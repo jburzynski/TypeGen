@@ -1,2 +1,2 @@
-# type-it
-C# to TypeScript converter
+# type-gen
+C# to TypeScript file generator
