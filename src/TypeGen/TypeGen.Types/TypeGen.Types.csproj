@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="TsClassAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TsDefaultValueAttribute.cs" />
     <Compile Include="TsEnumAttribute.cs" />
     <Compile Include="TsIgnoreAttribute.cs" />
   </ItemGroup>

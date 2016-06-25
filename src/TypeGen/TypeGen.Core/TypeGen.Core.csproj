@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generator.cs" />
+    <Compile Include="GeneratorOptions.cs" />
     <Compile Include="INameConverter.cs" />
     <Compile Include="ITypeNameConverter.cs" />
     <Compile Include="NoChangeConverter.cs" />
@@ -48,6 +49,20 @@
     <Compile Include="PascalCaseToCamelCaseConverter.cs" />
     <Compile Include="PascalCaseToKebabCaseConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TypeGen.Types\TypeGen.Types.csproj">
+      <Project>{db5fc56e-d6a8-491d-96bc-692c57058eeb}</Project>
+      <Name>TypeGen.Types</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Class.tpl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\ClassProperty.tpl" />
+    <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
