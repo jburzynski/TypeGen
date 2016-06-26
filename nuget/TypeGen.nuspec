@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>TypeGen</id>
+    <version>1.0.0</version>
+    <authors>Jacek Burzynski</authors>
+    <owners>Jacek Burzynski</owners>
+    <licenseUrl>https://github.com/jburzynski/type-gen/blob/master/docs/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jburzynski/type-gen</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>type-gen is a C# to TypeScript files generator</description>
+    <copyright>Copyright Jacek Burzynski 2016</copyright>
+    <tags>code-generator typescript ts</tags>
+  </metadata>
+</package>

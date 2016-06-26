@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using TypeGen.Types;
 
 namespace TypeGen.Core
@@ -16,6 +16,7 @@ namespace TypeGen.Core
         private readonly string _classTemplate;
         private readonly string _classPropertyTemplate;
         private readonly string _classPropertyWithDefaultValueTemplate;
+        private readonly string _baseDirectory;
         private string _tabText;
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace TypeGen.Core
             }
         }
 
-        public Generator()
+        public Generator(string baseDirectory = "")
         {
             FileNameConverter = new PascalCaseToKebabCaseConverter();
             TypeNameConverter = new NoChangeConverter();
@@ -88,6 +89,8 @@ namespace TypeGen.Core
             TypeScriptFileExtension = "ts";
             TabLength = 4;
             Options = new GeneratorOptions();
+
+            _baseDirectory = baseDirectory;
 
             // initialize templates
             _classTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
@@ -127,6 +130,8 @@ namespace TypeGen.Core
             string propertiesText = string.Empty;
             PropertyInfo[] propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
+            // create TypeScript source code for properties' definition
+
             propertiesText = propertyInfos.Aggregate(propertiesText,
                 (current, propertyInfo) => current + GetPropertyText(propertyInfo));
 
@@ -136,10 +141,16 @@ namespace TypeGen.Core
                 propertiesText = propertiesText.Remove(propertiesText.Length - 2);
             }
 
+            // create TypeScript source code for the whole class
+
             string tsClassName = TypeNameConverter.Convert(type.Name, type);
-            string tsFilePath = GetFilePath(type, classAttribute.OutputDir);
+            string filePath = GetFilePath(type, classAttribute.OutputDir);
 
             string classText = FillClassTemplate(string.Empty, tsClassName, propertiesText);
+
+            // write TypeScript file
+
+            File.WriteAllText(_baseDirectory + "\\" + filePath, classText);
         }
 
         /// <summary>
@@ -211,12 +222,12 @@ namespace TypeGen.Core
         {
             string fileName = FileNameConverter.Convert(type.Name);
 
-            if (!string.IsNullOrWhiteSpace(TypeScriptFileExtension))
+            if (!string.IsNullOrEmpty(TypeScriptFileExtension))
             {
                 fileName += "." + TypeScriptFileExtension;
             }
 
-            if (string.IsNullOrWhiteSpace(outputDir))
+            if (string.IsNullOrEmpty(outputDir))
             {
                 return fileName;
             }
