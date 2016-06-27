@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TypeGen.Core.Converters;
 using TypeGen.Types;
 
 namespace TypeGen.Core
@@ -17,27 +18,6 @@ namespace TypeGen.Core
         private readonly string _classPropertyTemplate;
         private readonly string _classPropertyWithDefaultValueTemplate;
         private readonly string _baseDirectory;
-        private string _tabText;
-
-        /// <summary>
-        /// Converter used for converting C# file names to TypeScript file names
-        /// </summary>
-        public INameConverter FileNameConverter { get; set; }
-
-        /// <summary>
-        /// Converter used for converting C# type names (classes, enums etc.) to TypeScript type names
-        /// </summary>
-        public ITypeNameConverter TypeNameConverter { get; set; }
-
-        /// <summary>
-        /// Converter used for converting C# property names to TypeScript property names
-        /// </summary>
-        public INameConverter PropertyNameConverter { get; set; }
-
-        /// <summary>
-        /// File extension used for the generated TypeScript files. Default is "ts".
-        /// </summary>
-        public string TypeScriptFileExtension { get; set; }
 
         private GeneratorOptions _options;
 
@@ -60,34 +40,8 @@ namespace TypeGen.Core
             }
         }
 
-        private int _tabLength;
-
-        /// <summary>
-        /// Number of space characters per tab. Default is 4.
-        /// </summary>
-        public int TabLength {
-            get
-            {
-                return _tabLength;
-            }
-            set
-            {
-                _tabLength = value;
-                _tabText = string.Empty;
-                for (int i = 0; i < _tabLength; i++)
-                {
-                    _tabText += " ";
-                }
-            }
-        }
-
         public Generator(string baseDirectory = "")
         {
-            FileNameConverter = new PascalCaseToKebabCaseConverter();
-            TypeNameConverter = new NoChangeConverter();
-            PropertyNameConverter = new PascalCaseToCamelCaseConverter();
-            TypeScriptFileExtension = "ts";
-            TabLength = 4;
             Options = new GeneratorOptions();
 
             _baseDirectory = baseDirectory;
@@ -143,7 +97,7 @@ namespace TypeGen.Core
 
             // create TypeScript source code for the whole class
 
-            string tsClassName = TypeNameConverter.Convert(type.Name, type);
+            string tsClassName = Options.TypeNameConverters.Convert(type.Name, type);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
 
             string classText = FillClassTemplate(string.Empty, tsClassName, propertiesText);
@@ -161,7 +115,7 @@ namespace TypeGen.Core
         private string GetPropertyText(PropertyInfo propertyInfo)
         {
             string accessorText = Options.ExplicitPublicAccessor ? "public " : string.Empty;
-            string name = PropertyNameConverter.Convert(propertyInfo.Name);
+            string name = Options.PropertyNameConverters.Convert(propertyInfo.Name);
 
             var defaultValueAttribute = propertyInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
@@ -199,7 +153,7 @@ namespace TypeGen.Core
 
         private string ReplaceTabs(string template)
         {
-            return template.Replace("$tg{tab}", _tabText);
+            return template.Replace("$tg{tab}", GetTabText());
         }
 
         /// <summary>
@@ -220,11 +174,11 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetFilePath(Type type, string outputDir)
         {
-            string fileName = FileNameConverter.Convert(type.Name);
+            string fileName = Options.FileNameConverters.Convert(type.Name);
 
-            if (!string.IsNullOrEmpty(TypeScriptFileExtension))
+            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
             {
-                fileName += "." + TypeScriptFileExtension;
+                fileName += "." + Options.TypeScriptFileExtension;
             }
 
             if (string.IsNullOrEmpty(outputDir))
@@ -239,6 +193,20 @@ namespace TypeGen.Core
             }
 
             return outputDir + "\\" + fileName;
+        }
+
+        /// <summary>
+        /// Gets a string value to use as a tab
+        /// </summary>
+        /// <returns></returns>
+        private string GetTabText()
+        {
+            string tabText = string.Empty;
+            for (int i = 0; i < Options.TabLength; i++)
+            {
+                tabText += " ";
+            }
+            return tabText;
         }
     }
 }

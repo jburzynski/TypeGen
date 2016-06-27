@@ -43,14 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\TypeNameConverterCollection.cs" />
+    <Compile Include="Converters\NameConverterCollection.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="GeneratorOptions.cs" />
-    <Compile Include="INameConverter.cs" />
-    <Compile Include="ITypeNameConverter.cs" />
-    <Compile Include="NoChangeConverter.cs" />
-    <Compile Include="NoChangeTypeConverter.cs" />
-    <Compile Include="PascalCaseToCamelCaseConverter.cs" />
-    <Compile Include="PascalCaseToKebabCaseConverter.cs" />
+    <Compile Include="Converters\INameConverter.cs" />
+    <Compile Include="Converters\ITypeNameConverter.cs" />
+    <Compile Include="Converters\NoChangeConverter.cs" />
+    <Compile Include="Converters\PascalCaseToCamelCaseConverter.cs" />
+    <Compile Include="Converters\PascalCaseToKebabCaseConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

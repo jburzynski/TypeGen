@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TypeGen.Core
+namespace TypeGen.Core.Converters
 {
     /// <summary>
     /// Interface for type name converters

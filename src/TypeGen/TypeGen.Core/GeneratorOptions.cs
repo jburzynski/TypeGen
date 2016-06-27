@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Converters;
 
 namespace TypeGen.Core
 {
@@ -10,9 +11,46 @@ namespace TypeGen.Core
     /// </summary>
     public class GeneratorOptions
     {
+        public GeneratorOptions()
+        {
+            FileNameConverters = new NameConverterCollection(new[] { new PascalCaseToKebabCaseConverter() });
+            TypeNameConverters = new TypeNameConverterCollection();
+            PropertyNameConverters = new NameConverterCollection(new[] { new PascalCaseToCamelCaseConverter() });
+            TypeScriptFileExtension = "ts";
+            TabLength = 4;
+        }
+
         /// <summary>
-        /// Whether to use explicit "public" accessor. Default is "false".
+        /// A collection (chain) of converters used for converting C# file names to TypeScript file names.
+        /// Default is PascalCase to kebab-case.
+        /// </summary>
+        public NameConverterCollection FileNameConverters { get; set; }
+
+        /// <summary>
+        /// A collection (chain) of converters used for converting C# type names (classes, enums etc.) to TypeScript type names.
+        /// Default is NoChangeConverter (preserves original type name).
+        /// </summary>
+        public TypeNameConverterCollection TypeNameConverters { get; set; }
+
+        /// <summary>
+        /// A collection (chain) of converters used for converting C# property names to TypeScript property names.
+        /// Default is PascalCase to camelCase.
+        /// </summary>
+        public NameConverterCollection PropertyNameConverters { get; set; }
+
+        /// <summary>
+        /// Whether to generate explicit "public" accessor in TypeScript classes. Default is "false".
         /// </summary>
         public bool ExplicitPublicAccessor { get; set; }
+
+        /// <summary>
+        /// File extension used for the generated TypeScript files. Default is "ts".
+        /// </summary>
+        public string TypeScriptFileExtension { get; set; }
+
+        /// <summary>
+        /// Number of space characters per tab. Default is 4.
+        /// </summary>
+        public int TabLength { get; set; }
     }
 }

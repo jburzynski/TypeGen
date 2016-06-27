@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace TypeGen.Core
+namespace TypeGen.Core.Converters
 {
     /// <summary>
     /// Converts PascalCase names to camelCase names
@@ -12,12 +10,18 @@ namespace TypeGen.Core
     {
         public string Convert(string name)
         {
-            return "someName";
+            return ConvertTypeInvariant(name);
         }
 
         public string Convert(string name, Type type)
         {
-            return "someName";
+            return ConvertTypeInvariant(name);
+        }
+
+        private static string ConvertTypeInvariant(string name)
+        {
+            char firstChar = char.ToLowerInvariant(name[0]);
+            return firstChar + name.Remove(0, 1);
         }
     }
 }
