@@ -16,6 +16,7 @@ namespace TypeGen.Core
             FileNameConverters = new NameConverterCollection(new[] { new PascalCaseToKebabCaseConverter() });
             TypeNameConverters = new TypeNameConverterCollection();
             PropertyNameConverters = new NameConverterCollection(new[] { new PascalCaseToCamelCaseConverter() });
+            EnumValueNameConverters = new NameConverterCollection();
             TypeScriptFileExtension = "ts";
             TabLength = 4;
         }
@@ -37,6 +38,12 @@ namespace TypeGen.Core
         /// Default is PascalCase to camelCase.
         /// </summary>
         public NameConverterCollection PropertyNameConverters { get; set; }
+
+        /// <summary>
+        /// A collection (chain) of converters used for converting C# enum value names to TypeScript names.
+        /// Default is NoChangeConverter (preserves original name).
+        /// </summary>
+        public NameConverterCollection EnumValueNameConverters { get; set; }
 
         /// <summary>
         /// Whether to generate explicit "public" accessor in TypeScript classes. Default is "false".
