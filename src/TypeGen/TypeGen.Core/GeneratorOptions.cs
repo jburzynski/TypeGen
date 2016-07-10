@@ -13,7 +13,7 @@ namespace TypeGen.Core
     {
         public GeneratorOptions()
         {
-            FileNameConverters = new NameConverterCollection(new[] { new PascalCaseToKebabCaseConverter() });
+            FileNameConverters = new TypeNameConverterCollection(new[] { new PascalCaseToKebabCaseConverter() });
             TypeNameConverters = new TypeNameConverterCollection();
             PropertyNameConverters = new NameConverterCollection(new[] { new PascalCaseToCamelCaseConverter() });
             EnumValueNameConverters = new NameConverterCollection();
@@ -25,7 +25,7 @@ namespace TypeGen.Core
         /// A collection (chain) of converters used for converting C# file names to TypeScript file names.
         /// Default is PascalCase to kebab-case.
         /// </summary>
-        public NameConverterCollection FileNameConverters { get; set; }
+        public TypeNameConverterCollection FileNameConverters { get; set; }
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# type names (classes, enums etc.) to TypeScript type names.
@@ -34,13 +34,13 @@ namespace TypeGen.Core
         public TypeNameConverterCollection TypeNameConverters { get; set; }
 
         /// <summary>
-        /// A collection (chain) of converters used for converting C# property names to TypeScript property names.
+        /// A collection (chain) of converters used for converting C# class property names to TypeScript class property names.
         /// Default is PascalCase to camelCase.
         /// </summary>
         public NameConverterCollection PropertyNameConverters { get; set; }
 
         /// <summary>
-        /// A collection (chain) of converters used for converting C# enum value names to TypeScript names.
+        /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names.
         /// Default is NoChangeConverter (preserves original name).
         /// </summary>
         public NameConverterCollection EnumValueNameConverters { get; set; }

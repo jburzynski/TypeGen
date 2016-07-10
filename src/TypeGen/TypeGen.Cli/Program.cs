@@ -14,6 +14,7 @@ namespace TypeGen.Cli
         {
             Assembly assembly;
             string projectFolder = string.Empty;
+
             if (args.Contains("--load-tg-test"))
             {
                 assembly = Assembly.LoadFrom("TypeGen.Test.dll");
@@ -38,7 +39,7 @@ namespace TypeGen.Cli
             }
 
             var generator = new Generator(projectFolder);
-            generator.GenerateFromAssembly(assembly);
+            generator.Generate(assembly);
         }
 
         private static string GetFileNameFromPath(string path)

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TypeGen.Types
+namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
     /// Indentifies an enum that a TypeScript file should be generated for

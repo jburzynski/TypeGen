@@ -46,9 +46,9 @@
     <Compile Include="SomeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TypeGen.Types\TypeGen.Types.csproj">
-      <Project>{db5fc56e-d6a8-491d-96bc-692c57058eeb}</Project>
-      <Name>TypeGen.Types</Name>
+    <ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj">
+      <Project>{f155f00c-6f6c-4480-bbb4-c1e00dc53958}</Project>
+      <Name>TypeGen.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

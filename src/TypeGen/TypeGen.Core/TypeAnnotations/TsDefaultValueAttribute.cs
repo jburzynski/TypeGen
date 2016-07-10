@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TypeGen.Types
+namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
     /// Specifies a default value for a TypeScript property

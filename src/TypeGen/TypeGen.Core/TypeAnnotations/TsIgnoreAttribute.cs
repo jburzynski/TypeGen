@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TypeGen.Types
+namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
     /// Identifies a property that should be ignored when generating a TypeScript file

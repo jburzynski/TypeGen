@@ -5,7 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TypeGen.Core.Converters;
-using TypeGen.Types;
+using TypeGen.Core.Services;
+using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core
 {
@@ -14,6 +15,9 @@ namespace TypeGen.Core
     /// </summary>
     public class Generator
     {
+        // services
+        private readonly TypeService _typeService;
+
         private readonly string _enumTemplate;
         private readonly string _enumValueTemplate;
         private readonly string _classTemplate;
@@ -44,6 +48,7 @@ namespace TypeGen.Core
 
         public Generator(string baseDirectory = "")
         {
+            _typeService = new TypeService();
             Options = new GeneratorOptions();
 
             _baseDirectory = baseDirectory;
@@ -60,7 +65,7 @@ namespace TypeGen.Core
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
-        public void GenerateFromAssembly(Assembly assembly)
+        public void Generate(Assembly assembly)
         {
             foreach (Type type in assembly.GetTypes())
             {
@@ -87,8 +92,11 @@ namespace TypeGen.Core
         {
             string propertiesText = string.Empty;
 
-            MemberInfo[] fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
-            MemberInfo[] propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            IEnumerable<MemberInfo> fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public)
+                .WithoutTsIgnore();
+
+            IEnumerable<MemberInfo> propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .WithoutTsIgnore();
 
             // create TypeScript source code for properties' definition
 
@@ -179,7 +187,7 @@ namespace TypeGen.Core
                 ? ((PropertyInfo) memberInfo).PropertyType
                 : ((FieldInfo) memberInfo).FieldType;
 
-            string typeString = Utilities.GetTsTypeName(type);
+            string typeString = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
 
             return FillClassPropertyTemplate(accessorText, name, typeString);
         }
@@ -225,7 +233,7 @@ namespace TypeGen.Core
 
         private string ReplaceTabs(string template)
         {
-            return template.Replace("$tg{tab}", GetTabText());
+            return template.Replace("$tg{tab}", Utilities.GetTabText(Options.TabLength));
         }
 
         /// <summary>
@@ -236,7 +244,7 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetFilePath(Type type, string outputDir)
         {
-            string fileName = Options.FileNameConverters.Convert(type.Name);
+            string fileName = Options.FileNameConverters.Convert(type.Name, type);
 
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
             {
@@ -255,20 +263,6 @@ namespace TypeGen.Core
             }
 
             return outputDir + "\\" + fileName;
-        }
-
-        /// <summary>
-        /// Gets a string value to use as a tab
-        /// </summary>
-        /// <returns></returns>
-        private string GetTabText()
-        {
-            string tabText = string.Empty;
-            for (int i = 0; i < Options.TabLength; i++)
-            {
-                tabText += " ";
-            }
-            return tabText;
         }
     }
 }

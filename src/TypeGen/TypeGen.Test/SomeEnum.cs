@@ -1,4 +1,4 @@
-﻿using TypeGen.Types;
+﻿using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Test
 {

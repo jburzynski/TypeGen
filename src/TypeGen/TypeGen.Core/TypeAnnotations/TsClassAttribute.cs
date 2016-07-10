@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using TypeGen.Core.Converters;
 
-namespace TypeGen.Types
+namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
     /// Indentifies a class that a TypeScript file should be generated for
