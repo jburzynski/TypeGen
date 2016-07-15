@@ -2,7 +2,7 @@
 
 namespace TypeGen.Test
 {
-    [TsEnum]
+    [TsEnum(OutputDir = "./my/enums/.././enums/project")]
     public enum SomeEnum
     {
         EnumValue = 1,

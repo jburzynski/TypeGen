@@ -13,7 +13,7 @@ namespace TypeGen.Cli
         private static void Main(string[] args)
         {
             Assembly assembly;
-            string projectFolder = string.Empty;
+            var projectFolder = "";
 
             if (args.Contains("--load-tg-test"))
             {

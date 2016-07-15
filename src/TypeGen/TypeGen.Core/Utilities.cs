@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using TypeGen.Core.Converters;
 
 namespace TypeGen.Core
@@ -25,7 +28,7 @@ namespace TypeGen.Core
             {
                 if (stream == null)
                 {
-                    throw new ApplicationException("Could not find embedded resource '" + name + "'");
+                    throw new ApplicationException($"Could not find embedded resource '{name}'");
                 }
 
                 var contentBytes = new byte[stream.Length];
@@ -41,12 +44,64 @@ namespace TypeGen.Core
         /// <returns></returns>
         public static string GetTabText(int tabLength)
         {
-            string tabText = string.Empty;
-            for (int i = 0; i < tabLength; i++)
+            var tabText = "";
+            for (var i = 0; i < tabLength; i++)
             {
                 tabText += " ";
             }
             return tabText;
+        }
+
+        /// <summary>
+        /// Gets path prefix required to navigate from path1 to path2.
+        /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\".
+        /// This method returns a path with a trailing slash if diff is not empty; otherwise returns an empty string.
+        /// </summary>
+        /// <param name="path1"></param>
+        /// <param name="path2"></param>
+        /// <returns></returns>
+        public static string GetPathDiff(string path1, string path2)
+        {
+            if (path1 == null) path1 = "";
+            if (path2 == null) path2 = "";
+
+            path1 = Path.GetFullPath(path1).NormalizePath();
+            path2 = Path.GetFullPath(path2).NormalizePath();
+
+            string prefix = GetMaximalCommonPrefix(path1, path2);
+
+            // remove common prefix from each path
+            path1 = path1.ReplaceFirst(prefix, "");
+            path2 = path2.ReplaceFirst(prefix, "");
+
+            // calculate depth between path1 and path2
+            int relativeDepth = path1.Split('\\').Length;
+
+            var diff = "";
+            relativeDepth.Times(i => { diff += "..\\"; });
+            diff += path2;
+
+            return diff != "" ? $"{diff}\\" : "";
+        }
+
+        /// <summary>
+        /// Gets maximal common prefix for two strings (case-insensitive)
+        /// </summary>
+        /// <param name="str1"></param>
+        /// <param name="str2"></param>
+        /// <returns></returns>
+        private static string GetMaximalCommonPrefix(string str1, string str2)
+        {
+            int length = Math.Min(str1.Length, str2.Length);
+            var stringBuilder = new StringBuilder();
+
+            for (var i = 0; i < length; i++)
+            {
+                if (char.ToUpperInvariant(str1[i]) != char.ToUpperInvariant(str2[i])) break;
+                stringBuilder.Append(str1[i]);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

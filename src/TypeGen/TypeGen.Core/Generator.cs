@@ -17,14 +17,9 @@ namespace TypeGen.Core
     {
         // services
         private readonly TypeService _typeService;
+        private readonly TemplateService _templateService;
 
-        private readonly string _enumTemplate;
-        private readonly string _enumValueTemplate;
-        private readonly string _classTemplate;
-        private readonly string _classPropertyTemplate;
-        private readonly string _classPropertyWithDefaultValueTemplate;
         private readonly string _baseDirectory;
-
         private GeneratorOptions _options;
 
         /// <summary>
@@ -40,7 +35,7 @@ namespace TypeGen.Core
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("Options");
+                    throw new ArgumentNullException(nameof(Options));
                 }
                 _options = value;
             }
@@ -48,17 +43,14 @@ namespace TypeGen.Core
 
         public Generator(string baseDirectory = "")
         {
-            _typeService = new TypeService();
             Options = new GeneratorOptions();
 
-            _baseDirectory = baseDirectory;
+            _typeService = new TypeService();
+            _templateService = new TemplateService(Options.TabLength);
 
-            // initialize templates
-            _enumTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
-            _enumValueTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
-            _classTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
-            _classPropertyTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
-            _classPropertyWithDefaultValueTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
+            _templateService.Initialize();
+
+            _baseDirectory = baseDirectory;
         }
 
         /// <summary>
@@ -69,17 +61,26 @@ namespace TypeGen.Core
         {
             foreach (Type type in assembly.GetTypes())
             {
-                var classAttribute = type.GetCustomAttribute<TsClassAttribute>();
-                if (classAttribute != null)
-                {
-                    GenerateClass(type, classAttribute);
-                }
+                Generate(type);
+            }
+        }
 
-                var enumAttribute = type.GetCustomAttribute<TsEnumAttribute>();
-                if (enumAttribute != null)
-                {
-                    GenerateEnum(type, enumAttribute);
-                }
+        /// <summary>
+        /// Generate TypeScript files for a given type
+        /// </summary>
+        /// <param name="type"></param>
+        public void Generate(Type type)
+        {
+            var classAttribute = type.GetCustomAttribute<TsClassAttribute>();
+            if (classAttribute != null)
+            {
+                GenerateClass(type, classAttribute);
+            }
+
+            var enumAttribute = type.GetCustomAttribute<TsEnumAttribute>();
+            if (enumAttribute != null)
+            {
+                GenerateEnum(type, enumAttribute);
             }
         }
 
@@ -90,35 +91,23 @@ namespace TypeGen.Core
         /// <param name="classAttribute"></param>
         private void GenerateClass(Type type, TsClassAttribute classAttribute)
         {
-            string propertiesText = string.Empty;
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (classAttribute == null) throw new ArgumentNullException(nameof(classAttribute));
 
-            IEnumerable<MemberInfo> fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public)
-                .WithoutTsIgnore();
-
-            IEnumerable<MemberInfo> propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .WithoutTsIgnore();
-
-            // create TypeScript source code for properties' definition
-
-            propertiesText += fieldInfos.Union(propertyInfos)
-                .Aggregate(propertiesText, (current, memberInfo) => current + GetPropertyText(memberInfo));
-
-            if (propertiesText != string.Empty)
-            {
-                // remove the last new line symbol
-                propertiesText = propertiesText.Remove(propertiesText.Length - 2);
-            }
+            // GenerateImportedFiles(type, classAttribute.OutputDir);
+            string importsText = GetImportsText(type, classAttribute.OutputDir);
+            string propertiesText = GetPropertiesText(type);
 
             // create TypeScript source code for the whole class
 
             string tsClassName = Options.TypeNameConverters.Convert(type.Name, type);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
 
-            string classText = FillClassTemplate(string.Empty, tsClassName, propertiesText);
+            string classText = _templateService.FillClassTemplate(importsText, tsClassName, propertiesText);
 
             // write TypeScript file
 
-            string separator = string.IsNullOrEmpty(_baseDirectory) ? string.Empty : "\\";
+            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
             File.WriteAllText(_baseDirectory + separator + filePath, classText);
         }
 
@@ -129,42 +118,22 @@ namespace TypeGen.Core
         /// <param name="enumAttribute"></param>
         private void GenerateEnum(Type type, TsEnumAttribute enumAttribute)
         {
-            string valuesText = string.Empty;
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (enumAttribute == null) throw new ArgumentNullException(nameof(enumAttribute));
 
-            Array enumValues = Enum.GetValues(type);
-
-            valuesText += enumValues.Cast<object>()
-                .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue));
-
-            if (valuesText != string.Empty)
-            {
-                // remove the last new line symbol
-                valuesText = valuesText.Remove(valuesText.Length - 2);
-            }
+            string valuesText = GetEnumValuesText(type);
 
             // create TypeScript source code for the whole enum
 
             string tsEnumName = Options.TypeNameConverters.Convert(type.Name, type);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
 
-            string enumText = FillEnumTemplate(string.Empty, tsEnumName, valuesText);
+            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText);
 
             // write TypeScript file
 
-            string separator = string.IsNullOrEmpty(_baseDirectory) ? string.Empty : "\\";
+            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
             File.WriteAllText(_baseDirectory + separator + filePath, enumText);
-        }
-
-        /// <summary>
-        /// Gets TypeScript enum value definition source code
-        /// </summary>
-        /// <param name="enumValue">an enum value (result of Enum.GetValues())</param>
-        /// <returns></returns>
-        private string GetEnumValueText(object enumValue)
-        {
-            string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
-            var enumValueInt = (int)enumValue;
-            return FillEnumValueTemplate(name, enumValueInt);
         }
 
         /// <summary>
@@ -174,66 +143,151 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetPropertyText(MemberInfo memberInfo)
         {
-            string accessorText = Options.ExplicitPublicAccessor ? "public " : string.Empty;
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+
+            string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
             string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
             {
-                return FillClassPropertyWithDefaultValueTemplate(accessorText, name, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, defaultValueAttribute.DefaultValue);
             }
 
-            Type type = memberInfo is PropertyInfo
-                ? ((PropertyInfo) memberInfo).PropertyType
-                : ((FieldInfo) memberInfo).FieldType;
-
+            Type type = _typeService.GetMemberType(memberInfo);
             string typeString = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
 
-            return FillClassPropertyTemplate(accessorText, name, typeString);
+            return _templateService.FillClassPropertyTemplate(accessorText, name, typeString);
         }
 
-        private string FillEnumTemplate(string imports, string name, string values)
+        /// <summary>
+        /// Gets TypeScript properties definition source code
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string GetPropertiesText(Type type)
         {
-            return ReplaceTabs(_enumTemplate)
-                .Replace("$tg{imports}", imports)
-                .Replace("$tg{name}", name)
-                .Replace("$tg{values}", values);
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            string propertiesText = "";
+            IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
+
+            // create TypeScript source code for properties' definition
+
+            propertiesText += memberInfos
+                .Aggregate(propertiesText, (current, memberInfo) => current + GetPropertyText(memberInfo));
+
+            if (propertiesText != "")
+            {
+                // remove the last new line symbol
+                propertiesText = propertiesText.Remove(propertiesText.Length - 2);
+            }
+
+            return propertiesText;
         }
 
-        private string FillEnumValueTemplate(string name, int intValue)
+        /// <summary>
+        /// Gets TypeScript enum value definition source code
+        /// </summary>
+        /// <param name="enumValue">an enum value (result of Enum.GetValues())</param>
+        /// <returns></returns>
+        private string GetEnumValueText(object enumValue)
         {
-            return ReplaceTabs(_enumValueTemplate)
-                .Replace("$tg{name}", name)
-                .Replace("$tg{number}", intValue.ToString());
+            if (enumValue == null) throw new ArgumentNullException(nameof(enumValue));
+
+            string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
+            var enumValueInt = (int)enumValue;
+            return _templateService.FillEnumValueTemplate(name, enumValueInt);
         }
 
-        private string FillClassTemplate(string imports, string name, string properties)
+        /// <summary>
+        /// Gets TypeScript enum values definition source code
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string GetEnumValuesText(Type type)
         {
-            return ReplaceTabs(_classTemplate)
-                .Replace("$tg{imports}", imports)
-                .Replace("$tg{name}", name)
-                .Replace("$tg{properties}", properties);
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            var valuesText = "";
+            Array enumValues = Enum.GetValues(type);
+
+            valuesText += enumValues.Cast<object>()
+                .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue));
+
+            if (valuesText != "")
+            {
+                // remove the last new line symbol
+                valuesText = valuesText.Remove(valuesText.Length - 2);
+            }
+
+            return valuesText;
         }
 
-        private string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string defaultValue)
+        /// <summary>
+        /// Gets TypeScript imports declaration source code.
+        /// This method will generate TS files for dependencies if needed.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputDir">The passed type's output directory</param>
+        /// <returns></returns>
+        private string GetImportsText(Type type, string outputDir)
         {
-            return ReplaceTabs(_classPropertyWithDefaultValueTemplate)
-                .Replace("$tg{accessor}", accessor)
-                .Replace("$tg{name}", name)
-                .Replace("$tg{defaultValue}", defaultValue);
-        }
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
-        private string FillClassPropertyTemplate(string accessor, string name, string type)
-        {
-            return ReplaceTabs(_classPropertyTemplate)
-                .Replace("$tg{accessor}", accessor)
-                .Replace("$tg{name}", name)
-                .Replace("$tg{type}", type);
-        }
+            var result = "";
+            IEnumerable<Type> typeDependencies = _typeService.GetTypeDependencies(type);
 
-        private string ReplaceTabs(string template)
-        {
-            return template.Replace("$tg{tab}", Utilities.GetTabText(Options.TabLength));
+            foreach (Type typeDependency in typeDependencies)
+            {
+                var dependencyClassAttribute = typeDependency.GetCustomAttribute<TsClassAttribute>();
+                var dependencyEnumAttribute = typeDependency.GetCustomAttribute<TsEnumAttribute>();
+
+                string dependencyOutputDir = dependencyClassAttribute?.OutputDir ?? dependencyEnumAttribute?.OutputDir;
+
+                // dependency type TypeScript file generation
+
+                // dependency type NOT in the same assembly, but HAS TsX attribute
+                if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
+                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null))
+                {
+                    Generate(typeDependency);
+                }
+
+                // dependency DOESN'T HAVE a TsX attribute
+                if (dependencyClassAttribute == null && dependencyEnumAttribute == null)
+                {
+                    if (typeDependency.IsClass)
+                    {
+                        GenerateClass(typeDependency, new TsClassAttribute { OutputDir = outputDir });
+                    }
+                    else if (typeDependency.IsEnum)
+                    {
+                        GenerateEnum(typeDependency, new TsEnumAttribute { OutputDir = outputDir });
+                    }
+                    else
+                    {
+                        throw new ApplicationException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
+                    }
+
+                    dependencyOutputDir = outputDir;
+                }
+
+                string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
+                string fileName = Options.FileNameConverters.Convert(typeDependency.Name, typeDependency);
+                string dependencyPath = pathDiff + fileName;
+                dependencyPath = dependencyPath.Replace('\\', '/');
+
+                string typeName = Options.TypeNameConverters.Convert(typeDependency.Name, typeDependency);
+                result += _templateService.FillImportTemplate(typeName, dependencyPath);
+            }
+
+            if (result != "")
+            {
+                result += "\r\n";
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -244,11 +298,13 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetFilePath(Type type, string outputDir)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             string fileName = Options.FileNameConverters.Convert(type.Name, type);
 
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
             {
-                fileName += "." + Options.TypeScriptFileExtension;
+                fileName += $".{Options.TypeScriptFileExtension}";
             }
 
             if (string.IsNullOrEmpty(outputDir))
@@ -256,13 +312,7 @@ namespace TypeGen.Core
                 return fileName;
             }
 
-            outputDir = outputDir.Replace('/', '\\');
-            if (outputDir.Last() == '\\')
-            {
-                outputDir = outputDir.Remove(outputDir.Length - 1);
-            }
-
-            return outputDir + "\\" + fileName;
+            return $"{outputDir.NormalizePath()}\\{fileName}";
         }
     }
 }
