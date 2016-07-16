@@ -77,6 +77,12 @@ namespace TypeGen.Core
                 GenerateClass(type, classAttribute);
             }
 
+            var interfaceAttribute = type.GetCustomAttribute<TsInterfaceAttribute>();
+            if (interfaceAttribute != null)
+            {
+                GenerateInterface(type, interfaceAttribute);
+            }
+
             var enumAttribute = type.GetCustomAttribute<TsEnumAttribute>();
             if (enumAttribute != null)
             {
@@ -94,9 +100,8 @@ namespace TypeGen.Core
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (classAttribute == null) throw new ArgumentNullException(nameof(classAttribute));
 
-            // GenerateImportedFiles(type, classAttribute.OutputDir);
             string importsText = GetImportsText(type, classAttribute.OutputDir);
-            string propertiesText = GetPropertiesText(type);
+            string propertiesText = GetClassPropertiesText(type);
 
             // create TypeScript source code for the whole class
 
@@ -109,6 +114,32 @@ namespace TypeGen.Core
 
             string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
             File.WriteAllText(_baseDirectory + separator + filePath, classText);
+        }
+
+        /// <summary>
+        /// Generates a TypeScript interface file from a class type
+        /// </summary>
+        /// <param name="type"></param>W
+        /// <param name="interfaceAttribute"></param>
+        private void GenerateInterface(Type type, TsInterfaceAttribute interfaceAttribute)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (interfaceAttribute == null) throw new ArgumentNullException(nameof(interfaceAttribute));
+
+            string importsText = GetImportsText(type, interfaceAttribute.OutputDir);
+            string propertiesText = GetInterfacePropertiesText(type);
+
+            // create TypeScript source code for the whole class
+
+            string tsInterfaceName = Options.TypeNameConverters.Convert(type.Name, type);
+            string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
+
+            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, propertiesText);
+
+            // write TypeScript file
+
+            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
+            File.WriteAllText(_baseDirectory + separator + filePath, interfaceText);
         }
 
         /// <summary>
@@ -137,11 +168,11 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Gets TypeScript property definition source code
+        /// Gets TypeScript class property definition source code
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <returns></returns>
-        private string GetPropertyText(MemberInfo memberInfo)
+        private string GetClassPropertyText(MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
 
@@ -161,21 +192,64 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Gets TypeScript properties definition source code
+        /// Gets TypeScript class properties definition source code
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string GetPropertiesText(Type type)
+        private string GetClassPropertiesText(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            string propertiesText = "";
+            var propertiesText = "";
             IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
 
             // create TypeScript source code for properties' definition
 
             propertiesText += memberInfos
-                .Aggregate(propertiesText, (current, memberInfo) => current + GetPropertyText(memberInfo));
+                .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(memberInfo));
+
+            if (propertiesText != "")
+            {
+                // remove the last new line symbol
+                propertiesText = propertiesText.Remove(propertiesText.Length - 2);
+            }
+
+            return propertiesText;
+        }
+
+        /// <summary>
+        /// Gets TypeScript interface property definition source code
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        private string GetInterfacePropertyText(MemberInfo memberInfo)
+        {
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+
+            string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
+
+            Type type = _typeService.GetMemberType(memberInfo);
+            string typeString = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+
+            return _templateService.FillInterfacePropertyTemplate(name, typeString);
+        }
+
+        /// <summary>
+        /// Gets TypeScript interface properties definition source code
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string GetInterfacePropertiesText(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            var propertiesText = "";
+            IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
+
+            // create TypeScript source code for properties' definition
+
+            propertiesText += memberInfos
+                .Aggregate(propertiesText, (current, memberInfo) => current + GetInterfacePropertyText(memberInfo));
 
             if (propertiesText != "")
             {
@@ -241,9 +315,12 @@ namespace TypeGen.Core
             foreach (Type typeDependency in typeDependencies)
             {
                 var dependencyClassAttribute = typeDependency.GetCustomAttribute<TsClassAttribute>();
+                var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<TsInterfaceAttribute>();
                 var dependencyEnumAttribute = typeDependency.GetCustomAttribute<TsEnumAttribute>();
 
-                string dependencyOutputDir = dependencyClassAttribute?.OutputDir ?? dependencyEnumAttribute?.OutputDir;
+                string dependencyOutputDir = dependencyClassAttribute?.OutputDir
+                    ?? dependencyInterfaceAttribute?.OutputDir
+                    ?? dependencyEnumAttribute?.OutputDir;
 
                 // dependency type TypeScript file generation
 
@@ -274,7 +351,10 @@ namespace TypeGen.Core
                 }
 
                 string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
+                pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
+
                 string fileName = Options.FileNameConverters.Convert(typeDependency.Name, typeDependency);
+
                 string dependencyPath = pathDiff + fileName;
                 dependencyPath = dependencyPath.Replace('\\', '/');
 

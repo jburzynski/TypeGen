@@ -10,7 +10,6 @@ namespace TypeGen.Core.Converters
     {
         /// <summary>
         /// Regex taken from http://stackoverflow.com/a/37301354
-        /// All credit to Mikhail.
         /// </summary>
         private static readonly Regex _regex
             = new Regex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])", RegexOptions.Compiled);

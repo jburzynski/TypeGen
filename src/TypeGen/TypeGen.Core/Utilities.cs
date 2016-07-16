@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
-using TypeGen.Core.Converters;
 
 namespace TypeGen.Core
 {
@@ -62,8 +58,8 @@ namespace TypeGen.Core
         /// <returns></returns>
         public static string GetPathDiff(string path1, string path2)
         {
-            if (path1 == null) path1 = "";
-            if (path2 == null) path2 = "";
+            if (string.IsNullOrEmpty(path1)) path1 = ".\\";
+            if (string.IsNullOrEmpty(path2)) path2 = ".\\";
 
             path1 = Path.GetFullPath(path1).NormalizePath();
             path2 = Path.GetFullPath(path2).NormalizePath();
@@ -71,17 +67,22 @@ namespace TypeGen.Core
             string prefix = GetMaximalCommonPrefix(path1, path2);
 
             // remove common prefix from each path
-            path1 = path1.ReplaceFirst(prefix, "");
-            path2 = path2.ReplaceFirst(prefix, "");
+            path1 = path1.ReplaceFirst(prefix, "").NormalizePath();
+            path2 = path2.ReplaceFirst(prefix, "").NormalizePath();
 
             // calculate depth between path1 and path2
-            int relativeDepth = path1.Split('\\').Length;
+            int relativeDepth = path1 == "" ? 0 : path1.Split('\\').Length;
 
             var diff = "";
             relativeDepth.Times(i => { diff += "..\\"; });
             diff += path2;
 
-            return diff != "" ? $"{diff}\\" : "";
+            if (diff != "")
+            {
+                return diff.EndsWith("\\") ? diff : $"{diff}\\";
+            }
+
+            return "";
         }
 
         /// <summary>

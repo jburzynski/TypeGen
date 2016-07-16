@@ -59,6 +59,7 @@
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\TypeService.cs" />
     <Compile Include="StringExtensions.cs" />
+    <Compile Include="TypeAnnotations\TsInterfaceAttribute.cs" />
     <Compile Include="TypeAnnotations\TsClassAttribute.cs" />
     <Compile Include="TypeAnnotations\TsDefaultValueAttribute.cs" />
     <Compile Include="TypeAnnotations\TsEnumAttribute.cs" />
@@ -80,6 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Import.tpl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Interface.tpl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

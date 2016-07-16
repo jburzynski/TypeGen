@@ -16,6 +16,8 @@ namespace TypeGen.Core.Services
         private string _classTemplate;
         private string _classPropertyTemplate;
         private string _classPropertyWithDefaultValueTemplate;
+        private string _interfaceTemplate;
+        private string _interfacePropertyTemplate;
         private string _importTemplate;
 
         private readonly int _tabLength;
@@ -32,6 +34,8 @@ namespace TypeGen.Core.Services
             _classTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
             _classPropertyTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
             _classPropertyWithDefaultValueTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
+            _interfaceTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
+            _interfacePropertyTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
             _importTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
@@ -55,6 +59,21 @@ namespace TypeGen.Core.Services
         {
             return ReplaceTabs(_classPropertyTemplate)
                 .Replace("$tg{accessor}", accessor)
+                .Replace("$tg{name}", name)
+                .Replace("$tg{type}", type);
+        }
+
+        public string FillInterfaceTemplate(string imports, string name, string properties)
+        {
+            return ReplaceTabs(_interfaceTemplate)
+                .Replace("$tg{imports}", imports)
+                .Replace("$tg{name}", name)
+                .Replace("$tg{properties}", properties);
+        }
+
+        public string FillInterfacePropertyTemplate(string name, string type)
+        {
+            return ReplaceTabs(_interfacePropertyTemplate)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{type}", type);
         }

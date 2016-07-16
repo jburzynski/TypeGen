@@ -7,7 +7,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Test
 {
-    [TsClass(OutputDir = "./my/classes/../../my/classes/by/project/")]
+    [TsClass(OutputDir = "./my/classes/../../my/classes/by\\project/")]
     public class SomeClass
     {
         public string SomeProperty { get; set; }
@@ -34,5 +34,17 @@ namespace TypeGen.Test
         public IEnumerable<float[]> SampleJaggedEnumerableArrayCombo { get; set; }
 
         public SomeEnum EnumValue { get; set; }
+
+        public SomeOtherEnum OtherEnumValue { get; set; }
+
+        public SomeClass2 Value2 { get; set; }
+
+        public SomeClass3 Value3 { get; set; }
+
+        public int SomeField;
+
+        private int PrivateField; // should not be generated
+
+        private int PrivateProperty { get; set; } // should not be generated
     }
 }
