@@ -1,5 +1,4 @@
 # TypeGen
-=========
 
 C# to TypeScript file generator
 
