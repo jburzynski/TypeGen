@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TypeGen.Core
 {
-    public static class AttributeExtensions
+    internal static class AttributeExtensions
     {
         /// <summary>
         /// Shim for .NET 4.5 GetCustomAttribute

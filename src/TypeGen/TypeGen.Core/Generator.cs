@@ -344,7 +344,7 @@ namespace TypeGen.Core
                     }
                     else
                     {
-                        throw new ApplicationException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
+                        throw new CoreException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
                     }
 
                     dependencyOutputDir = outputDir;

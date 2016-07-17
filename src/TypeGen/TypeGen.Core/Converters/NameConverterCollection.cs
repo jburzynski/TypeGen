@@ -42,7 +42,7 @@ namespace TypeGen.Core.Converters
         {
             if (_converters.IndexOf(converter) == 0)
             {
-                throw new ApplicationException("Cannot remove the first, default NoChangeConverter");
+                throw new CoreException("Cannot remove the first, default NoChangeConverter");
             }
 
             _converters.Remove(converter);

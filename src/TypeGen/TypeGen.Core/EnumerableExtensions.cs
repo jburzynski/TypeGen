@@ -7,7 +7,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core
 {
-    public static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
         /// <summary>
         /// Removes members marked with TsIgnore attribute

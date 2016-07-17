@@ -1,0 +1,9 @@
+{
+    "assembly": null,
+    "fileNameConverters": [ "PascalCaseToKebabCase" ],
+    "typeNameConverters": [ ],
+    "propertyNameConverters": [ "PascalCaseToCamelCase" ],
+    "enumValueNameConverters": [ ],
+    "typeScriptFileExtension": "ts",
+    "tabLength": 4
+}

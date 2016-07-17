@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TypeGen.Core
 {
-    public static class IntExtensions
+    internal static class IntExtensions
     {
         /// <summary>
         /// Invokes an action for every integer from 0 to "integer"-1

@@ -8,7 +8,7 @@ namespace TypeGen.Core.Services
     /// <summary>
     /// Contains logic for filling templates with data
     /// </summary>
-    public class TemplateService
+    internal class TemplateService
     {
         private string _enumTemplate;
         private string _enumValueTemplate;

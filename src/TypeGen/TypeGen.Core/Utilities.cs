@@ -11,7 +11,7 @@ namespace TypeGen.Core
     /// <summary>
     /// Utility class
     /// </summary>
-    public static class Utilities
+    internal static class Utilities
     {
         /// <summary>
         /// Gets embedded resource as string
@@ -24,7 +24,7 @@ namespace TypeGen.Core
             {
                 if (stream == null)
                 {
-                    throw new ApplicationException($"Could not find embedded resource '{name}'");
+                    throw new CoreException($"Could not find embedded resource '{name}'");
                 }
 
                 var contentBytes = new byte[stream.Length];

@@ -10,7 +10,7 @@ namespace TypeGen.Core.Services
     /// <summary>
     /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
     /// </summary>
-    public class TypeService
+    internal class TypeService
     {
         /// <summary>
         /// Determines if a type has a TypeScript simple type representation
@@ -96,7 +96,7 @@ namespace TypeGen.Core.Services
 
             if (!memberInfo.Is<FieldInfo>() && !memberInfo.Is<PropertyInfo>())
             {
-                throw new ApplicationException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
+                throw new CoreException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
             }
 
             return memberInfo is PropertyInfo
@@ -136,7 +136,7 @@ namespace TypeGen.Core.Services
             if (IsCollectionType(type))
             {
                 Type elementType = GetTsCollectionElementType(type);
-                if (elementType == null) throw new ApplicationException("TS collection element type is null");
+                if (elementType == null) throw new CoreException("TS collection element type is null");
 
                 return GetTsTypeName(elementType, typeNameConverters) + "[]";
             }

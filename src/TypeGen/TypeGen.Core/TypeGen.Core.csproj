@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Converters\TypeNameConverterCollection.cs" />
     <Compile Include="Converters\NameConverterCollection.cs" />
+    <Compile Include="CoreException.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="GeneratorOptions.cs" />
     <Compile Include="Converters\INameConverter.cs" />

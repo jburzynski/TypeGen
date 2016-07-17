@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TypeGen.Core
 {
-    public static class ObjectExtensions
+    internal static class ObjectExtensions
     {
         /// <summary>
         /// Checks if obj is of type T.
