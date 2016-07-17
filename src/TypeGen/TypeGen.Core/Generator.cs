@@ -50,7 +50,7 @@ namespace TypeGen.Core
 
             _templateService.Initialize();
 
-            _baseDirectory = baseDirectory;
+            _baseDirectory = baseDirectory.NormalizePath();
         }
 
         /// <summary>
