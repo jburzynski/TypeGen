@@ -6,7 +6,7 @@
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <licenseUrl>https://github.com/jburzynski/type-gen/blob/master/docs/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/jburzynski/type-gen</projectUrl>
+    <projectUrl>https://github.com/jburzynski/TypeGen</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# to TypeScript file generator with support for one-class-per-file generation</description>
