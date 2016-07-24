@@ -25,11 +25,12 @@ namespace TypeGen.Core.Converters
         }
 
         /// <summary>
-        /// Adds a converter to the collection
+        /// Adds a converter to the collection. Null converters will not be added.
         /// </summary>
         /// <param name="converter"></param>
         public void Add(INameConverter converter)
         {
+            if (converter == null) return;
             _converters.Add(converter);
         }
 

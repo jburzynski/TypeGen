@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for name converters
     /// </summary>
-    public interface INameConverter
+    public interface INameConverter : IConverter
     {
         /// <summary>
         /// Converts a name to a new name

@@ -7,7 +7,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Test
 {
-    [TsInterface]
+    [ExportTsInterface]
     public class SomeInterface
     {
         public int SomeInt { get; set; }

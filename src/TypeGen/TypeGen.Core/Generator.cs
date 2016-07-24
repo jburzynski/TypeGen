@@ -18,8 +18,6 @@ namespace TypeGen.Core
         // services
         private readonly TypeService _typeService;
         private readonly TemplateService _templateService;
-
-        private readonly string _baseDirectory;
         private GeneratorOptions _options;
 
         /// <summary>
@@ -38,10 +36,11 @@ namespace TypeGen.Core
                     throw new ArgumentNullException(nameof(Options));
                 }
                 _options = value;
+                if (_templateService != null) _templateService.TabLength = value.TabLength;
             }
         }
 
-        public Generator(string baseDirectory = "")
+        public Generator()
         {
             Options = new GeneratorOptions();
 
@@ -49,8 +48,6 @@ namespace TypeGen.Core
             _templateService = new TemplateService(Options.TabLength);
 
             _templateService.Initialize();
-
-            _baseDirectory = baseDirectory.NormalizePath();
         }
 
         /// <summary>
@@ -71,19 +68,19 @@ namespace TypeGen.Core
         /// <param name="type"></param>
         public void Generate(Type type)
         {
-            var classAttribute = type.GetCustomAttribute<TsClassAttribute>();
+            var classAttribute = type.GetCustomAttribute<ExportTsClassAttribute>();
             if (classAttribute != null)
             {
                 GenerateClass(type, classAttribute);
             }
 
-            var interfaceAttribute = type.GetCustomAttribute<TsInterfaceAttribute>();
+            var interfaceAttribute = type.GetCustomAttribute<ExportTsInterfaceAttribute>();
             if (interfaceAttribute != null)
             {
                 GenerateInterface(type, interfaceAttribute);
             }
 
-            var enumAttribute = type.GetCustomAttribute<TsEnumAttribute>();
+            var enumAttribute = type.GetCustomAttribute<ExportTsEnumAttribute>();
             if (enumAttribute != null)
             {
                 GenerateEnum(type, enumAttribute);
@@ -95,7 +92,7 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="classAttribute"></param>
-        private void GenerateClass(Type type, TsClassAttribute classAttribute)
+        private void GenerateClass(Type type, ExportTsClassAttribute classAttribute)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (classAttribute == null) throw new ArgumentNullException(nameof(classAttribute));
@@ -112,8 +109,7 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
-            File.WriteAllText(_baseDirectory + separator + filePath, classText);
+            WriteTsFile(filePath, classText);
         }
 
         /// <summary>
@@ -121,7 +117,7 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>W
         /// <param name="interfaceAttribute"></param>
-        private void GenerateInterface(Type type, TsInterfaceAttribute interfaceAttribute)
+        private void GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (interfaceAttribute == null) throw new ArgumentNullException(nameof(interfaceAttribute));
@@ -138,8 +134,7 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
-            File.WriteAllText(_baseDirectory + separator + filePath, interfaceText);
+            WriteTsFile(filePath, interfaceText);
         }
 
         /// <summary>
@@ -147,7 +142,7 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="enumAttribute"></param>
-        private void GenerateEnum(Type type, TsEnumAttribute enumAttribute)
+        private void GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (enumAttribute == null) throw new ArgumentNullException(nameof(enumAttribute));
@@ -163,8 +158,21 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            string separator = string.IsNullOrEmpty(_baseDirectory) ? "" : "\\";
-            File.WriteAllText(_baseDirectory + separator + filePath, enumText);
+            WriteTsFile(filePath, enumText);
+        }
+
+        /// <summary>
+        /// Writes a TS file
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private void WriteTsFile(string filePath, string text)
+        {
+            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
+            string outputPath = Options.BaseOutputDirectory + separator + filePath;
+            new FileInfo(outputPath).Directory.Create();
+            File.WriteAllText(outputPath, text);
         }
 
         /// <summary>
@@ -314,9 +322,9 @@ namespace TypeGen.Core
 
             foreach (Type typeDependency in typeDependencies)
             {
-                var dependencyClassAttribute = typeDependency.GetCustomAttribute<TsClassAttribute>();
-                var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<TsInterfaceAttribute>();
-                var dependencyEnumAttribute = typeDependency.GetCustomAttribute<TsEnumAttribute>();
+                var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
+                var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
+                var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
 
                 string dependencyOutputDir = dependencyClassAttribute?.OutputDir
                     ?? dependencyInterfaceAttribute?.OutputDir
@@ -324,23 +332,23 @@ namespace TypeGen.Core
 
                 // dependency type TypeScript file generation
 
-                // dependency type NOT in the same assembly, but HAS TsX attribute
+                // dependency type NOT in the same assembly, but HAS ExportTsX attribute
                 if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
                     && (dependencyClassAttribute != null || dependencyEnumAttribute != null))
                 {
                     Generate(typeDependency);
                 }
 
-                // dependency DOESN'T HAVE a TsX attribute
+                // dependency DOESN'T HAVE an ExportTsX attribute
                 if (dependencyClassAttribute == null && dependencyEnumAttribute == null)
                 {
                     if (typeDependency.IsClass)
                     {
-                        GenerateClass(typeDependency, new TsClassAttribute { OutputDir = outputDir });
+                        GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = outputDir });
                     }
                     else if (typeDependency.IsEnum)
                     {
-                        GenerateEnum(typeDependency, new TsEnumAttribute { OutputDir = outputDir });
+                        GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = outputDir });
                     }
                     else
                     {

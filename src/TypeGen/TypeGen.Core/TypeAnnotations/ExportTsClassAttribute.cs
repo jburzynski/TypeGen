@@ -1,12 +1,13 @@
 ﻿using System;
+using TypeGen.Core.Converters;
 
 namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
-    /// Indentifies an enum that a TypeScript file should be generated for
+    /// Indentifies a class that a TypeScript file should be generated for
     /// </summary>
-    [AttributeUsage(AttributeTargets.Enum)]
-    public class TsEnumAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ExportTsClassAttribute : Attribute
     {
         /// <summary>
         /// TypeScript file output directory

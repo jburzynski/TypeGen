@@ -59,5 +59,17 @@ namespace TypeGen.Core
         /// Number of space characters per tab. Default is 4.
         /// </summary>
         public int TabLength { get; set; }
+
+        private string _baseOutputDirectory;
+
+        /// <summary>
+        /// The base directory for generating TypeScript files.
+        /// Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
+        /// </summary>
+        public string BaseOutputDirectory
+        {
+            get { return _baseOutputDirectory; }
+            set { _baseOutputDirectory = value.NormalizePath(); }
+        }
     }
 }

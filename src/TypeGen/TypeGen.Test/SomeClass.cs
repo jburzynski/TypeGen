@@ -7,7 +7,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Test
 {
-    [TsClass(OutputDir = "./my/classes/../../my/classes/by\\project/")]
+    [ExportTsClass(OutputDir = "./my/classes/../../my/classes/by\\project/")]
     public class SomeClass
     {
         public string SomeProperty { get; set; }

@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\IConverter.cs" />
     <Compile Include="Converters\TypeNameConverterCollection.cs" />
     <Compile Include="Converters\NameConverterCollection.cs" />
+    <Compile Include="Converters\UnderscoreCaseToCamelCaseConverter.cs" />
+    <Compile Include="Converters\UnderscoreCaseToPascalCaseConverter.cs" />
     <Compile Include="CoreException.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="GeneratorOptions.cs" />
@@ -60,10 +63,10 @@
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\TypeService.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="TypeAnnotations\TsInterfaceAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsClassAttribute.cs" />
+    <Compile Include="TypeAnnotations\ExportTsInterfaceAttribute.cs" />
+    <Compile Include="TypeAnnotations\ExportTsClassAttribute.cs" />
     <Compile Include="TypeAnnotations\TsDefaultValueAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsEnumAttribute.cs" />
+    <Compile Include="TypeAnnotations\ExportTsEnumAttribute.cs" />
     <Compile Include="TypeAnnotations\TsIgnoreAttribute.cs" />
     <Compile Include="AttributeExtensions.cs" />
     <Compile Include="Utilities.cs" />

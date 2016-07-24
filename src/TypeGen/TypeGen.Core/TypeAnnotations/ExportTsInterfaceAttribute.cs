@@ -4,10 +4,10 @@ using TypeGen.Core.Converters;
 namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
-    /// Indentifies a class that a TypeScript file should be generated for
+    /// Indentifies a class that a TypeScript interface file should be generated for
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class TsClassAttribute : Attribute
+    public class ExportTsInterfaceAttribute : Attribute
     {
         /// <summary>
         /// TypeScript file output directory

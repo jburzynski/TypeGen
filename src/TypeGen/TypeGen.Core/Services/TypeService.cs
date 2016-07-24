@@ -100,8 +100,8 @@ namespace TypeGen.Core.Services
             }
 
             return memberInfo is PropertyInfo
-                ? ((PropertyInfo)memberInfo).PropertyType
-                : ((FieldInfo)memberInfo).FieldType;
+                ? ToExportableType(((PropertyInfo)memberInfo).PropertyType)
+                : ToExportableType(((FieldInfo)memberInfo).FieldType);
         }
 
         /// <summary>
@@ -125,6 +125,8 @@ namespace TypeGen.Core.Services
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
+
+            type = ToExportableType(type);
 
             // handle simple types
             if (IsTsSimpleType(type))
@@ -210,6 +212,8 @@ namespace TypeGen.Core.Services
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (!type.IsClass) yield break;
 
+            type = ToExportableType(type);
+
             IEnumerable<MemberInfo> memberInfos = GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
             {
@@ -224,6 +228,19 @@ namespace TypeGen.Core.Services
                     yield return memberFlatType;
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts a type to a 'TS-exportable' type.
+        /// If the type is nullable, returns the underlying type.
+        /// Otherwise, returns the passed type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private Type ToExportableType(Type type)
+        {
+            Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
+            return nullableUnderlyingType ?? type;
         }
     }
 }

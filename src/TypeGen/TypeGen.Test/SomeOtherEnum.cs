@@ -2,10 +2,10 @@
 
 namespace TypeGen.Test
 {
-    [TsEnum]
+    [ExportTsEnum]
     public enum SomeOtherEnum
     {
-        SomeValue,
-        SomeOtherValue
+        some_value,
+        some_other_value
     }
 }

@@ -5,7 +5,7 @@ namespace TypeGen.Core.Converters
     /// <summary>
     /// Interface for type name converters
     /// </summary>
-    public interface ITypeNameConverter
+    public interface ITypeNameConverter : IConverter
     {
         /// <summary>
         /// Converts a type's name to a new name.

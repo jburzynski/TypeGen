@@ -2,10 +2,10 @@
 
 namespace TypeGen.Test
 {
-    [TsEnum(OutputDir = "./my/enums/.././enums/project")]
+    [ExportTsEnum(OutputDir = "./my/enums/.././enums/project")]
     public enum SomeEnum
     {
-        EnumValue = 1,
-        AnotherValue = 2
+        ENUM_VALUE = 1,
+        ANOTHER_VALUE = 2
     }
 }

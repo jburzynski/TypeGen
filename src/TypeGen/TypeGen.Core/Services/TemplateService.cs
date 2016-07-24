@@ -19,11 +19,11 @@ namespace TypeGen.Core.Services
         private string _interfacePropertyTemplate;
         private string _importTemplate;
 
-        private readonly int _tabLength;
+        public int TabLength { get; set; }
 
         public TemplateService(int tabLength)
         {
-            _tabLength = tabLength;
+            TabLength = tabLength;
         }
 
         public void Initialize()
@@ -101,7 +101,7 @@ namespace TypeGen.Core.Services
 
         private string ReplaceTabs(string template)
         {
-            return template.Replace("$tg{tab}", Utilities.GetTabText(_tabLength));
+            return template.Replace("$tg{tab}", Utilities.GetTabText(TabLength));
         }
     }
 }

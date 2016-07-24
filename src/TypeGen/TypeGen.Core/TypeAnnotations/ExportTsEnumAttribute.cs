@@ -1,13 +1,12 @@
 ﻿using System;
-using TypeGen.Core.Converters;
 
 namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
-    /// Indentifies a class that a TypeScript interface file should be generated for
+    /// Indentifies an enum that a TypeScript file should be generated for
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class TsInterfaceAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Enum)]
+    public class ExportTsEnumAttribute : Attribute
     {
         /// <summary>
         /// TypeScript file output directory
