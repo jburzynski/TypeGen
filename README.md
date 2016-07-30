@@ -1,6 +1,6 @@
 # TypeGen
 
-C# to TypeScript file generator
+C# to TypeScript file generator with support for one-class-per-file generation
 
 [![Travis build status](https://travis-ci.org/jburzynski/TypeGen.svg?branch=master)](https://travis-ci.org/jburzynski/TypeGen)
 
