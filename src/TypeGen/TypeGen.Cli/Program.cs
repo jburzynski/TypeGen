@@ -35,11 +35,18 @@ namespace TypeGen.Cli
                     return;
                 }
 
+                if (args.Any(arg => arg.ToUpperInvariant() == "GET-CWD"))
+                {
+                    string cwd = Directory.GetCurrentDirectory();
+                    Console.WriteLine($"Current working directory is: {cwd}");
+                    return;
+                }
+
                 verbose = args.Any(arg => arg.ToUpperInvariant() == "-V" || arg.ToUpperInvariant() == "-VERBOSE");
 
                 if (args.Length == 0)
                 {
-                    Console.WriteLine("Please specify the project file (first argument)");
+                    Console.WriteLine("Invalid usage. Please see help for more information (TypeGen -Help).");
                     return;
                 }
 
@@ -96,7 +103,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            Console.WriteLine("Usage: TypeGen ProjectFolder [-Config-Path \"config\\path.json\"] [-h | -Help] [-v | -Verbose]");
+            Console.WriteLine("Usage: TypeGen ProjectFolder [-Config-Path \"config\\path.json\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]");
             Console.WriteLine("For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }
 
