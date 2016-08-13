@@ -18,6 +18,11 @@ namespace TypeGen.Core.Converters
             _converters = new List<ITypeNameConverter> { new NoChangeConverter() };
         }
 
+        public TypeNameConverterCollection(params ITypeNameConverter[] converters)
+            : this((IEnumerable<ITypeNameConverter>) converters)
+        {
+        }
+
         public TypeNameConverterCollection(IEnumerable<ITypeNameConverter> converters)
         {
             _converters = converters.ToList();
