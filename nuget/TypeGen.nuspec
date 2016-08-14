@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/jburzynski/TypeGen</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>C# to TypeScript file generator with support for one-class-per-file generation</description>
+    <description>TypeGen is a C# to TypeScript file generator with support for one-class-per-file generation</description>
     <copyright>Copyright Jacek Burzynski 2016</copyright>
     <tags>code-generator typescript ts</tags>
   </metadata>
