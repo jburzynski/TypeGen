@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core
+namespace TypeGen.Core.Extensions
 {
     internal static class EnumerableExtensions
     {
@@ -16,7 +14,7 @@ namespace TypeGen.Core
         /// <returns></returns>
         public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
         {
-            return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
+            return memberInfos.Where(i => AttributeExtensions.GetCustomAttribute<TsIgnoreAttribute>((MemberInfo) i) == null);
         }
     }
 }

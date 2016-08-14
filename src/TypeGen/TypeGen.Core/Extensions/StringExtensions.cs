@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
 
-namespace TypeGen.Core
+namespace TypeGen.Core.Extensions
 {
     internal static class StringExtensions
     {
@@ -53,32 +50,53 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Use the current thread's culture info for conversion.
+        /// Converts a string to TitleCase format.
+        /// Uses the current thread's culture info for conversion.
         /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
         /// </summary>
-        public static string ToTitleCase(this string str)
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToTitleCase(this string value)
         {
             CultureInfo cultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
-            return cultureInfo.TextInfo.ToTitleCase(str.ToLower());
+            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
         }
 
         /// <summary>
-        /// Overload which uses the culture info with the specified name.
+        /// Converts a string to TitleCase format.
+        /// Uses the culture info with the specified name.
         /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
         /// </summary>
-        public static string ToTitleCase(this string str, string cultureInfoName)
+        /// <param name="value"></param>
+        /// <param name="cultureInfoName"></param>
+        /// <returns></returns>
+        public static string ToTitleCase(this string value, string cultureInfoName)
         {
             var cultureInfo = new CultureInfo(cultureInfoName);
-            return cultureInfo.TextInfo.ToTitleCase(str.ToLower());
+            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
         }
 
         /// <summary>
-        /// Overload which uses the specified culture info.
+        /// Converts a string to TitleCase format.
+        /// Uses the specified culture info.
         /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
         /// </summary>
-        public static string ToTitleCase(this string str, CultureInfo cultureInfo)
+        /// <param name="value"></param>
+        /// <param name="cultureInfo"></param>
+        /// <returns></returns>
+        public static string ToTitleCase(this string value, CultureInfo cultureInfo)
         {
-            return cultureInfo.TextInfo.ToTitleCase(str.ToLower());
+            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
+        }
+
+        /// <summary>
+        /// Determines whether the string is null or consists only of whitespace characters
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsNullOrWhitespace(this string value)
+        {
+            return value == null || value.All(char.IsWhiteSpace);
         }
     }
 }

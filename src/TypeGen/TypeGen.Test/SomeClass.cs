@@ -10,6 +10,9 @@ namespace TypeGen.Test
     [ExportTsClass(OutputDir = "./my/classes/../../my/classes/by\\project/")]
     public class SomeClass
     {
+        [TsIgnore]
+        public string IgnoreThisProperty { get; set; }
+
         public string SomeProperty { get; set; }
 
         [TsDefaultValue("3.14")]
@@ -42,6 +45,9 @@ namespace TypeGen.Test
         public SomeClass3 Value3 { get; set; }
 
         public int SomeField;
+
+        [TsType("string")]
+        public int TsStringField { get; set; }
 
         private int PrivateField; // should not be generated
 

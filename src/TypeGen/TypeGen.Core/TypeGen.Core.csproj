@@ -49,6 +49,11 @@
     <Compile Include="Converters\UnderscoreCaseToCamelCaseConverter.cs" />
     <Compile Include="Converters\UnderscoreCaseToPascalCaseConverter.cs" />
     <Compile Include="CoreException.cs" />
+    <Compile Include="Extensions\AttributeExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="GeneratorOptions.cs" />
     <Compile Include="Converters\INameConverter.cs" />
@@ -56,19 +61,17 @@
     <Compile Include="Converters\NoChangeConverter.cs" />
     <Compile Include="Converters\PascalCaseToCamelCaseConverter.cs" />
     <Compile Include="Converters\PascalCaseToKebabCaseConverter.cs" />
-    <Compile Include="IntExtensions.cs" />
-    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="IGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\TypeService.cs" />
-    <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeAnnotations\ExportTsInterfaceAttribute.cs" />
     <Compile Include="TypeAnnotations\ExportTsClassAttribute.cs" />
     <Compile Include="TypeAnnotations\TsDefaultValueAttribute.cs" />
     <Compile Include="TypeAnnotations\ExportTsEnumAttribute.cs" />
     <Compile Include="TypeAnnotations\TsIgnoreAttribute.cs" />
-    <Compile Include="AttributeExtensions.cs" />
+    <Compile Include="TypeAnnotations\TsType.cs" />
+    <Compile Include="TypeAnnotations\TsTypeAttribute.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Extensions;
 
 namespace TypeGen.Core
 {

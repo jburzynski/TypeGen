@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Extensions;
 
 namespace TypeGen.Core.Converters
 {
@@ -22,7 +24,7 @@ namespace TypeGen.Core.Converters
 
         private static string ConvertTypeInvariant(string name)
         {
-            return name.ToTitleCase().Replace("_", "");
+            return name.ToTitleCase(CultureInfo.InvariantCulture).Replace("_", "");
         }
     }
 }

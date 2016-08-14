@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Extensions;
 
 namespace TypeGen.Core.Services
 {
@@ -75,10 +76,10 @@ namespace TypeGen.Core.Services
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (!type.IsClass) return Enumerable.Empty<MemberInfo>();
 
-            IEnumerable<MemberInfo> fieldInfos = (IEnumerable<MemberInfo>) type.GetFields(BindingFlags.Instance | BindingFlags.Public)
+            var fieldInfos = (IEnumerable<MemberInfo>) type.GetFields(BindingFlags.Instance | BindingFlags.Public)
                 .WithoutTsIgnore();
 
-            IEnumerable<MemberInfo> propertyInfos = (IEnumerable<MemberInfo>) type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            var propertyInfos = (IEnumerable<MemberInfo>) type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .WithoutTsIgnore();
 
             return fieldInfos.Union(propertyInfos);

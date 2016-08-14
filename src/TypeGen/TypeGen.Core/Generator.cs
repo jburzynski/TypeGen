@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Extensions;
 using TypeGen.Core.Services;
 using TypeGen.Core.TypeAnnotations;
 
@@ -13,7 +14,7 @@ namespace TypeGen.Core
     /// <summary>
     /// Class used for generating TypeScript files from C# files
     /// </summary>
-    public class Generator
+    public class Generator : IGenerator
     {
         // services
         private readonly TypeService _typeService;
@@ -193,10 +194,9 @@ namespace TypeGen.Core
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, defaultValueAttribute.DefaultValue);
             }
 
-            Type type = _typeService.GetMemberType(memberInfo);
-            string typeString = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string typeName = GetTsTypeNameForMember(memberInfo);
 
-            return _templateService.FillClassPropertyTemplate(accessorText, name, typeString);
+            return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
         }
 
         /// <summary>
@@ -235,11 +235,9 @@ namespace TypeGen.Core
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
 
             string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
+            string typeName = GetTsTypeNameForMember(memberInfo);
 
-            Type type = _typeService.GetMemberType(memberInfo);
-            string typeString = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
-
-            return _templateService.FillInterfacePropertyTemplate(name, typeString);
+            return _templateService.FillInterfacePropertyTemplate(name, typeName);
         }
 
         /// <summary>
@@ -376,6 +374,24 @@ namespace TypeGen.Core
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Gets the TypeScript type name to generate for a member
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        private string GetTsTypeNameForMember(MemberInfo memberInfo)
+        {
+            var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
+            if (typeAttribute != null)
+            {
+                if (typeAttribute.TypeName.IsNullOrWhitespace()) throw new CoreException("No type specified in TsType attribute");
+                return typeAttribute.TypeName;
+            }
+
+            Type type = _typeService.GetMemberType(memberInfo);
+            return _typeService.GetTsTypeName(type, Options.TypeNameConverters);
         }
 
         /// <summary>
