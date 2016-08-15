@@ -14,11 +14,5 @@ namespace TypeGen.Cli
         {
             return path.Split('\\').Last();
         }
-
-        public static string ChangeFileExtension(string fileName, string toExt)
-        {
-            string fileNameNoExt = fileName.Split('.').First();
-            return $"{fileNameNoExt}.{toExt}";
-        }
     }
 }

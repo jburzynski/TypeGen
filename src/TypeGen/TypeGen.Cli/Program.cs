@@ -240,12 +240,12 @@ namespace TypeGen.Cli
             string binDebugPath = $"{projectFolder}\\bin\\Debug\\";
             string binPath = $"{projectFolder}\\bin\\";
 
-            string assemblyFileName = Utilities.ChangeFileExtension(csProjFileName, "dll");
+            string assemblyFileName = Path.ChangeExtension(csProjFileName, "dll");
 
             if (File.Exists(binDebugPath + assemblyFileName)) return binDebugPath + assemblyFileName;
             if (File.Exists(binPath + assemblyFileName)) return binPath + assemblyFileName;
 
-            string assemblyFileNameExe = Utilities.ChangeFileExtension(csProjFileName, "exe");
+            string assemblyFileNameExe = Path.ChangeExtension(csProjFileName, "exe");
 
             if (File.Exists(binDebugPath + assemblyFileNameExe)) return binDebugPath + assemblyFileNameExe;
             if (File.Exists(binPath + assemblyFileNameExe)) return binPath + assemblyFileNameExe;
