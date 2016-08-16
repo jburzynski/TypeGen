@@ -332,13 +332,13 @@ namespace TypeGen.Core
 
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute
                 if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
-                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null))
+                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null || dependencyInterfaceAttribute != null))
                 {
                     Generate(typeDependency);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute
-                if (dependencyClassAttribute == null && dependencyEnumAttribute == null)
+                if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
                 {
                     if (typeDependency.IsClass)
                     {
