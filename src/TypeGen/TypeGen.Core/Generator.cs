@@ -316,45 +316,49 @@ namespace TypeGen.Core
             if (type == null) throw new ArgumentNullException(nameof(type));
 
             var result = "";
-            IEnumerable<Type> typeDependencies = _typeService.GetTypeDependencies(type);
+            IEnumerable<TypeDependencyInfo> typeDependencies = _typeService.GetTypeDependencies(type);
 
-            foreach (Type typeDependency in typeDependencies)
+            foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
             {
+                Type typeDependency = typeDependencyInfo.Type;
+
                 var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
                 var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
                 var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
-
-                string dependencyOutputDir = dependencyClassAttribute?.OutputDir
-                    ?? dependencyInterfaceAttribute?.OutputDir
-                    ?? dependencyEnumAttribute?.OutputDir;
 
                 // dependency type TypeScript file generation
 
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute
                 if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
-                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null))
+                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null || dependencyInterfaceAttribute != null))
                 {
                     Generate(typeDependency);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute
-                if (dependencyClassAttribute == null && dependencyEnumAttribute == null)
+                if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
                 {
+                    var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
+                        .FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
+                        as TsDefaultTypeOutputAttribute;
+
+                    string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
+
                     if (typeDependency.IsClass)
                     {
-                        GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = outputDir });
+                        GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = defaultOutputDir });
                     }
                     else if (typeDependency.IsEnum)
                     {
-                        GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = outputDir });
+                        GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = defaultOutputDir });
                     }
                     else
                     {
                         throw new CoreException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
                     }
-
-                    dependencyOutputDir = outputDir;
                 }
+
+                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependency, outputDir);
 
                 string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
@@ -374,6 +378,28 @@ namespace TypeGen.Core
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Gets the output directory for a type dependency
+        /// </summary>
+        /// <param name="typeDependency"></param>
+        /// <param name="exportedTypeOutputDir"></param>
+        /// <returns></returns>
+        private static string GetTypeDependencyOutputDir(Type typeDependency, string exportedTypeOutputDir)
+        {
+            var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
+            var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
+            var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
+
+            if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
+            {
+                return exportedTypeOutputDir;
+            }
+
+            return dependencyClassAttribute?.OutputDir
+                    ?? dependencyInterfaceAttribute?.OutputDir
+                    ?? dependencyEnumAttribute?.OutputDir;
         }
 
         /// <summary>

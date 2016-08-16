@@ -208,7 +208,7 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public IEnumerable<Type> GetTypeDependencies(Type type)
+        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (!type.IsClass) yield break;
@@ -226,7 +226,11 @@ namespace TypeGen.Core.Services
 
                 if (!IsTsSimpleType(memberFlatType))
                 {
-                    yield return memberFlatType;
+                    yield return new TypeDependencyInfo
+                    {
+                        Type = memberFlatType,
+                        MemberAttributes = memberInfo.GetCustomAttributes(typeof(Attribute), false) as Attribute[]
+                    };
                 }
             }
         }
