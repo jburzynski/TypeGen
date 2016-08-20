@@ -6,7 +6,7 @@ namespace TypeGen.Core.TypeAnnotations
     /// Indentifies an enum that a TypeScript file should be generated for
     /// </summary>
     [AttributeUsage(AttributeTargets.Enum)]
-    public class ExportTsEnumAttribute : Attribute
+    public class ExportTsEnumAttribute : ExportAttribute
     {
         /// <summary>
         /// TypeScript file output directory

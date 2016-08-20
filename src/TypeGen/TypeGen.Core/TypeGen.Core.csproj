@@ -66,6 +66,7 @@
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\TypeDependencyInfo.cs" />
     <Compile Include="Services\TypeService.cs" />
+    <Compile Include="TypeAnnotations\ExportAttribute.cs" />
     <Compile Include="TypeAnnotations\ExportTsInterfaceAttribute.cs" />
     <Compile Include="TypeAnnotations\ExportTsClassAttribute.cs" />
     <Compile Include="TypeAnnotations\TsDefaultValueAttribute.cs" />

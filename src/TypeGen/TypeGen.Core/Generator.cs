@@ -98,15 +98,18 @@ namespace TypeGen.Core
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (classAttribute == null) throw new ArgumentNullException(nameof(classAttribute));
 
+            // get text for sections
+
+            string extendsText = GetExtendsText(type);
             string importsText = GetImportsText(type, classAttribute.OutputDir);
             string propertiesText = GetClassPropertiesText(type);
 
-            // create TypeScript source code for the whole class
+            // generate the file content
 
             string tsClassName = Options.TypeNameConverters.Convert(type.Name, type);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
 
-            string classText = _templateService.FillClassTemplate(importsText, tsClassName, propertiesText);
+            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText);
 
             // write TypeScript file
 
@@ -116,22 +119,25 @@ namespace TypeGen.Core
         /// <summary>
         /// Generates a TypeScript interface file from a class type
         /// </summary>
-        /// <param name="type"></param>W
+        /// <param name="type"></param>
         /// <param name="interfaceAttribute"></param>
         private void GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (interfaceAttribute == null) throw new ArgumentNullException(nameof(interfaceAttribute));
 
+            // get text for sections
+
+            string extendsText = GetExtendsText(type);
             string importsText = GetImportsText(type, interfaceAttribute.OutputDir);
             string propertiesText = GetInterfacePropertiesText(type);
 
-            // create TypeScript source code for the whole class
+            // generate the file content
 
             string tsInterfaceName = Options.TypeNameConverters.Convert(type.Name, type);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
 
-            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, propertiesText);
+            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText);
 
             // write TypeScript file
 
@@ -174,6 +180,27 @@ namespace TypeGen.Core
             string outputPath = Options.BaseOutputDirectory + separator + filePath;
             new FileInfo(outputPath).Directory.Create();
             File.WriteAllText(outputPath, text);
+        }
+
+        /// <summary>
+        /// Gets the text for the "extends" section
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        private string GetExtendsText(Type type)
+        {
+            // text for "extends" section
+
+            var extendsText = "";
+
+            Type baseType = _typeService.GetBaseType(type);
+            if (baseType == null) return extendsText;
+
+            string baseTypeName = _typeService.GetTsTypeName(baseType, Options.TypeNameConverters);
+            extendsText = $" extends {baseTypeName}";
+
+            return extendsText;
         }
 
         /// <summary>
@@ -339,7 +366,7 @@ namespace TypeGen.Core
                 if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
-                        .FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
+                        ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
                         as TsDefaultTypeOutputAttribute;
 
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;

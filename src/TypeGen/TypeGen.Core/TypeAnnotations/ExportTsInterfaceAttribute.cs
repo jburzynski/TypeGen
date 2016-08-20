@@ -6,8 +6,8 @@ namespace TypeGen.Core.TypeAnnotations
     /// <summary>
     /// Indentifies a class that a TypeScript interface file should be generated for
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ExportTsInterfaceAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class ExportTsInterfaceAttribute : ExportAttribute
     {
         /// <summary>
         /// TypeScript file output directory

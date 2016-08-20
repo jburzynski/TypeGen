@@ -38,11 +38,12 @@ namespace TypeGen.Core.Services
             _importTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string properties)
+        public string FillClassTemplate(string imports, string name, string extends, string properties)
         {
             return ReplaceTabs(_classTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
+                .Replace("$tg{extends}", extends)
                 .Replace("$tg{properties}", properties);
         }
 
@@ -62,11 +63,12 @@ namespace TypeGen.Core.Services
                 .Replace("$tg{type}", type);
         }
 
-        public string FillInterfaceTemplate(string imports, string name, string properties)
+        public string FillInterfaceTemplate(string imports, string name, string extends, string properties)
         {
             return ReplaceTabs(_interfaceTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
+                .Replace("$tg{extends}", extends)
                 .Replace("$tg{properties}", properties);
         }
 

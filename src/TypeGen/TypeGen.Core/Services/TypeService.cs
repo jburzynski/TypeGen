@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.Services
 {
@@ -62,6 +63,38 @@ namespace TypeGen.Core.Services
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Determines whether the type represents a TypeScript class
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>True if the type represents a TypeScript class; false otherwise</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
+        public bool IsTsClass(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsClass) return false;
+
+            var exportAttribute = type.GetCustomAttribute<ExportAttribute>();
+            return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
+        }
+
+        /// <summary>
+        /// Determines whether the type represents a TypeScript class
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>True is the type represents a TypeScript class; false otherwise</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
+        public bool IsTsInterface(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsClass) return false;
+
+            var exportAttribute = type.GetCustomAttribute<ExportAttribute>();
+            return exportAttribute is ExportTsInterfaceAttribute;
         }
 
         /// <summary>
@@ -215,6 +248,16 @@ namespace TypeGen.Core.Services
 
             type = ToExportableType(type);
 
+            Type baseType = GetBaseType(type);
+            if (baseType != null)
+            {
+                yield return new TypeDependencyInfo
+                {
+                    Type = baseType,
+                    MemberAttributes = null
+                };
+            }
+
             IEnumerable<MemberInfo> memberInfos = GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
             {
@@ -246,6 +289,27 @@ namespace TypeGen.Core.Services
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;
+        }
+
+        /// <summary>
+        /// Gets custom base type for a class type.
+        /// If no custom base type exists, null is returned.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown if type is null</exception>
+        /// <exception cref="CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
+        public Type GetBaseType(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (!type.IsClass) throw new CoreException($"Type '{type.FullName}' should be a class type");
+
+            Type baseType = type.BaseType;
+            if (baseType == null || baseType == typeof(object)) return null;
+
+            if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");
+
+            return baseType;
         }
     }
 }
