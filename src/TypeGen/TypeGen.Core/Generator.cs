@@ -100,6 +100,7 @@ namespace TypeGen.Core
 
             // get text for sections
 
+            string genericText = GetGenericDefinitionText(type);
             string extendsText = GetExtendsText(type);
             string importsText = GetImportsText(type, classAttribute.OutputDir);
             string propertiesText = GetClassPropertiesText(type);
@@ -183,6 +184,31 @@ namespace TypeGen.Core
         }
 
         /// <summary>
+        /// Gets the text for the generic definition part
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        private string GetGenericDefinitionText(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsGenericTypeDefinition) return "";
+
+            Type[] genericArguments = type.GetGenericArguments();
+
+            string[] genericArgumentNames = (from t in genericArguments
+                select t.BaseType != null && t.BaseType != typeof (object)
+                    ? $"{t.Name} extends {t.BaseType.Name}"
+                    : t.Name)
+                    .ToArray();
+
+            string genericArgumentDef = string.Join(", ", genericArgumentNames);
+
+            return $"<{genericArgumentDef}>";
+        }
+
+        /// <summary>
         /// Gets the text for the "extends" section
         /// </summary>
         /// <param name="type"></param>
@@ -190,7 +216,7 @@ namespace TypeGen.Core
         /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         private string GetExtendsText(Type type)
         {
-            // text for "extends" section
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             var extendsText = "";
 

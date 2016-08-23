@@ -235,18 +235,39 @@ namespace TypeGen.Core.Services
         }
 
         /// <summary>
-        /// Gets all non-simple and non-collection types the given type depends on.
-        /// Types of properties/fields marked with TsIgnoreAttribute will be omitted.
-        /// Returns an empty array if no dependencies were detected.
+        /// Gets type dependencies related to generic type definition
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        private IEnumerable<TypeDependencyInfo> GetGenericTypeDependencies(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.IsClass) yield break;
 
-            type = ToExportableType(type);
+            if (!type.IsGenericTypeDefinition) yield break;
+
+            foreach (Type genericArgumentType in type.GetGenericArguments())
+            {
+                if (genericArgumentType.BaseType != null && genericArgumentType.BaseType != typeof(object))
+                {
+                    yield return new TypeDependencyInfo
+                    {
+                        Type = genericArgumentType.BaseType,
+                        MemberAttributes = null
+                    };
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the base type dependency for a type, if the base type exists
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             Type baseType = GetBaseType(type);
             if (baseType != null)
@@ -257,6 +278,17 @@ namespace TypeGen.Core.Services
                     MemberAttributes = null
                 };
             }
+        }
+
+        /// <summary>
+        /// Gets type dependencies for the members inside a given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        private IEnumerable<TypeDependencyInfo> GetMemberTypeDependencies(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             IEnumerable<MemberInfo> memberInfos = GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
@@ -276,6 +308,26 @@ namespace TypeGen.Core.Services
                     };
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets all non-simple and non-collection types the given type depends on.
+        /// Types of properties/fields marked with TsIgnoreAttribute will be omitted.
+        /// Returns an empty array if no dependencies were detected.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (!type.IsClass) return Enumerable.Empty<TypeDependencyInfo>();
+
+            type = ToExportableType(type);
+
+            return GetGenericTypeDependencies(type)
+                .Concat(GetBaseTypeDependency(type)
+                .Concat(GetMemberTypeDependencies(type)));
         }
 
         /// <summary>

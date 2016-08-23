@@ -3,6 +3,6 @@
 * Any changes made to this file can be lost when this file is regenerated.
 */
 
-$tg{imports}export class $tg{name}$tg{extends} {
+$tg{imports}export class $tg{name}$tg{generic}$tg{extends} {
 $tg{properties}
 }
