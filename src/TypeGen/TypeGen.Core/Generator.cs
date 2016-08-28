@@ -363,12 +363,13 @@ namespace TypeGen.Core
                 string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
 
-                string fileName = Options.FileNameConverters.Convert(typeDependency.Name, typeDependency);
+                string typeDependencyName = typeDependency.Name.RemoveTypeArity();
+                string fileName = Options.FileNameConverters.Convert(typeDependencyName, typeDependency);
 
                 string dependencyPath = pathDiff + fileName;
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
-                string typeName = Options.TypeNameConverters.Convert(typeDependency.Name, typeDependency);
+                string typeName = Options.TypeNameConverters.Convert(typeDependencyName, typeDependency);
                 result += _templateService.FillImportTemplate(typeName, dependencyPath);
             }
 
@@ -431,19 +432,17 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetFilePath(Type type, string outputDir)
         {
-            string fileName = Options.FileNameConverters.Convert(type.Name, type);
+            string typeName = type.Name.RemoveTypeArity();
+            string fileName = Options.FileNameConverters.Convert(typeName, type);
 
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
             {
                 fileName += $".{Options.TypeScriptFileExtension}";
             }
 
-            if (string.IsNullOrEmpty(outputDir))
-            {
-                return fileName;
-            }
-
-            return $"{outputDir.NormalizePath()}\\{fileName}";
+            return string.IsNullOrEmpty(outputDir)
+                ? fileName
+                : $"{outputDir.NormalizePath()}\\{fileName}";
         }
     }
 }

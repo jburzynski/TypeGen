@@ -11,6 +11,16 @@ namespace TypeGen.Core.Services
     /// </summary>
     public class TypeDependencyInfo
     {
+        public TypeDependencyInfo()
+        {
+        }
+
+        public TypeDependencyInfo(Type type, Attribute[] memberAttributes)
+        {
+            Type = type;
+            MemberAttributes = memberAttributes;
+        }
+
         /// <summary>
         /// The type dependency
         /// </summary>
