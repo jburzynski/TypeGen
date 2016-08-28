@@ -95,19 +95,15 @@ namespace TypeGen.Core
         /// <param name="classAttribute"></param>
         private void GenerateClass(Type type, ExportTsClassAttribute classAttribute)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (classAttribute == null) throw new ArgumentNullException(nameof(classAttribute));
-
             // get text for sections
 
-            string genericText = GetGenericDefinitionText(type);
             string extendsText = GetExtendsText(type);
             string importsText = GetImportsText(type, classAttribute.OutputDir);
             string propertiesText = GetClassPropertiesText(type);
 
             // generate the file content
 
-            string tsClassName = Options.TypeNameConverters.Convert(type.Name, type);
+            string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
 
             string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText);
@@ -124,9 +120,6 @@ namespace TypeGen.Core
         /// <param name="interfaceAttribute"></param>
         private void GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (interfaceAttribute == null) throw new ArgumentNullException(nameof(interfaceAttribute));
-
             // get text for sections
 
             string extendsText = GetExtendsText(type);
@@ -135,7 +128,7 @@ namespace TypeGen.Core
 
             // generate the file content
 
-            string tsInterfaceName = Options.TypeNameConverters.Convert(type.Name, type);
+            string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
 
             string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText);
@@ -152,14 +145,11 @@ namespace TypeGen.Core
         /// <param name="enumAttribute"></param>
         private void GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (enumAttribute == null) throw new ArgumentNullException(nameof(enumAttribute));
-
             string valuesText = GetEnumValuesText(type);
 
             // create TypeScript source code for the whole enum
 
-            string tsEnumName = Options.TypeNameConverters.Convert(type.Name, type);
+            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
 
             string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText);
@@ -179,33 +169,8 @@ namespace TypeGen.Core
         {
             string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
             string outputPath = Options.BaseOutputDirectory + separator + filePath;
-            new FileInfo(outputPath).Directory.Create();
+            new FileInfo(outputPath).Directory?.Create();
             File.WriteAllText(outputPath, text);
-        }
-
-        /// <summary>
-        /// Gets the text for the generic definition part
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
-        private string GetGenericDefinitionText(Type type)
-        {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
-            if (!type.IsGenericTypeDefinition) return "";
-
-            Type[] genericArguments = type.GetGenericArguments();
-
-            string[] genericArgumentNames = (from t in genericArguments
-                select t.BaseType != null && t.BaseType != typeof (object)
-                    ? $"{t.Name} extends {t.BaseType.Name}"
-                    : t.Name)
-                    .ToArray();
-
-            string genericArgumentDef = string.Join(", ", genericArgumentNames);
-
-            return $"<{genericArgumentDef}>";
         }
 
         /// <summary>
@@ -213,11 +178,8 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         private string GetExtendsText(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             var extendsText = "";
 
             Type baseType = _typeService.GetBaseType(type);
@@ -236,8 +198,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
-            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
-
             string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
             string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
 
@@ -248,7 +208,6 @@ namespace TypeGen.Core
             }
 
             string typeName = GetTsTypeNameForMember(memberInfo);
-
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
         }
 
@@ -259,8 +218,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetClassPropertiesText(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             var propertiesText = "";
             IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
 
@@ -285,8 +242,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
-            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
-
             string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = GetTsTypeNameForMember(memberInfo);
 
@@ -300,8 +255,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertiesText(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             var propertiesText = "";
             IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
 
@@ -326,8 +279,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetEnumValueText(object enumValue)
         {
-            if (enumValue == null) throw new ArgumentNullException(nameof(enumValue));
-
             string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
             var enumValueInt = (int)enumValue;
             return _templateService.FillEnumValueTemplate(name, enumValueInt);
@@ -340,8 +291,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetEnumValuesText(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             var valuesText = "";
             Array enumValues = Enum.GetValues(type);
 
@@ -366,8 +315,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetImportsText(Type type, string outputDir)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             var result = "";
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeService.GetTypeDependencies(type);
 
@@ -465,7 +412,10 @@ namespace TypeGen.Core
             var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
             if (typeAttribute != null)
             {
-                if (typeAttribute.TypeName.IsNullOrWhitespace()) throw new CoreException("No type specified in TsType attribute");
+                if (typeAttribute.TypeName.IsNullOrWhitespace())
+                {
+                    throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
+                }
                 return typeAttribute.TypeName;
             }
 
@@ -481,8 +431,6 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetFilePath(Type type, string outputDir)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             string fileName = Options.FileNameConverters.Convert(type.Name, type);
 
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))

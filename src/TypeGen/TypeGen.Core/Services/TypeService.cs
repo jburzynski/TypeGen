@@ -145,7 +145,6 @@ namespace TypeGen.Core.Services
         /// <returns></returns>
         private static bool IsCollectionType(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
             return type.FullName != "System.String" && type.GetInterface("IEnumerable") != null;
         }
 
@@ -155,6 +154,8 @@ namespace TypeGen.Core.Services
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
+        /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
         public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -177,8 +178,63 @@ namespace TypeGen.Core.Services
                 return GetTsTypeName(elementType, typeNameConverters) + "[]";
             }
 
-            // handle custom types
-            return typeNameConverters.Convert(type.Name, type);
+            // handle non-collection (custom) generic types
+            if (type.IsGenericType)
+            {
+                return GetGenericTsTypeName(type, typeNameConverters);
+            }
+
+            // handle custom types & generic parameters
+            return type.IsGenericParameter ? type.Name : typeNameConverters.Convert(type.Name, type);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a generic type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            return type.IsGenericTypeDefinition
+                ? GetGenericDefinitionTsTypeName(type, typeNameConverters)
+                : GetGenericNonDefinitionTsTypeName(type, typeNameConverters);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a generic definition type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetGenericDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            Type[] genericArguments = type.GetGenericArguments();
+
+            string[] genericArgumentNames = (from t in genericArguments
+                                             select t.BaseType != null && t.BaseType != typeof(object)
+                                                 ? $"{t.Name} extends {GetTsTypeName(t.BaseType, typeNameConverters)}"
+                                                 : t.Name)
+                                            .ToArray();
+
+            string genericArgumentDef = string.Join(", ", genericArgumentNames);
+            return $"<{genericArgumentDef}>";
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a generic (not generic definition) type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetGenericNonDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            string[] genericArgumentNames = type.GetGenericArguments()
+                .Select(t => t.IsGenericParameter ? t.Name : GetTsTypeName(t, typeNameConverters))
+                .ToArray();
+                
+            string genericArgumentDef = string.Join(", ", genericArgumentNames);
+            return $"<{genericArgumentDef}>";
         }
 
         /// <summary>
@@ -189,8 +245,6 @@ namespace TypeGen.Core.Services
         /// <returns></returns>
         private static Type GetTsCollectionElementType(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             // handle array types
             Type elementType = type.GetElementType();
             if (elementType != null)
@@ -225,8 +279,6 @@ namespace TypeGen.Core.Services
         /// <returns></returns>
         private static Type GetFlatTsCollectionElementType(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             while (true)
             {
                 if (!IsCollectionType(type)) return type;
@@ -239,11 +291,8 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         private IEnumerable<TypeDependencyInfo> GetGenericTypeDependencies(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             if (!type.IsGenericTypeDefinition) yield break;
 
             foreach (Type genericArgumentType in type.GetGenericArguments())
@@ -264,11 +313,8 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             Type baseType = GetBaseType(type);
             if (baseType != null)
             {
@@ -285,11 +331,8 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         private IEnumerable<TypeDependencyInfo> GetMemberTypeDependencies(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
             IEnumerable<MemberInfo> memberInfos = GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
             {
