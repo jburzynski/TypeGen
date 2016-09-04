@@ -50,8 +50,8 @@ Some of TypeGen's features include:
 
 * generating TypeScript classes, interfaces and enums - single class per file
 * support for collection (or nested collection) property types
-* possibility of specifying an output path to generate a TypeScript file to (per class/enum)
-* automatic generation of property types (if the type is not natively available in TypeScript)
+* generic classes/types generation
+* support for inheritance
 * customizable convertion between C#/TypeScript names (naming conventions)
 
 For complete list of features with examples, please refer to the project's documentation: http://typegen.readthedocs.io
