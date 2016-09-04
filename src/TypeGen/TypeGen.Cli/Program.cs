@@ -103,6 +103,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
+            Console.WriteLine("TypeGen v1.2.0");
             Console.WriteLine("Usage: TypeGen ProjectFolder [-Config-Path \"config\\path.json\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]");
             Console.WriteLine("For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }

@@ -18,7 +18,7 @@ namespace TypeGen.Cli
             if (path == null) return null;
             if (path == "") return "";
 
-            path = path.Replace('/', '\\');
+            path = path.Trim().Replace('/', '\\');
 
             if (path.First() == '\\')
             {

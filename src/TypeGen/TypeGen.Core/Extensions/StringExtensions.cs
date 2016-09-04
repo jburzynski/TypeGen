@@ -6,7 +6,7 @@ namespace TypeGen.Core.Extensions
     internal static class StringExtensions
     {
         /// <summary>
-        /// Normalizes a path
+        /// Normalizes a path to [..\ | .\]this\path\format
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -97,6 +97,16 @@ namespace TypeGen.Core.Extensions
         public static bool IsNullOrWhitespace(this string value)
         {
             return value == null || value.All(char.IsWhiteSpace);
+        }
+
+        /// <summary>
+        /// Removes arity information from type name
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string RemoveTypeArity(this string value)
+        {
+            return value.Split('`')[0];
         }
     }
 }

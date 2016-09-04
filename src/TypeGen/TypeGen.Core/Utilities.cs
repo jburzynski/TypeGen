@@ -65,7 +65,7 @@ namespace TypeGen.Core
             path1 = Path.GetFullPath(path1).NormalizePath();
             path2 = Path.GetFullPath(path2).NormalizePath();
 
-            string prefix = GetMaximalCommonPrefix(path1, path2);
+            string prefix = GetMaximalCommonPathPrefix(path1, path2);
 
             // remove common prefix from each path
             path1 = path1.ReplaceFirst(prefix, "").NormalizePath();
@@ -87,23 +87,27 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Gets maximal common prefix for two strings (case-insensitive)
+        /// Gets maximal common path prefix for two absolute, normalized paths (case-insensitive).
+        /// The resulting prefix doesn't end with a slash.
         /// </summary>
-        /// <param name="str1"></param>
-        /// <param name="str2"></param>
+        /// <param name="path1"></param>
+        /// <param name="path2"></param>
         /// <returns></returns>
-        private static string GetMaximalCommonPrefix(string str1, string str2)
+        private static string GetMaximalCommonPathPrefix(string path1, string path2)
         {
-            int length = Math.Min(str1.Length, str2.Length);
-            var stringBuilder = new StringBuilder();
+            string[] path1Parts = path1.Split('\\');
+            string[] path2Parts = path2.Split('\\');
+
+            int length = Math.Min(path1Parts.Length, path2Parts.Length);
+            var result = "";
 
             for (var i = 0; i < length; i++)
             {
-                if (char.ToUpperInvariant(str1[i]) != char.ToUpperInvariant(str2[i])) break;
-                stringBuilder.Append(str1[i]);
+                if (path1Parts[i] != path2Parts[i]) break;
+                result += $"{path1Parts[i]}\\";
             }
 
-            return stringBuilder.ToString();
+            return result.EndsWith("\\") ? result.Remove(result.Length - 1) : result;
         }
     }
 }
