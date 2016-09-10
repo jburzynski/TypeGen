@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
@@ -23,17 +24,7 @@ namespace TypeGen.Core.Services
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return new[]
-            {
-                "System.Object",
-                "System.Boolean",
-                "System.String",
-                "System.Int32",
-                "System.Int64",
-                "System.Single",
-                "System.Double",
-                "System.Decimal"
-            }.Contains(type.FullName);
+            return GetTsSimpleTypeName(type) != null;
         }
 
         /// <summary>
@@ -60,6 +51,8 @@ namespace TypeGen.Core.Services
                 case "System.Double":
                 case "System.Decimal":
                     return "number";
+                case "System.DateTime":
+                    return "Date";
                 default:
                     return null;
             }
@@ -145,7 +138,54 @@ namespace TypeGen.Core.Services
         /// <returns></returns>
         private static bool IsCollectionType(Type type)
         {
-            return type.FullName != "System.String" && type.GetInterface("IEnumerable") != null;
+            return type.FullName != "System.String" // not a string
+                && !IsDictionaryType(type) // not a dictionary
+                && type.GetInterface("IEnumerable") != null; // implements IEnumerable
+        }
+
+        /// <summary>
+        /// Determines if a type is a dictionary type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static bool IsDictionaryType(Type type)
+        {
+            return type.GetInterface("System.Collections.Generic.IDictionary`2") != null
+                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"));
+        }
+
+        /// <summary>
+        /// Determines if a type is a user-defined generic type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static bool IsCustomGenericType(Type type)
+        {
+            return type.IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a member
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
+        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        {
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+
+            // special case - member is dynamic
+
+            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
+            {
+                return "any";
+            }
+
+            // otherwise, resolve by type
+
+            Type type = GetMemberType(memberInfo);
+            return GetTsTypeName(type, typeNameConverters);
         }
 
         /// <summary>
@@ -172,14 +212,17 @@ namespace TypeGen.Core.Services
             // handle collection types
             if (IsCollectionType(type))
             {
-                Type elementType = GetTsCollectionElementType(type);
-                if (elementType == null) throw new CoreException("TS collection element type is null");
-
-                return GetTsTypeName(elementType, typeNameConverters) + "[]";
+                return GetTsCollectionTypeName(type, typeNameConverters);
             }
 
-            // handle non-collection (custom) generic types
-            if (type.IsGenericType)
+            // handle dictionaries
+            if (IsDictionaryType(type))
+            {
+                return GetTsDictionaryTypeName(type, typeNameConverters);
+            }
+
+            // handle custom generic types
+            if (IsCustomGenericType(type))
             {
                 return GetGenericTsTypeName(type, typeNameConverters);
             }
@@ -187,6 +230,42 @@ namespace TypeGen.Core.Services
             // handle custom types & generic parameters
             string typeNameNoArity = type.Name.RemoveTypeArity();
             return type.IsGenericParameter ? typeNameNoArity : typeNameConverters.Convert(typeNameNoArity, type);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a dictionary type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
+            Type keyType = interfaceType.GetGenericArguments()[0];
+            Type valueType = interfaceType.GetGenericArguments()[1];
+
+            string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
+            string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
+
+            if (!keyTypeName.In("number", "string"))
+            {
+                throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
+                                        " TypeScript dictionary key type must be either 'number' or 'string'");
+            }
+
+            return $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a collection type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetTsCollectionTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            Type elementType = GetTsCollectionElementType(type);
+            return GetTsTypeName(elementType, typeNameConverters) + "[]";
         }
 
         /// <summary>
@@ -301,7 +380,7 @@ namespace TypeGen.Core.Services
 
             foreach (Type genericArgumentType in type.GetGenericArguments())
             {
-                if (genericArgumentType.BaseType == null || genericArgumentType.BaseType == typeof (object)) continue;
+                if (genericArgumentType.BaseType == null || genericArgumentType.BaseType == typeof(object)) continue;
 
                 Type baseType = GetFlatType(ToExportableType(genericArgumentType.BaseType));
                 if (IsTsSimpleType(baseType) || baseType.IsGenericParameter) continue;
@@ -374,7 +453,9 @@ namespace TypeGen.Core.Services
         /// <returns></returns>
         private IEnumerable<Type> GetGenericTypeNonDefinitionDependencies(Type type)
         {
-            IEnumerable<Type> result = new[] { type.GetGenericTypeDefinition() };
+            IEnumerable<Type> result = IsDictionaryType(type)
+                ? new Type[0]
+                : new[] { type.GetGenericTypeDefinition() };
 
             foreach (Type genericArgument in type.GetGenericArguments())
             {

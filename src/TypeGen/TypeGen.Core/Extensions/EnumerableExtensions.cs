@@ -16,5 +16,16 @@ namespace TypeGen.Core.Extensions
         {
             return memberInfos.Where(i => AttributeExtensions.GetCustomAttribute<TsIgnoreAttribute>((MemberInfo) i) == null);
         }
+
+        /// <summary>
+        /// Checks if element is in a given set of elements
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        public static bool In<T>(this T element, params T[] elements)
+        {
+            return elements.Contains(element);
+        }
     }
 }

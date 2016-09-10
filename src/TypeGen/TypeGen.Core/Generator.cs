@@ -419,9 +419,8 @@ namespace TypeGen.Core
                 }
                 return typeAttribute.TypeName;
             }
-
-            Type type = _typeService.GetMemberType(memberInfo);
-            return _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            
+            return _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters);
         }
 
         /// <summary>

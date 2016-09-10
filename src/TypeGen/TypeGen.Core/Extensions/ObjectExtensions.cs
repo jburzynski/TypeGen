@@ -1,4 +1,6 @@
-﻿namespace TypeGen.Core.Extensions
+﻿using System.Linq;
+
+namespace TypeGen.Core.Extensions
 {
     internal static class ObjectExtensions
     {
