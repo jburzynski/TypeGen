@@ -18,7 +18,9 @@ namespace TypeGen.Core
     {
         // services
         private readonly TypeService _typeService;
+        private readonly TypeDependencyService _typeDependencyService;
         private readonly TemplateService _templateService;
+        private readonly FileContentService _fileContentService;
         private GeneratorOptions _options;
 
         /// <summary>
@@ -46,7 +48,9 @@ namespace TypeGen.Core
             Options = new GeneratorOptions();
 
             _typeService = new TypeService();
+            _typeDependencyService = new TypeDependencyService(_typeService);
             _templateService = new TemplateService(Options.TabLength);
+            _fileContentService = new FileContentService(_typeDependencyService, _typeService, _templateService);
 
             _templateService.Initialize();
         }
@@ -98,15 +102,16 @@ namespace TypeGen.Core
             // get text for sections
 
             string extendsText = GetExtendsText(type);
-            string importsText = GetImportsText(type, classAttribute.OutputDir);
+            string importsText = ResolveTypeImports(type, classAttribute.OutputDir);
             string propertiesText = GetClassPropertiesText(type);
 
             // generate the file content
 
             string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
+            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
 
-            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText);
+            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customCode);
 
             // write TypeScript file
 
@@ -123,15 +128,16 @@ namespace TypeGen.Core
             // get text for sections
 
             string extendsText = GetExtendsText(type);
-            string importsText = GetImportsText(type, interfaceAttribute.OutputDir);
+            string importsText = ResolveTypeImports(type, interfaceAttribute.OutputDir);
             string propertiesText = GetInterfacePropertiesText(type);
 
             // generate the file content
 
             string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
+            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
 
-            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText);
+            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customCode);
 
             // write TypeScript file
 
@@ -167,10 +173,8 @@ namespace TypeGen.Core
         /// <returns></returns>
         private void WriteTsFile(string filePath, string text)
         {
-            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
-            string outputPath = Options.BaseOutputDirectory + separator + filePath;
-            new FileInfo(outputPath).Directory?.Create();
-            File.WriteAllText(outputPath, text);
+            new FileInfo(filePath).Directory?.Create();
+            File.WriteAllText(filePath, text);
         }
 
         /// <summary>
@@ -199,7 +203,9 @@ namespace TypeGen.Core
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
             string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
-            string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
+
+            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
@@ -242,7 +248,9 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
-            string name = Options.PropertyNameConverters.Convert(memberInfo.Name);
+            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
+
             string typeName = GetTsTypeNameForMember(memberInfo);
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName);
@@ -307,16 +315,26 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Gets TypeScript imports declaration source code.
-        /// This method will generate TS files for dependencies if needed.
+        /// Returns TypeScript imports declaration source code.
+        /// Generates TS files for dependencies if needed.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir">The passed type's output directory</param>
         /// <returns></returns>
-        private string GetImportsText(Type type, string outputDir)
+        private string ResolveTypeImports(Type type, string outputDir)
         {
-            var result = "";
-            IEnumerable<TypeDependencyInfo> typeDependencies = _typeService.GetTypeDependencies(type);
+            GenerateTypeDependencies(type, outputDir);
+            return _fileContentService.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
+        }
+
+        /// <summary>
+        /// Generates type dependencies' files for a given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputDir"></param>
+        private void GenerateTypeDependencies(Type type, string outputDir)
+        {
+            IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
             {
@@ -357,50 +375,7 @@ namespace TypeGen.Core
                         throw new CoreException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
                     }
                 }
-
-                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependency, outputDir);
-
-                string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
-                pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
-
-                string typeDependencyName = typeDependency.Name.RemoveTypeArity();
-                string fileName = Options.FileNameConverters.Convert(typeDependencyName, typeDependency);
-
-                string dependencyPath = pathDiff + fileName;
-                dependencyPath = dependencyPath.Replace('\\', '/');
-
-                string typeName = Options.TypeNameConverters.Convert(typeDependencyName, typeDependency);
-                result += _templateService.FillImportTemplate(typeName, dependencyPath);
             }
-
-            if (result != "")
-            {
-                result += "\r\n";
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the output directory for a type dependency
-        /// </summary>
-        /// <param name="typeDependency"></param>
-        /// <param name="exportedTypeOutputDir"></param>
-        /// <returns></returns>
-        private static string GetTypeDependencyOutputDir(Type typeDependency, string exportedTypeOutputDir)
-        {
-            var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
-            var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
-
-            if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
-            {
-                return exportedTypeOutputDir;
-            }
-
-            return dependencyClassAttribute?.OutputDir
-                    ?? dependencyInterfaceAttribute?.OutputDir
-                    ?? dependencyEnumAttribute?.OutputDir;
         }
 
         /// <summary>
@@ -439,9 +414,12 @@ namespace TypeGen.Core
                 fileName += $".{Options.TypeScriptFileExtension}";
             }
 
-            return string.IsNullOrEmpty(outputDir)
+            fileName = string.IsNullOrEmpty(outputDir)
                 ? fileName
                 : $"{outputDir.NormalizePath()}\\{fileName}";
+
+            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
+            return Options.BaseOutputDirectory + separator + fileName;
         }
     }
 }

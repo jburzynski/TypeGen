@@ -61,9 +61,11 @@
     <Compile Include="Converters\PascalCaseToKebabCaseConverter.cs" />
     <Compile Include="IGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\FileContentService.cs" />
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\TypeDependencyInfo.cs" />
     <Compile Include="Services\TypeDependencyInfoTypeComparer.cs" />
+    <Compile Include="Services\TypeDependencyService.cs" />
     <Compile Include="Services\TypeService.cs" />
     <Compile Include="TypeAnnotations\ExportAttribute.cs" />
     <Compile Include="TypeAnnotations\ExportTsInterfaceAttribute.cs" />
@@ -72,8 +74,10 @@
     <Compile Include="TypeAnnotations\ExportTsEnumAttribute.cs" />
     <Compile Include="TypeAnnotations\TsIgnoreAttribute.cs" />
     <Compile Include="TypeAnnotations\TsType.cs" />
+    <Compile Include="TypeAnnotations\TsMemberNameAttribute.cs" />
     <Compile Include="TypeAnnotations\TsTypeAttribute.cs" />
     <Compile Include="TypeAnnotations\TsDefaultTypeOutputAttribute.cs" />
+    <Compile Include="TypeAnnotations\TsTypeAttributeComparer.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

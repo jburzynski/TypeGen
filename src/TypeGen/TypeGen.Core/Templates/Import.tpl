@@ -1,1 +1,1 @@
-import { $tg{name} } from "$tg{path}";
+import { $tg{name}$tg{asAlias} } from "$tg{path}";
