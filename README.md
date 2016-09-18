@@ -2,7 +2,7 @@
 
 C# to TypeScript file generator with support for one-class-per-file generation
 
-[![Travis build status](https://travis-ci.org/jburzynski/TypeGen.svg?branch=master)](https://travis-ci.org/jburzynski/TypeGen)
+[![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
 ***For a complete list of features with examples, please see the project's documentation: http://typegen.readthedocs.io***
 
