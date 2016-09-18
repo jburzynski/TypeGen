@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
@@ -23,17 +24,7 @@ namespace TypeGen.Core.Services
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return new[]
-            {
-                "System.Object",
-                "System.Boolean",
-                "System.String",
-                "System.Int32",
-                "System.Int64",
-                "System.Single",
-                "System.Double",
-                "System.Decimal"
-            }.Contains(type.FullName);
+            return GetTsSimpleTypeName(type) != null;
         }
 
         /// <summary>
@@ -60,6 +51,8 @@ namespace TypeGen.Core.Services
                 case "System.Double":
                 case "System.Decimal":
                     return "number";
+                case "System.DateTime":
+                    return "Date";
                 default:
                     return null;
             }
@@ -143,9 +136,56 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static bool IsCollectionType(Type type)
+        public bool IsCollectionType(Type type)
         {
-            return type.FullName != "System.String" && type.GetInterface("IEnumerable") != null;
+            return type.FullName != "System.String" // not a string
+                && !IsDictionaryType(type) // not a dictionary
+                && type.GetInterface("IEnumerable") != null; // implements IEnumerable
+        }
+
+        /// <summary>
+        /// Determines if a type is a dictionary type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool IsDictionaryType(Type type)
+        {
+            return type.GetInterface("System.Collections.Generic.IDictionary`2") != null
+                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"));
+        }
+
+        /// <summary>
+        /// Determines if a type is a user-defined generic type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool IsCustomGenericType(Type type)
+        {
+            return type.IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a member
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
+        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        {
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+
+            // special case - member is dynamic
+
+            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
+            {
+                return "any";
+            }
+
+            // otherwise, resolve by type
+
+            Type type = GetMemberType(memberInfo);
+            return GetTsTypeName(type, typeNameConverters);
         }
 
         /// <summary>
@@ -172,14 +212,17 @@ namespace TypeGen.Core.Services
             // handle collection types
             if (IsCollectionType(type))
             {
-                Type elementType = GetTsCollectionElementType(type);
-                if (elementType == null) throw new CoreException("TS collection element type is null");
-
-                return GetTsTypeName(elementType, typeNameConverters) + "[]";
+                return GetTsCollectionTypeName(type, typeNameConverters);
             }
 
-            // handle non-collection (custom) generic types
-            if (type.IsGenericType)
+            // handle dictionaries
+            if (IsDictionaryType(type))
+            {
+                return GetTsDictionaryTypeName(type, typeNameConverters);
+            }
+
+            // handle custom generic types
+            if (IsCustomGenericType(type))
             {
                 return GetGenericTsTypeName(type, typeNameConverters);
             }
@@ -187,6 +230,42 @@ namespace TypeGen.Core.Services
             // handle custom types & generic parameters
             string typeNameNoArity = type.Name.RemoveTypeArity();
             return type.IsGenericParameter ? typeNameNoArity : typeNameConverters.Convert(typeNameNoArity, type);
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a dictionary type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
+            Type keyType = interfaceType.GetGenericArguments()[0];
+            Type valueType = interfaceType.GetGenericArguments()[1];
+
+            string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
+            string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
+
+            if (!keyTypeName.In("number", "string"))
+            {
+                throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
+                                        " TypeScript dictionary key type must be either 'number' or 'string'");
+            }
+
+            return $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+        }
+
+        /// <summary>
+        /// Gets TypeScript type name for a collection type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        private string GetTsCollectionTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            Type elementType = GetTsCollectionElementType(type);
+            return GetTsTypeName(elementType, typeNameConverters) + "[]";
         }
 
         /// <summary>
@@ -279,7 +358,7 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Type GetFlatType(Type type)
+        public Type GetFlatType(Type type)
         {
             while (true)
             {
@@ -289,135 +368,13 @@ namespace TypeGen.Core.Services
         }
 
         /// <summary>
-        /// Gets type dependencies related to generic type definition
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private IEnumerable<TypeDependencyInfo> GetGenericTypeDefinitionDependencies(Type type)
-        {
-            IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
-
-            if (!type.IsGenericTypeDefinition) return result;
-
-            foreach (Type genericArgumentType in type.GetGenericArguments())
-            {
-                if (genericArgumentType.BaseType == null || genericArgumentType.BaseType == typeof (object)) continue;
-
-                Type baseType = GetFlatType(ToExportableType(genericArgumentType.BaseType));
-                if (IsTsSimpleType(baseType) || baseType.IsGenericParameter) continue;
-
-                if (baseType.IsGenericType)
-                {
-                    result = result.Concat(GetGenericTypeNonDefinitionDependencies(baseType)
-                        .Select(t => new TypeDependencyInfo(t, null)));
-                }
-                else
-                {
-                    result = result.Concat(new[] { new TypeDependencyInfo(baseType, null) });
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the base type dependency for a type, if the base type exists
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
-        {
-            Type baseType = GetBaseType(type);
-            if (baseType != null)
-            {
-                yield return new TypeDependencyInfo(baseType, null);
-            }
-        }
-
-        /// <summary>
-        /// Gets type dependencies for the members inside a given type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private IEnumerable<TypeDependencyInfo> GetMemberTypeDependencies(Type type)
-        {
-            IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
-
-            IEnumerable<MemberInfo> memberInfos = GetTsExportableMembers(type);
-            foreach (MemberInfo memberInfo in memberInfos)
-            {
-                Type memberType = GetMemberType(memberInfo);
-                Type memberFlatType = GetFlatType(memberType);
-
-                if (IsTsSimpleType(memberFlatType) || memberFlatType.IsGenericParameter) continue;
-
-                var memberAttributes = memberInfo.GetCustomAttributes(typeof (Attribute), false) as Attribute[];
-
-                if (memberFlatType.IsGenericType)
-                {
-                    result = result.Concat(GetGenericTypeNonDefinitionDependencies(memberFlatType)
-                        .Select(t => new TypeDependencyInfo(t, memberAttributes)));
-                }
-                else
-                {
-                    result = result.Concat(new[] { new TypeDependencyInfo(memberFlatType, memberAttributes) });
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets type dependencies for a single generic member type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private IEnumerable<Type> GetGenericTypeNonDefinitionDependencies(Type type)
-        {
-            IEnumerable<Type> result = new[] { type.GetGenericTypeDefinition() };
-
-            foreach (Type genericArgument in type.GetGenericArguments())
-            {
-                Type flatArgumentType = GetFlatType(ToExportableType(genericArgument));
-                if (IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
-
-                result = result.Concat(flatArgumentType.IsGenericType
-                    ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)
-                    : new[] { flatArgumentType });
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets all non-simple and non-collection types the given type depends on.
-        /// Types of properties/fields marked with TsIgnoreAttribute will be omitted.
-        /// Returns an empty array if no dependencies were detected.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
-        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
-        {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.IsClass) return Enumerable.Empty<TypeDependencyInfo>();
-
-            type = ToExportableType(type);
-
-            return GetGenericTypeDefinitionDependencies(type)
-                .Concat(GetBaseTypeDependency(type)
-                .Concat(GetMemberTypeDependencies(type)))
-                .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>());
-        }
-
-        /// <summary>
         /// Converts a type to a 'TS-exportable' type.
         /// If the type is nullable, returns the underlying type.
         /// Otherwise, returns the passed type.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private Type ToExportableType(Type type)
+        public Type ToExportableType(Type type)
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;

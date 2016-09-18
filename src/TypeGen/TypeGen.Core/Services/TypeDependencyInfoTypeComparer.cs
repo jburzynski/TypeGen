@@ -12,12 +12,15 @@ namespace TypeGen.Core.Services
     {
         public bool Equals(T x, T y)
         {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
             return x.Type == y.Type;
         }
 
         public int GetHashCode(T obj)
         {
-            return obj.Type.GetHashCode();
+            return obj.Type?.GetHashCode() ?? 0;
         }
     }
 }

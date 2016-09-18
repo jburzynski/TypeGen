@@ -23,6 +23,11 @@
         /// <summary>
         /// TypeScript number type
         /// </summary>
-        Number
+        Number,
+
+        /// <summary>
+        /// TypeScript Date type
+        /// </summary>
+        Date
     }
 }

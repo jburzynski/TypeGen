@@ -14,9 +14,9 @@ namespace TypeGen.Core
     {
         public GeneratorOptions()
         {
-            FileNameConverters = new TypeNameConverterCollection(new[] { new PascalCaseToKebabCaseConverter() });
+            FileNameConverters = new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter());
             TypeNameConverters = new TypeNameConverterCollection();
-            PropertyNameConverters = new NameConverterCollection(new[] { new PascalCaseToCamelCaseConverter() });
+            PropertyNameConverters = new NameConverterCollection(new PascalCaseToCamelCaseConverter());
             EnumValueNameConverters = new NameConverterCollection();
             TypeScriptFileExtension = "ts";
             TabLength = 4;

@@ -4,5 +4,5 @@
 */
 
 $tg{imports}export interface $tg{name}$tg{extends} {
-$tg{properties}
+$tg{properties}$tg{customCode}
 }

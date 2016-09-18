@@ -38,13 +38,14 @@ namespace TypeGen.Core.Services
             _importTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string properties)
+        public string FillClassTemplate(string imports, string name, string extends, string properties, string customCode)
         {
             return ReplaceTabs(_classTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
-                .Replace("$tg{properties}", properties);
+                .Replace("$tg{properties}", properties)
+                .Replace("$tg{customCode}", customCode);
         }
 
         public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string defaultValue)
@@ -63,13 +64,14 @@ namespace TypeGen.Core.Services
                 .Replace("$tg{type}", type);
         }
 
-        public string FillInterfaceTemplate(string imports, string name, string extends, string properties)
+        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customCode)
         {
             return ReplaceTabs(_interfaceTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
-                .Replace("$tg{properties}", properties);
+                .Replace("$tg{properties}", properties)
+                .Replace("$tg{customCode}", customCode);
         }
 
         public string FillInterfacePropertyTemplate(string name, string type)
@@ -94,10 +96,11 @@ namespace TypeGen.Core.Services
                 .Replace("$tg{number}", intValue.ToString());
         }
 
-        public string FillImportTemplate(string name, string path)
+        public string FillImportTemplate(string name, string asAlias, string path)
         {
             return ReplaceTabs(_importTemplate)
                 .Replace("$tg{name}", name)
+                .Replace("$tg{asAlias}", asAlias)
                 .Replace("$tg{path}", path);
         }
 

@@ -85,6 +85,7 @@ namespace TypeGen.Cli
             catch (Exception e) when (e is CliException || e is CoreException)
             {
                 Console.WriteLine($"APPLICATION ERROR: {e.Message}");
+                Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Exiting...");
             }
             catch (ReflectionTypeLoadException e)
@@ -92,18 +93,20 @@ namespace TypeGen.Cli
                 foreach (Exception loaderException in e.LoaderExceptions)
                 {
                     Console.WriteLine($"TYPE LOAD ERROR: {loaderException.Message}");
+                    Console.WriteLine(e.StackTrace);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"GENERIC ERROR: {e.Message}");
+                Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Exiting...");
             }
         }
 
         private static void ShowHelp()
         {
-            Console.WriteLine("TypeGen v1.2.0");
+            Console.WriteLine("TypeGen v1.3.0");
             Console.WriteLine("Usage: TypeGen ProjectFolder [-Config-Path \"config\\path.json\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]");
             Console.WriteLine("For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }
