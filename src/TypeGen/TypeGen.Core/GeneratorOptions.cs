@@ -12,14 +12,23 @@ namespace TypeGen.Core
     /// </summary>
     public class GeneratorOptions
     {
+        public static int DefaultTabLength => 4;
+        public static bool DefaultExplicitPublicAccessor => false;
+        public static TypeNameConverterCollection DefaultFileNameConverters => new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter());
+        public static TypeNameConverterCollection DefaultTypeNameConverters => new TypeNameConverterCollection();
+        public static NameConverterCollection DefaultPropertyNameConverters => new NameConverterCollection(new PascalCaseToCamelCaseConverter());
+        public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
+        public static string DefaultTypeScriptFileExtension => "ts";
+
         public GeneratorOptions()
         {
-            FileNameConverters = new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter());
-            TypeNameConverters = new TypeNameConverterCollection();
-            PropertyNameConverters = new NameConverterCollection(new PascalCaseToCamelCaseConverter());
-            EnumValueNameConverters = new NameConverterCollection();
-            TypeScriptFileExtension = "ts";
-            TabLength = 4;
+            FileNameConverters = DefaultFileNameConverters;
+            TypeNameConverters = DefaultTypeNameConverters;
+            PropertyNameConverters = DefaultPropertyNameConverters;
+            EnumValueNameConverters = DefaultEnumValueNameConverters;
+            TypeScriptFileExtension = DefaultTypeScriptFileExtension;
+            TabLength = DefaultTabLength;
+            ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
         }
 
         /// <summary>

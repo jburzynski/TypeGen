@@ -9,7 +9,7 @@ namespace TypeGen.Core.Services
     /// Contains information about a type dependency.
     /// Type dependency is a type which the exported type depends on (complex type of a property or field).
     /// </summary>
-    public class TypeDependencyInfo
+    internal class TypeDependencyInfo
     {
         public TypeDependencyInfo()
         {

@@ -8,7 +8,7 @@ namespace TypeGen.Core.Services
     /// <summary>
     /// A comparer class that compares types of TypeDependencyInfo instances
     /// </summary>
-    public class TypeDependencyInfoTypeComparer<T> : IEqualityComparer<T> where T: TypeDependencyInfo
+    internal class TypeDependencyInfoTypeComparer<T> : IEqualityComparer<T> where T: TypeDependencyInfo
     {
         public bool Equals(T x, T y)
         {

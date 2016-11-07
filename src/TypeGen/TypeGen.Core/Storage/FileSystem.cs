@@ -1,52 +1,26 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using TypeGen.Core.Extensions;
 
-namespace TypeGen.Core
+namespace TypeGen.Core.Storage
 {
     /// <summary>
-    /// Utility class
+    /// Contains logic for manipulating the file system
     /// </summary>
-    internal static class Utilities
+    internal class FileSystem
     {
         /// <summary>
-        /// Gets embedded resource as string
+        /// Writes a text file to the specified location
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string GetEmbeddedResource(string name)
+        /// <param name="filePath"></param>
+        /// <param name="content"></param>
+        public void SaveFile(string filePath, string content)
         {
-            using (Stream stream = typeof (Utilities).Assembly.GetManifestResourceStream(name))
-            {
-                if (stream == null)
-                {
-                    throw new CoreException($"Could not find embedded resource '{name}'");
-                }
-
-                var contentBytes = new byte[stream.Length];
-                stream.Read(contentBytes, 0, (int)stream.Length);
-                return Encoding.ASCII.GetString(contentBytes);
-            }
-        }
-
-        /// <summary>
-        /// Gets a string value to use as a tab
-        /// </summary>
-        /// <param name="tabLength">The number of spaces per tab.</param>
-        /// <returns></returns>
-        public static string GetTabText(int tabLength)
-        {
-            var tabText = "";
-            for (var i = 0; i < tabLength; i++)
-            {
-                tabText += " ";
-            }
-            return tabText;
+            new FileInfo(filePath).Directory?.Create();
+            File.WriteAllText(filePath, content);
         }
 
         /// <summary>
@@ -57,7 +31,7 @@ namespace TypeGen.Core
         /// <param name="path1"></param>
         /// <param name="path2"></param>
         /// <returns></returns>
-        public static string GetPathDiff(string path1, string path2)
+        public string GetPathDiff(string path1, string path2)
         {
             if (string.IsNullOrEmpty(path1)) path1 = ".\\";
             if (string.IsNullOrEmpty(path2)) path2 = ".\\";
@@ -93,7 +67,7 @@ namespace TypeGen.Core
         /// <param name="path1"></param>
         /// <param name="path2"></param>
         /// <returns></returns>
-        private static string GetMaximalCommonPathPrefix(string path1, string path2)
+        private string GetMaximalCommonPathPrefix(string path1, string path2)
         {
             string[] path1Parts = path1.Split('\\');
             string[] path2Parts = path2.Split('\\');

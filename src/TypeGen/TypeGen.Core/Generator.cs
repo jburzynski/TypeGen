@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Services;
+using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core
@@ -16,11 +16,13 @@ namespace TypeGen.Core
     /// </summary>
     public class Generator : IGenerator
     {
-        // services
+        // dependencies
+
         private readonly TypeService _typeService;
         private readonly TypeDependencyService _typeDependencyService;
         private readonly TemplateService _templateService;
-        private readonly FileContentService _fileContentService;
+        private readonly TsContentGenerator _tsContentGenerator;
+        private readonly FileSystem _fileSystem;
         private GeneratorOptions _options;
 
         /// <summary>
@@ -47,12 +49,11 @@ namespace TypeGen.Core
         {
             Options = new GeneratorOptions();
 
+            _fileSystem = new FileSystem();
             _typeService = new TypeService();
             _typeDependencyService = new TypeDependencyService(_typeService);
             _templateService = new TemplateService(Options.TabLength);
-            _fileContentService = new FileContentService(_typeDependencyService, _typeService, _templateService);
-
-            _templateService.Initialize();
+            _tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _fileSystem);
         }
 
         /// <summary>
@@ -109,13 +110,13 @@ namespace TypeGen.Core
 
             string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
-            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
+            string customCode = _tsContentGenerator.GetCustomCode(filePath, Options.TabLength);
 
             string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customCode);
 
             // write TypeScript file
 
-            WriteTsFile(filePath, classText);
+            _fileSystem.SaveFile(filePath, classText);
         }
 
         /// <summary>
@@ -135,13 +136,13 @@ namespace TypeGen.Core
 
             string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
-            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
+            string customCode = _tsContentGenerator.GetCustomCode(filePath, Options.TabLength);
 
             string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customCode);
 
             // write TypeScript file
 
-            WriteTsFile(filePath, interfaceText);
+            _fileSystem.SaveFile(filePath, interfaceText);
         }
 
         /// <summary>
@@ -162,19 +163,7 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            WriteTsFile(filePath, enumText);
-        }
-
-        /// <summary>
-        /// Writes a TS file
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private void WriteTsFile(string filePath, string text)
-        {
-            new FileInfo(filePath).Directory?.Create();
-            File.WriteAllText(filePath, text);
+            _fileSystem.SaveFile(filePath, enumText);
         }
 
         /// <summary>
@@ -324,7 +313,7 @@ namespace TypeGen.Core
         private string ResolveTypeImports(Type type, string outputDir)
         {
             GenerateTypeDependencies(type, outputDir);
-            return _fileContentService.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
+            return _tsContentGenerator.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
         }
 
         /// <summary>

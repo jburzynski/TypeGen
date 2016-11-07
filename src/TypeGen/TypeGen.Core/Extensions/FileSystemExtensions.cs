@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace TypeGen.Cli
+namespace TypeGen.Core.Extensions
 {
-    internal static class StringExtensions
+    /// <summary>
+    /// Extensions for file system-related operations
+    /// </summary>
+    public static class FileSystemExtensions
     {
         /// <summary>
-        /// Normalizes a path
+        /// Normalizes a path to [..\ | .\]this\path\format
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -18,7 +20,7 @@ namespace TypeGen.Cli
             if (path == null) return null;
             if (path == "") return "";
 
-            path = path.Trim().Replace('/', '\\');
+            path = path.Replace('/', '\\');
 
             if (path.First() == '\\')
             {

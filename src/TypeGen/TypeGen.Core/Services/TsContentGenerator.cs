@@ -7,26 +7,33 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Services
 {
     /// <summary>
-    /// Contains logic related to generating and processing TypeScript file contents
+    /// Contains logic for generating TypeScript file contents
     /// </summary>
-    internal class FileContentService
+    internal class TsContentGenerator
     {
         private readonly TypeDependencyService _typeDependencyService;
         private readonly TypeService _typeService;
         private readonly TemplateService _templateService;
+        private readonly FileSystem _fileSystem;
 
         private const string KeepTsTagName = "keep-ts";
 
-        public FileContentService(TypeDependencyService typeDependencyService, TypeService typeService, TemplateService templateService)
+        public TsContentGenerator(TypeDependencyService typeDependencyService,
+            TypeService typeService,
+            TemplateService templateService,
+            FileSystem fileSystem)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
+            _fileSystem = fileSystem;
         }
 
         /// <summary>
@@ -74,7 +81,7 @@ namespace TypeGen.Core.Services
 
                 string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependency, outputDir);
 
-                string pathDiff = Utilities.GetPathDiff(outputDir, dependencyOutputDir);
+                string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
 
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
@@ -153,7 +160,7 @@ namespace TypeGen.Core.Services
             string content = File.ReadAllText(filePath);
             MatchCollection matches = Regex.Matches(content, $@"\/\/<{KeepTsTagName}>((.|\n|\r|\r\n)+?)\/\/<\/{KeepTsTagName}>", RegexOptions.IgnoreCase);
 
-            string tab = Utilities.GetTabText(tabSize);
+            string tab = StringUtils.GetTabText(tabSize);
 
             string result = matches
                 .Cast<Match>()

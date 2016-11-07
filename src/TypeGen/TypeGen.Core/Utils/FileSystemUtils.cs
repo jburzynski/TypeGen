@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TypeGen.Core;
 
-namespace TypeGen.Cli
+namespace TypeGen.Core.Utils
 {
-    internal class Utilities
+    /// <summary>
+    /// File system-related utility class
+    /// </summary>
+    public class FileSystemUtils
     {
         public static string GetFileNameFromPath(string path)
         {

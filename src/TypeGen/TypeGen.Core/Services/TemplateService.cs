@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Storage;
+using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Services
 {
@@ -10,6 +12,10 @@ namespace TypeGen.Core.Services
     /// </summary>
     internal class TemplateService
     {
+        // dependencies
+
+        private readonly InternalStorage _internalStorage;
+
         private string _enumTemplate;
         private string _enumValueTemplate;
         private string _classTemplate;
@@ -23,19 +29,22 @@ namespace TypeGen.Core.Services
 
         public TemplateService(int tabLength)
         {
+            _internalStorage = new InternalStorage();
             TabLength = tabLength;
+
+            LoadTemplates();
         }
 
-        public void Initialize()
+        private void LoadTemplates()
         {
-            _enumTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
-            _enumValueTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
-            _classTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
-            _classPropertyTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
-            _classPropertyWithDefaultValueTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
-            _interfaceTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
-            _interfacePropertyTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
-            _importTemplate = Utilities.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
+            _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
+            _enumValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
+            _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
+            _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
+            _classPropertyWithDefaultValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
+            _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
+            _interfacePropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
+            _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
         public string FillClassTemplate(string imports, string name, string extends, string properties, string customCode)
@@ -106,7 +115,7 @@ namespace TypeGen.Core.Services
 
         private string ReplaceTabs(string template)
         {
-            return template.Replace("$tg{tab}", Utilities.GetTabText(TabLength));
+            return template.Replace("$tg{tab}", StringUtils.GetTabText(TabLength));
         }
     }
 }
