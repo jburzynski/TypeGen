@@ -9,24 +9,12 @@ namespace TypeGen.Cli.Business
 {
     internal class FileSystem
     {
-        public bool DirectoryExists(string directory)
-        {
-            return Directory.Exists(directory);
-        }
+        public bool DirectoryExists(string directory) => Directory.Exists(directory);
 
-        public string[] GetDirectoryFiles(string directory)
-        {
-            return Directory.GetFiles(directory);
-        }
+        public string[] GetDirectoryFiles(string directory) => Directory.GetFiles(directory);
 
-        public bool FileExists(string filePath)
-        {
-            return File.Exists(filePath);
-        }
+        public bool FileExists(string filePath) => File.Exists(filePath);
 
-        public string ReadFile(string filePath)
-        {
-            return File.ReadAllText(filePath);
-        }
+        public string ReadFile(string filePath) => File.ReadAllText(filePath);
     }
 }
