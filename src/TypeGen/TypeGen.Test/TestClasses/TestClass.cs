@@ -18,5 +18,8 @@ namespace TypeGen.Test.TestClasses
 
         [TsType("RegExp", "../acme/regex", "Regex")]
         public Regex Regex2 { get; set; }
+
+        [TsType(TsType.Any)]
+        public int IntAsAny { get; set; }
     }
 }

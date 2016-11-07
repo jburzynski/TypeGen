@@ -47,6 +47,9 @@ namespace TypeGen.Core.TypeAnnotations
                 case TsType.Date:
                     TypeName = "Date";
                     break;
+                case TsType.Any:
+                    TypeName = "any";
+                    break;
             }
         }
 
