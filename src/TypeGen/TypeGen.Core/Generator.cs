@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
-using TypeGen.Core.Services;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 
@@ -53,7 +53,12 @@ namespace TypeGen.Core
             _typeService = new TypeService();
             _typeDependencyService = new TypeDependencyService(_typeService);
             _templateService = new TemplateService(Options.TabLength);
-            _tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _fileSystem);
+
+            _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
+                _typeService,
+                _templateService,
+                _fileSystem,
+                new TsContentParser(_fileSystem));
         }
 
         /// <summary>
@@ -110,9 +115,10 @@ namespace TypeGen.Core
 
             string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
-            string customCode = _tsContentGenerator.GetCustomCode(filePath, Options.TabLength);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customCode);
+            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customHead, customBody);
 
             // write TypeScript file
 
@@ -136,9 +142,10 @@ namespace TypeGen.Core
 
             string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
-            string customCode = _tsContentGenerator.GetCustomCode(filePath, Options.TabLength);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customCode);
+            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customHead, customBody);
 
             // write TypeScript file
 

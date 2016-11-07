@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TypeGen.Core.Storage;
+﻿using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for filling templates with data
@@ -47,14 +43,15 @@ namespace TypeGen.Core.Services
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string properties, string customCode)
+        public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
         {
             return ReplaceTabs(_classTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
                 .Replace("$tg{properties}", properties)
-                .Replace("$tg{customCode}", customCode);
+                .Replace("$tg{customHead}", customHead)
+                .Replace("$tg{customBody}", customBody);
         }
 
         public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string defaultValue)
@@ -73,14 +70,15 @@ namespace TypeGen.Core.Services
                 .Replace("$tg{type}", type);
         }
 
-        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customCode)
+        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
         {
             return ReplaceTabs(_interfaceTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
                 .Replace("$tg{properties}", properties)
-                .Replace("$tg{customCode}", customCode);
+                .Replace("$tg{customHead}", customHead)
+                .Replace("$tg{customBody}", customBody);
         }
 
         public string FillInterfacePropertyTemplate(string name, string type)

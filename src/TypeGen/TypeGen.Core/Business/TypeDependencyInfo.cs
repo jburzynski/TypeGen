@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains information about a type dependency.

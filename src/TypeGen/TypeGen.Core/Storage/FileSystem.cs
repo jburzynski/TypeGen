@@ -24,6 +24,20 @@ namespace TypeGen.Core.Storage
         }
 
         /// <summary>
+        /// Reads file as string
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public string ReadFile(string filePath) => File.ReadAllText(filePath);
+
+        /// <summary>
+        /// Checks if the file exists
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public bool FileExists(string filePath) => File.Exists(filePath);
+
+        /// <summary>
         /// Gets path prefix required to navigate from path1 to path2.
         /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\".
         /// This method returns a path with a trailing slash if diff is not empty; otherwise returns an empty string.

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
@@ -11,7 +9,7 @@ using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Utils;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for generating TypeScript file contents
@@ -22,18 +20,23 @@ namespace TypeGen.Core.Services
         private readonly TypeService _typeService;
         private readonly TemplateService _templateService;
         private readonly FileSystem _fileSystem;
+        private readonly TsContentParser _tsContentParser;
 
         private const string KeepTsTagName = "keep-ts";
+        private const string CustomHeadTagName = "custom-head";
+        private const string CustomBodyTagName = "custom-body";
 
         public TsContentGenerator(TypeDependencyService typeDependencyService,
             TypeService typeService,
             TemplateService templateService,
-            FileSystem fileSystem)
+            FileSystem fileSystem,
+            TsContentParser tsContentParser)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
             _fileSystem = fileSystem;
+            _tsContentParser = tsContentParser;
         }
 
         /// <summary>
@@ -151,29 +154,31 @@ namespace TypeGen.Core.Services
         /// Returns an empty string if a file does not exist.
         /// </summary>
         /// <param name="filePath"></param>
-        /// <param name="tabSize"></param>
+        /// <param name="indentSize"></param>
         /// <returns></returns>
-        public string GetCustomCode(string filePath, int tabSize)
+        public string GetCustomBody(string filePath, int indentSize)
         {
-            if (!File.Exists(filePath)) return "";
+            string content = _tsContentParser.GetTagContent(filePath, indentSize, KeepTsTagName, CustomBodyTagName);
+            string tab = StringUtils.GetTabText(indentSize);
 
-            string content = File.ReadAllText(filePath);
-            MatchCollection matches = Regex.Matches(content, $@"\/\/<{KeepTsTagName}>((.|\n|\r|\r\n)+?)\/\/<\/{KeepTsTagName}>", RegexOptions.IgnoreCase);
-
-            string tab = StringUtils.GetTabText(tabSize);
-
-            string result = matches
-                .Cast<Match>()
-                .Aggregate("", (current, match) => current + $"\r\n{tab}{match.Groups[1].Value.Trim()}" + "\r\n");
-
-            if (!string.IsNullOrEmpty(result))
-            {
-                result = result.Remove(0, 2 + tabSize);
-            }
-            
-            return string.IsNullOrEmpty(result)
+            return string.IsNullOrEmpty(content)
                 ? ""
-                : $"\r\n\r\n{tab}//<{KeepTsTagName}>\r\n{tab}{result}{tab}//</{KeepTsTagName}>";
+                : $"\r\n\r\n{tab}//<{CustomBodyTagName}>\r\n{tab}{content}{tab}//</{CustomBodyTagName}>";
+        }
+
+        /// <summary>
+        /// Gets custom code for a TypeScript file given by filePath.
+        /// Returns an empty string if a file does not exist.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public string GetCustomHead(string filePath)
+        {
+            string content = _tsContentParser.GetTagContent(filePath, 0, CustomHeadTagName);
+
+            return string.IsNullOrEmpty(content)
+                ? ""
+                : $"//<{CustomHeadTagName}>\r\n{content}//</{CustomHeadTagName}>\r\n\r\n";
         }
     }
 }

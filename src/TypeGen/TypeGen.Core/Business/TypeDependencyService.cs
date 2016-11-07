@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for handling type dependencies (i.e. types that a type depends on)
