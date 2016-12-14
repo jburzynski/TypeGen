@@ -126,8 +126,8 @@ namespace TypeGen.Core.Business
             }
 
             return memberInfo is PropertyInfo
-                ? ToExportableType(((PropertyInfo)memberInfo).PropertyType)
-                : ToExportableType(((FieldInfo)memberInfo).FieldType);
+                ? GetUnderlyingType(((PropertyInfo)memberInfo).PropertyType)
+                : GetUnderlyingType(((FieldInfo)memberInfo).FieldType);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace TypeGen.Core.Business
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
 
-            type = ToExportableType(type);
+            type = GetUnderlyingType(type);
 
             // handle simple types
             if (IsTsSimpleType(type))
@@ -373,7 +373,7 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Type ToExportableType(Type type)
+        public Type GetUnderlyingType(Type type)
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;

@@ -10,5 +10,9 @@ namespace TypeGen.Core.TypeAnnotations
     /// </summary>
     public abstract class ExportAttribute : Attribute
     {
+        /// <summary>
+        /// TypeScript file output directory
+        /// </summary>
+        public string OutputDir { get; set; }
     }
 }

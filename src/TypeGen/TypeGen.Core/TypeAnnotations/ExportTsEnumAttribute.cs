@@ -8,9 +8,5 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Enum)]
     public class ExportTsEnumAttribute : ExportAttribute
     {
-        /// <summary>
-        /// TypeScript file output directory
-        /// </summary>
-        public string OutputDir { get; set; }
     }
 }

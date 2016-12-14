@@ -66,7 +66,26 @@ namespace TypeGen.Core.Business
         }
 
         /// <summary>
-        /// Returns TypeScript imports source code related to type dependencies.
+        /// Gets the text for the "extends" section
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        public string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            var extendsText = "";
+
+            Type baseType = _typeService.GetBaseType(type);
+            if (baseType == null) return extendsText;
+
+            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters);
+            extendsText = $" extends {baseTypeName}";
+
+            return extendsText;
+        }
+
+        /// <summary>
+        /// Returns TypeScript imports source code related to type dependencies
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
@@ -84,12 +103,15 @@ namespace TypeGen.Core.Business
 
                 string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependency, outputDir);
 
+                // get path diff
                 string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
 
+                // get type & file name
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
                 string fileName = fileNameConverters.Convert(typeDependencyName, typeDependency);
 
+                // get file path
                 string dependencyPath = pathDiff + fileName;
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
@@ -101,7 +123,7 @@ namespace TypeGen.Core.Business
         }
 
         /// <summary>
-        /// Gets code for imports that are NOT related to type dependencies
+        /// Gets code for imports that are specified in TsTypeAttribute.ImportPath property
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

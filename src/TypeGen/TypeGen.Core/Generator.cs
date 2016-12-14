@@ -107,7 +107,7 @@ namespace TypeGen.Core
         {
             // get text for sections
 
-            string extendsText = GetExtendsText(type);
+            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             string importsText = ResolveTypeImports(type, classAttribute.OutputDir);
             string propertiesText = GetClassPropertiesText(type);
 
@@ -134,7 +134,7 @@ namespace TypeGen.Core
         {
             // get text for sections
 
-            string extendsText = GetExtendsText(type);
+            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             string importsText = ResolveTypeImports(type, interfaceAttribute.OutputDir);
             string propertiesText = GetInterfacePropertiesText(type);
 
@@ -161,7 +161,7 @@ namespace TypeGen.Core
         {
             string valuesText = GetEnumValuesText(type);
 
-            // create TypeScript source code for the whole enum
+            // create TypeScript source code for the enum
 
             string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
@@ -173,23 +173,7 @@ namespace TypeGen.Core
             _fileSystem.SaveFile(filePath, enumText);
         }
 
-        /// <summary>
-        /// Gets the text for the "extends" section
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private string GetExtendsText(Type type)
-        {
-            var extendsText = "";
-
-            Type baseType = _typeService.GetBaseType(type);
-            if (baseType == null) return extendsText;
-
-            string baseTypeName = _typeService.GetTsTypeName(baseType, Options.TypeNameConverters);
-            extendsText = $" extends {baseTypeName}";
-
-            return extendsText;
-        }
+        
 
         /// <summary>
         /// Gets TypeScript class property definition source code

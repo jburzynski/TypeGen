@@ -9,9 +9,5 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class ExportTsInterfaceAttribute : ExportAttribute
     {
-        /// <summary>
-        /// TypeScript file output directory
-        /// </summary>
-        public string OutputDir { get; set; }
     }
 }
