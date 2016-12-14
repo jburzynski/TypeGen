@@ -251,6 +251,8 @@ paket-files/
 .idea/
 *.sln.iml
 
-# do not ignore TypeGen specific files
+# TypeScript files
+*.ts
 
+# do not ignore TypeGen specific files
 !TypeGen.[0-9].[0-9].[0-9].nupkg
