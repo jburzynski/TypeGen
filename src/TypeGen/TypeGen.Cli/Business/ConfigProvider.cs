@@ -35,9 +35,12 @@ namespace TypeGen.Cli.Business
         {
             if (!_fileSystem.FileExists(configPath))
             {
-                if (logVerbose) _logger.Log("No config file found. Default configuration will be used.");
+                if (logVerbose) _logger.Log($"No config file found for project \"{projectFolder}\". Default configuration will be used.");
 
-                var defaultConfig = new TgConfig();
+                TgConfig defaultConfig = new TgConfig()
+                    .MergeWithDefaultParams()
+                    .Normalize();
+
                 defaultConfig.AssemblyPath = GetAssemblyPath(defaultConfig, projectFolder, logVerbose);
                 return defaultConfig;
             }

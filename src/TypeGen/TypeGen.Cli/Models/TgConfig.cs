@@ -16,10 +16,10 @@ namespace TypeGen.Cli.Models
         public TgConfig Normalize()
         {
             AssemblyPath = AssemblyPath.NormalizePath();
-            FileNameConverters = FileNameConverters.Map(FileSystemExtensions.NormalizePath);
-            TypeNameConverters = TypeNameConverters.Map(FileSystemExtensions.NormalizePath);
-            PropertyNameConverters = PropertyNameConverters.Map(FileSystemExtensions.NormalizePath);
-            EnumValueNameConverters = EnumValueNameConverters.Map(FileSystemExtensions.NormalizePath);
+            FileNameConverters = FileNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            TypeNameConverters = TypeNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
             return this;
         }
 

@@ -54,35 +54,18 @@ namespace TypeGen.Cli
                 }
 
                 bool verbose = _consoleArgsReader.ContainsVerboseParam(args);
+                string[] projectFolders = _consoleArgsReader.GetProjectFolders(args).ToArray();
+                string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
 
-                string projectFolder = _consoleArgsReader.GetProjectFolder(args);
-                if (!_fileSystem.DirectoryExists(projectFolder))
+                for (var i = 0; i < projectFolders.Length; i++)
                 {
-                    throw new CliException($"Project folder '{projectFolder}' does not exist");
+                    string projectFolder = projectFolders[i];
+                    string configPath = configPaths.HasIndex(i) ? configPaths[i] : null;
+
+                    _logger.Log($"Generating files for project \"{projectFolder}\"...");
+                    Generate(projectFolder, configPath, verbose);
+                    _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
                 }
-
-                // get config
-
-                string configPath = _consoleArgsReader.GetConfigPath(args);
-                configPath = !string.IsNullOrEmpty(configPath)
-                    ? $"{projectFolder}\\{configPath}"
-                    : $"{projectFolder}\\tgconfig.json";
-
-                TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
-
-                // get assembly
-
-                Assembly assembly = Assembly.LoadFrom(config.AssemblyPath);
-
-                // create generator options
-
-                GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assembly, projectFolder, verbose);
-                generatorOptions.BaseOutputDirectory = projectFolder;
-
-                var generator = new Generator {Options = generatorOptions};
-                generator.Generate(assembly);
-
-                _logger.Log("Files generated successfully. Exiting...");
             }
             catch (Exception e) when (e is CliException || e is CoreException)
             {
@@ -104,10 +87,33 @@ namespace TypeGen.Cli
             }
         }
 
+        private static void Generate(string projectFolder, string configPath, bool verbose)
+        {
+            // get config
+
+            configPath = !string.IsNullOrEmpty(configPath)
+                ? $"{projectFolder}\\{configPath}"
+                : $"{projectFolder}\\tgconfig.json";
+
+            TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
+
+            // get assembly
+
+            Assembly assembly = Assembly.LoadFrom(config.AssemblyPath);
+
+            // create generator options
+
+            GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assembly, projectFolder, verbose);
+            generatorOptions.BaseOutputDirectory = projectFolder;
+
+            var generator = new Generator { Options = generatorOptions };
+            generator.Generate(assembly);
+        }
+
         private static void ShowHelp()
         {
             _logger.Log($"TypeGen {AppConfig.Version}",
-                "Usage: TypeGen ProjectFolder [-Config-Path \"config\\path.json\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
+                "Usage: TypeGen ProjectFolder1[:ProjectFolder2:(...)] [-Config-Path \"path1[:path2:(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
                 "For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }
     }

@@ -24,24 +24,26 @@ namespace TypeGen.Cli.Business
             return args.Any(arg => arg.ToUpperInvariant() == "-V" || arg.ToUpperInvariant() == "-VERBOSE");
         }
 
-        public string GetConfigPath(string[] args)
+        public IEnumerable<string> GetConfigPaths(string[] args)
         {
             List<string> argsList = args.ToList();
             int index = argsList.IndexOf("-Config-Path");
 
-            if (index < 0) return null;
+            if (index < 0) return Enumerable.Empty<string>();
 
             if (args.Length < index + 2) // index of the next element + 1
             {
                 throw new CliException("-Config-Path parameter present, but no path specified");
             }
 
-            return args[index + 1].NormalizePath();
+            return args[index + 1].Split(':')
+                .Select(s => s.NormalizePath());
         }
 
-        public string GetProjectFolder(string[] args)
+        public IEnumerable<string> GetProjectFolders(string[] args)
         {
-            return args[0].NormalizePath();
+            return args[0].Split(':')
+                .Select(s => s.NormalizePath());
         }
     }
 }

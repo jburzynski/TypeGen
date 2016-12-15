@@ -9,21 +9,15 @@ namespace TypeGen.Cli
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// Maps an array to a new array.
-        /// Returns the new (mapped) array.
+        /// Checks if an array has the specified index
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
-        /// <param name="mapFunc"></param>
+        /// <param name="index"></param>
         /// <returns></returns>
-        public static T[] Map<T>(this T[] array, Func<T, T> mapFunc)
+        public static bool HasIndex<T>(this T[] array, int index)
         {
-            var result = new T[array.Length];
-            for (var i = 0; i < array.Length; i++)
-            {
-                result[i] = mapFunc(array[i]);
-            }
-            return result;
+            return array?.Length >= index + 1;
         }
     }
 }
