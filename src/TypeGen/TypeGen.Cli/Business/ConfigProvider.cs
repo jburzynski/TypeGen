@@ -41,7 +41,7 @@ namespace TypeGen.Cli.Business
                     .MergeWithDefaultParams()
                     .Normalize();
 
-                defaultConfig.AssemblyPath = GetAssemblyPath(defaultConfig, projectFolder, logVerbose);
+                UpdateAssemblyPaths(defaultConfig, projectFolder, logVerbose);
                 return defaultConfig;
             }
 
@@ -51,25 +51,31 @@ namespace TypeGen.Cli.Business
                 .MergeWithDefaultParams()
                 .Normalize();
 
-            config.AssemblyPath = GetAssemblyPath(config, projectFolder, logVerbose);
+            UpdateAssemblyPaths(config, projectFolder, logVerbose);
 
             return config;
         }
 
-        private string GetAssemblyPath(TgConfig config, string projectFolder, bool logVerbose)
+        private void UpdateAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
         {
-            if (string.IsNullOrEmpty(config.AssemblyPath))
+            config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+            config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder, logVerbose)).ToArray();
+        }
+
+        private string GetAssemblyPath(string configAssemblyPath, string projectFolder, bool logVerbose)
+        {
+            if (string.IsNullOrEmpty(configAssemblyPath))
             {
                 if (logVerbose) _logger.Log("Assembly path not found in the config file. Reading from the default assembly path (project folder's bin\\Debug or bin\\).");
                 return GetDefaultAssemblyPath(projectFolder);
             }
 
-            if (logVerbose) _logger.Log($"Reading assembly path from the config file: '{config.AssemblyPath}'");
-            string assemblyPath = $"{projectFolder}\\{config.AssemblyPath}";
+            if (logVerbose) _logger.Log($"Reading assembly path from the config file: '{configAssemblyPath}'");
+            string assemblyPath = $"{projectFolder}\\{configAssemblyPath}";
 
             if (!_fileSystem.FileExists(assemblyPath))
             {
-                throw new CliException($"The specified assembly: '{config.AssemblyPath}' not found in the project folder");
+                throw new CliException($"The specified assembly: '{configAssemblyPath}' not found in the project folder");
             }
 
             return assemblyPath;

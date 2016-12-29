@@ -56,7 +56,7 @@
     <Compile Include="Business\Logger.cs" />
     <Compile Include="CliException.cs" />
     <Compile Include="Models\TgConfig.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

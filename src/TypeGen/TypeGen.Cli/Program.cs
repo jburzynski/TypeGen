@@ -7,7 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TypeGen.Cli;
 using TypeGen.Cli.Business;
+using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 
@@ -96,18 +98,25 @@ namespace TypeGen.Cli
                 : $"{projectFolder}\\tgconfig.json";
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
+            IEnumerable<Assembly> assemblies = GetAssemblies(config.GetAssemblies());
 
-            // get assembly
+            // create generator
 
-            Assembly assembly = Assembly.LoadFrom(config.AssemblyPath);
-
-            // create generator options
-
-            GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assembly, projectFolder, verbose);
+            GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder, verbose);
             generatorOptions.BaseOutputDirectory = projectFolder;
-
             var generator = new Generator { Options = generatorOptions };
-            generator.Generate(assembly);
+
+            // generate
+
+            foreach (Assembly assembly in assemblies)
+            {
+                generator.Generate(assembly);
+            }
+        }
+
+        private static IEnumerable<Assembly> GetAssemblies(IEnumerable<string> assemblyNames)
+        {
+            return assemblyNames.Select(Assembly.LoadFrom);
         }
 
         private static void ShowHelp()

@@ -26,43 +26,43 @@ namespace TypeGen.Cli.Business
         /// Returns the GeneratorOptions object based on the passed ConfigParams
         /// </summary>
         /// <param name="config"></param>
-        /// <param name="assembly"></param>
+        /// <param name="assemblies"></param>
         /// <param name="projectFolder"></param>
         /// <param name="logVerbose"></param>
         /// <returns></returns>
-        public GeneratorOptions GetGeneratorOptions(TgConfig config, Assembly assembly, string projectFolder, bool logVerbose)
+        public GeneratorOptions GetGeneratorOptions(TgConfig config, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
         {
             return new GeneratorOptions
             {
                 TypeScriptFileExtension = config.TypeScriptFileExtension,
                 TabLength = config.TabLength ?? GeneratorOptions.DefaultTabLength,
                 ExplicitPublicAccessor = config.ExplicitPublicAccessor ?? GeneratorOptions.DefaultExplicitPublicAccessor,
-                FileNameConverters = GetTypeNameConvertersFromConfig(config.FileNameConverters, assembly, projectFolder, logVerbose),
-                TypeNameConverters = GetTypeNameConvertersFromConfig(config.TypeNameConverters, assembly, projectFolder, logVerbose),
-                PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assembly, projectFolder, logVerbose),
-                EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assembly, projectFolder, logVerbose)
+                FileNameConverters = GetTypeNameConvertersFromConfig(config.FileNameConverters, assemblies, projectFolder, logVerbose),
+                TypeNameConverters = GetTypeNameConvertersFromConfig(config.TypeNameConverters, assemblies, projectFolder, logVerbose),
+                PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assemblies, projectFolder, logVerbose),
+                EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose)
             };
         }
 
-        private TypeNameConverterCollection GetTypeNameConvertersFromConfig(string[] typeNameConverters, Assembly assembly, string projectFolder, bool logVerbose)
+        private TypeNameConverterCollection GetTypeNameConvertersFromConfig(string[] typeNameConverters, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
         {
-            IEnumerable<ITypeNameConverter> converters = typeNameConverters.Select(name => GetConverterFromName<ITypeNameConverter>(name, assembly, projectFolder, logVerbose));
+            IEnumerable<ITypeNameConverter> converters = typeNameConverters.Select(name => GetConverterFromName<ITypeNameConverter>(name, assemblies, projectFolder, logVerbose));
             return new TypeNameConverterCollection(converters);
         }
 
-        private NameConverterCollection GetNameConvertersFromConfig(string[] nameConverters, Assembly assembly, string projectFolder, bool logVerbose)
+        private NameConverterCollection GetNameConvertersFromConfig(string[] nameConverters, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
         {
-            IEnumerable<INameConverter> converters = nameConverters.Select(name => GetConverterFromName<INameConverter>(name, assembly, projectFolder, logVerbose));
+            IEnumerable<INameConverter> converters = nameConverters.Select(name => GetConverterFromName<INameConverter>(name, assemblies, projectFolder, logVerbose));
             return new NameConverterCollection(converters);
         }
 
-        private TConverter GetConverterFromName<TConverter>(string name, Assembly assembly, string projectFolder, bool logVerbose) where TConverter : class, IConverter
+        private TConverter GetConverterFromName<TConverter>(string name, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose) where TConverter : class, IConverter
         {
             string[] nameParts = name.Split(':');
 
             if (nameParts.Length == 1)
             {
-                return GetConverterNoAssembly<TConverter>(name, assembly, logVerbose);
+                return GetConverterNoAssembly<TConverter>(name, assemblies, logVerbose);
             }
 
             if (nameParts.Length == 2)
@@ -85,9 +85,9 @@ namespace TypeGen.Cli.Business
             return GetConverterFromAssembly<TConverter>(converterAssembly, name);
         }
 
-        private TConverter GetConverterFromAssembly<TConverter>(Assembly converterAssembly, string converterName) where TConverter : class, IConverter
+        private TConverter GetConverterFromAssembly<TConverter>(Assembly assembly, string converterName) where TConverter : class, IConverter
         {
-            foreach (Type type in converterAssembly.GetTypes())
+            foreach (Type type in assembly.GetTypes())
             {
                 bool nameMatches = (type.Name == converterName
                                    || type.Name == $"{converterName}Converter"
@@ -104,19 +104,25 @@ namespace TypeGen.Cli.Business
             return null;
         }
 
-        private TConverter GetConverterNoAssembly<TConverter>(string name, Assembly assembly, bool logVerbose) where TConverter : class, IConverter
+        private TConverter GetConverterNoAssembly<TConverter>(string name, IEnumerable<Assembly> assemblies, bool logVerbose) where TConverter : class, IConverter
         {
-            // first, try to get the converter from the current loaded assembly
-            var result = GetConverterFromAssembly<TConverter>(assembly, name);
-            if (result != null)
+            TConverter result;
+
+            // first, try to get the converter from the assemblies passed in config
+
+            foreach (Assembly assembly in assemblies)
             {
+                result = GetConverterFromAssembly<TConverter>(assembly, name);
+                if (result == null) continue;
+
                 if (logVerbose) _logger.Log($"Converter '{name}' found in assembly '{assembly.FullName}'");
                 return result;
             }
 
-            if (logVerbose) _logger.Log($"Converter '{name}' not found in assembly '{assembly.FullName}'. Falling back to TypeGen.Core.");
+            if (logVerbose) _logger.Log($"Converter '{name}' not found in assemblies: '{string.Join(", ", assemblies)}'. Falling back to TypeGen.Core.");
 
             // fallback to TypeGen.Core
+
             Assembly coreAssembly = typeof(Generator).Assembly;
             result = GetConverterFromAssembly<TConverter>(coreAssembly, name);
             if (result != null)
@@ -125,7 +131,7 @@ namespace TypeGen.Cli.Business
                 return result;
             }
 
-            throw new CliException($"Converter '{name}' not found in assembly '{assembly.FullName}' or TypeGen.Core");
+            throw new CliException($"Converter '{name}' not found in TypeGen.Core or any of the assemblies: '{string.Join(", ", assemblies)}'");
         }
     }
 }
