@@ -7,7 +7,7 @@ using System.Text;
 namespace TypeGen.Core.Storage
 {
     /// <summary>
-    /// Contains logic for reading the internal storage
+    /// Represents the internal storage
     /// </summary>
     internal class InternalStorage
     {

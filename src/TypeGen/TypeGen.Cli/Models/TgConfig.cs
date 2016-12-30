@@ -30,6 +30,7 @@ namespace TypeGen.Cli.Models
         {
             if (Assemblies == null) Assemblies = new string[0];
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
+            if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
             if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
             if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;
             if (FileNameConverters == null) FileNameConverters = GeneratorOptions.DefaultFileNameConverters.GetTypeNames().ToArray();
@@ -73,5 +74,8 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "explicitPublicAccessor")]
         public bool? ExplicitPublicAccessor { get; set; }
+
+        [DataMember(Name = "singleQuotes")]
+        public bool? SingleQuotes { get; set; }
     }
 }

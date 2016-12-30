@@ -37,6 +37,7 @@ namespace TypeGen.Cli.Business
                 TypeScriptFileExtension = config.TypeScriptFileExtension,
                 TabLength = config.TabLength ?? GeneratorOptions.DefaultTabLength,
                 ExplicitPublicAccessor = config.ExplicitPublicAccessor ?? GeneratorOptions.DefaultExplicitPublicAccessor,
+                SingleQuotes = config.SingleQuotes ?? GeneratorOptions.DefaultSingleQuotes,
                 FileNameConverters = GetTypeNameConvertersFromConfig(config.FileNameConverters, assemblies, projectFolder, logVerbose),
                 TypeNameConverters = GetTypeNameConvertersFromConfig(config.TypeNameConverters, assemblies, projectFolder, logVerbose),
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assemblies, projectFolder, logVerbose),

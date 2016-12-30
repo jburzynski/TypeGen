@@ -22,12 +22,11 @@ namespace TypeGen.Core.Business
         private string _importTemplate;
 
         public int TabLength { get; set; }
+        public bool SingleQuotes { get; set; }
 
-        public TemplateService(int tabLength)
+        public TemplateService(InternalStorage internalStorage)
         {
-            _internalStorage = new InternalStorage();
-            TabLength = tabLength;
-
+            _internalStorage = internalStorage;
             LoadTemplates();
         }
 
@@ -45,7 +44,7 @@ namespace TypeGen.Core.Business
 
         public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
         {
-            return ReplaceTabs(_classTemplate)
+            return ReplaceSpecialChars(_classTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
@@ -56,7 +55,7 @@ namespace TypeGen.Core.Business
 
         public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string defaultValue)
         {
-            return ReplaceTabs(_classPropertyWithDefaultValueTemplate)
+            return ReplaceSpecialChars(_classPropertyWithDefaultValueTemplate)
                 .Replace("$tg{accessor}", accessor)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{defaultValue}", defaultValue);
@@ -64,7 +63,7 @@ namespace TypeGen.Core.Business
 
         public string FillClassPropertyTemplate(string accessor, string name, string type)
         {
-            return ReplaceTabs(_classPropertyTemplate)
+            return ReplaceSpecialChars(_classPropertyTemplate)
                 .Replace("$tg{accessor}", accessor)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{type}", type);
@@ -72,7 +71,7 @@ namespace TypeGen.Core.Business
 
         public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
         {
-            return ReplaceTabs(_interfaceTemplate)
+            return ReplaceSpecialChars(_interfaceTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{extends}", extends)
@@ -83,14 +82,14 @@ namespace TypeGen.Core.Business
 
         public string FillInterfacePropertyTemplate(string name, string type)
         {
-            return ReplaceTabs(_interfacePropertyTemplate)
+            return ReplaceSpecialChars(_interfacePropertyTemplate)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{type}", type);
         }
 
         public string FillEnumTemplate(string imports, string name, string values)
         {
-            return ReplaceTabs(_enumTemplate)
+            return ReplaceSpecialChars(_enumTemplate)
                 .Replace("$tg{imports}", imports)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{values}", values);
@@ -98,22 +97,24 @@ namespace TypeGen.Core.Business
 
         public string FillEnumValueTemplate(string name, int intValue)
         {
-            return ReplaceTabs(_enumValueTemplate)
+            return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{number}", intValue.ToString());
         }
 
         public string FillImportTemplate(string name, string asAlias, string path)
         {
-            return ReplaceTabs(_importTemplate)
+            return ReplaceSpecialChars(_importTemplate)
                 .Replace("$tg{name}", name)
                 .Replace("$tg{asAlias}", asAlias)
                 .Replace("$tg{path}", path);
         }
 
-        private string ReplaceTabs(string template)
+        private string ReplaceSpecialChars(string template)
         {
-            return template.Replace("$tg{tab}", StringUtils.GetTabText(TabLength));
+            return template
+                .Replace("$tg{tab}", StringUtils.GetTabText(TabLength))
+                .Replace("$tg{quot}", SingleQuotes ? "'" : "\"");
         }
     }
 }

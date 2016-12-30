@@ -8,7 +8,7 @@ using TypeGen.Core.Extensions;
 namespace TypeGen.Core.Storage
 {
     /// <summary>
-    /// Contains logic for manipulating the file system
+    /// Represents the file system
     /// </summary>
     internal class FileSystem
     {
