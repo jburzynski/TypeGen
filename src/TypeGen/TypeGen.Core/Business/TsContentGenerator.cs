@@ -101,7 +101,7 @@ namespace TypeGen.Core.Business
             {
                 Type typeDependency = typeDependencyInfo.Type;
 
-                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependency, outputDir);
+                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
 
                 // get path diff
                 string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
@@ -152,23 +152,27 @@ namespace TypeGen.Core.Business
         /// <summary>
         /// Gets the output directory for a type dependency
         /// </summary>
-        /// <param name="typeDependency"></param>
+        /// <param name="typeDependencyInfo"></param>
         /// <param name="exportedTypeOutputDir"></param>
         /// <returns></returns>
-        private string GetTypeDependencyOutputDir(Type typeDependency, string exportedTypeOutputDir)
+        private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string exportedTypeOutputDir)
         {
-            var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
-            var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
+            var classAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsClassAttribute>();
+            var interfaceAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsInterfaceAttribute>();
+            var enumAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsEnumAttribute>();
 
-            if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
+            if (classAttribute == null && enumAttribute == null && interfaceAttribute == null)
             {
-                return exportedTypeOutputDir;
+                TsDefaultTypeOutputAttribute defaultTypeOutputAttribute = typeDependencyInfo.MemberAttributes
+                    ?.SingleOrDefault(a => a.GetType() == typeof(TsDefaultTypeOutputAttribute))
+                    as TsDefaultTypeOutputAttribute;
+
+                return defaultTypeOutputAttribute?.OutputDir ?? exportedTypeOutputDir;
             }
 
-            return dependencyClassAttribute?.OutputDir
-                    ?? dependencyInterfaceAttribute?.OutputDir
-                    ?? dependencyEnumAttribute?.OutputDir;
+            return classAttribute?.OutputDir
+                    ?? interfaceAttribute?.OutputDir
+                    ?? enumAttribute?.OutputDir;
         }
 
         /// <summary>
