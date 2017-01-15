@@ -6,7 +6,7 @@ using System.Text;
 namespace TypeGen.Core.Extensions
 {
     /// <summary>
-    /// Extensions for file system-related operations
+    /// Extensions for filesystem-related operations
     /// </summary>
     public static class FileSystemExtensions
     {
@@ -33,6 +33,17 @@ namespace TypeGen.Core.Extensions
             }
 
             return path;
+        }
+
+        /// <summary>
+        /// Adds a new path segment to the existing path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="newSection"></param>
+        /// <returns></returns>
+        public static string ConcatPath(this string path, string newSection)
+        {
+            return path.NormalizePath() + '\\' + newSection.NormalizePath();
         }
     }
 }

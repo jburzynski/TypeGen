@@ -12,12 +12,12 @@ namespace TypeGen.Core
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
-        void Generate(Assembly assembly);
+        GenerationResult Generate(Assembly assembly);
 
         /// <summary>
         /// Generate TypeScript files for a given type
         /// </summary>
         /// <param name="type"></param>
-        void Generate(Type type);
+        GenerationResult Generate(Type type);
     }
 }

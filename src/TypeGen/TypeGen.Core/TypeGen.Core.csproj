@@ -54,6 +54,7 @@
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="GenerationResult.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="GeneratorOptions.cs" />
     <Compile Include="Converters\INameConverter.cs" />

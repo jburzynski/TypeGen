@@ -41,7 +41,7 @@ namespace TypeGen.Cli.Business
                     .MergeWithDefaultParams()
                     .Normalize();
 
-                UpdateAssemblyPaths(defaultConfig, projectFolder, logVerbose);
+                UpdateConfigAssemblyPaths(defaultConfig, projectFolder, logVerbose);
                 return defaultConfig;
             }
 
@@ -51,12 +51,12 @@ namespace TypeGen.Cli.Business
                 .MergeWithDefaultParams()
                 .Normalize();
 
-            UpdateAssemblyPaths(config, projectFolder, logVerbose);
+            UpdateConfigAssemblyPaths(config, projectFolder, logVerbose);
 
             return config;
         }
 
-        private void UpdateAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
+        private void UpdateConfigAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
         {
             config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
             config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder, logVerbose)).ToArray();

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml;
 using TypeGen.Cli;
 using TypeGen.Cli.Business;
 using TypeGen.Cli.Extensions;
@@ -22,6 +23,7 @@ namespace TypeGen.Cli
         private static readonly FileSystem _fileSystem;
         private static readonly ConfigProvider _configProvider;
         private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
+        private static readonly ProjectFileManager _projectFileManager;
 
         static Program()
         {
@@ -30,6 +32,7 @@ namespace TypeGen.Cli
             _fileSystem = new FileSystem();
             _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer());
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
+            _projectFileManager = new ProjectFileManager(_fileSystem);
         }
 
         private static void Main(string[] args)
@@ -87,6 +90,9 @@ namespace TypeGen.Cli
                 _logger.Log($"GENERIC ERROR: {e.Message}",
                     e.StackTrace);
             }
+
+            // DEBUG ONLY
+            //Console.Read();
         }
 
         private static void Generate(string projectFolder, string configPath, bool verbose)
@@ -108,10 +114,27 @@ namespace TypeGen.Cli
 
             // generate
 
-            foreach (Assembly assembly in assemblies)
+            IEnumerable<string> generatedFiles = assemblies
+                .Aggregate(Enumerable.Empty<string>(), (acc, assembly) => acc.Concat(
+                    generator.Generate(assembly).GeneratedFiles
+                    ));
+
+            if (config.AddFilesToProject ?? TgConfig.DefaultAddFilesToProject)
             {
-                generator.Generate(assembly);
+                AddFilesToProject(projectFolder, generatedFiles);
             }
+        }
+
+        private static void AddFilesToProject(string projectFolder, IEnumerable<string> generatedFiles)
+        {
+            XmlDocument projectFile = _projectFileManager.ReadFromProjectFolder(projectFolder);
+
+            foreach (string filePath in generatedFiles)
+            {
+                _projectFileManager.AddTsFile(projectFile, filePath);
+            }
+
+            _projectFileManager.SaveProjectFile(projectFolder, projectFile);
         }
 
         private static IEnumerable<Assembly> GetAssemblies(IEnumerable<string> assemblyNames)

@@ -54,6 +54,7 @@
     <Compile Include="Business\GeneratorOptionsProvider.cs" />
     <Compile Include="Business\JsonSerializer.cs" />
     <Compile Include="Business\Logger.cs" />
+    <Compile Include="Business\ProjectFileManager.cs" />
     <Compile Include="CliException.cs" />
     <Compile Include="Models\TgConfig.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
