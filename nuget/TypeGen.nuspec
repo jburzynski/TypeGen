@@ -10,6 +10,6 @@
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a C# to TypeScript file generator with support for one-class-per-file generation</description>
-    <tags>code-generator typescript ts</tags>
+    <tags>code-generator generator typescript ts</tags>
   </metadata>
 </package>
