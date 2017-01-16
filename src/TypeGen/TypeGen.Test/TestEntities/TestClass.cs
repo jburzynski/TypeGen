@@ -4,7 +4,7 @@ using TypeGen.Core.TypeAnnotations;
 namespace TypeGen.Test.TestEntities
 {
     [ExportTsClass(OutputDir = "test-classes")]
-    internal class TestClass<T, U> : BaseClass<int>
+    internal class TestClass<T, U> : BaseClass<int> where U : BaseClass2<string>
     {
         public string HelloWorld { get; set; }
 

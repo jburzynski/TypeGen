@@ -41,11 +41,11 @@ namespace TypeGen.Core.Business
                 if (baseFlatType.IsGenericType)
                 {
                     result = result.Concat(GetGenericTypeNonDefinitionDependencies(baseFlatType)
-                        .Select(t => new TypeDependencyInfo(t, null)));
+                        .Select(t => new TypeDependencyInfo(t)));
                 }
                 else
                 {
-                    result = result.Concat(new[] { new TypeDependencyInfo(baseFlatType, null) });
+                    result = result.Concat(new[] { new TypeDependencyInfo(baseFlatType) });
                 }
             }
 
@@ -60,10 +60,14 @@ namespace TypeGen.Core.Business
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
             Type baseType = _typeService.GetBaseType(type);
-            if (baseType != null)
+            if (baseType == null) yield break;
+
+            if (baseType.IsGenericType)
             {
-                yield return new TypeDependencyInfo(baseType, null);
+                baseType = baseType.GetGenericTypeDefinition();
             }
+
+            yield return new TypeDependencyInfo(baseType);
         }
 
         /// <summary>

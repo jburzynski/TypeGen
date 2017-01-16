@@ -12,7 +12,7 @@ namespace TypeGen.Core.Business
         {
         }
 
-        public TypeDependencyInfo(Type type, Attribute[] memberAttributes)
+        public TypeDependencyInfo(Type type, Attribute[] memberAttributes = null)
         {
             Type = type;
             MemberAttributes = memberAttributes;
