@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TypeGen.Core.Extensions
+namespace TypeGen.Cli.Extensions
 {
     /// <summary>
     /// Extensions for filesystem-related operations

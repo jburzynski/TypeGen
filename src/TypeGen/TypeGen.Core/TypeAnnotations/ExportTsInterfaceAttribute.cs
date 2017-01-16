@@ -1,5 +1,4 @@
 ﻿using System;
-using TypeGen.Core.Converters;
 
 namespace TypeGen.Core.TypeAnnotations
 {

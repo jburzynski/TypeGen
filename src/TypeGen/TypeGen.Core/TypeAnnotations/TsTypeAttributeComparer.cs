@@ -8,7 +8,7 @@ namespace TypeGen.Core.TypeAnnotations
     /// <summary>
     /// A comparer class that compares TsTypeAttribute properties
     /// </summary>
-    public class TsTypeAttributeComparer : IEqualityComparer<TsTypeAttribute>
+    internal class TsTypeAttributeComparer : IEqualityComparer<TsTypeAttribute>
     {
         public bool Equals(TsTypeAttribute x, TsTypeAttribute y)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using TypeGen.Core.Extensions;
+using TypeGen.Cli.Extensions;
 using TypeGen.Core.Utils;
 
 namespace TypeGen.Cli.Business
