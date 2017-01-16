@@ -14,7 +14,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
         {
-            return memberInfos.Where(i => AttributeExtensions.GetCustomAttribute<TsIgnoreAttribute>((MemberInfo) i) == null);
+            return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
         }
 
         /// <summary>

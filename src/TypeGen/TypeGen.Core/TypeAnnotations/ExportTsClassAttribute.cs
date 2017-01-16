@@ -1,5 +1,4 @@
 ﻿using System;
-using TypeGen.Core.Converters;
 
 namespace TypeGen.Core.TypeAnnotations
 {
@@ -9,9 +8,5 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class ExportTsClassAttribute : ExportAttribute
     {
-        /// <summary>
-        /// TypeScript file output directory
-        /// </summary>
-        public string OutputDir { get; set; }
     }
 }

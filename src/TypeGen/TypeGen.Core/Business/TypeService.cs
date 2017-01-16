@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
@@ -127,8 +126,8 @@ namespace TypeGen.Core.Services
             }
 
             return memberInfo is PropertyInfo
-                ? ToExportableType(((PropertyInfo)memberInfo).PropertyType)
-                : ToExportableType(((FieldInfo)memberInfo).FieldType);
+                ? GetUnderlyingType(((PropertyInfo)memberInfo).PropertyType)
+                : GetUnderlyingType(((FieldInfo)memberInfo).FieldType);
         }
 
         /// <summary>
@@ -201,7 +200,7 @@ namespace TypeGen.Core.Services
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
 
-            type = ToExportableType(type);
+            type = GetUnderlyingType(type);
 
             // handle simple types
             if (IsTsSimpleType(type))
@@ -374,7 +373,7 @@ namespace TypeGen.Core.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Type ToExportableType(Type type)
+        public Type GetUnderlyingType(Type type)
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;

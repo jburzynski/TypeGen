@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Test.TestClasses
+namespace TypeGen.Test.TestEntities
 {
-    [ExportTsClass]
-    internal class TestClass
+    [ExportTsClass(OutputDir = "test-classes")]
+    internal class TestClass<T, U> : BaseClass<int> where U : BaseClass2<string>
     {
         public string HelloWorld { get; set; }
 
@@ -18,5 +13,8 @@ namespace TypeGen.Test.TestClasses
 
         [TsType("RegExp", "../acme/regex", "Regex")]
         public Regex Regex2 { get; set; }
+
+        [TsType(TsType.Any)]
+        public int IntAsAny { get; set; }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TypeGen.Core.TypeAnnotations
 {
@@ -46,6 +43,9 @@ namespace TypeGen.Core.TypeAnnotations
                     break;
                 case TsType.Date:
                     TypeName = "Date";
+                    break;
+                case TsType.Any:
+                    TypeName = "any";
                     break;
             }
         }

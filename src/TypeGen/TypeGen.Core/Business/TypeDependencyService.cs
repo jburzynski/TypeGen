@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for handling type dependencies (i.e. types that a type depends on)
@@ -35,18 +34,18 @@ namespace TypeGen.Core.Services
             {
                 if (genericArgumentType.BaseType == null || genericArgumentType.BaseType == typeof(object)) continue;
 
-                Type baseType = _typeService.ToExportableType(genericArgumentType.BaseType);
+                Type baseType = _typeService.GetUnderlyingType(genericArgumentType.BaseType);
                 Type baseFlatType = _typeService.GetFlatType(baseType);
                 if (_typeService.IsTsSimpleType(baseFlatType) || baseFlatType.IsGenericParameter) continue;
 
                 if (baseFlatType.IsGenericType)
                 {
                     result = result.Concat(GetGenericTypeNonDefinitionDependencies(baseFlatType)
-                        .Select(t => new TypeDependencyInfo(t, null)));
+                        .Select(t => new TypeDependencyInfo(t)));
                 }
                 else
                 {
-                    result = result.Concat(new[] { new TypeDependencyInfo(baseFlatType, null) });
+                    result = result.Concat(new[] { new TypeDependencyInfo(baseFlatType) });
                 }
             }
 
@@ -61,10 +60,14 @@ namespace TypeGen.Core.Services
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
             Type baseType = _typeService.GetBaseType(type);
-            if (baseType != null)
+            if (baseType == null) yield break;
+
+            if (baseType.IsGenericType)
             {
-                yield return new TypeDependencyInfo(baseType, null);
+                baseType = baseType.GetGenericTypeDefinition();
             }
+
+            yield return new TypeDependencyInfo(baseType);
         }
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace TypeGen.Core.Services
 
             foreach (Type genericArgument in type.GetGenericArguments())
             {
-                Type argumentType = _typeService.ToExportableType(genericArgument);
+                Type argumentType = _typeService.GetUnderlyingType(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
                 if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
@@ -140,7 +143,7 @@ namespace TypeGen.Core.Services
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (!type.IsClass) return Enumerable.Empty<TypeDependencyInfo>();
 
-            type = _typeService.ToExportableType(type);
+            type = _typeService.GetUnderlyingType(type);
 
             return GetGenericTypeDefinitionDependencies(type)
                 .Concat(GetBaseTypeDependency(type)

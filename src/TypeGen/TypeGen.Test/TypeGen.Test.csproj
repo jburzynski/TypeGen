@@ -55,7 +55,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="TestClasses\TestClass.cs" />
+    <Compile Include="TestEntities\BaseClass.cs" />
+    <Compile Include="TestEntities\BaseClass2.cs" />
+    <Compile Include="TestEntities\GenericClass.cs" />
+    <Compile Include="TestEntities\GenericBaseClass.cs" />
+    <Compile Include="TestEntities\TestClass.cs" />
+    <Compile Include="TestEntities\TestEnum.cs" />
+    <Compile Include="TestEntities\TestInterface.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

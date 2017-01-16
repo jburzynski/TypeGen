@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace TypeGen.Core.Services
+namespace TypeGen.Core.Business
 {
     /// <summary>
     /// A comparer class that compares types of TypeDependencyInfo instances
     /// </summary>
-    public class TypeDependencyInfoTypeComparer<T> : IEqualityComparer<T> where T: TypeDependencyInfo
+    internal class TypeDependencyInfoTypeComparer<T> : IEqualityComparer<T> where T: TypeDependencyInfo
     {
         public bool Equals(T x, T y)
         {

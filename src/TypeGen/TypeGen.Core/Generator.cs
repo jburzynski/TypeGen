@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using TypeGen.Core.Converters;
+using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
-using TypeGen.Core.Services;
+using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core
@@ -16,17 +16,20 @@ namespace TypeGen.Core
     /// </summary>
     public class Generator : IGenerator
     {
-        // services
+        // dependencies
+
         private readonly TypeService _typeService;
         private readonly TypeDependencyService _typeDependencyService;
         private readonly TemplateService _templateService;
-        private readonly FileContentService _fileContentService;
+        private readonly TsContentGenerator _tsContentGenerator;
+        private readonly FileSystem _fileSystem;
         private GeneratorOptions _options;
 
         /// <summary>
         /// Generator options. Cannot be null.
         /// </summary>
-        public GeneratorOptions Options {
+        public GeneratorOptions Options
+        {
             get
             {
                 return _options;
@@ -39,7 +42,11 @@ namespace TypeGen.Core
                     throw new ArgumentNullException(nameof(Options));
                 }
                 _options = value;
-                if (_templateService != null) _templateService.TabLength = value.TabLength;
+                if (_templateService != null)
+                {
+                    _templateService.TabLength = value.TabLength;
+                    _templateService.SingleQuotes = value.SingleQuotes;
+                }
             }
         }
 
@@ -47,49 +54,72 @@ namespace TypeGen.Core
         {
             Options = new GeneratorOptions();
 
+            var internalStorage = new InternalStorage();
+            _fileSystem = new FileSystem();
             _typeService = new TypeService();
             _typeDependencyService = new TypeDependencyService(_typeService);
-            _templateService = new TemplateService(Options.TabLength);
-            _fileContentService = new FileContentService(_typeDependencyService, _typeService, _templateService);
+            _templateService = new TemplateService(internalStorage)
+            {
+                TabLength = Options.TabLength,
+                SingleQuotes = Options.SingleQuotes
+            };
 
-            _templateService.Initialize();
+            _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
+                _typeService,
+                _templateService,
+                _fileSystem,
+                new TsContentParser(_fileSystem));
         }
 
         /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
-        public void Generate(Assembly assembly)
+        public GenerationResult Generate(Assembly assembly)
         {
-            foreach (Type type in assembly.GetTypes())
+            IEnumerable<string> files = assembly.GetTypes()
+                .Aggregate(Enumerable.Empty<string>(), (acc, type) => acc.Concat(
+                    Generate(type).GeneratedFiles
+                    ));
+
+            return new GenerationResult
             {
-                Generate(type);
-            }
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = files.Distinct()
+            };
         }
 
         /// <summary>
         /// Generate TypeScript files for a given type
         /// </summary>
         /// <param name="type"></param>
-        public void Generate(Type type)
+        public GenerationResult Generate(Type type)
         {
+            IEnumerable<string> files = Enumerable.Empty<string>();
+
             var classAttribute = type.GetCustomAttribute<ExportTsClassAttribute>();
             if (classAttribute != null)
             {
-                GenerateClass(type, classAttribute);
+                files = files.Concat(GenerateClass(type, classAttribute).GeneratedFiles);
             }
 
             var interfaceAttribute = type.GetCustomAttribute<ExportTsInterfaceAttribute>();
             if (interfaceAttribute != null)
             {
-                GenerateInterface(type, interfaceAttribute);
+                files = files.Concat(GenerateInterface(type, interfaceAttribute).GeneratedFiles);
             }
 
             var enumAttribute = type.GetCustomAttribute<ExportTsEnumAttribute>();
             if (enumAttribute != null)
             {
-                GenerateEnum(type, enumAttribute);
+                files = files.Concat(GenerateEnum(type, enumAttribute).GeneratedFiles);
             }
+
+            return new GenerationResult
+            {
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = files.Distinct()
+            };
         }
 
         /// <summary>
@@ -97,25 +127,35 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="classAttribute"></param>
-        private void GenerateClass(Type type, ExportTsClassAttribute classAttribute)
+        private GenerationResult GenerateClass(Type type, ExportTsClassAttribute classAttribute)
         {
+            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, classAttribute.OutputDir);
+
             // get text for sections
 
-            string extendsText = GetExtendsText(type);
-            string importsText = ResolveTypeImports(type, classAttribute.OutputDir);
+            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+            string importsText = _tsContentGenerator.GetImportsText(type, classAttribute.OutputDir, Options.FileNameConverters, Options.TypeNameConverters);
             string propertiesText = GetClassPropertiesText(type);
 
             // generate the file content
 
             string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, classAttribute.OutputDir);
-            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
+            string filePathRelative = GetRelativeFilePath(type, classAttribute.OutputDir);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customCode);
+            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customHead, customBody);
 
             // write TypeScript file
 
-            WriteTsFile(filePath, classText);
+            _fileSystem.SaveFile(filePath, classText);
+
+            return new GenerationResult
+            {
+                GeneratedFiles = new[] { filePathRelative }
+                .Concat(dependenciesGenerationResult.GeneratedFiles)
+            };
         }
 
         /// <summary>
@@ -123,25 +163,35 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="interfaceAttribute"></param>
-        private void GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
+        private GenerationResult GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
+            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, interfaceAttribute.OutputDir);
+
             // get text for sections
 
-            string extendsText = GetExtendsText(type);
-            string importsText = ResolveTypeImports(type, interfaceAttribute.OutputDir);
+            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+            string importsText = _tsContentGenerator.GetImportsText(type, interfaceAttribute.OutputDir, Options.FileNameConverters, Options.TypeNameConverters);
             string propertiesText = GetInterfacePropertiesText(type);
 
             // generate the file content
 
             string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
-            string customCode = _fileContentService.GetCustomCode(filePath, Options.TabLength);
+            string filePathRelative = GetRelativeFilePath(type, interfaceAttribute.OutputDir);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customCode);
+            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customHead, customBody);
 
             // write TypeScript file
 
-            WriteTsFile(filePath, interfaceText);
+            _fileSystem.SaveFile(filePath, interfaceText);
+
+            return new GenerationResult
+            {
+                GeneratedFiles = new[] { filePathRelative }
+                .Concat(dependenciesGenerationResult.GeneratedFiles)
+            };
         }
 
         /// <summary>
@@ -149,50 +199,22 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="enumAttribute"></param>
-        private void GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
+        private GenerationResult GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
             string valuesText = GetEnumValuesText(type);
 
-            // create TypeScript source code for the whole enum
+            // create TypeScript source code for the enum
 
             string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
+            string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
             string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText);
 
             // write TypeScript file
 
-            WriteTsFile(filePath, enumText);
-        }
-
-        /// <summary>
-        /// Writes a TS file
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private void WriteTsFile(string filePath, string text)
-        {
-            new FileInfo(filePath).Directory?.Create();
-            File.WriteAllText(filePath, text);
-        }
-
-        /// <summary>
-        /// Gets the text for the "extends" section
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private string GetExtendsText(Type type)
-        {
-            var extendsText = "";
-
-            Type baseType = _typeService.GetBaseType(type);
-            if (baseType == null) return extendsText;
-
-            string baseTypeName = _typeService.GetTsTypeName(baseType, Options.TypeNameConverters);
-            extendsText = $" extends {baseTypeName}";
-
-            return extendsText;
+            _fileSystem.SaveFile(filePath, enumText);
+            return new GenerationResult { GeneratedFiles = new[] { filePathRelative } };
         }
 
         /// <summary>
@@ -315,25 +337,13 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Returns TypeScript imports declaration source code.
-        /// Generates TS files for dependencies if needed.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="outputDir">The passed type's output directory</param>
-        /// <returns></returns>
-        private string ResolveTypeImports(Type type, string outputDir)
-        {
-            GenerateTypeDependencies(type, outputDir);
-            return _fileContentService.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
-        }
-
-        /// <summary>
         /// Generates type dependencies' files for a given type
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
-        private void GenerateTypeDependencies(Type type, string outputDir)
+        private GenerationResult GenerateTypeDependencies(Type type, string outputDir)
         {
+            IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
@@ -350,7 +360,7 @@ namespace TypeGen.Core
                 if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
                     && (dependencyClassAttribute != null || dependencyEnumAttribute != null || dependencyInterfaceAttribute != null))
                 {
-                    Generate(typeDependency);
+                    generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute
@@ -364,11 +374,15 @@ namespace TypeGen.Core
 
                     if (typeDependency.IsClass)
                     {
-                        GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = defaultOutputDir });
+                        generatedFiles = generatedFiles.Concat(
+                            GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = defaultOutputDir })
+                            .GeneratedFiles);
                     }
                     else if (typeDependency.IsEnum)
                     {
-                        GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = defaultOutputDir });
+                        generatedFiles = generatedFiles.Concat(
+                            GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = defaultOutputDir })
+                            .GeneratedFiles);
                     }
                     else
                     {
@@ -376,6 +390,8 @@ namespace TypeGen.Core
                     }
                 }
             }
+
+            return new GenerationResult { GeneratedFiles = generatedFiles };
         }
 
         /// <summary>
@@ -399,12 +415,13 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Gets the output TypeScript file path based on a type
+        /// Gets the output TypeScript file path based on a type.
+        /// The path is relative to the base output directory.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
         /// <returns></returns>
-        private string GetFilePath(Type type, string outputDir)
+        private string GetRelativeFilePath(Type type, string outputDir)
         {
             string typeName = type.Name.RemoveTypeArity();
             string fileName = Options.FileNameConverters.Convert(typeName, type);
@@ -414,9 +431,21 @@ namespace TypeGen.Core
                 fileName += $".{Options.TypeScriptFileExtension}";
             }
 
-            fileName = string.IsNullOrEmpty(outputDir)
+            return string.IsNullOrEmpty(outputDir)
                 ? fileName
                 : $"{outputDir.NormalizePath()}\\{fileName}";
+        }
+
+        /// <summary>
+        /// Gets the output TypeScript file path based on a type.
+        /// The path includes base output directory.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
+        private string GetFilePath(Type type, string outputDir)
+        {
+            string fileName = GetRelativeFilePath(type, outputDir);
 
             string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
             return Options.BaseOutputDirectory + separator + fileName;

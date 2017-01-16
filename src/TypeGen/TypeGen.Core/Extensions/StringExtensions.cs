@@ -6,31 +6,6 @@ namespace TypeGen.Core.Extensions
     internal static class StringExtensions
     {
         /// <summary>
-        /// Normalizes a path to [..\ | .\]this\path\format
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string NormalizePath(this string path)
-        {
-            if (path == null) return null;
-            if (path == "") return "";
-
-            path = path.Replace('/', '\\');
-
-            if (path.First() == '\\')
-            {
-                path = path.Remove(0, 1);
-            }
-
-            if (path != "" && path.Last() == '\\')
-            {
-                path = path.Remove(path.Length - 1);
-            }
-
-            return path;
-        }
-
-        /// <summary>
         /// Replaces the first occurrence of "search" in "text" with "replace"
         /// </summary>
         /// <param name="text"></param>
