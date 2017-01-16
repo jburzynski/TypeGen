@@ -41,11 +41,12 @@ namespace TypeGen.Core
                 {
                     throw new ArgumentNullException(nameof(Options));
                 }
+
                 _options = value;
+
                 if (_templateService != null)
                 {
-                    _templateService.TabLength = value.TabLength;
-                    _templateService.SingleQuotes = value.SingleQuotes;
+                    _templateService.GeneratorOptions = value;
                 }
             }
         }
@@ -58,11 +59,7 @@ namespace TypeGen.Core
             _fileSystem = new FileSystem();
             _typeService = new TypeService();
             _typeDependencyService = new TypeDependencyService(_typeService);
-            _templateService = new TemplateService(internalStorage)
-            {
-                TabLength = Options.TabLength,
-                SingleQuotes = Options.SingleQuotes
-            };
+            _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,

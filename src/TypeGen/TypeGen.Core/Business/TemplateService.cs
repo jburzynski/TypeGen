@@ -21,8 +21,7 @@ namespace TypeGen.Core.Business
         private string _interfacePropertyTemplate;
         private string _importTemplate;
 
-        public int TabLength { get; set; }
-        public bool SingleQuotes { get; set; }
+        public GeneratorOptions GeneratorOptions { get; set; }
 
         public TemplateService(InternalStorage internalStorage)
         {
@@ -113,8 +112,8 @@ namespace TypeGen.Core.Business
         private string ReplaceSpecialChars(string template)
         {
             return template
-                .Replace("$tg{tab}", StringUtils.GetTabText(TabLength))
-                .Replace("$tg{quot}", SingleQuotes ? "'" : "\"");
+                .Replace("$tg{tab}", StringUtils.GetTabText(GeneratorOptions.TabLength))
+                .Replace("$tg{quot}", GeneratorOptions.SingleQuotes ? "'" : "\"");
         }
     }
 }
