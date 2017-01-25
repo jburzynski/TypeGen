@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using System.Xml;
 using TypeGen.Cli;
@@ -139,7 +140,7 @@ namespace TypeGen.Cli
 
         private static IEnumerable<Assembly> GetAssemblies(IEnumerable<string> assemblyNames)
         {
-            return assemblyNames.Select(Assembly.LoadFrom);
+            return assemblyNames.Select(AssemblyLoadContext.Default.LoadFromAssemblyPath);
         }
 
         private static void ShowHelp()

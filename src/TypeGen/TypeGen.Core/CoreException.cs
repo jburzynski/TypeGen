@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace TypeGen.Core
@@ -9,14 +8,9 @@ namespace TypeGen.Core
     /// <summary>
     /// An exception that occurred on TypeGen Core level
     /// </summary>
-    public class CoreException : ApplicationException
+    public class CoreException : Exception
     {
         public CoreException()
-        {
-        }
-
-        public CoreException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 

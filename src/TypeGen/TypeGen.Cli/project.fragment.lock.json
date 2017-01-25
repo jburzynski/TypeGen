@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "exports": {
+    "TypeGen.Core/1.0.0": {
+      "type": "project",
+      "framework": ".NETStandard,Version=v1.0",
+      "compile": {
+        "bin/Debug/TypeGen.Core.dll": {}
+      },
+      "runtime": {
+        "bin/Debug/TypeGen.Core.dll": {}
+      }
+    }
+  }
+}

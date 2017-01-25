@@ -18,6 +18,28 @@ namespace TypeGen.Core.Extensions
         }
 
         /// <summary>
+        /// Filters members for TypeScript export
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memberInfos"></param>
+        /// <returns></returns>
+        public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
+        {
+            return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
+        }
+
+        /// <summary>
+        /// Filters members for TypeScript export
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memberInfos"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
+        {
+            return memberInfos.Where(i => i.CanRead && !i.GetMethod.IsStatic);
+        }
+
+        /// <summary>
         /// Checks if element is in a given set of elements
         /// </summary>
         /// <param name="element"></param>

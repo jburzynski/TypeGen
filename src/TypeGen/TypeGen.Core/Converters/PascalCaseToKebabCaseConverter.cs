@@ -11,8 +11,7 @@ namespace TypeGen.Core.Converters
         /// <summary>
         /// Regex taken from http://stackoverflow.com/a/37301354
         /// </summary>
-        private static readonly Regex _regex
-            = new Regex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])", RegexOptions.Compiled);
+        private static readonly Regex _regex = new Regex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])");
 
         public string Convert(string name)
         {

@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+        "type": "platform",
+        "version": "1.0.0-rc2-3002702"
+    },
+	"System.Runtime": "4.3.0",
+	"System.Runtime.Loader": "4.3.0",
+    "System.Runtime.Serialization.Primitives": "4.3.0",
+    "System.Runtime.Serialization.Json": "4.3.0",
+	"System.Xml.XPath": "4.3.0",
+	"System.Xml.XmlDocument": "4.3.0",
+	"System.Xml.XPath.XmlDocument": "4.3.0"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+        "imports": "dnxcore50",
+        "dependencies": {
+            "TypeGen.Core": {
+                "target": "project"
+            }
+        }
+    }
+  }
+}

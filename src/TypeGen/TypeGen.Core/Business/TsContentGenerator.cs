@@ -157,9 +157,9 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string exportedTypeOutputDir)
         {
-            var classAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsClassAttribute>();
-            var interfaceAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var enumAttribute = typeDependencyInfo.Type.GetCustomAttribute<ExportTsEnumAttribute>();
+            var classAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
+            var interfaceAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
+            var enumAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
 
             if (classAttribute == null && enumAttribute == null && interfaceAttribute == null)
             {
