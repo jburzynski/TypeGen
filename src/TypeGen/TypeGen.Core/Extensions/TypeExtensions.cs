@@ -18,7 +18,7 @@ namespace TypeGen.Core.Extensions
         public static Type GetInterface(this Type type, string name)
         {
             return type.GetTypeInfo().ImplementedInterfaces
-                .FirstOrDefault(i => i.FullName == name || i.Name == name);
+                .FirstOrDefault(i => i.FullName.Split('[')[0] == name || i.Name.Split('[')[0] == name);
         }
 
         /// <summary>

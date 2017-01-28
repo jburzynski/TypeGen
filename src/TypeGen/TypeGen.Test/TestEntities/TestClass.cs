@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Test.TestEntities
@@ -16,5 +17,7 @@ namespace TypeGen.Test.TestEntities
 
         [TsType(TsType.Any)]
         public int IntAsAny { get; set; }
+
+        public Dictionary<string, int> DictionaryProperty { get; set; }
     }
 }
