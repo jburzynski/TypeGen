@@ -254,5 +254,10 @@ paket-files/
 # TypeScript files
 *.ts
 
+# Old folders
+/src/TypeGen-port
+/src/TypeGen/TypeGen.Cli.netcoreapp
+/src/TypeGen/TypeGen.Core.net40
+
 # do not ignore TypeGen specific files
 !TypeGen.[0-9].[0-9].[0-9].nupkg
