@@ -20,5 +20,19 @@ namespace TypeGen.Core.Extensions
             return type.GetTypeInfo().ImplementedInterfaces
                 .FirstOrDefault(i => i.FullName == name || i.Name == name);
         }
+
+        /// <summary>
+        /// Shim for .NET Framework Type.GetGenericArguments
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type[] GetGenericArguments(this Type type)
+        {
+            TypeInfo typeInfo = type.GetTypeInfo();
+
+            return typeInfo.GenericTypeArguments
+                .Concat(typeInfo.GenericTypeParameters)
+                .ToArray();
+        }
     }
 }

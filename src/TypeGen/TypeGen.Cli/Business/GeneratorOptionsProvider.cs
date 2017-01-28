@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Cli.Models;
@@ -83,7 +82,7 @@ namespace TypeGen.Cli.Business
                 throw new CliException($"Assembly path '{assemblyFullPath}' not found for converter '{name}'");
             }
 
-            Assembly converterAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFullPath);
+            Assembly converterAssembly = Assembly.LoadFrom(assemblyFullPath);
             return GetConverterFromAssembly<TConverter>(converterAssembly, name);
         }
 
@@ -125,13 +124,15 @@ namespace TypeGen.Cli.Business
 
             // fallback to TypeGen.Core
 
-            Assembly coreAssembly = typeof(Generator).GetTypeInfo().Assembly;
+            Assembly coreAssembly = typeof(Generator).Assembly;
             result = GetConverterFromAssembly<TConverter>(coreAssembly, name);
+            if (result != null)
+            {
+                if (logVerbose) _logger.Log($"Converter '{name}' found in TypeGen.Core");
+                return result;
+            }
 
-            if (result == null) throw new CliException($"Converter '{name}' not found in TypeGen.Core or any of the assemblies: '{string.Join(", ", assemblies)}'");
-
-            if (logVerbose) _logger.Log($"Converter '{name}' found in TypeGen.Core");
-            return result;
+            throw new CliException($"Converter '{name}' not found in TypeGen.Core or any of the assemblies: '{string.Join(", ", assemblies)}'");
         }
     }
 }

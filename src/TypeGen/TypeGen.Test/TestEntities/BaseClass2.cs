@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TypeGen.Cli
+namespace TypeGen.Test.TestEntities
 {
-    internal class AppConfig
+    internal class BaseClass2<T>
     {
-        public static string Version => "1.4.2";
+        public T BaseProperty { get; set; }
     }
 }

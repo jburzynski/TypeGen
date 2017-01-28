@@ -5,7 +5,7 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D7A0BB6C-1023-4F24-A840-9CED220D8104}</ProjectGuid>
+    <ProjectGuid>{F155F00C-6F6C-4480-BBB4-C1E00DC53958}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TypeGen.Core</RootNamespace>
@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\netstandard1.3\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\netstandard1.3\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -37,14 +37,14 @@
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <None Include="project.json" />
-    <None Include="Templates\Class.tpl" />
-    <None Include="Templates\ClassProperty.tpl" />
-    <None Include="Templates\ClassPropertyWithDefaultValue.tpl" />
-    <None Include="Templates\Enum.tpl" />
-    <None Include="Templates\EnumValue.tpl" />
-    <None Include="Templates\Import.tpl" />
-    <None Include="Templates\Interface.tpl" />
-    <None Include="Templates\InterfaceProperty.tpl" />
+    <EmbeddedResource Include="Templates\Class.tpl" />
+    <EmbeddedResource Include="Templates\ClassProperty.tpl" />
+    <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
+    <EmbeddedResource Include="Templates\Enum.tpl" />
+    <EmbeddedResource Include="Templates\EnumValue.tpl" />
+    <EmbeddedResource Include="Templates\Import.tpl" />
+    <EmbeddedResource Include="Templates\Interface.tpl" />
+    <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business\TemplateService.cs" />

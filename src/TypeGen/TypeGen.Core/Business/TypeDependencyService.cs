@@ -30,7 +30,7 @@ namespace TypeGen.Core.Business
 
             if (!type.GetTypeInfo().IsGenericTypeDefinition) return result;
 
-            foreach (Type genericArgumentType in type.GenericTypeArguments)
+            foreach (Type genericArgumentType in type.GetGenericArguments())
             {
                 Type baseType = genericArgumentType.GetTypeInfo().BaseType;
                 if (baseType == null || baseType == typeof(object)) continue;
@@ -117,7 +117,7 @@ namespace TypeGen.Core.Business
                 ? new Type[0]
                 : new[] { type.GetGenericTypeDefinition() };
 
-            foreach (Type genericArgument in type.GenericTypeArguments)
+            foreach (Type genericArgument in type.GetGenericArguments())
             {
                 Type argumentType = _typeService.GetUnderlyingType(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);

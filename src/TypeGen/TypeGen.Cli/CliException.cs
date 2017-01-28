@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,9 +10,14 @@ namespace TypeGen.Cli
     /// <summary>
     /// An exception that occurred on TypeGen CLI level
     /// </summary>
-    internal class CliException : Exception
+    public class CliException : ApplicationException
     {
         public CliException()
+        {
+        }
+
+        public CliException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 

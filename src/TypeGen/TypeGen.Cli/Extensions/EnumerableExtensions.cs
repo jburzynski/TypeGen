@@ -4,7 +4,7 @@ using TypeGen.Core.Converters;
 
 namespace TypeGen.Cli.Extensions
 {
-    internal static class EnumerableExtensions
+    public static class EnumerableExtensions
     {
         /// <summary>
         /// Checks if an array has the specified index

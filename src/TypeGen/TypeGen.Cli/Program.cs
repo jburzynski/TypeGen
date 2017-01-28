@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Text;
 using System.Xml;
 using TypeGen.Cli;
@@ -140,12 +139,12 @@ namespace TypeGen.Cli
 
         private static IEnumerable<Assembly> GetAssemblies(IEnumerable<string> assemblyNames)
         {
-            return assemblyNames.Select(AssemblyLoadContext.Default.LoadFromAssemblyPath);
+            return assemblyNames.Select(Assembly.LoadFrom);
         }
 
         private static void ShowHelp()
         {
-            _logger.Log($"TypeGen {AppConfig.Version}",
+            _logger.Log($"TypeGen v{AppConfig.Version}",
                 "Usage: TypeGen ProjectFolder1[:ProjectFolder2:(...)] [-Config-Path \"path1[:path2:(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
                 "For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }

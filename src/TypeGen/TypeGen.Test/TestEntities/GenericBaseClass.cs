@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Cli
+namespace TypeGen.Test.TestEntities
 {
-    internal class AppConfig
+    [ExportTsClass]
+    internal class GenericBaseClass<T>
     {
-        public static string Version => "1.4.2";
     }
 }

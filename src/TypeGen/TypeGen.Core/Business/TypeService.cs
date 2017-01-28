@@ -246,8 +246,8 @@ namespace TypeGen.Core.Business
         private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
             Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
-            Type keyType = interfaceType.GenericTypeArguments[0];
-            Type valueType = interfaceType.GenericTypeArguments[1];
+            Type keyType = interfaceType.GetGenericArguments()[0];
+            Type valueType = interfaceType.GetGenericArguments()[1];
 
             string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
             string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
@@ -294,7 +294,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetGenericDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
-            Type[] genericArguments = type.GenericTypeArguments;
+            Type[] genericArguments = type.GetGenericArguments();
 
             string[] genericArgumentNames = (from t in genericArguments
                                              select t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
@@ -315,7 +315,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetGenericNonDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
-            string[] genericArgumentNames = type.GenericTypeArguments
+            string[] genericArgumentNames = type.GetGenericArguments()
                 .Select(t => t.IsGenericParameter ? t.Name : GetTsTypeName(t, typeNameConverters))
                 .ToArray();
 
@@ -342,7 +342,7 @@ namespace TypeGen.Core.Business
             // handle IEnumerable<>
             if (type.Name == "IEnumerable`1")
             {
-                return type.GenericTypeArguments[0];
+                return type.GetGenericArguments()[0];
             }
 
             // handle types implementing IEnumerable<>
@@ -350,7 +350,7 @@ namespace TypeGen.Core.Business
             {
                 if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
-                    return interfaceType.GenericTypeArguments[0];
+                    return interfaceType.GetGenericArguments()[0];
                 }
             }
 
