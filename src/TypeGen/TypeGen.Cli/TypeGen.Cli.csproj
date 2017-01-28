@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>0a219081-6d9a-4c61-b9b1-615a2f8f302d</ProjectGuid>
+    <ProjectGuid>{88BA83C0-E451-4E66-A3F2-3CDA7346BF10}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TypeGen.Cli</RootNamespace>
