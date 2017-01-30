@@ -435,6 +435,14 @@
             An exception that occurred on TypeGen Core level
             </summary>
         </member>
+        <member name="M:TypeGen.Core.Extensions.AssemblyExtensions.GetLoadableTypes(System.Reflection.Assembly)">
+            <summary>
+            Gets all types that can be loaded from an assembly.
+            Source: http://stackoverflow.com/questions/11915389/assembly-gettypes-throwing-an-exception
+            </summary>
+            <param name="assembly"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Removes members marked with TsIgnore attribute

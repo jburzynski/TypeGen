@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TypeGen.Core.Utils
+namespace TypeGen.Cli.Utils
 {
     /// <summary>
     /// File system-related utility class

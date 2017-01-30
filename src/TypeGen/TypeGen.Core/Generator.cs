@@ -74,9 +74,9 @@ namespace TypeGen.Core
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            IEnumerable<string> files = assembly.DefinedTypes
-                .Aggregate(Enumerable.Empty<string>(), (acc, typeInfo) => acc.Concat(
-                    Generate(typeInfo.AsType()).GeneratedFiles
+            IEnumerable<string> files = assembly.GetLoadableTypes()
+                .Aggregate(Enumerable.Empty<string>(), (acc, type) => acc.Concat(
+                    Generate(type).GeneratedFiles
                     ));
 
             return new GenerationResult

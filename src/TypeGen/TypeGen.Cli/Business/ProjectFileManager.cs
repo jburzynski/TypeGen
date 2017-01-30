@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using TypeGen.Cli.Extensions;
-using TypeGen.Core.Utils;
+using TypeGen.Cli.Utils;
 
 namespace TypeGen.Cli.Business
 {

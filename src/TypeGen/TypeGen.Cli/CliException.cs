@@ -10,7 +10,7 @@ namespace TypeGen.Cli
     /// <summary>
     /// An exception that occurred on TypeGen CLI level
     /// </summary>
-    public class CliException : ApplicationException
+    internal class CliException : ApplicationException
     {
         public CliException()
         {
