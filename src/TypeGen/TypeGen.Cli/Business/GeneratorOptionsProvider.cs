@@ -5,10 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
+using TypeGen.Cli.Extensions;
 
 namespace TypeGen.Cli.Business
 {

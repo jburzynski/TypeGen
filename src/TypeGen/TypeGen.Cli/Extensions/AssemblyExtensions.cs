@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TypeGen.Cli.Extensions
 {
@@ -21,7 +19,8 @@ namespace TypeGen.Cli.Extensions
 
             try
             {
-                return assembly.GetTypes();
+                return assembly.DefinedTypes
+                     .Select(ti => ti.AsType());
             }
             catch (ReflectionTypeLoadException e)
             {

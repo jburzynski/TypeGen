@@ -58,7 +58,10 @@ namespace TypeGen.Cli.Business
 
         private void UpdateConfigAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
         {
-            config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+            config.AssemblyPath = string.IsNullOrEmpty(config.AssemblyPath) ?
+                null :
+                GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+
             config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder, logVerbose)).ToArray();
         }
 

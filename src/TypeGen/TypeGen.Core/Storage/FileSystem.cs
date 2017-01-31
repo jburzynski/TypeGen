@@ -37,6 +37,11 @@ namespace TypeGen.Core.Storage
         /// <returns></returns>
         public bool FileExists(string filePath) => File.Exists(filePath);
 
+        public string[] GetFilesRecursive(string rootDirectory, string fileName)
+        {
+            return Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
+        }
+
         /// <summary>
         /// Gets path prefix required to navigate from path1 to path2.
         /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\".
