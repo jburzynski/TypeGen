@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
+using TypeGen.Cli.Extensions;
 
 namespace TypeGen.Cli.Business
 {
@@ -88,7 +89,7 @@ namespace TypeGen.Cli.Business
 
         private TConverter GetConverterFromAssembly<TConverter>(Assembly assembly, string converterName) where TConverter : class, IConverter
         {
-            foreach (Type type in assembly.GetTypes())
+            foreach (Type type in assembly.GetLoadableTypes())
             {
                 bool nameMatches = (type.Name == converterName
                                    || type.Name == $"{converterName}Converter"
@@ -132,7 +133,7 @@ namespace TypeGen.Cli.Business
                 return result;
             }
 
-            throw new CliException($"Converter '{name}' not found in TypeGen.Core or any of the assemblies: '{string.Join(", ", assemblies)}'");
+            throw new CliException($"Converter '{name}' not found in TypeGen.Core or any of the assemblies: '{string.Join("; ", assemblies)}'");
         }
     }
 }

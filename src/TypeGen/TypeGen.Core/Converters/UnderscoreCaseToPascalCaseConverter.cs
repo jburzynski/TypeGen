@@ -24,7 +24,7 @@ namespace TypeGen.Core.Converters
 
         private static string ConvertTypeInvariant(string name)
         {
-            return name.ToTitleCase(CultureInfo.InvariantCulture).Replace("_", "");
+            return name.ToTitleCase().Replace("_", "");
         }
     }
 }

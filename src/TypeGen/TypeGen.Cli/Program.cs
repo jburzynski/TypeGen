@@ -10,9 +10,9 @@ using System.Text;
 using System.Xml;
 using TypeGen.Cli;
 using TypeGen.Cli.Business;
-using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
+using TypeGen.Cli.Extensions;
 
 namespace TypeGen.Cli
 {
@@ -24,6 +24,9 @@ namespace TypeGen.Cli
         private static readonly ConfigProvider _configProvider;
         private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
         private static readonly ProjectFileManager _projectFileManager;
+        private static readonly AssemblyResolver _assemblyResolver;
+
+        private static IList<string> _externalAssemblies;
 
         static Program()
         {
@@ -33,6 +36,7 @@ namespace TypeGen.Cli
             _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer());
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
+            _assemblyResolver = new AssemblyResolver(_fileSystem);
         }
 
         private static void Main(string[] args)
@@ -90,9 +94,6 @@ namespace TypeGen.Cli
                 _logger.Log($"GENERIC ERROR: {e.Message}",
                     e.StackTrace);
             }
-
-            // DEBUG ONLY
-            //Console.Read();
         }
 
         private static void Generate(string projectFolder, string configPath, bool verbose)
@@ -104,6 +105,15 @@ namespace TypeGen.Cli
                 : $"{projectFolder}\\tgconfig.json";
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
+
+            // register assembly resolver
+
+            if (config.ExternalAssemblyPaths.Any())
+            {
+                _assemblyResolver.Directories = config.ExternalAssemblyPaths;
+                _assemblyResolver.Register();
+            }
+
             IEnumerable<Assembly> assemblies = GetAssemblies(config.GetAssemblies());
 
             // create generator
@@ -123,6 +133,10 @@ namespace TypeGen.Cli
             {
                 AddFilesToProject(projectFolder, generatedFiles);
             }
+
+            // unregister assembly resolver
+
+            _assemblyResolver.Unregister();
         }
 
         private static void AddFilesToProject(string projectFolder, IEnumerable<string> generatedFiles)
@@ -144,7 +158,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            _logger.Log($"TypeGen {AppConfig.Version}",
+            _logger.Log($"TypeGen v{AppConfig.Version}",
                 "Usage: TypeGen ProjectFolder1[:ProjectFolder2:(...)] [-Config-Path \"path1[:path2:(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
                 "For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
         }

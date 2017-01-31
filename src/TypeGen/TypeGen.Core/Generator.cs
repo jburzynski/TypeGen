@@ -74,7 +74,7 @@ namespace TypeGen.Core
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            IEnumerable<string> files = assembly.GetTypes()
+            IEnumerable<string> files = assembly.GetLoadableTypes()
                 .Aggregate(Enumerable.Empty<string>(), (acc, type) => acc.Concat(
                     Generate(type).GeneratedFiles
                     ));
@@ -94,19 +94,19 @@ namespace TypeGen.Core
         {
             IEnumerable<string> files = Enumerable.Empty<string>();
 
-            var classAttribute = type.GetCustomAttribute<ExportTsClassAttribute>();
+            var classAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
             if (classAttribute != null)
             {
                 files = files.Concat(GenerateClass(type, classAttribute).GeneratedFiles);
             }
 
-            var interfaceAttribute = type.GetCustomAttribute<ExportTsInterfaceAttribute>();
+            var interfaceAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
             if (interfaceAttribute != null)
             {
                 files = files.Concat(GenerateInterface(type, interfaceAttribute).GeneratedFiles);
             }
 
-            var enumAttribute = type.GetCustomAttribute<ExportTsEnumAttribute>();
+            var enumAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
             if (enumAttribute != null)
             {
                 files = files.Concat(GenerateEnum(type, enumAttribute).GeneratedFiles);
@@ -347,9 +347,9 @@ namespace TypeGen.Core
             {
                 Type typeDependency = typeDependencyInfo.Type;
 
-                var dependencyClassAttribute = typeDependency.GetCustomAttribute<ExportTsClassAttribute>();
-                var dependencyInterfaceAttribute = typeDependency.GetCustomAttribute<ExportTsInterfaceAttribute>();
-                var dependencyEnumAttribute = typeDependency.GetCustomAttribute<ExportTsEnumAttribute>();
+                var dependencyClassAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
+                var dependencyInterfaceAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
+                var dependencyEnumAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
 
                 // dependency type TypeScript file generation
 
@@ -369,13 +369,13 @@ namespace TypeGen.Core
 
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
-                    if (typeDependency.IsClass)
+                    if (typeDependency.GetTypeInfo().IsClass)
                     {
                         generatedFiles = generatedFiles.Concat(
                             GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = defaultOutputDir })
                             .GeneratedFiles);
                     }
-                    else if (typeDependency.IsEnum)
+                    else if (typeDependency.GetTypeInfo().IsEnum)
                     {
                         generatedFiles = generatedFiles.Concat(
                             GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = defaultOutputDir })

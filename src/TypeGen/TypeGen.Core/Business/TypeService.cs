@@ -66,10 +66,11 @@ namespace TypeGen.Core.Business
         public bool IsTsClass(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
+            TypeInfo typeInfo = type.GetTypeInfo();
 
-            if (!type.IsClass) return false;
+            if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = type.GetCustomAttribute<ExportAttribute>();
+            var exportAttribute = typeInfo.GetCustomAttribute<ExportAttribute>();
             return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
         }
 
@@ -82,10 +83,11 @@ namespace TypeGen.Core.Business
         public bool IsTsInterface(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
+            TypeInfo typeInfo = type.GetTypeInfo();
 
-            if (!type.IsClass) return false;
+            if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = type.GetCustomAttribute<ExportAttribute>();
+            var exportAttribute = typeInfo.GetCustomAttribute<ExportAttribute>();
             return exportAttribute is ExportTsInterfaceAttribute;
         }
 
@@ -99,12 +101,16 @@ namespace TypeGen.Core.Business
         public IEnumerable<MemberInfo> GetTsExportableMembers(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.IsClass) return Enumerable.Empty<MemberInfo>();
+            TypeInfo typeInfo = type.GetTypeInfo();
 
-            var fieldInfos = (IEnumerable<MemberInfo>) type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            if (!typeInfo.IsClass) return Enumerable.Empty<MemberInfo>();
+
+            var fieldInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredFields
+                .WithMembersFilter()
                 .WithoutTsIgnore();
 
-            var propertyInfos = (IEnumerable<MemberInfo>) type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
+                .WithMembersFilter()
                 .WithoutTsIgnore();
 
             return fieldInfos.Union(propertyInfos);
@@ -160,7 +166,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public bool IsCustomGenericType(Type type)
         {
-            return type.IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
+            return type.GetTypeInfo().IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
         }
 
         /// <summary>
@@ -275,7 +281,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
-            return type.IsGenericTypeDefinition
+            return type.GetTypeInfo().IsGenericTypeDefinition
                 ? GetGenericDefinitionTsTypeName(type, typeNameConverters)
                 : GetGenericNonDefinitionTsTypeName(type, typeNameConverters);
         }
@@ -291,8 +297,8 @@ namespace TypeGen.Core.Business
             Type[] genericArguments = type.GetGenericArguments();
 
             string[] genericArgumentNames = (from t in genericArguments
-                                             select t.BaseType != null && t.BaseType != typeof(object)
-                                                 ? $"{t.Name} extends {GetTsTypeName(t.BaseType, typeNameConverters)}"
+                                             select t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
+                                                 ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, typeNameConverters)}"
                                                  : t.Name)
                                             .ToArray();
 
@@ -340,9 +346,9 @@ namespace TypeGen.Core.Business
             }
 
             // handle types implementing IEnumerable<>
-            foreach (Type interfaceType in type.GetInterfaces())
+            foreach (Type interfaceType in type.GetTypeInfo().ImplementedInterfaces)
             {
-                if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     return interfaceType.GetGenericArguments()[0];
                 }
@@ -390,9 +396,9 @@ namespace TypeGen.Core.Business
         public Type GetBaseType(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.IsClass) throw new CoreException($"Type '{type.FullName}' should be a class type");
+            if (!type.GetTypeInfo().IsClass) throw new CoreException($"Type '{type.FullName}' should be a class type");
 
-            Type baseType = type.BaseType;
+            Type baseType = type.GetTypeInfo().BaseType;
             if (baseType == null || baseType == typeof(object)) return null;
 
             if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");

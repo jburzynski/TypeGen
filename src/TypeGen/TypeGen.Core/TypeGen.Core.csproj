@@ -1,118 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F155F00C-6F6C-4480-BBB4-C1E00DC53958}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TypeGen.Core</RootNamespace>
-    <AssemblyName>TypeGen.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <DocumentationFile>\TypeGen.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Business\TsContentParser.cs" />
-    <Compile Include="Converters\IConverter.cs" />
-    <Compile Include="Converters\TypeNameConverterCollection.cs" />
-    <Compile Include="Converters\NameConverterCollection.cs" />
-    <Compile Include="Converters\UnderscoreCaseToCamelCaseConverter.cs" />
-    <Compile Include="Converters\UnderscoreCaseToPascalCaseConverter.cs" />
-    <Compile Include="CoreException.cs" />
-    <Compile Include="Extensions\AttributeExtensions.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\FileSystemExtensions.cs" />
-    <Compile Include="Extensions\IntExtensions.cs" />
-    <Compile Include="Extensions\ObjectExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="GenerationResult.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="GeneratorOptions.cs" />
-    <Compile Include="Converters\INameConverter.cs" />
-    <Compile Include="Converters\ITypeNameConverter.cs" />
-    <Compile Include="Converters\PascalCaseToCamelCaseConverter.cs" />
-    <Compile Include="Converters\PascalCaseToKebabCaseConverter.cs" />
-    <Compile Include="IGenerator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Business\TsContentGenerator.cs" />
-    <Compile Include="Business\TemplateService.cs" />
-    <Compile Include="Business\TypeDependencyInfo.cs" />
-    <Compile Include="Business\TypeDependencyInfoTypeComparer.cs" />
-    <Compile Include="Business\TypeDependencyService.cs" />
-    <Compile Include="Business\TypeService.cs" />
-    <Compile Include="Storage\FileSystem.cs" />
-    <Compile Include="Storage\InternalStorage.cs" />
-    <Compile Include="TypeAnnotations\ExportAttribute.cs" />
-    <Compile Include="TypeAnnotations\ExportTsClassAttribute.cs" />
-    <Compile Include="TypeAnnotations\ExportTsEnumAttribute.cs" />
-    <Compile Include="TypeAnnotations\ExportTsInterfaceAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsDefaultTypeOutputAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsDefaultValueAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsIgnoreAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsMemberNameAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsType.cs" />
-    <Compile Include="TypeAnnotations\TsTypeAttribute.cs" />
-    <Compile Include="TypeAnnotations\TsTypeAttributeComparer.cs" />
-    <Compile Include="Utils\FileSystemUtils.cs" />
-    <Compile Include="Utils\StringUtils.cs" />
+    <None Remove="Templates\Class.tpl" />
+    <None Remove="Templates\ClassProperty.tpl" />
+    <None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
+    <None Remove="Templates\Enum.tpl" />
+    <None Remove="Templates\EnumValue.tpl" />
+    <None Remove="Templates\Import.tpl" />
+    <None Remove="Templates\Interface.tpl" />
+    <None Remove="Templates\InterfaceProperty.tpl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
     <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\Enum.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\EnumValue.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\Import.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\Interface.tpl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+  </ItemGroup>
 </Project>

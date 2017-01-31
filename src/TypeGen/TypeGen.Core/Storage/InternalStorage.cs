@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace TypeGen.Core.Storage
@@ -18,7 +19,7 @@ namespace TypeGen.Core.Storage
         /// <returns></returns>
         public string GetEmbeddedResource(string name)
         {
-            using (Stream stream = GetType().Assembly.GetManifestResourceStream(name))
+            using (Stream stream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream(name))
             {
                 if (stream == null)
                 {

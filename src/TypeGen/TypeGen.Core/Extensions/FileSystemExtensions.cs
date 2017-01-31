@@ -22,12 +22,12 @@ namespace TypeGen.Core.Extensions
 
             path = path.Replace('/', '\\');
 
-            if (path.First() == '\\')
+            if (path.ToCharArray().First() == '\\')
             {
                 path = path.Remove(0, 1);
             }
 
-            if (path != "" && path.Last() == '\\')
+            if (path != "" && path.ToCharArray().Last() == '\\')
             {
                 path = path.Remove(path.Length - 1);
             }

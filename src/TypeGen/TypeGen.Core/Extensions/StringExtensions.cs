@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 
 namespace TypeGen.Core.Extensions
@@ -25,43 +26,21 @@ namespace TypeGen.Core.Extensions
         }
 
         /// <summary>
-        /// Converts a string to TitleCase format.
-        /// Uses the current thread's culture info for conversion.
-        /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
+        /// Converts a string to TitleCase format
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static string ToTitleCase(this string value)
         {
-            CultureInfo cultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
-            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
-        }
+            string[] tokens = value.ToLowerInvariant().Split(new[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries);
 
-        /// <summary>
-        /// Converts a string to TitleCase format.
-        /// Uses the culture info with the specified name.
-        /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cultureInfoName"></param>
-        /// <returns></returns>
-        public static string ToTitleCase(this string value, string cultureInfoName)
-        {
-            var cultureInfo = new CultureInfo(cultureInfoName);
-            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
-        }
+            for (var i = 0; i < tokens.Length; i++)
+            {
+                string token = tokens[i];
+                tokens[i] = token.Substring(0, 1).ToUpperInvariant() + token.Substring(1);
+            }
 
-        /// <summary>
-        /// Converts a string to TitleCase format.
-        /// Uses the specified culture info.
-        /// Source: http://theburningmonk.com/2010/08/dotnet-tips-string-totitlecase-extension-methods/
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cultureInfo"></param>
-        /// <returns></returns>
-        public static string ToTitleCase(this string value, CultureInfo cultureInfo)
-        {
-            return cultureInfo.TextInfo.ToTitleCase(value.ToLower());
+            return string.Join("_", tokens);
         }
 
         /// <summary>
@@ -71,7 +50,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool IsNullOrWhitespace(this string value)
         {
-            return value == null || value.All(char.IsWhiteSpace);
+            return value == null || value.ToCharArray().All(char.IsWhiteSpace);
         }
 
         /// <summary>

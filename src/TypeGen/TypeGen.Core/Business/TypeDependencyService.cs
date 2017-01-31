@@ -28,17 +28,18 @@ namespace TypeGen.Core.Business
         {
             IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
 
-            if (!type.IsGenericTypeDefinition) return result;
+            if (!type.GetTypeInfo().IsGenericTypeDefinition) return result;
 
             foreach (Type genericArgumentType in type.GetGenericArguments())
             {
-                if (genericArgumentType.BaseType == null || genericArgumentType.BaseType == typeof(object)) continue;
+                Type baseType = genericArgumentType.GetTypeInfo().BaseType;
+                if (baseType == null || baseType == typeof(object)) continue;
 
-                Type baseType = _typeService.GetUnderlyingType(genericArgumentType.BaseType);
+                baseType = _typeService.GetUnderlyingType(baseType);
                 Type baseFlatType = _typeService.GetFlatType(baseType);
                 if (_typeService.IsTsSimpleType(baseFlatType) || baseFlatType.IsGenericParameter) continue;
 
-                if (baseFlatType.IsGenericType)
+                if (baseFlatType.GetTypeInfo().IsGenericType)
                 {
                     result = result.Concat(GetGenericTypeNonDefinitionDependencies(baseFlatType)
                         .Select(t => new TypeDependencyInfo(t)));
@@ -62,7 +63,7 @@ namespace TypeGen.Core.Business
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) yield break;
 
-            if (baseType.IsGenericType)
+            if (baseType.GetTypeInfo().IsGenericType)
             {
                 baseType = baseType.GetGenericTypeDefinition();
             }
@@ -91,7 +92,7 @@ namespace TypeGen.Core.Business
 
                 var memberAttributes = memberInfo.GetCustomAttributes(typeof(Attribute), false) as Attribute[];
 
-                if (memberFlatType.IsGenericType)
+                if (memberFlatType.GetTypeInfo().IsGenericType)
                 {
                     result = result.Concat(GetGenericTypeNonDefinitionDependencies(memberFlatType)
                         .Select(t => new TypeDependencyInfo(t, memberAttributes)));
@@ -122,7 +123,7 @@ namespace TypeGen.Core.Business
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
                 if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
-                result = result.Concat(flatArgumentType.IsGenericType
+                result = result.Concat(flatArgumentType.GetTypeInfo().IsGenericType
                     ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)
                     : new[] { flatArgumentType });
             }
@@ -141,7 +142,7 @@ namespace TypeGen.Core.Business
         public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.IsClass) return Enumerable.Empty<TypeDependencyInfo>();
+            if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
 
             type = _typeService.GetUnderlyingType(type);
 

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using TypeGen.Cli.Extensions;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
-using TypeGen.Core.Extensions;
+using TypeGen.Cli.Extensions;
 
 namespace TypeGen.Cli.Models
 {
@@ -25,6 +24,7 @@ namespace TypeGen.Cli.Models
             TypeNameConverters = TypeNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
             PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
             EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(FileSystemExtensions.NormalizePath).ToArray();
             return this;
         }
 
@@ -40,6 +40,7 @@ namespace TypeGen.Cli.Models
             if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
+            if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             return this;
         }
 
@@ -68,6 +69,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "enumValueNameConverters")]
         public string[] EnumValueNameConverters { get; set; }
+
+        [DataMember(Name = "externalAssemblyPaths")]
+        public string[] ExternalAssemblyPaths { get; set; }
 
         [DataMember(Name = "typeScriptFileExtension")]
         public string TypeScriptFileExtension { get; set; }

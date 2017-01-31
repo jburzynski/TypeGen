@@ -16,5 +16,10 @@ namespace TypeGen.Cli.Business
         public bool FileExists(string filePath) => File.Exists(filePath);
 
         public string ReadFile(string filePath) => File.ReadAllText(filePath);
+
+        public string[] GetFilesRecursive(string rootDirectory, string fileName)
+        {
+            return Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
+        }
     }
 }
