@@ -58,9 +58,11 @@ namespace TypeGen.Cli.Business
 
         private void UpdateConfigAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
         {
-            config.AssemblyPath = string.IsNullOrEmpty(config.AssemblyPath) ?
-                null :
-                GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+            if (!string.IsNullOrEmpty(config.AssemblyPath))
+            {
+                config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+                _logger.Log("WARNING: assemblyPath config parameter is deprecated and can be removed in future versions. Please use 'assemblies' instead.");
+            }
 
             config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder, logVerbose)).ToArray();
         }
