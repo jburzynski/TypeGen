@@ -40,6 +40,11 @@ namespace TypeGen.Cli.Extensions
         /// <returns></returns>
         public static string ConcatPath(this string path, string newSection)
         {
+            if (string.IsNullOrEmpty(path) && string.IsNullOrEmpty(newSection)) return null;
+
+            if (string.IsNullOrEmpty(path)) return newSection;
+            if (string.IsNullOrEmpty(newSection)) return path;
+
             return path.NormalizePath() + '\\' + newSection.NormalizePath();
         }
     }

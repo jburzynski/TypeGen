@@ -119,7 +119,7 @@ namespace TypeGen.Cli
             // create generator
 
             GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder, verbose);
-            generatorOptions.BaseOutputDirectory = projectFolder;
+            generatorOptions.BaseOutputDirectory = projectFolder.ConcatPath(config.OutputPath);
             var generator = new Generator { Options = generatorOptions };
 
             // generate
