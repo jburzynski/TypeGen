@@ -99,7 +99,7 @@ namespace TypeGen.Cli.Business
 
             if (projectFileName == null)
             {
-                throw new CliException($"Project file (*.csproj or *.xproj) not found in the project folder ({projectFolder}) and no assembly path found in the config file");
+                throw new CliException("Project file (*.csproj or *.xproj) not found in the project folder and no assembly path found in the config file");
             }
 
             string dllFileName = Path.ChangeExtension(projectFileName, "dll");
