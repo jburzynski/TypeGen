@@ -58,18 +58,25 @@ namespace TypeGen.Cli.Business
 
         private void UpdateConfigAssemblyPaths(TgConfig config, string projectFolder, bool logVerbose)
         {
-            config.AssemblyPath = string.IsNullOrEmpty(config.AssemblyPath) ?
-                null :
-                GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+            if (!string.IsNullOrEmpty(config.AssemblyPath))
+            {
+                config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder, logVerbose);
+                _logger.Log("WARNING: assemblyPath config parameter is deprecated and can be removed in future versions. Please use 'assemblies' instead.");
+            }
 
             config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder, logVerbose)).ToArray();
+
+            if (!config.Assemblies.Any())
+            {
+                config.Assemblies = new[] { GetAssemblyPath(null, projectFolder, logVerbose) };
+            }
         }
 
         private string GetAssemblyPath(string configAssemblyPath, string projectFolder, bool logVerbose)
         {
             if (string.IsNullOrEmpty(configAssemblyPath))
             {
-                if (logVerbose) _logger.Log("Assembly path not found in the config file. Reading from the default assembly path (project folder's bin\\Debug or bin\\).");
+                if (logVerbose) _logger.Log("Assembly path not found in the config file. Assembly file will be searched for recursively in the project's bin\\.");
                 return GetDefaultAssemblyPath(projectFolder);
             }
 
@@ -86,29 +93,25 @@ namespace TypeGen.Cli.Business
 
         private string GetDefaultAssemblyPath(string projectFolder)
         {
-            string csProjFileName = _fileSystem.GetDirectoryFiles(projectFolder)
+            string projectFileName = _fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(FileSystemUtils.GetFileNameFromPath)
-                .FirstOrDefault(n => n.EndsWith(".csproj"));
+                .FirstOrDefault(n => n.EndsWith(".csproj") || n.EndsWith(".xproj"));
 
-            if (csProjFileName == null)
+            if (projectFileName == null)
             {
-                throw new CliException("Project file (*.csproj) not found in the project folder and no assembly path found in the config file");
+                throw new CliException("Project file (*.csproj or *.xproj) not found in the project folder and no assembly path found in the config file");
             }
 
-            string binDebugPath = $"{projectFolder}\\bin\\Debug\\";
-            string binPath = $"{projectFolder}\\bin\\";
+            string dllFileName = Path.ChangeExtension(projectFileName, "dll");
+            string exeFileName = Path.ChangeExtension(projectFileName, "exe");
+            string binPath = $"{projectFolder}\\bin";
 
-            string assemblyFileName = Path.ChangeExtension(csProjFileName, "dll");
+            IEnumerable<string> foundFiles = _fileSystem.GetFilesRecursive(binPath, dllFileName)
+                .Concat(_fileSystem.GetFilesRecursive(binPath, exeFileName));
 
-            if (_fileSystem.FileExists(binDebugPath + assemblyFileName)) return binDebugPath + assemblyFileName;
-            if (_fileSystem.FileExists(binPath + assemblyFileName)) return binPath + assemblyFileName;
+            if (foundFiles.Any()) return foundFiles.First();
 
-            string assemblyFileNameExe = Path.ChangeExtension(csProjFileName, "exe");
-
-            if (_fileSystem.FileExists(binDebugPath + assemblyFileNameExe)) return binDebugPath + assemblyFileNameExe;
-            if (_fileSystem.FileExists(binPath + assemblyFileNameExe)) return binPath + assemblyFileNameExe;
-
-            throw new CliException($"None of: '{assemblyFileName}' or '{assemblyFileNameExe}' found in the default assembly folder (the project's bin\\Debug or bin\\ folders). Please make sure you have your project built.");
+            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's bin\\ folder; searched recursively). Please make sure you have your project built.");
         }
     }
 }

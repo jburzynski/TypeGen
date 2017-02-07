@@ -25,6 +25,7 @@ namespace TypeGen.Cli.Models
             PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
             EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
             ExternalAssemblyPaths = ExternalAssemblyPaths.Select(FileSystemExtensions.NormalizePath).ToArray();
+            OutputPath = OutputPath.NormalizePath();
             return this;
         }
 
@@ -87,5 +88,8 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "addFilesToProject")]
         public bool? AddFilesToProject { get; set; }
+
+        [DataMember(Name = "outputPath")]
+        public string OutputPath { get; set; }
     }
 }

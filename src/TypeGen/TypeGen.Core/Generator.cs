@@ -354,7 +354,7 @@ namespace TypeGen.Core
                 // dependency type TypeScript file generation
 
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute
-                if (typeDependency.AssemblyQualifiedName != type.AssemblyQualifiedName
+                if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
                     && (dependencyClassAttribute != null || dependencyEnumAttribute != null || dependencyInterfaceAttribute != null))
                 {
                     generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
