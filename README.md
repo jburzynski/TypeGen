@@ -4,11 +4,7 @@ C# to TypeScript file generator with support for one-class-per-file generation
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
-***For a complete list of features with examples, please see the project's documentation: http://typegen.readthedocs.io***
-
-***You can track the development progress on [project's sprint board](https://www.flying-donut.com/app/project/project-id=5820b1120cbfe400037de17e)***
-
-***If you spotted a bug, please raise it in the [issue tracker](https://github.com/jburzynski/TypeGen/issues) or contact me directly at [jburzyn gmail]; thanks!***
+***Please visit project's website: http://jburzynski.net/TypeGen***
 
 ## Quick start
 
