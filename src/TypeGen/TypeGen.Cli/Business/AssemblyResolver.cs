@@ -30,8 +30,6 @@ namespace TypeGen.Cli.Business
 
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            if (Directories == null || !Directories.Any()) throw new CliException("Cannot resolve assembly. No directories specified.");
-
             string assemblyFileName = GetAssemblyFileName(args.Name);
             string assemblyFilePath = null;
 
@@ -46,8 +44,7 @@ namespace TypeGen.Cli.Business
 
             if (assemblyFilePath != null) return Assembly.LoadFrom(assemblyFilePath);
 
-            string directoriesList = string.Join(", ", Directories);
-            throw new CliException($"Could not resolve assembly '{args.Name}'. File '{assemblyFileName}' not found in any of the searched directories: {directoriesList}");
+            throw new CliException();
         }
 
         private string GetAssemblyFileName(string assemblyFullName)

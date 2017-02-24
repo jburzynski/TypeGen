@@ -81,6 +81,10 @@ namespace TypeGen.Cli
                 _logger.Log($"APPLICATION ERROR: {e.Message}",
                     e.StackTrace);
             }
+            catch (AssemblyResolutionException e)
+            {
+                _logger.Log(e.Message);
+            }
             catch (ReflectionTypeLoadException e)
             {
                 foreach (Exception loaderException in e.LoaderExceptions)
@@ -108,11 +112,8 @@ namespace TypeGen.Cli
 
             // register assembly resolver
 
-            if (config.ExternalAssemblyPaths.Any())
-            {
-                _assemblyResolver.Directories = config.ExternalAssemblyPaths;
-                _assemblyResolver.Register();
-            }
+            _assemblyResolver.Directories = config.ExternalAssemblyPaths;
+            _assemblyResolver.Register();
 
             IEnumerable<Assembly> assemblies = GetAssemblies(config.GetAssemblies());
 
