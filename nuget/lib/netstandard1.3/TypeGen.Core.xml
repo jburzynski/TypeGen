@@ -248,6 +248,14 @@
             <exception cref="T:System.ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
             <exception cref="T:TypeGen.Core.CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
         </member>
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection)">
+            <summary>
+            Gets the TypeScript type name to generate for a member
+            </summary>
+            <param name="memberInfo"></param>
+            <param name="typeNameConverters"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.Business.TypeService.GetTsDictionaryTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
             <summary>
             Gets TypeScript type name for a dictionary type
@@ -555,6 +563,20 @@
             <param name="type"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type)">
+            <summary>
+            Checks if a type is marked with an ExportTs... attribute
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Gets all types marked with ExportTs... attributes
+            </summary>
+            <param name="types"></param>
+            <returns></returns>
+        </member>
         <member name="T:TypeGen.Core.GenerationResult">
             <summary>
             Represents a result from file generation
@@ -580,6 +602,27 @@
             Generator options. Cannot be null.
             </summary>
         </member>
+        <member name="M:TypeGen.Core.Generator.AddToGeneratedTypes(System.Type)">
+            <summary>
+            Adds the type to the collections of types generated in the current session
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.IsGeneratedForCurrentAssembly(System.Type)">
+            <summary>
+            Checks if a type has already been generated for an assembly in the current session
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.IsGeneratedForCurrentType(System.Type)">
+            <summary>
+            Checks if a type dependency has already been generated for a currently generated type.
+            This method also returns true if the argument is the currently generated type itself.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
             <summary>
             Generates TypeScript files for C# files in an assembly
@@ -588,9 +631,24 @@
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Type)">
             <summary>
-            Generate TypeScript files for a given type
+            Generates TypeScript files for a given type
             </summary>
             <param name="type"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerateType(System.Type)">
+            <summary>
+            Contains the actual logic of generating TypeScript files for a given type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerateNotMarked(System.Type,System.String)">
+            <summary>
+            Generates TypeScript files for types that are not marked with an ExportTs... attribute
+            </summary>
+            <param name="type"></param>
+            <param name="outputDirectory"></param>
+            <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.GenerateClass(System.Type,TypeGen.Core.TypeAnnotations.ExportTsClassAttribute)">
             <summary>
@@ -661,13 +719,6 @@
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
-        </member>
-        <member name="M:TypeGen.Core.Generator.GetTsTypeNameForMember(System.Reflection.MemberInfo)">
-            <summary>
-            Gets the TypeScript type name to generate for a member
-            </summary>
-            <param name="memberInfo"></param>
-            <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.GetRelativeFilePath(System.Type,System.String)">
             <summary>

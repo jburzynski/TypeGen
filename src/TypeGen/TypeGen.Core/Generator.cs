@@ -25,6 +25,12 @@ namespace TypeGen.Core
         private readonly FileSystem _fileSystem;
         private GeneratorOptions _options;
 
+        // per-generation shared variables
+
+        // type collections, to keep track of what types have been generated in the current session
+        private IList<Type> _assemblyGeneratedTypes;
+        private IList<Type> _typeGeneratedTypes;
+
         /// <summary>
         /// Generator options. Cannot be null.
         /// </summary>
@@ -69,15 +75,52 @@ namespace TypeGen.Core
         }
 
         /// <summary>
+        /// Adds the type to the collections of types generated in the current session
+        /// </summary>
+        /// <param name="type"></param>
+        private void AddToGeneratedTypes(Type type)
+        {
+            _assemblyGeneratedTypes?.Add(type);
+            _typeGeneratedTypes?.Add(type);
+        }
+
+        /// <summary>
+        /// Checks if a type has already been generated for an assembly in the current session
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private bool IsGeneratedForCurrentAssembly(Type type)
+        {
+            return _assemblyGeneratedTypes?.Contains(type) ?? false;
+        }
+
+        /// <summary>
+        /// Checks if a type dependency has already been generated for a currently generated type.
+        /// This method also returns true if the argument is the currently generated type itself.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private bool IsGeneratedForCurrentType(Type type)
+        {
+            return _typeGeneratedTypes?.Contains(type) ?? false;
+        }
+
+        /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            IEnumerable<string> files = assembly.GetLoadableTypes()
-                .Aggregate(Enumerable.Empty<string>(), (acc, type) => acc.Concat(
-                    Generate(type).GeneratedFiles
-                    ));
+            _assemblyGeneratedTypes = new List<Type>();
+            IEnumerable<string> files = Enumerable.Empty<string>();
+
+            foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+            {
+                if (IsGeneratedForCurrentAssembly(type)) continue;
+                files = files.Concat(Generate(type).GeneratedFiles);
+            }
+
+            _assemblyGeneratedTypes = null;
 
             return new GenerationResult
             {
@@ -87,36 +130,73 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Generate TypeScript files for a given type
+        /// Generates TypeScript files for a given type
         /// </summary>
         /// <param name="type"></param>
         public GenerationResult Generate(Type type)
         {
-            IEnumerable<string> files = Enumerable.Empty<string>();
+            _typeGeneratedTypes = new List<Type>();
 
-            var classAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
-            if (classAttribute != null)
-            {
-                files = files.Concat(GenerateClass(type, classAttribute).GeneratedFiles);
-            }
+            AddToGeneratedTypes(type);
+            IEnumerable<string> files = GenerateType(type).GeneratedFiles;
 
-            var interfaceAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
-            if (interfaceAttribute != null)
-            {
-                files = files.Concat(GenerateInterface(type, interfaceAttribute).GeneratedFiles);
-            }
-
-            var enumAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
-            if (enumAttribute != null)
-            {
-                files = files.Concat(GenerateEnum(type, enumAttribute).GeneratedFiles);
-            }
+            _typeGeneratedTypes = null;
 
             return new GenerationResult
             {
                 BaseOutputDirectory = Options.BaseOutputDirectory,
                 GeneratedFiles = files.Distinct()
             };
+        }
+
+        /// <summary>
+        /// Contains the actual logic of generating TypeScript files for a given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private GenerationResult GenerateType(Type type)
+        {
+            var classAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
+            var interfaceAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
+            var enumAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
+
+            if (classAttribute != null)
+            {
+                return GenerateClass(type, classAttribute);
+            }
+
+            if (interfaceAttribute != null)
+            {
+                return GenerateInterface(type, interfaceAttribute);
+            }
+
+            if (enumAttribute != null)
+            {
+                return GenerateEnum(type, enumAttribute);
+            }
+
+            return GenerateNotMarked(type, Options.BaseOutputDirectory);
+        }
+
+        /// <summary>
+        /// Generates TypeScript files for types that are not marked with an ExportTs... attribute
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputDirectory"></param>
+        /// <returns></returns>
+        private GenerationResult GenerateNotMarked(Type type, string outputDirectory)
+        {
+            if (type.GetTypeInfo().IsClass)
+            {
+                return GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
+            }
+
+            if (type.GetTypeInfo().IsEnum)
+            {
+                return GenerateEnum(type, new ExportTsEnumAttribute { OutputDir = outputDirectory });
+            }
+
+            throw new CoreException($"Generated type must be either a C# class or enum. Error when generating type {type.FullName}");
         }
 
         /// <summary>
@@ -232,7 +312,7 @@ namespace TypeGen.Core
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, defaultValueAttribute.DefaultValue);
             }
 
-            string typeName = GetTsTypeNameForMember(memberInfo);
+            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
         }
 
@@ -270,7 +350,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = GetTsTypeNameForMember(memberInfo);
+            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName);
         }
@@ -347,21 +427,26 @@ namespace TypeGen.Core
             {
                 Type typeDependency = typeDependencyInfo.Type;
 
-                var dependencyClassAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
-                var dependencyInterfaceAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
-                var dependencyEnumAttribute = typeDependency.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
-
                 // dependency type TypeScript file generation
 
-                // dependency type NOT in the same assembly, but HAS ExportTsX attribute
+                // dependency type NOT in the same assembly, but HAS ExportTsX attribute (AND hasn't been generated yet)
                 if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
-                    && (dependencyClassAttribute != null || dependencyEnumAttribute != null || dependencyInterfaceAttribute != null))
+                    && typeDependency.HasExportAttribute()
+                    && !IsGeneratedForCurrentAssembly(typeDependency))
                 {
+                    AddToGeneratedTypes(typeDependency);
                     generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
                 }
 
-                // dependency DOESN'T HAVE an ExportTsX attribute
-                if (dependencyClassAttribute == null && dependencyEnumAttribute == null && dependencyInterfaceAttribute == null)
+                // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
+                if (typeDependency.HasExportAttribute() && !IsGeneratedForCurrentAssembly(typeDependency))
+                {
+                    AddToGeneratedTypes(typeDependency);
+                    generatedFiles = generatedFiles.Concat(GenerateType(typeDependency).GeneratedFiles);
+                }
+
+                // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
+                if (!typeDependency.HasExportAttribute() && !IsGeneratedForCurrentType(typeDependency))
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
@@ -369,46 +454,12 @@ namespace TypeGen.Core
 
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
-                    if (typeDependency.GetTypeInfo().IsClass)
-                    {
-                        generatedFiles = generatedFiles.Concat(
-                            GenerateClass(typeDependency, new ExportTsClassAttribute { OutputDir = defaultOutputDir })
-                            .GeneratedFiles);
-                    }
-                    else if (typeDependency.GetTypeInfo().IsEnum)
-                    {
-                        generatedFiles = generatedFiles.Concat(
-                            GenerateEnum(typeDependency, new ExportTsEnumAttribute { OutputDir = defaultOutputDir })
-                            .GeneratedFiles);
-                    }
-                    else
-                    {
-                        throw new CoreException($"Could not generate TypeScript file for C# type '{typeDependency.FullName}'. Specified type is not a class or enum type. Dependent type: '{type.FullName}'.");
-                    }
+                    AddToGeneratedTypes(typeDependency);
+                    generatedFiles = generatedFiles.Concat(GenerateNotMarked(typeDependency, defaultOutputDir).GeneratedFiles);
                 }
             }
 
             return new GenerationResult { GeneratedFiles = generatedFiles };
-        }
-
-        /// <summary>
-        /// Gets the TypeScript type name to generate for a member
-        /// </summary>
-        /// <param name="memberInfo"></param>
-        /// <returns></returns>
-        private string GetTsTypeNameForMember(MemberInfo memberInfo)
-        {
-            var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
-            if (typeAttribute != null)
-            {
-                if (typeAttribute.TypeName.IsNullOrWhitespace())
-                {
-                    throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
-                }
-                return typeAttribute.TypeName;
-            }
-            
-            return _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters);
         }
 
         /// <summary>
