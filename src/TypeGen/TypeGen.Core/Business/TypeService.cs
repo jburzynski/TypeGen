@@ -238,6 +238,27 @@ namespace TypeGen.Core.Business
         }
 
         /// <summary>
+        /// Gets the TypeScript type name to generate for a member
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        public string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        {
+            var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
+            if (typeAttribute != null)
+            {
+                if (typeAttribute.TypeName.IsNullOrWhitespace())
+                {
+                    throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
+                }
+                return typeAttribute.TypeName;
+            }
+
+            return GetTsTypeName(memberInfo, typeNameConverters);
+        }
+
+        /// <summary>
         /// Gets TypeScript type name for a dictionary type
         /// </summary>
         /// <param name="type"></param>

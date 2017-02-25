@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TypeGen.Cli.Business;
 
 namespace TypeGen.Cli.Extensions
 {
@@ -24,7 +25,16 @@ namespace TypeGen.Cli.Extensions
             }
             catch (ReflectionTypeLoadException e)
             {
-                return e.Types.Where(t => t != null);
+                IEnumerable<Type> types = e.Types.Where(t => t != null);
+
+                if (!types.Any())
+                {
+                    throw new AssemblyResolutionException($"Could not resolve assembly '{assembly.FullName}'. " +
+                                           "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
+                                           "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (typically C:\\Users\\[user_name]\\.nuget\\packages).");
+                }
+
+                return types;
             }
         }
     }

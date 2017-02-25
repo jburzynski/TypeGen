@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Business\AssemblyResolutionException.cs" />
     <Compile Include="Business\AssemblyResolver.cs" />
     <Compile Include="Business\ConfigProvider.cs" />
     <Compile Include="Business\ConsoleArgsReader.cs" />
