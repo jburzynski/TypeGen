@@ -6,6 +6,11 @@ C# to TypeScript file generator with support for one-class-per-file generation
 
 ***Please visit project's website: http://jburzynski.net/TypeGen***
 
+## How to get
+
+* [NuGet](https://www.nuget.org/packages/TypeGen)
+* [Chocolatey (CLI only)](https://chocolatey.org/packages/TypeGen)
+
 ## Quick start
 
 Get TypeGen via NuGet by either:
