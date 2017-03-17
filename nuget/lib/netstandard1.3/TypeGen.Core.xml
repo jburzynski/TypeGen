@@ -482,6 +482,14 @@
             <param name="elements"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WhereNotNull``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters away null values from an IEnumerable
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="enumerable"></param>
+            <returns></returns>
+        </member>
         <member name="T:TypeGen.Core.Extensions.FileSystemExtensions">
             <summary>
             Extensions for filesystem-related operations

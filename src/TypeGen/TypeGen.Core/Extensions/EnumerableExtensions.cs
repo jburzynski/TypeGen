@@ -49,5 +49,16 @@ namespace TypeGen.Core.Extensions
         {
             return elements.Contains(element);
         }
+
+        /// <summary>
+        /// Filters away null values from an IEnumerable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> enumerable)
+        {
+            return enumerable.Where(v => v != null);
+        }
     }
 }
