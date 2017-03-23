@@ -28,8 +28,7 @@ namespace TypeGen.Core
         // per-generation shared variables
 
         // type collections, to keep track of what types have been generated in the current session
-        private IList<Type> _assemblyGeneratedTypes;
-        private IList<Type> _typeGeneratedTypes;
+        private readonly GenerationContext _generationContext;
 
         /// <summary>
         /// Generator options. Cannot be null.
@@ -60,6 +59,7 @@ namespace TypeGen.Core
         public Generator()
         {
             Options = new GeneratorOptions();
+            _generationContext = new GenerationContext();
 
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
@@ -75,52 +75,24 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Adds the type to the collections of types generated in the current session
-        /// </summary>
-        /// <param name="type"></param>
-        private void AddToGeneratedTypes(Type type)
-        {
-            _assemblyGeneratedTypes?.Add(type);
-            _typeGeneratedTypes?.Add(type);
-        }
-
-        /// <summary>
-        /// Checks if a type has already been generated for an assembly in the current session
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private bool IsGeneratedForCurrentAssembly(Type type)
-        {
-            return _assemblyGeneratedTypes?.Contains(type) ?? false;
-        }
-
-        /// <summary>
-        /// Checks if a type dependency has already been generated for a currently generated type.
-        /// This method also returns true if the argument is the currently generated type itself.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private bool IsGeneratedForCurrentType(Type type)
-        {
-            return _typeGeneratedTypes?.Contains(type) ?? false;
-        }
-
-        /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            _assemblyGeneratedTypes = new List<Type>();
+            _generationContext.InitializeAssemblyGeneratedTypes();
             IEnumerable<string> files = Enumerable.Empty<string>();
 
-            foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+            ExecuteWithTypeContextLogging(() =>
             {
-                if (IsGeneratedForCurrentAssembly(type)) continue;
-                files = files.Concat(Generate(type).GeneratedFiles);
-            }
+                foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                {
+                    if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
+                    files = files.Concat(Generate(type).GeneratedFiles);
+                }
+            });
 
-            _assemblyGeneratedTypes = null;
+            _generationContext.ClearAssemblyGeneratedTypes();
 
             return new GenerationResult
             {
@@ -135,12 +107,21 @@ namespace TypeGen.Core
         /// <param name="type"></param>
         public GenerationResult Generate(Type type)
         {
-            _typeGeneratedTypes = new List<Type>();
+            _generationContext.InitializeTypeGeneratedTypes();
+            _generationContext.Add(type);
 
-            AddToGeneratedTypes(type);
-            IEnumerable<string> files = GenerateType(type).GeneratedFiles;
+            IEnumerable<string> files = Enumerable.Empty<string>();
 
-            _typeGeneratedTypes = null;
+            if (_generationContext.IsAssemblyContext())
+            {
+                files = GenerateType(type).GeneratedFiles;
+            }
+            else
+            {
+                ExecuteWithTypeContextLogging(() => { files = GenerateType(type).GeneratedFiles; });
+            }
+
+            _generationContext.ClearTypeGeneratedTypes();
 
             return new GenerationResult
             {
@@ -432,21 +413,21 @@ namespace TypeGen.Core
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute (AND hasn't been generated yet)
                 if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
                     && typeDependency.HasExportAttribute()
-                    && !IsGeneratedForCurrentAssembly(typeDependency))
+                    && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
                 {
-                    AddToGeneratedTypes(typeDependency);
+                    _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
                 }
 
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute() && !IsGeneratedForCurrentAssembly(typeDependency))
+                if (typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
                 {
-                    AddToGeneratedTypes(typeDependency);
+                    _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(GenerateType(typeDependency).GeneratedFiles);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
-                if (!typeDependency.HasExportAttribute() && !IsGeneratedForCurrentType(typeDependency))
+                if (!typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForType(typeDependency))
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
@@ -454,7 +435,7 @@ namespace TypeGen.Core
 
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
-                    AddToGeneratedTypes(typeDependency);
+                    _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(GenerateNotMarked(typeDependency, defaultOutputDir).GeneratedFiles);
                 }
             }
@@ -497,6 +478,28 @@ namespace TypeGen.Core
 
             string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
             return Options.BaseOutputDirectory + separator + fileName;
+        }
+
+        /// <summary>
+        /// Executes the passed action and adds additional info about the currently generated types in case of a CoreException
+        /// </summary>
+        /// <param name="action"></param>
+        private void ExecuteWithTypeContextLogging(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (CoreException e)
+            {
+                if (_generationContext.TypeGeneratedTypes != null)
+                {
+                    throw new CoreException(e.Message + "; inside type: " +
+                                            string.Join(", in ", _generationContext.TypeGeneratedTypes.Reverse().Select(t => t.FullName)));
+                }
+
+                throw;
+            }
         }
     }
 }

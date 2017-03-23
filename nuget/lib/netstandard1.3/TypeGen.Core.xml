@@ -585,6 +585,68 @@
             <param name="types"></param>
             <returns></returns>
         </member>
+        <member name="T:TypeGen.Core.GenerationContext">
+            <summary>
+            File generation context (used per Generator.Generate() invocation)
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.AssemblyGeneratedTypes">
+            <summary>
+            Types that have already been generated for an assembly in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.TypeGeneratedTypes">
+            <summary>
+            Types that have already been generated for a type in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.Add(System.Type)">
+            <summary>
+            Adds the type to the generation context
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.IsAssemblyContext">
+            <summary>
+            Checks if the generation context is for assembly generation
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForAssembly(System.Type)">
+            <summary>
+            Checks if a type has already been generated for an assembly in the current context
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForType(System.Type)">
+            <summary>
+            Checks if a type dependency has already been generated for a currently generated type.
+            This method also returns true if the argument is the currently generated type itself.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.InitializeAssemblyGeneratedTypes">
+            <summary>
+            Initializes the assembly generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.ClearAssemblyGeneratedTypes">
+            <summary>
+            Clears the assembly generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.InitializeTypeGeneratedTypes">
+            <summary>
+            Initializes the type generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.GenerationContext.ClearTypeGeneratedTypes">
+            <summary>
+            Clears the type generated types collection
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.GenerationResult">
             <summary>
             Represents a result from file generation
@@ -609,27 +671,6 @@
             <summary>
             Generator options. Cannot be null.
             </summary>
-        </member>
-        <member name="M:TypeGen.Core.Generator.AddToGeneratedTypes(System.Type)">
-            <summary>
-            Adds the type to the collections of types generated in the current session
-            </summary>
-            <param name="type"></param>
-        </member>
-        <member name="M:TypeGen.Core.Generator.IsGeneratedForCurrentAssembly(System.Type)">
-            <summary>
-            Checks if a type has already been generated for an assembly in the current session
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:TypeGen.Core.Generator.IsGeneratedForCurrentType(System.Type)">
-            <summary>
-            Checks if a type dependency has already been generated for a currently generated type.
-            This method also returns true if the argument is the currently generated type itself.
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
             <summary>
@@ -745,6 +786,12 @@
             <param name="type"></param>
             <param name="outputDir"></param>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.ExecuteWithTypeContextLogging(System.Action)">
+            <summary>
+            Executes the passed action and adds additional info about the currently generated types in case of a CoreException
+            </summary>
+            <param name="action"></param>
         </member>
         <member name="T:TypeGen.Core.GeneratorOptions">
             <summary>
