@@ -1,0 +1,94 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace TypeGen.Core
+{
+    /// <summary>
+    /// File generation context (used per Generator.Generate() invocation)
+    /// </summary>
+    internal class GenerationContext
+    {
+        /// <summary>
+        /// Types that have already been generated for an assembly in the current call to Generator.Generate()
+        /// </summary>
+        public IList<Type> AssemblyGeneratedTypes { get; private set; }
+
+        /// <summary>
+        /// Types that have already been generated for a type in the current call to Generator.Generate()
+        /// </summary>
+        public IList<Type> TypeGeneratedTypes { get; private set; }
+
+        /// <summary>
+        /// Adds the type to the generation context
+        /// </summary>
+        /// <param name="type"></param>
+        public void Add(Type type)
+        {
+            AssemblyGeneratedTypes?.Add(type);
+            TypeGeneratedTypes?.Add(type);
+        }
+
+        /// <summary>
+        /// Checks if the generation context is for assembly generation
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAssemblyContext()
+        {
+            return AssemblyGeneratedTypes != null;
+        }
+
+        /// <summary>
+        /// Checks if a type has already been generated for an assembly in the current context
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool HasBeenGeneratedForAssembly(Type type)
+        {
+            return AssemblyGeneratedTypes?.Contains(type) ?? false;
+        }
+
+        /// <summary>
+        /// Checks if a type dependency has already been generated for a currently generated type.
+        /// This method also returns true if the argument is the currently generated type itself.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool HasBeenGeneratedForType(Type type)
+        {
+            return TypeGeneratedTypes?.Contains(type) ?? false;
+        }
+
+        /// <summary>
+        /// Initializes the assembly generated types collection
+        /// </summary>
+        public void InitializeAssemblyGeneratedTypes()
+        {
+            AssemblyGeneratedTypes = new List<Type>();
+        }
+
+        /// <summary>
+        /// Clears the assembly generated types collection
+        /// </summary>
+        public void ClearAssemblyGeneratedTypes()
+        {
+            AssemblyGeneratedTypes = null;
+        }
+
+        /// <summary>
+        /// Initializes the type generated types collection
+        /// </summary>
+        public void InitializeTypeGeneratedTypes()
+        {
+            TypeGeneratedTypes = new List<Type>();
+        }
+
+        /// <summary>
+        /// Clears the type generated types collection
+        /// </summary>
+        public void ClearTypeGeneratedTypes()
+        {
+            TypeGeneratedTypes = null;
+        }
+    }
+}

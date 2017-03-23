@@ -43,13 +43,7 @@ namespace TypeGen.Cli
         {
             try
             {
-                if (args == null || args.Length == 0)
-                {
-                    _logger.Log("Invalid usage. Please see help for more information (TypeGen -Help).");
-                    return;
-                }
-
-                if (_consoleArgsReader.ContainsHelpParam(args))
+                if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpParam(args))
                 {
                     ShowHelp();
                     return;
@@ -98,6 +92,9 @@ namespace TypeGen.Cli
                 _logger.Log($"GENERIC ERROR: {e.Message}",
                     e.StackTrace);
             }
+
+            // debug only
+            //Console.Read();
         }
 
         private static void Generate(string projectFolder, string configPath, bool verbose)
