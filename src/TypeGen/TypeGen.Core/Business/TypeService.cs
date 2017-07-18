@@ -174,13 +174,14 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <param name="typeNameConverters"></param>
+        /// <param name="isMember"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool isMember = false)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
 
-            // special case - member is dynamic
+            // special case - dynamic property/field
 
             if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
             {
@@ -190,7 +191,7 @@ namespace TypeGen.Core.Business
             // otherwise, resolve by type
 
             Type type = GetMemberType(memberInfo);
-            return GetTsTypeName(type, typeNameConverters);
+            return GetTsTypeName(type, typeNameConverters, isMember);
         }
 
         /// <summary>
@@ -198,10 +199,11 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
+        /// <param name="isMember"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
         /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
-        public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool isMember = false)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
@@ -229,7 +231,7 @@ namespace TypeGen.Core.Business
             // handle custom generic types
             if (IsCustomGenericType(type))
             {
-                return GetGenericTsTypeName(type, typeNameConverters);
+                return GetGenericTsTypeName(type, typeNameConverters, isMember);
             }
 
             // handle custom types & generic parameters
@@ -255,7 +257,7 @@ namespace TypeGen.Core.Business
                 return typeAttribute.TypeName;
             }
 
-            return GetTsTypeName(memberInfo, typeNameConverters);
+            return GetTsTypeName(memberInfo, typeNameConverters, isMember: true);
         }
 
         /// <summary>
@@ -299,9 +301,12 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
+        /// <param name="isMember"></param>
         /// <returns></returns>
-        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool isMember = false)
         {
+            if (isMember) return GetGenericNonDefinitionTsTypeName(type, typeNameConverters);
+
             return type.GetTypeInfo().IsGenericTypeDefinition
                 ? GetGenericDefinitionTsTypeName(type, typeNameConverters)
                 : GetGenericNonDefinitionTsTypeName(type, typeNameConverters);

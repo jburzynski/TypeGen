@@ -88,6 +88,7 @@ namespace TypeGen.Core.Business
                 Type memberType = _typeService.GetMemberType(memberInfo);
                 Type memberFlatType = _typeService.GetFlatType(memberType);
 
+                if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
                 if (_typeService.IsTsSimpleType(memberFlatType) || memberFlatType.IsGenericParameter) continue;
 
                 var memberAttributes = memberInfo.GetCustomAttributes(typeof(Attribute), false) as Attribute[];
