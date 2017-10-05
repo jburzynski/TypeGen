@@ -8,6 +8,9 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Enum)]
     public class ExportTsEnumAttribute : ExportAttribute
     {
+        /// <summary>
+        /// Specifies whether an enum should be exported as TypeScript const enum
+        /// </summary>
         public bool IsConst { get; set; }
     }
 }

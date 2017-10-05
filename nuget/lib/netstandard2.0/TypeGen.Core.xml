@@ -941,6 +941,11 @@
             Indentifies an enum that a TypeScript file should be generated for
             </summary>
         </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute.IsConst">
+            <summary>
+            Specifies whether an enum should be exported as TypeScript const enum
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.TypeAnnotations.ExportTsInterfaceAttribute">
             <summary>
             Indentifies a class that a TypeScript interface file should be generated for
