@@ -42,11 +42,11 @@ namespace TypeGen.Core.Business
                     return "Object";
                 case "System.Boolean":
                     return "boolean";
+                case "System.Char":
                 case "System.String":
                     return "string";
                 case "System.SByte":
                 case "System.Byte":
-                case "System.Char":
                 case "System.Int16":
                 case "System.UInt16":
                 case "System.Int32":
