@@ -267,7 +267,7 @@ namespace TypeGen.Core
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
-            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText);
+            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst);
 
             // write TypeScript file
 

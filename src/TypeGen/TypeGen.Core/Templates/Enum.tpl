@@ -3,6 +3,6 @@
 * Any changes made to this file can be lost when this file is regenerated.
 */
 
-export enum $tg{name} {
+export$tg{modifiers} enum $tg{name} {
 $tg{values}
 }

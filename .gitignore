@@ -256,3 +256,9 @@ paket-files/
 
 # do not ignore TypeGen specific files
 !TypeGen.[0-9].[0-9].[0-9].nupkg
+/TypeGen.exe-Copy.config
+/copy-test.ps1
+/nuget clear.txt
+/nuget-update.ps1
+/nuget-update-1.4.ps1
+/Release steps.txt
