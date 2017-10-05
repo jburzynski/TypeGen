@@ -8,5 +8,6 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Enum)]
     public class ExportTsEnumAttribute : ExportAttribute
     {
+        public bool IsConst { get; set; }
     }
 }
