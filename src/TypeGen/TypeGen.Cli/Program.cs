@@ -77,7 +77,7 @@ namespace TypeGen.Cli
             }
             catch (AssemblyResolutionException e)
             {
-                _logger.Log(e.Message);
+                _logger.Log(e.Message, e.StackTrace);
             }
             catch (ReflectionTypeLoadException e)
             {

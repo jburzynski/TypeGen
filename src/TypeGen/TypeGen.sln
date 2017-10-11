@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeGen.Core", "TypeGen.Core\TypeGen.Core.csproj", "{7217A194-1AC9-4C1C-B799-DD00EF7C38E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.Cli", "TypeGen.Cli\TypeGen.Cli.csproj", "{432F0D6B-3E9D-4FE1-9ABF-72915433093A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeGen.Cli", "TypeGen.Cli\TypeGen.Cli.csproj", "{432F0D6B-3E9D-4FE1-9ABF-72915433093A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

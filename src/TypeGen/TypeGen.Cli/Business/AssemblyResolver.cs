@@ -31,20 +31,33 @@ namespace TypeGen.Cli.Business
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
             string assemblyFileName = GetAssemblyFileName(args.Name);
-            string assemblyFilePath = null;
 
             foreach (string directory in Directories)
             {
                 string[] foundPaths = _fileSystem.GetFilesRecursive(directory, assemblyFileName);
                 if (!foundPaths.Any()) continue;
 
-                assemblyFilePath = foundPaths.First();
-                break;
+                Assembly assembly = ResolveFromPaths(foundPaths);
+                if (assembly != null) return assembly;
             }
 
-            if (assemblyFilePath != null) return Assembly.LoadFrom(assemblyFilePath);
+            throw new AssemblyResolutionException($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", Directories)}");
+        }
 
-            throw new CliException();
+        private Assembly ResolveFromPaths(IEnumerable<string> paths)
+        {
+            foreach (string path in paths)
+            {
+                try
+                {
+                    return Assembly.LoadFrom(path);
+                }
+                catch (BadImageFormatException)
+                {
+                }
+            }
+
+            return null;
         }
 
         private string GetAssemblyFileName(string assemblyFullName)

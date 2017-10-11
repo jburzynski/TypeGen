@@ -16,42 +16,6 @@ namespace TypeGen.Cli.Models
     {
         public static bool DefaultAddFilesToProject => false;
 
-        public TgConfig Normalize()
-        {
-            AssemblyPath = AssemblyPath.NormalizePath();
-            Assemblies = Assemblies.Select(FileSystemExtensions.NormalizePath).ToArray();
-            FileNameConverters = FileNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            TypeNameConverters = TypeNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(FileSystemExtensions.NormalizePath).ToArray();
-            OutputPath = OutputPath.NormalizePath();
-            return this;
-        }
-
-        public TgConfig MergeWithDefaultParams()
-        {
-            if (Assemblies == null) Assemblies = new string[0];
-            if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
-            if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
-            if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
-            if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
-            if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;
-            if (FileNameConverters == null) FileNameConverters = GeneratorOptions.DefaultFileNameConverters.GetTypeNames().ToArray();
-            if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
-            if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
-            if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
-            if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
-            return this;
-        }
-
-        public string[] GetAssemblies()
-        {
-            return Assemblies.IsNullOrEmpty() ?
-                new[] { AssemblyPath } :
-                Assemblies;
-        }
-
         [Obsolete("Use Assemblies instead")]
         [DataMember(Name = "assemblyPath")]
         public string AssemblyPath { get; set; }
@@ -91,5 +55,61 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "outputPath")]
         public string OutputPath { get; set; }
+
+        public TgConfig Normalize()
+        {
+            AssemblyPath = AssemblyPath.NormalizePath();
+            Assemblies = Assemblies.Select(FileSystemExtensions.NormalizePath).ToArray();
+            FileNameConverters = FileNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            TypeNameConverters = TypeNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
+            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(FileSystemExtensions.NormalizePath).ToArray();
+            OutputPath = OutputPath.NormalizePath();
+
+            ReplaceAllTags();
+
+            return this;
+        }
+
+        private void ReplaceAllTags()
+        {
+            AssemblyPath = ReplacePathTags(AssemblyPath);
+            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(ReplacePathTags).ToArray();
+            OutputPath = ReplacePathTags(OutputPath);
+        }
+
+        public TgConfig MergeWithDefaultParams()
+        {
+            if (Assemblies == null) Assemblies = new string[0];
+            if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
+            if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
+            if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
+            if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
+            if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;
+            if (FileNameConverters == null) FileNameConverters = GeneratorOptions.DefaultFileNameConverters.GetTypeNames().ToArray();
+            if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
+            if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
+            if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
+            if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
+            return this;
+        }
+
+        public string[] GetAssemblies()
+        {
+            return Assemblies.IsNullOrEmpty() ?
+                new[] { AssemblyPath } :
+                Assemblies;
+        }
+
+        private static string GetTag(string name)
+        {
+            return $"<{name}>";
+        }
+
+        private static string ReplacePathTags(string path)
+        {
+            return path?.Replace(GetTag("global-packages"), CliSettings.GlobalPackagesPath);
+        }
     }
 }

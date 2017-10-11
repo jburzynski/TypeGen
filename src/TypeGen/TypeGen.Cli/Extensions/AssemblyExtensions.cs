@@ -31,7 +31,7 @@ namespace TypeGen.Cli.Extensions
                 {
                     throw new AssemblyResolutionException($"Could not resolve assembly '{assembly.FullName}'. " +
                                            "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
-                                           "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (typically C:\\Users\\[user_name]\\.nuget\\packages).");
+                                           "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (you can use global NuGet packages directory alias: \"<global-packages>\").");
                 }
 
                 return types;
