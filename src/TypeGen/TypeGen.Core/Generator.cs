@@ -462,7 +462,7 @@ namespace TypeGen.Core
 
             return string.IsNullOrEmpty(outputDir)
                 ? fileName
-                : $"{outputDir.NormalizePath()}\\{fileName}";
+                : $"{outputDir.NormalizePath()}{Path.DirectorySeparatorChar}{fileName}";
         }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace TypeGen.Core
         {
             string fileName = GetRelativeFilePath(type, outputDir);
 
-            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : "\\";
+            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : Path.DirectorySeparatorChar + "";
             return Options.BaseOutputDirectory + separator + fileName;
         }
 

@@ -77,7 +77,7 @@ namespace TypeGen.Cli.Business
 
         private TConverter GetConverterFromAssembly<TConverter>(string assemblyPath, string name, string projectFolder) where TConverter : class, IConverter
         {
-            string assemblyFullPath = $"{projectFolder}\\{assemblyPath}";
+            string assemblyFullPath = $"{projectFolder}{Path.DirectorySeparatorChar}{assemblyPath}";
             if (!_fileSystem.FileExists(assemblyFullPath))
             {
                 throw new CliException($"Assembly path '{assemblyFullPath}' not found for converter '{name}'");
