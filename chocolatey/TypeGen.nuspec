@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>1.5.6</version>
+    <version>1.5.10</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <licenseUrl>https://github.com/jburzynski/type-gen/blob/master/docs/LICENSE</licenseUrl>
