@@ -286,14 +286,14 @@ namespace TypeGen.Core
 
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-
+            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
+            
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
             {
-                return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
         }
 

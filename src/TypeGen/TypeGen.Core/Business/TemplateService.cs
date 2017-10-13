@@ -57,11 +57,12 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("customBody"), customBody);
         }
 
-        public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string defaultValue)
+        public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string type, string defaultValue)
         {
             return ReplaceSpecialChars(_classPropertyWithDefaultValueTemplate)
-                .Replace("accessor", accessor)
+                .Replace(GetTag("accessor"), accessor)
                 .Replace(GetTag("name"), name)
+                .Replace(GetTag("type"), type)
                 .Replace(GetTag("defaultValue"), defaultValue);
         }
 
