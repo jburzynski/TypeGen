@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace TypeGen.Core.TypeAnnotations
 {
@@ -12,6 +13,11 @@ namespace TypeGen.Core.TypeAnnotations
         /// The TypeScript property type name
         /// </summary>
         public string TypeName { get; set; }
+
+        /// <summary>
+        /// Type name without special characters ([], &lt;&gt;, ?)
+        /// </summary>
+        public string FlatTypeName => TypeName?.Split('[', '<', '?').First();
 
         /// <summary>
         /// The path of the file to import (can be left null if no imports are required)

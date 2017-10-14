@@ -262,3 +262,5 @@ paket-files/
 /nuget-update.ps1
 /nuget-update-1.4.ps1
 /Release steps.txt
+/local-chocolatey-path.txt
+/local-nuget-path.txt

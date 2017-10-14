@@ -141,8 +141,8 @@ namespace TypeGen.Core.Business
             {
                 bool withOriginalTypeName = !string.IsNullOrEmpty(attribute.OriginalTypeName);
 
-                string name = withOriginalTypeName ? attribute.OriginalTypeName : attribute.TypeName;
-                string asAlias = withOriginalTypeName ? $" as {attribute.TypeName}" : "";
+                string name = withOriginalTypeName ? attribute.OriginalTypeName : attribute.FlatTypeName;
+                string asAlias = withOriginalTypeName ? $" as {attribute.FlatTypeName}" : "";
                 result += _templateService.FillImportTemplate(name, asAlias, attribute.ImportPath);
             }
 

@@ -996,6 +996,11 @@
             The TypeScript property type name
             </summary>
         </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.FlatTypeName">
+            <summary>
+            Type name without special characters ([], &lt;&gt;, ?)
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.ImportPath">
             <summary>
             The path of the file to import (can be left null if no imports are required)
@@ -1025,6 +1030,13 @@
             <summary>
             File system-related utility class
             </summary>
+        </member>
+        <member name="M:TypeGen.Core.Utils.FileSystemUtils.SplitPathSeperator(System.String)">
+            <summary>
+            Split paths by seperator with \\ and /
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
         </member>
         <member name="T:TypeGen.Core.Utils.StringUtils">
             <summary>
