@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Storage
 {
@@ -52,8 +53,8 @@ namespace TypeGen.Core.Storage
         /// <returns></returns>
         public string GetPathDiff(string path1, string path2)
         {
-            if (string.IsNullOrEmpty(path1)) path1 = ".\\";
-            if (string.IsNullOrEmpty(path2)) path2 = ".\\";
+            if (string.IsNullOrEmpty(path1)) path1 = "." + Path.DirectorySeparatorChar;
+            if (string.IsNullOrEmpty(path2)) path2 = "." + Path.DirectorySeparatorChar;
 
             path1 = Path.GetFullPath(path1).NormalizePath();
             path2 = Path.GetFullPath(path2).NormalizePath();
@@ -65,15 +66,15 @@ namespace TypeGen.Core.Storage
             path2 = path2.ReplaceFirst(prefix, "").NormalizePath();
 
             // calculate depth between path1 and path2
-            int relativeDepth = path1 == "" ? 0 : path1.Split('\\').Length;
+            int relativeDepth = path1 == "" ? 0 : FileSystemUtils.SplitPathSeperator(path1).Length;
 
             var diff = "";
-            relativeDepth.Times(i => { diff += "..\\"; });
+            relativeDepth.Times(i => { diff += ".." + Path.DirectorySeparatorChar; });
             diff += path2;
 
             if (diff != "")
             {
-                return diff.EndsWith("\\") ? diff : $"{diff}\\";
+                return diff.EndsWith("\\") || diff.EndsWith("/") ? diff : $"{diff}{Path.DirectorySeparatorChar}";
             }
 
             return "";
@@ -88,8 +89,8 @@ namespace TypeGen.Core.Storage
         /// <returns></returns>
         private string GetMaximalCommonPathPrefix(string path1, string path2)
         {
-            string[] path1Parts = path1.Split('\\');
-            string[] path2Parts = path2.Split('\\');
+            string[] path1Parts = FileSystemUtils.SplitPathSeperator(path1);
+            string[] path2Parts = FileSystemUtils.SplitPathSeperator(path2);
 
             int length = Math.Min(path1Parts.Length, path2Parts.Length);
             var result = "";
@@ -97,10 +98,10 @@ namespace TypeGen.Core.Storage
             for (var i = 0; i < length; i++)
             {
                 if (path1Parts[i] != path2Parts[i]) break;
-                result += $"{path1Parts[i]}\\";
+                result += $"{path1Parts[i]}{Path.DirectorySeparatorChar}";
             }
 
-            return result.EndsWith("\\") ? result.Remove(result.Length - 1) : result;
+            return result.EndsWith("\\") || result.EndsWith("/") ? result.Remove(result.Length - 1) : result;
         }
     }
 }

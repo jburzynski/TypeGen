@@ -102,8 +102,8 @@ namespace TypeGen.Cli
             // get config
 
             configPath = !string.IsNullOrEmpty(configPath)
-                ? $"{projectFolder}\\{configPath}"
-                : $"{projectFolder}\\tgconfig.json";
+                ? $"{projectFolder}{Path.DirectorySeparatorChar}{configPath}"
+                : $"{projectFolder}{Path.DirectorySeparatorChar}tgconfig.json";
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
 
