@@ -10,9 +10,19 @@ namespace TypeGen.Core.Utils
     /// </summary>
     internal class FileSystemUtils
     {
+        /// <summary>
+        /// Split paths by seperator with \\ and /
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] SplitPathSeperator(string path)
+        {
+            return path.Split('\\', '/');
+        }
+
         public static string GetFileNameFromPath(string path)
         {
-            return path.Split('\\').Last();
+            return SplitPathSeperator(path).Last();
         }
     }
 }

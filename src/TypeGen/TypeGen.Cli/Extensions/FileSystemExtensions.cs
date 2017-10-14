@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 
 namespace TypeGen.Cli.Extensions
 {
@@ -17,14 +18,12 @@ namespace TypeGen.Cli.Extensions
             if (path == null) return null;
             if (path == "") return "";
 
-            path = path.Replace('/', '\\');
-
-            if (path.First() == '\\')
+            if (path.First() == '\\' || path.First() == '/')
             {
                 path = path.Remove(0, 1);
             }
 
-            if (path != "" && path.Last() == '\\')
+            if (path != "" && (path.Last() == '\\' || path.Last() == '/'))
             {
                 path = path.Remove(path.Length - 1);
             }
@@ -45,7 +44,7 @@ namespace TypeGen.Cli.Extensions
             if (string.IsNullOrEmpty(path)) return newSection;
             if (string.IsNullOrEmpty(newSection)) return path;
 
-            return path.NormalizePath() + '\\' + newSection.NormalizePath();
+            return path.NormalizePath() + Path.DirectorySeparatorChar + newSection.NormalizePath();
         }
     }
 }
