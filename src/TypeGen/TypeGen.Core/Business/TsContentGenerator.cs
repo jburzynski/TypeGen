@@ -105,7 +105,7 @@ namespace TypeGen.Core.Business
 
                 // get path diff
                 string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
-                pathDiff = pathDiff.StartsWith("..\\") ? pathDiff : $"./{pathDiff}";
+                pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
 
                 // get type & file name
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
