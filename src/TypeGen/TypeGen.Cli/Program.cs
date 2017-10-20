@@ -104,8 +104,8 @@ namespace TypeGen.Cli
             // get config
 
             configPath = !string.IsNullOrEmpty(configPath)
-                ? $"{projectFolder}{Path.DirectorySeparatorChar}{configPath}"
-                : $"{projectFolder}{Path.DirectorySeparatorChar}tgconfig.json";
+                ? Path.Combine(projectFolder, configPath)
+                : Path.Combine(projectFolder, "tgconfig.json");
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
 
@@ -119,7 +119,7 @@ namespace TypeGen.Cli
             // create generator
 
             GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder, verbose);
-            generatorOptions.BaseOutputDirectory = projectFolder.ConcatPath(config.OutputPath);
+            generatorOptions.BaseOutputDirectory = Path.Combine(projectFolder, config.OutputPath);
             var generator = new Generator { Options = generatorOptions };
 
             // generate

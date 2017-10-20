@@ -82,7 +82,7 @@ namespace TypeGen.Cli.Business
             }
 
             if (logVerbose) _logger.Log($"Reading assembly path from the config file: '{configAssemblyPath}'");
-            string assemblyPath = $"{projectFolder}{Path.DirectorySeparatorChar}{configAssemblyPath}";
+            string assemblyPath = Path.Combine(projectFolder, configAssemblyPath);
 
             if (!_fileSystem.FileExists(assemblyPath))
             {
@@ -105,7 +105,7 @@ namespace TypeGen.Cli.Business
 
             string dllFileName = Path.ChangeExtension(projectFileName, "dll");
             string exeFileName = Path.ChangeExtension(projectFileName, "exe");
-            string binPath = $"{projectFolder}{Path.DirectorySeparatorChar}bin";
+            string binPath = Path.Combine(projectFolder, "bin");
 
             IEnumerable<string> foundFiles = _fileSystem.GetFilesRecursive(binPath, dllFileName)
                 .Concat(_fileSystem.GetFilesRecursive(binPath, exeFileName));

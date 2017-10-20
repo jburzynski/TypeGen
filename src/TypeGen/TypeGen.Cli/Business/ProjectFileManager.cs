@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace TypeGen.Cli.Business
             string projectFileName = GetProjectFileName(projectFolder);
             if (string.IsNullOrEmpty(projectFileName)) return null;
 
-            string xmlPath = projectFolder.ConcatPath(projectFileName);
+            string xmlPath = Path.Combine(projectFolder, projectFileName);
 
             var document = new XmlDocument();
             document.Load(xmlPath);
@@ -56,7 +57,7 @@ namespace TypeGen.Cli.Business
         public void SaveProjectFile(string projectFolder, XmlDocument projectFile)
         {
             string projectFileName = GetProjectFileName(projectFolder);
-            string filePath = projectFolder.ConcatPath(projectFileName);
+            string filePath = Path.Combine(projectFolder, projectFileName);
 
             projectFile.Save(filePath);
         }

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "TypeGen.Cli": {
-      "commandName": "Project",
-      "commandLineArgs": "../../../../playground/Core2WebApp/Core2WebApp/Core2WebApp"
-    }
-  }
-}

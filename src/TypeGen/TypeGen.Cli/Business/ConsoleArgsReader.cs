@@ -9,6 +9,11 @@ namespace TypeGen.Cli.Business
 {
     internal class ConsoleArgsReader
     {
+        /// <summary>
+        /// Used to separate two or more paths; not a directory separator
+        /// </summary>
+        private const string PathSeparator = "|";
+
         public bool ContainsHelpParam(string[] args)
         {
             return args.Any(arg => arg.ToUpperInvariant() == "-H" || arg.ToUpperInvariant() == "-HELP");
@@ -36,13 +41,13 @@ namespace TypeGen.Cli.Business
                 throw new CliException("-Config-Path parameter present, but no path specified");
             }
 
-            return args[index + 1].Split(':')
+            return args[index + 1].Split(PathSeparator)
                 .Select(s => s.NormalizePath());
         }
 
         public IEnumerable<string> GetProjectFolders(string[] args)
         {
-            return args[0].Split(':')
+            return args[0].Split(PathSeparator)
                 .Select(s => s.NormalizePath());
         }
     }

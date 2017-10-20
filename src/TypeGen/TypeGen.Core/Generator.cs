@@ -462,7 +462,7 @@ namespace TypeGen.Core
 
             return string.IsNullOrEmpty(outputDir)
                 ? fileName
-                : $"{outputDir.NormalizePath()}{Path.DirectorySeparatorChar}{fileName}";
+                : Path.Combine(outputDir, fileName);
         }
 
         /// <summary>
