@@ -58,17 +58,7 @@ namespace TypeGen.Cli.Models
 
         public TgConfig Normalize()
         {
-            AssemblyPath = AssemblyPath.NormalizePath();
-            Assemblies = Assemblies.Select(FileSystemExtensions.NormalizePath).ToArray();
-            FileNameConverters = FileNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            TypeNameConverters = TypeNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            PropertyNameConverters = PropertyNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            EnumValueNameConverters = EnumValueNameConverters.Select(FileSystemExtensions.NormalizePath).ToArray();
-            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(FileSystemExtensions.NormalizePath).ToArray();
-            OutputPath = OutputPath.NormalizePath();
-
             ReplaceAllTags();
-
             return this;
         }
 

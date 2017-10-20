@@ -73,16 +73,10 @@ namespace TypeGen.Core
         /// </summary>
         public int TabLength { get; set; }
 
-        private string _baseOutputDirectory;
-
         /// <summary>
         /// The base directory for generating TypeScript files.
         /// Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
         /// </summary>
-        public string BaseOutputDirectory
-        {
-            get { return _baseOutputDirectory; }
-            set { _baseOutputDirectory = value.NormalizePath(); }
-        }
+        public string BaseOutputDirectory { get; set; }
     }
 }

@@ -64,64 +64,18 @@ namespace TypeGen.Core.Storage
         public string[] GetDirectoryFiles(string directory) => Directory.GetFiles(directory);
 
         /// <summary>
-        /// Gets path prefix required to navigate from path1 to path2.
-        /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\".
-        /// This method returns a path with a trailing slash if diff is not empty; otherwise returns an empty string.
+        /// Gets path prefix required to navigate from pathFrom to pathTo.
+        /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\"
         /// </summary>
-        /// <param name="path1"></param>
-        /// <param name="path2"></param>
+        /// <param name="pathFrom"></param>
+        /// <param name="pathTo"></param>
         /// <returns></returns>
-        public string GetPathDiff(string path1, string path2)
+        public string GetPathDiff(string pathFrom, string pathTo)
         {
-            if (string.IsNullOrEmpty(path1)) path1 = "." + Path.DirectorySeparatorChar;
-            if (string.IsNullOrEmpty(path2)) path2 = "." + Path.DirectorySeparatorChar;
+            var pathFromUri = new Uri("file:///" + pathFrom);
+            var pathToUri = new Uri("file:///" + pathTo);
 
-            path1 = Path.GetFullPath(path1).NormalizePath();
-            path2 = Path.GetFullPath(path2).NormalizePath();
-
-            string prefix = GetMaximalCommonPathPrefix(path1, path2);
-
-            // remove common prefix from each path
-            path1 = path1.ReplaceFirst(prefix, "").NormalizePath();
-            path2 = path2.ReplaceFirst(prefix, "").NormalizePath();
-
-            // calculate depth between path1 and path2
-            int relativeDepth = path1 == "" ? 0 : FileSystemUtils.SplitPathSeperator(path1).Length;
-
-            var diff = "";
-            relativeDepth.Times(i => { diff += ".." + Path.DirectorySeparatorChar; });
-            diff += path2;
-
-            if (diff != "")
-            {
-                return diff.EndsWith("\\") || diff.EndsWith("/") ? diff : $"{diff}{Path.DirectorySeparatorChar}";
-            }
-
-            return "";
-        }
-
-        /// <summary>
-        /// Gets maximal common path prefix for two absolute, normalized paths (case-insensitive).
-        /// The resulting prefix doesn't end with a slash.
-        /// </summary>
-        /// <param name="path1"></param>
-        /// <param name="path2"></param>
-        /// <returns></returns>
-        private string GetMaximalCommonPathPrefix(string path1, string path2)
-        {
-            string[] path1Parts = FileSystemUtils.SplitPathSeperator(path1);
-            string[] path2Parts = FileSystemUtils.SplitPathSeperator(path2);
-
-            int length = Math.Min(path1Parts.Length, path2Parts.Length);
-            var result = "";
-
-            for (var i = 0; i < length; i++)
-            {
-                if (path1Parts[i] != path2Parts[i]) break;
-                result += $"{path1Parts[i]}{Path.DirectorySeparatorChar}";
-            }
-
-            return result.EndsWith("\\") || result.EndsWith("/") ? result.Remove(result.Length - 1) : result;
+            return pathFromUri.MakeRelativeUri(pathToUri).ToString();
         }
     }
 }

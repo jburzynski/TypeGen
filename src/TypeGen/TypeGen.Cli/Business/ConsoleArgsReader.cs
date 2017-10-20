@@ -41,14 +41,12 @@ namespace TypeGen.Cli.Business
                 throw new CliException("-Config-Path parameter present, but no path specified");
             }
 
-            return args[index + 1].Split(PathSeparator)
-                .Select(s => s.NormalizePath());
+            return args[index + 1].Split(PathSeparator);
         }
 
         public IEnumerable<string> GetProjectFolders(string[] args)
         {
-            return args[0].Split(PathSeparator)
-                .Select(s => s.NormalizePath());
+            return args[0].Split(PathSeparator);
         }
     }
 }
