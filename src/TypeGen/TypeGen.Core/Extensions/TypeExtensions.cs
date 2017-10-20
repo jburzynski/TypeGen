@@ -58,5 +58,48 @@ namespace TypeGen.Core.Extensions
         {
             return types.Where(t => t.HasExportAttribute());
         }
+
+        /// <summary>
+        /// Removes members marked with TsIgnore attribute
+        /// </summary>
+        /// <param name="memberInfos"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
+        {
+            return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
+        }
+
+        /// <summary>
+        /// Filters members for TypeScript export
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memberInfos"></param>
+        /// <returns></returns>
+        public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
+        {
+            return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
+        }
+
+        /// <summary>
+        /// Filters members for TypeScript export
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memberInfos"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
+        {
+            return memberInfos.Where(i => i.CanRead && !i.GetMethod.IsStatic);
+        }
+
+        /// <summary>
+        /// Maps an enumerable to an enumerable of the elements' type names
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetTypeNames(this IEnumerable<object> enumerable)
+        {
+            return enumerable
+                .Select(c => c.GetType().Name);
+        }
     }
 }

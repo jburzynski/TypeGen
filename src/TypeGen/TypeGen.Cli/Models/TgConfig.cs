@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
-using TypeGen.Cli.Extensions;
+using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Models
 {

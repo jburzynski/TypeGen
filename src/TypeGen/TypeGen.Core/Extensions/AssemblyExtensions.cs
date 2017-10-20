@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TypeGen.Core.Business;
 
 namespace TypeGen.Core.Extensions
 {
@@ -21,11 +22,15 @@ namespace TypeGen.Core.Extensions
             try
             {
                 return assembly.DefinedTypes
-                    .Select(ti => ti.AsType());
+                     .Select(ti => ti.AsType());
             }
             catch (ReflectionTypeLoadException e)
             {
-                return e.Types.Where(t => t != null);
+                IEnumerable<Type> types = e.Types.Where(t => t != null);
+
+                if (!types.Any()) throw new AssemblyResolutionException($"Could not resolve assembly '{assembly.FullName}'");
+
+                return types;
             }
         }
     }

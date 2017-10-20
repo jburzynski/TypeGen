@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TypeGen.Cli.Extensions;
+using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Business
 {

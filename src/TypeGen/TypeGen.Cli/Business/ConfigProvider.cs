@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Cli.Models;
-using TypeGen.Cli.Utils;
+using TypeGen.Core.Utils;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {

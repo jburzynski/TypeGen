@@ -29,16 +29,16 @@ if (Test-Path "local-nuget-path.txt") {
 
 #chocolatey
 
-#rm -Recurse -Force chocolatey\runtimes
-#copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\PublishOutput\* chocolatey
-#rm chocolatey\TypeGen.Cli.pdb
-#rm chocolatey\TypeGen.Core.pdb
-#rm chocolatey\TypeGen.Core.xml
+rm -Recurse -Force chocolatey\runtimes
+copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\PublishOutput\* chocolatey
+rm chocolatey\TypeGen.Cli.pdb
+rm chocolatey\TypeGen.Core.pdb
+rm chocolatey\TypeGen.Core.xml
 
-#nuget pack chocolatey\TypeGen.nuspec
-#move TypeGen.1.5.11.nupkg chocolatey -force
+choco pack chocolatey\TypeGen.nuspec
+move TypeGen.1.5.11.nupkg chocolatey -force
 
-#if (Test-Path "local-chocolatey-path.txt") {
-#  $localChocolateyPath = Get-Content "local-chocolatey-path.txt"
-#  #copy chocolatey\TypeGen.1.5.11.nupkg $localChocolateyPath
-#}
+if (Test-Path "local-chocolatey-path.txt") {
+  $localChocolateyPath = Get-Content "local-chocolatey-path.txt"
+  copy chocolatey\TypeGen.1.5.11.nupkg $localChocolateyPath
+}

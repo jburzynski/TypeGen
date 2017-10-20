@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using TypeGen.Cli.Utils;
-using TypeGen.Cli.Extensions;
+using TypeGen.Core.Utils;
+using TypeGen.Core.Extensions;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {
+    /// <summary>
+    /// For ASP.NET versions older than ASP.NET Core (addFilesToProject parameter)
+    /// </summary>
     internal class ProjectFileManager
     {
         private const string TypeScriptCompileXPath = "/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='TypeScriptCompile']";

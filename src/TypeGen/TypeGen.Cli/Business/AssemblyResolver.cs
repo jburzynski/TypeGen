@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TypeGen.Core.Storage;
+using TypeGen.Core.Business;
 
 namespace TypeGen.Cli.Business
 {

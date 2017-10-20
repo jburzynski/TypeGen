@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Cli.Models;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {

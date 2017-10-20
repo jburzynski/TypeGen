@@ -38,10 +38,30 @@ namespace TypeGen.Core.Storage
         /// <returns></returns>
         public bool FileExists(string filePath) => File.Exists(filePath);
 
+        /// <summary>
+        /// Searches recursively for a file in a directory
+        /// </summary>
+        /// <param name="rootDirectory"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public string[] GetFilesRecursive(string rootDirectory, string fileName)
         {
             return Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
         }
+
+        /// <summary>
+        /// Checks if the directory exists
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        public bool DirectoryExists(string directory) => Directory.Exists(directory);
+
+        /// <summary>
+        /// Gets all files in a directory
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        public string[] GetDirectoryFiles(string directory) => Directory.GetFiles(directory);
 
         /// <summary>
         /// Gets path prefix required to navigate from path1 to path2.

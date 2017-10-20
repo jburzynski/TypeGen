@@ -12,7 +12,9 @@ using TypeGen.Cli;
 using TypeGen.Cli.Business;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
-using TypeGen.Cli.Extensions;
+using TypeGen.Core.Business;
+using TypeGen.Core.Extensions;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli
 {
@@ -77,7 +79,10 @@ namespace TypeGen.Cli
             }
             catch (AssemblyResolutionException e)
             {
-                _logger.Log(e.Message, e.StackTrace);
+                string message = e.Message +
+                                 "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
+                                 "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (you can use global NuGet packages directory alias: \"<global-packages>\")";
+                _logger.Log(message, e.StackTrace);
             }
             catch (ReflectionTypeLoadException e)
             {
@@ -92,9 +97,6 @@ namespace TypeGen.Cli
                 _logger.Log($"GENERIC ERROR: {e.Message}",
                     e.StackTrace);
             }
-
-            // debug only
-            //Console.Read();
         }
 
         private static void Generate(string projectFolder, string configPath, bool verbose)

@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
-using TypeGen.Cli.Extensions;
+using TypeGen.Core.Extensions;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {

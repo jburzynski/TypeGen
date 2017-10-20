@@ -8,38 +8,6 @@ namespace TypeGen.Core.Extensions
     internal static class EnumerableExtensions
     {
         /// <summary>
-        /// Removes members marked with TsIgnore attribute
-        /// </summary>
-        /// <param name="memberInfos"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
-        {
-            return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
-        }
-
-        /// <summary>
-        /// Filters members for TypeScript export
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="memberInfos"></param>
-        /// <returns></returns>
-        public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
-        {
-            return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
-        }
-
-        /// <summary>
-        /// Filters members for TypeScript export
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="memberInfos"></param>
-        /// <returns></returns>
-        public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
-        {
-            return memberInfos.Where(i => i.CanRead && !i.GetMethod.IsStatic);
-        }
-
-        /// <summary>
         /// Checks if element is in a given set of elements
         /// </summary>
         /// <param name="element"></param>
@@ -59,6 +27,30 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.Where(v => v != null);
+        }
+
+        /// <summary>
+        /// Checks if an array has the specified index
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static bool HasIndex<T>(this T[] array, int index)
+        {
+            return array?.Length >= index + 1;
+        }
+
+        /// <summary>
+        /// Checks if an enumerable is empty
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null) return true;
+            return !enumerable.Any();
         }
     }
 }
