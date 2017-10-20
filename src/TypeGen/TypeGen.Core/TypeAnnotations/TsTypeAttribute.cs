@@ -15,9 +15,9 @@ namespace TypeGen.Core.TypeAnnotations
         public string TypeName { get; set; }
 
         /// <summary>
-        /// Type name without special characters ([], &lt;&gt;, ?)
+        /// Type name without special characters ([], &lt;&gt;)
         /// </summary>
-        public string FlatTypeName => TypeName?.Split('[', '<', '?').First();
+        public string FlatTypeName => TypeName?.Split('[', '<').First();
 
         /// <summary>
         /// The path of the file to import (can be left null if no imports are required)
