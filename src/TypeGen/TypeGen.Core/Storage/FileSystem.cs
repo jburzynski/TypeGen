@@ -57,7 +57,7 @@ namespace TypeGen.Core.Storage
         public bool DirectoryExists(string directory) => Directory.Exists(directory);
 
         /// <summary>
-        /// Gets all files in a directory
+        /// Gets all files in a directory (only files, not directories)
         /// </summary>
         /// <param name="directory"></param>
         /// <returns></returns>

@@ -26,9 +26,7 @@ namespace TypeGen.Cli
         private static readonly ConfigProvider _configProvider;
         private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
         private static readonly ProjectFileManager _projectFileManager;
-        private static readonly AssemblyResolver _assemblyResolver;
-
-        private static IList<string> _externalAssemblies;
+        private static AssemblyResolver _assemblyResolver;
 
         static Program()
         {
@@ -38,7 +36,6 @@ namespace TypeGen.Cli
             _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer());
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
-            _assemblyResolver = new AssemblyResolver(_fileSystem);
         }
 
         private static void Main(string[] args)
@@ -66,6 +63,8 @@ namespace TypeGen.Cli
                 {
                     string projectFolder = projectFolders[i];
                     string configPath = configPaths.HasIndex(i) ? configPaths[i] : null;
+
+                    _assemblyResolver = new AssemblyResolver(_fileSystem, projectFolder);
 
                     _logger.Log($"Generating files for project \"{projectFolder}\"...");
                     Generate(projectFolder, configPath, verbose);

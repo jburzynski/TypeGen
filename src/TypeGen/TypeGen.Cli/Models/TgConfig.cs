@@ -58,15 +58,14 @@ namespace TypeGen.Cli.Models
 
         public TgConfig Normalize()
         {
-            ReplaceAllTags();
-            return this;
-        }
+            if (ExternalAssemblyPaths.Contains("<global-packages>"))
+            {
+                List<string> newExternalAssemblyPaths = ExternalAssemblyPaths.ToList();
+                newExternalAssemblyPaths.Remove("<global-packages>");
+                ExternalAssemblyPaths = newExternalAssemblyPaths.ToArray();
+            }
 
-        private void ReplaceAllTags()
-        {
-            AssemblyPath = ReplacePathTags(AssemblyPath);
-            ExternalAssemblyPaths = ExternalAssemblyPaths.Select(ReplacePathTags).ToArray();
-            OutputPath = ReplacePathTags(OutputPath);
+            return this;
         }
 
         public TgConfig MergeWithDefaultParams()
@@ -90,16 +89,6 @@ namespace TypeGen.Cli.Models
             return Assemblies.IsNullOrEmpty() ?
                 new[] { AssemblyPath } :
                 Assemblies;
-        }
-
-        private static string GetTag(string name)
-        {
-            return $"<{name}>";
-        }
-
-        private static string ReplacePathTags(string path)
-        {
-            return path?.Replace(GetTag("global-packages"), CliSettings.GlobalPackagesPath);
         }
     }
 }
