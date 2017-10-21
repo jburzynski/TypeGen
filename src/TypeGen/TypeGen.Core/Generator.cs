@@ -332,8 +332,9 @@ namespace TypeGen.Core
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
+            bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
 
-            return _templateService.FillInterfacePropertyTemplate(name, typeName);
+            return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
         }
 
         /// <summary>

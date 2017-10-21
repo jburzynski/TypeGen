@@ -85,10 +85,11 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("customBody"), customBody);
         }
 
-        public string FillInterfacePropertyTemplate(string name, string type)
+        public string FillInterfacePropertyTemplate(string name, string type, bool isOptional)
         {
             return ReplaceSpecialChars(_interfacePropertyTemplate)
                 .Replace(GetTag("name"), name)
+                .Replace(GetTag("modifier"), isOptional ? "?" : "")
                 .Replace(GetTag("type"), type);
         }
 
