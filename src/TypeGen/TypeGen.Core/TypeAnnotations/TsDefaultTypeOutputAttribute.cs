@@ -8,7 +8,10 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class TsDefaultTypeOutputAttribute : Attribute
     {
-        public string OutputDir { get; private set; }
+        /// <summary>
+        /// The file's default output directory
+        /// </summary>
+        public string OutputDir { get; set; }
 
         public TsDefaultTypeOutputAttribute(string outputDir)
         {

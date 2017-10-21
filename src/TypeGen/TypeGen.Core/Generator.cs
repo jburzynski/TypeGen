@@ -187,33 +187,7 @@ namespace TypeGen.Core
         /// <param name="classAttribute"></param>
         private GenerationResult GenerateClass(Type type, ExportTsClassAttribute classAttribute)
         {
-            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, classAttribute.OutputDir);
-
-            // get text for sections
-
-            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
-            string importsText = _tsContentGenerator.GetImportsText(type, classAttribute.OutputDir, Options.FileNameConverters, Options.TypeNameConverters);
-            string propertiesText = GetClassPropertiesText(type);
-
-            // generate the file content
-
-            string tsClassName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
-            string filePath = GetFilePath(type, classAttribute.OutputDir);
-            string filePathRelative = GetRelativeFilePath(type, classAttribute.OutputDir);
-            string customHead = _tsContentGenerator.GetCustomHead(filePath);
-            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
-
-            string classText = _templateService.FillClassTemplate(importsText, tsClassName, extendsText, propertiesText, customHead, customBody);
-
-            // write TypeScript file
-
-            _fileSystem.SaveFile(filePath, classText);
-
-            return new GenerationResult
-            {
-                GeneratedFiles = new[] { filePathRelative }
-                .Concat(dependenciesGenerationResult.GeneratedFiles)
-            };
+            return GenerateClassOrInterface(type, classAttribute, null);
         }
 
         /// <summary>
@@ -223,32 +197,44 @@ namespace TypeGen.Core
         /// <param name="interfaceAttribute"></param>
         private GenerationResult GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
-            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, interfaceAttribute.OutputDir);
+            return GenerateClassOrInterface(type, null, interfaceAttribute);
+        }
+
+        private GenerationResult GenerateClassOrInterface(Type type, ExportTsClassAttribute classAttribute, ExportTsInterfaceAttribute interfaceAttribute)
+        {
+            string outputDir = classAttribute != null ? classAttribute.OutputDir : interfaceAttribute.OutputDir;
+            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, outputDir);
 
             // get text for sections
 
-            string extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
-            string importsText = _tsContentGenerator.GetImportsText(type, interfaceAttribute.OutputDir, Options.FileNameConverters, Options.TypeNameConverters);
-            string propertiesText = GetInterfacePropertiesText(type);
+            var tsCustomBaseAttribute = type.GetCustomAttribute<TsCustomBaseAttribute>();
+            string extendsText = tsCustomBaseAttribute != null ?
+                tsCustomBaseAttribute.Base :
+                _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+
+            string importsText = _tsContentGenerator.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
+            string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
 
             // generate the file content
 
-            string tsInterfaceName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
-            string filePath = GetFilePath(type, interfaceAttribute.OutputDir);
-            string filePathRelative = GetRelativeFilePath(type, interfaceAttribute.OutputDir);
+            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string filePath = GetFilePath(type, outputDir);
+            string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string interfaceText = _templateService.FillInterfaceTemplate(importsText, tsInterfaceName, extendsText, propertiesText, customHead, customBody);
+            string content = classAttribute != null ?
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody) :
+                _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody);
 
             // write TypeScript file
 
-            _fileSystem.SaveFile(filePath, interfaceText);
+            _fileSystem.SaveFile(filePath, content);
 
             return new GenerationResult
             {
                 GeneratedFiles = new[] { filePathRelative }
-                .Concat(dependenciesGenerationResult.GeneratedFiles)
+                    .Concat(dependenciesGenerationResult.GeneratedFiles)
             };
         }
 
