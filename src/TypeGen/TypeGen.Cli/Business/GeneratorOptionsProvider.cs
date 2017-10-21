@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
@@ -43,7 +44,9 @@ namespace TypeGen.Cli.Business
                 FileNameConverters = GetTypeNameConvertersFromConfig(config.FileNameConverters, assemblies, projectFolder, logVerbose),
                 TypeNameConverters = GetTypeNameConvertersFromConfig(config.TypeNameConverters, assemblies, projectFolder, logVerbose),
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assemblies, projectFolder, logVerbose),
-                EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose)
+                EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose),
+                StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
+                CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags()
             };
         }
 

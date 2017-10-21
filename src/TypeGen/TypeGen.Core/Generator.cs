@@ -35,19 +35,11 @@ namespace TypeGen.Core
         /// </summary>
         public GeneratorOptions Options
         {
-            get
-            {
-                return _options;
-            }
+            get => _options;
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(Options));
-                }
-
-                _options = value;
+                _options = value ?? throw new ArgumentNullException(nameof(Options));
 
                 if (_templateService != null)
                 {
@@ -279,7 +271,7 @@ namespace TypeGen.Core
 
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
+            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
             
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
@@ -324,7 +316,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters);
+            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
             bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);

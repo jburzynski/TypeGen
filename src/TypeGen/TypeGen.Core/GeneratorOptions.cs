@@ -20,6 +20,8 @@ namespace TypeGen.Core
         public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
+        public static bool DefaultStrictNullChecks => false;
+        public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
 
         public GeneratorOptions()
         {
@@ -78,5 +80,15 @@ namespace TypeGen.Core
         /// Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
         /// </summary>
         public string BaseOutputDirectory { get; set; }
+
+        /// <summary>
+        /// Whether to enable --strictNullChecks functionality in generated TypeScript code
+        /// </summary>
+        public bool StrictNullChecks { get; set; }
+
+        /// <summary>
+        /// Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
+        /// </summary>
+        public StrictNullFlags CsNullableTranslation { get; set; }
     }
 }

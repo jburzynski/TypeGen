@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using TypeGen.Cli.Extensions;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
@@ -56,6 +57,12 @@ namespace TypeGen.Cli.Models
         [DataMember(Name = "outputPath")]
         public string OutputPath { get; set; }
 
+        [DataMember(Name = "strictNullChecks")]
+        public bool? StrictNullChecks { get; set; }
+
+        [DataMember(Name = "csNullableTranslation")]
+        public string CsNullableTranslation { get; set; }
+
         public TgConfig Normalize()
         {
             if (ExternalAssemblyPaths.Contains("<global-packages>"))
@@ -81,6 +88,8 @@ namespace TypeGen.Cli.Models
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
+            if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
+            if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             return this;
         }
 

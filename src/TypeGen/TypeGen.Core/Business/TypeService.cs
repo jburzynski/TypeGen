@@ -138,8 +138,8 @@ namespace TypeGen.Core.Business
                 throw new CoreException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
             }
 
-            return memberInfo is PropertyInfo
-                ? GetUnderlyingType(((PropertyInfo)memberInfo).PropertyType)
+            return memberInfo is PropertyInfo info
+                ? GetUnderlyingType(info.PropertyType)
                 : GetUnderlyingType(((FieldInfo)memberInfo).FieldType);
         }
 
@@ -251,9 +251,13 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <param name="typeNameConverters"></param>
+        /// <param name="strictNullChecks"></param>
+        /// <param name="csNullableTranslation"></param>
         /// <returns></returns>
-        public string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        public string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation)
         {
+            string typeUnionSuffix = strictNullChecks ? GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation) : "";
+
             var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
             if (typeAttribute != null)
             {
@@ -261,10 +265,31 @@ namespace TypeGen.Core.Business
                 {
                     throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
                 }
-                return typeAttribute.TypeName;
+                return typeAttribute.TypeName + typeUnionSuffix;
             }
 
-            return GetTsTypeName(memberInfo, typeNameConverters, isMember: true);
+            return GetTsTypeName(memberInfo, typeNameConverters, isMember: true) + typeUnionSuffix;
+        }
+
+        private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo, StrictNullFlags csNullableTranslation)
+        {
+            Type memberType = memberInfo is PropertyInfo info
+                ? info.PropertyType
+                : ((FieldInfo)memberInfo).FieldType;
+
+            StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? csNullableTranslation : StrictNullFlags.Regular;
+
+            if (memberInfo.GetCustomAttribute<TsNullAttribute>() != null) flags |= StrictNullFlags.Null;
+            if (memberInfo.GetCustomAttribute<TsUndefinedAttribute>() != null) flags |= StrictNullFlags.Undefined;
+
+            if (memberInfo.GetCustomAttribute<TsNotNullAttribute>() != null) flags &= ~StrictNullFlags.Null;
+            if (memberInfo.GetCustomAttribute<TsNotUndefinedAttribute>() != null) flags &= ~StrictNullFlags.Undefined;
+
+            var result = "";
+            if (flags.HasFlag(StrictNullFlags.Null)) result += " | null";
+            if (flags.HasFlag(StrictNullFlags.Undefined)) result += " | undefined";
+
+            return result;
         }
 
         /// <summary>
