@@ -208,9 +208,16 @@ namespace TypeGen.Core
             // get text for sections
 
             var tsCustomBaseAttribute = type.GetCustomAttribute<TsCustomBaseAttribute>();
-            string extendsText = tsCustomBaseAttribute != null ?
-                tsCustomBaseAttribute.Base :
-                _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+            var extendsText = "";
+
+            if (tsCustomBaseAttribute != null)
+            {
+                extendsText = tsCustomBaseAttribute.Base;
+            }
+            else if (type.GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
+            {
+                extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+            }
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
             string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
