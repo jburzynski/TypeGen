@@ -199,14 +199,14 @@ namespace TypeGen.Core
 
             // get text for sections
 
-            var tsCustomBaseAttribute = type.GetCustomAttribute<TsCustomBaseAttribute>();
+            var tsCustomBaseAttribute = type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>();
             var extendsText = "";
 
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = tsCustomBaseAttribute.Base;
             }
-            else if (type.GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
+            else if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             }

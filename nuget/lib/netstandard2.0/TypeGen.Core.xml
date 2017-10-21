@@ -4,6 +4,11 @@
         <name>TypeGen.Core</name>
     </assembly>
     <members>
+        <member name="T:TypeGen.Core.Business.AssemblyResolutionException">
+            <summary>
+            An exception that is thrown when assembly reference cannot be resolved
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.Business.TemplateService">
             <summary>
             Contains logic for filling templates with data
@@ -250,12 +255,14 @@
             <exception cref="T:System.ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
             <exception cref="T:TypeGen.Core.CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection,System.Boolean,TypeGen.Core.StrictNullFlags)">
             <summary>
             Gets the TypeScript type name to generate for a member
             </summary>
             <param name="memberInfo"></param>
             <param name="typeNameConverters"></param>
+            <param name="strictNullChecks"></param>
+            <param name="csNullableTranslation"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.GetTsDictionaryTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
@@ -454,29 +461,6 @@
             <param name="assembly"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Removes members marked with TsIgnore attribute
-            </summary>
-            <param name="memberInfos"></param>
-            <returns></returns>
-        </member>
-        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
-            <summary>
-            Filters members for TypeScript export
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memberInfos"></param>
-            <returns></returns>
-        </member>
-        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
-            <summary>
-            Filters members for TypeScript export
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memberInfos"></param>
-            <returns></returns>
-        </member>
         <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.In``1(``0,``0[])">
             <summary>
             Checks if element is in a given set of elements
@@ -493,24 +477,21 @@
             <param name="enumerable"></param>
             <returns></returns>
         </member>
-        <member name="T:TypeGen.Core.Extensions.FileSystemExtensions">
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.HasIndex``1(``0[],System.Int32)">
             <summary>
-            Extensions for filesystem-related operations
+            Checks if an array has the specified index
             </summary>
-        </member>
-        <member name="M:TypeGen.Core.Extensions.FileSystemExtensions.NormalizePath(System.String)">
-            <summary>
-            Normalizes a path to [..\ | .\]this\path\format
-            </summary>
-            <param name="path"></param>
+            <typeparam name="T"></typeparam>
+            <param name="array"></param>
+            <param name="index"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.FileSystemExtensions.ConcatPath(System.String,System.String)">
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.IsNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
-            Adds a new path segment to the existing path
+            Checks if an enumerable is empty
             </summary>
-            <param name="path"></param>
-            <param name="newSection"></param>
+            <typeparam name="T"></typeparam>
+            <param name="enumerable"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Extensions.IntExtensions.Times(System.Int32,System.Action{System.Int32})">
@@ -586,6 +567,36 @@
             Gets all types marked with ExportTs... attributes
             </summary>
             <param name="types"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Removes members marked with TsIgnore attribute
+            </summary>
+            <param name="memberInfos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
+            <summary>
+            Filters members for TypeScript export
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memberInfos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
+            <summary>
+            Filters members for TypeScript export
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memberInfos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetTypeNames(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Maps an enumerable to an enumerable of the elements' type names
+            </summary>
+            <param name="enumerable"></param>
             <returns></returns>
         </member>
         <member name="T:TypeGen.Core.GenerationContext">
@@ -847,6 +858,16 @@
             Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.StrictNullChecks">
+            <summary>
+            Whether to enable --strictNullChecks functionality in generated TypeScript code
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.CsNullableTranslation">
+            <summary>
+            Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.IGenerator">
             <summary>
             Interface for a TypeScript generator class
@@ -890,23 +911,35 @@
             <param name="filePath"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Storage.FileSystem.GetPathDiff(System.String,System.String)">
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetFilesRecursive(System.String,System.String)">
             <summary>
-            Gets path prefix required to navigate from path1 to path2.
-            E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\".
-            This method returns a path with a trailing slash if diff is not empty; otherwise returns an empty string.
+            Searches recursively for a file in a directory
             </summary>
-            <param name="path1"></param>
-            <param name="path2"></param>
+            <param name="rootDirectory"></param>
+            <param name="fileName"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Storage.FileSystem.GetMaximalCommonPathPrefix(System.String,System.String)">
+        <member name="M:TypeGen.Core.Storage.FileSystem.DirectoryExists(System.String)">
             <summary>
-            Gets maximal common path prefix for two absolute, normalized paths (case-insensitive).
-            The resulting prefix doesn't end with a slash.
+            Checks if the directory exists
             </summary>
-            <param name="path1"></param>
-            <param name="path2"></param>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetDirectoryFiles(System.String)">
+            <summary>
+            Gets all files in a directory (only files, not directories)
+            </summary>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetPathDiff(System.String,System.String)">
+            <summary>
+            Gets path prefix required to navigate from pathFrom to pathTo.
+            E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\"
+            </summary>
+            <param name="pathFrom"></param>
+            <param name="pathTo"></param>
             <returns></returns>
         </member>
         <member name="T:TypeGen.Core.Storage.InternalStorage">
@@ -920,6 +953,26 @@
             </summary>
             <param name="name"></param>
             <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.StrictNullFlags">
+            <summary>
+            Represents flags used in TypeScript strict null checking mode
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullFlags.Regular">
+            <summary>
+            Not null and not undefined
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullFlags.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullFlags.Undefined">
+            <summary>
+            Undefined
+            </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.ExportAttribute">
             <summary>
@@ -951,9 +1004,25 @@
             Indentifies a class that a TypeScript interface file should be generated for
             </summary>
         </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute">
+            <summary>
+            Specifies custom base class definition for a TypeScript class or interface.
+            Base class definition is empty if no content is specified.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.Base">
+            <summary>
+            Base class/interface definition text
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute">
             <summary>
             Specifies the generated TypeScript type's default output directory.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute.OutputDir">
+            <summary>
+            The file's default output directory
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultValueAttribute">
@@ -971,6 +1040,12 @@
             Identifies a property that should be ignored when generating a TypeScript file
             </summary>
         </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsIgnoreBaseAttribute">
+            <summary>
+            Marked TypeScript classes/interfaces will not have base type definition.
+            Also, base classes/interfaces will not be generated if they're not marked with an ExportTs... attribute.
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsMemberNameAttribute">
             <summary>
             Specifies the generated member's name
@@ -979,6 +1054,26 @@
         <member name="P:TypeGen.Core.TypeAnnotations.TsMemberNameAttribute.Name">
             <summary>
             The member's name
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotNullAttribute">
+            <summary>
+            Identifies a non-nullable TypeScript property (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotUndefinedAttribute">
+            <summary>
+            Identifies a TypeScript property that cannot be set to undefined (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNullAttribute">
+            <summary>
+            Identifies a nullable TypeScript property (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsOptionalAttribute">
+            <summary>
+            Identifies an optional interface property
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsType">
@@ -998,7 +1093,7 @@
         </member>
         <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.FlatTypeName">
             <summary>
-            Type name without special characters ([], &lt;&gt;, ?)
+            Type name without special characters ([], &lt;&gt;)
             </summary>
         </member>
         <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.ImportPath">
@@ -1024,6 +1119,11 @@
         <member name="T:TypeGen.Core.TypeAnnotations.TsTypeAttributeComparer">
             <summary>
             A comparer class that compares TsTypeAttribute properties
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsUndefinedAttribute">
+            <summary>
+            Identifies a TypeScript property that can be set to undefined (used only with enabled strict null checking mode)
             </summary>
         </member>
         <member name="T:TypeGen.Core.Utils.FileSystemUtils">

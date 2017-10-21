@@ -60,7 +60,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (type.GetCustomAttribute<TsIgnoreBaseAttribute>() != null) yield break;
+            if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() != null) yield break;
 
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) yield break;

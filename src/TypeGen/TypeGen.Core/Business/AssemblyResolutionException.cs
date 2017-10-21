@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,14 +9,9 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// An exception that is thrown when assembly reference cannot be resolved
     /// </summary>
-    internal class AssemblyResolutionException : ApplicationException
+    internal class AssemblyResolutionException : CoreException
     {
         public AssemblyResolutionException()
-        {
-        }
-
-        public AssemblyResolutionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 

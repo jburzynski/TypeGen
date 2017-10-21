@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>1.5.11</version>
+    <version>1.6.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
 	<title>TypeGen</title>
