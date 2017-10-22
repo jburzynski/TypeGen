@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NuGet.Configuration;
+using TypeGen.Cli.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Business;
 
@@ -14,15 +15,23 @@ namespace TypeGen.Cli.Business
     internal class AssemblyResolver
     {
         private readonly FileSystem _fileSystem;
+        private readonly string _projectFolder;
 
-        public IEnumerable<string> Directories { get; set; }
+        private IEnumerable<string> _directories;
+        public IEnumerable<string> Directories
+        {
+            get => _directories;
+            set => _directories = value?.Select(d => Path.IsPathRooted(d) ? d : Path.Combine(_projectFolder, d));
+        }
+
         private readonly IEnumerable<string> _nugetPackagesFolders;
 
         public AssemblyResolver(FileSystem fileSystem, string projectFolder)
         {
             _fileSystem = fileSystem;
+            _projectFolder = projectFolder.ToAbsolutePath();
 
-            NuGetPathContext nugetPathContext = NuGetPathContext.Create(projectFolder);
+            NuGetPathContext nugetPathContext = NuGetPathContext.Create(_projectFolder);
             _nugetPackagesFolders = nugetPathContext.FallbackPackageFolders;
 
             if (!string.IsNullOrWhiteSpace(nugetPathContext.UserPackageFolder))

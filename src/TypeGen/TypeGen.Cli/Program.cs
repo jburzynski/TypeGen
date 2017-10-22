@@ -158,8 +158,8 @@ namespace TypeGen.Cli
         private static void ShowHelp()
         {
             _logger.Log($"TypeGen v{AppConfig.Version}",
-                "Usage: TypeGen ProjectFolder1[:ProjectFolder2:(...)] [-Config-Path \"path1[:path2:(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
-                "For more information please visit project's GitHub page: https://github.com/jburzynski/TypeGen");
+                "Usage: TypeGen ProjectFolder1[|ProjectFolder2|(...)] [-Config-Path \"path1[|path2|(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
+                "For more information please visit project's website: http://jburzynski.net/TypeGen");
         }
     }
 }
