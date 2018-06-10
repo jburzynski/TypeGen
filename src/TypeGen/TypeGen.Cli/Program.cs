@@ -112,7 +112,7 @@ namespace TypeGen.Cli
 
             if (config.OutputPath == null)
             {
-                _logger.Log("ERROR: Your config doesn't contain an outputPath.");
+                _logger.Log("ERROR: Your config has to specify an outputPath.");
                 return false;
             }
 
