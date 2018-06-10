@@ -67,8 +67,10 @@ namespace TypeGen.Cli
                     _assemblyResolver = new AssemblyResolver(_fileSystem, projectFolder);
 
                     _logger.Log($"Generating files for project \"{projectFolder}\"...");
-                    Generate(projectFolder, configPath, verbose);
-                    _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
+                    if (Generate(projectFolder, configPath, verbose))
+                    {
+                        _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
+                    }
                 }
             }
             catch (Exception e) when (e is CliException || e is CoreException)
@@ -98,7 +100,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath, bool verbose)
+        private static bool Generate(string projectFolder, string configPath, bool verbose)
         {
             // get config
 
@@ -107,6 +109,12 @@ namespace TypeGen.Cli
                 : Path.Combine(projectFolder, "tgconfig.json");
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
+
+            if (config.OutputPath == null)
+            {
+                _logger.Log("ERROR: Your config doesn't contain an outputPath.");
+                return false;
+            }
 
             // register assembly resolver
 
@@ -136,6 +144,8 @@ namespace TypeGen.Cli
             // unregister assembly resolver
 
             _assemblyResolver.Unregister();
+
+            return true;
         }
 
         private static void AddFilesToProject(string projectFolder, IEnumerable<string> generatedFiles)
