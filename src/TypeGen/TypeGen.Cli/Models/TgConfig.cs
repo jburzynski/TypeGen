@@ -90,6 +90,7 @@ namespace TypeGen.Cli.Models
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
+            if (OutputPath == null) OutputPath = "";
             return this;
         }
 
