@@ -51,7 +51,10 @@
           "System.Threading.Thread": "4.0.0"
         },
         "runtime": {
-          "lib/netstandard1.3/NuGet.Common.dll": {}
+          "lib/netstandard1.3/NuGet.Common.dll": {
+            "assemblyVersion": "4.3.0.5",
+            "fileVersion": "4.3.0.4339"
+          }
         }
       },
       "NuGet.Configuration/4.3.0": {
@@ -61,12 +64,18 @@
           "System.Xml.XDocument": "4.0.11"
         },
         "runtime": {
-          "lib/netstandard1.3/NuGet.Configuration.dll": {}
+          "lib/netstandard1.3/NuGet.Configuration.dll": {
+            "assemblyVersion": "4.3.0.5",
+            "fileVersion": "4.3.0.4339"
+          }
         }
       },
       "NuGet.Frameworks/4.3.0": {
         "runtime": {
-          "lib/netstandard1.3/NuGet.Frameworks.dll": {}
+          "lib/netstandard1.3/NuGet.Frameworks.dll": {
+            "assemblyVersion": "4.3.0.5",
+            "fileVersion": "4.3.0.4339"
+          }
         }
       },
       "runtime.native.System/4.0.0": {
@@ -407,11 +416,15 @@
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.3/System.Security.Cryptography.ProtectedData.dll": {
             "rid": "unix",
-            "assetType": "runtime"
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "1.0.24212.1"
           },
           "runtimes/win/lib/netstandard1.3/System.Security.Cryptography.ProtectedData.dll": {
             "rid": "win",
-            "assetType": "runtime"
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "1.0.24212.1"
           }
         }
       },
