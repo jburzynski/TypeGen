@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NuGet.Configuration;
 using TypeGen.Cli.Extensions;
@@ -52,8 +53,6 @@ namespace TypeGen.Cli.Business
 
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            string assemblyFileName = GetAssemblyFileName(args.Name);
-
             // step 1 - search by assembly name (nuget global + nuget fallback + user-defined)
 
             // nuget
@@ -66,12 +65,15 @@ namespace TypeGen.Cli.Business
 
             // step 2 - search recursively (nuget global + nuget fallback + user-defined)
 
+            string assemblyFileName = GetAssemblyFileName(args.Name);
+            string assemblyVersion = GetAssemblyVersion(args.Name);
+
             // nuget
-            assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName);
+            assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             if (assembly != null) return assembly;
 
             // user-defined
-            assembly = FindRecursive(Directories, assemblyFileName);
+            assembly = FindRecursive(Directories, assemblyFileName, assemblyVersion);
             if (assembly != null) return assembly;
 
             // exception if assembly not found
@@ -88,9 +90,10 @@ namespace TypeGen.Cli.Business
         {
             string assemblyShortName = GetAssemblyShortName(assemblyFullName);
             string assemblyFileName = GetAssemblyFileName(assemblyFullName);
+            string assemblyVersion = GetAssemblyVersion(assemblyFullName);
 
             string packageFolder = GetPackageFolder(directory, assemblyShortName);
-            return packageFolder == null ? null : FindRecursive(packageFolder, assemblyFileName);
+            return packageFolder == null ? null : FindRecursive(packageFolder, assemblyFileName, assemblyVersion);
         }
 
         private string GetPackageFolder(string root, string assemblyFolder)
@@ -108,24 +111,25 @@ namespace TypeGen.Cli.Business
             return null;
         }
 
-        private Assembly FindRecursive(IEnumerable<string> directories, string assemblyFileName)
+        private Assembly FindRecursive(IEnumerable<string> directories, string assemblyFileName, string assemblyVersion)
         {
-            return directories.Select(directory => FindRecursive(directory, assemblyFileName)).FirstOrDefault(assembly => assembly != null);
+            return directories.Select(directory => FindRecursive(directory, assemblyFileName, assemblyVersion)).FirstOrDefault(assembly => assembly != null);
         }
 
-        private Assembly FindRecursive(string directory, string assemblyFileName)
+        private Assembly FindRecursive(string directory, string assemblyFileName, string assemblyVersion)
         {
             string[] foundPaths = _fileSystem.GetFilesRecursive(directory, assemblyFileName);
-            return foundPaths.Any() ? ResolveFromPaths(foundPaths) : null;
+            return foundPaths.Any() ? ResolveFromPaths(foundPaths, assemblyVersion) : null;
         }
 
-        private Assembly ResolveFromPaths(IEnumerable<string> paths)
+        private Assembly ResolveFromPaths(IEnumerable<string> paths, string assemblyVersion)
         {
             foreach (string path in paths)
             {
                 try
                 {
-                    return Assembly.LoadFrom(path);
+                    Assembly assembly = Assembly.LoadFrom(path);
+                    if (assembly.GetName().Version.ToString() == assemblyVersion) return assembly;
                 }
                 catch (BadImageFormatException)
                 {
@@ -143,6 +147,12 @@ namespace TypeGen.Cli.Business
         private string GetAssemblyFileName(string assemblyFullName)
         {
             return GetAssemblyShortName(assemblyFullName) + ".dll";
+        }
+
+        private string GetAssemblyVersion(string assemblyFullName)
+        {
+            Match match = Regex.Match(assemblyFullName, "Version=(.+?),");
+            return match.Success ? match.Groups[1].Value : throw new CliException($"Could not determine assembly version of assembly: ${assemblyFullName}");
         }
     }
 }
