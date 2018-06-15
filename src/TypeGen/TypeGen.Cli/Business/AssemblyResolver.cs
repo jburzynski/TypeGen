@@ -139,7 +139,7 @@ namespace TypeGen.Cli.Business
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFrom(path);
+                    Assembly assembly = Assembly.LoadFile(path);
                     if (assembly.GetName().Version.ToString() == assemblyVersion) return assembly;
                 }
                 catch (BadImageFormatException)
