@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using NuGet.Configuration;
 using TypeGen.Cli.Extensions;
 using TypeGen.Core.Storage;
@@ -15,6 +13,9 @@ namespace TypeGen.Cli.Business
 {
     internal class AssemblyResolver
     {
+        private const string GlobalFallbackPath = @"C:\Program Files\dotnet\sdk\NuGetFallbackFolder";
+        private const string SharedPath = @"C:\Program Files\dotnet\shared";
+
         private readonly FileSystem _fileSystem;
         private readonly string _projectFolder;
 
@@ -25,20 +26,26 @@ namespace TypeGen.Cli.Business
             set => _directories = value?.Select(d => Path.IsPathRooted(d) ? d : Path.Combine(_projectFolder, d));
         }
 
-        private readonly IEnumerable<string> _nugetPackagesFolders;
+        private string _sharedFolder;
+        private List<string> _nugetPackagesFolders;
 
         public AssemblyResolver(FileSystem fileSystem, string projectFolder)
         {
             _fileSystem = fileSystem;
             _projectFolder = projectFolder.ToAbsolutePath();
 
-            NuGetPathContext nugetPathContext = NuGetPathContext.Create(_projectFolder);
-            _nugetPackagesFolders = nugetPathContext.FallbackPackageFolders;
+            if (Directory.Exists(SharedPath)) _sharedFolder = SharedPath;
+            PopulateNuGetPackageFolders();
+        }
 
-            if (!string.IsNullOrWhiteSpace(nugetPathContext.UserPackageFolder))
-            {
-                _nugetPackagesFolders = _nugetPackagesFolders.Concat(new[] { nugetPathContext.UserPackageFolder });
-            }
+        private void PopulateNuGetPackageFolders()
+        {
+            NuGetPathContext nugetPathContext = NuGetPathContext.Create(_projectFolder);
+            _nugetPackagesFolders = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(nugetPathContext.UserPackageFolder)) _nugetPackagesFolders.Add(nugetPathContext.UserPackageFolder);
+            _nugetPackagesFolders.AddRange(nugetPathContext.FallbackPackageFolders);
+            if (!_nugetPackagesFolders.Contains(GlobalFallbackPath) && Directory.Exists(GlobalFallbackPath)) _nugetPackagesFolders.Add(GlobalFallbackPath);
         }
 
         public void Register()
@@ -56,24 +63,28 @@ namespace TypeGen.Cli.Business
             // step 1 - search by assembly name (nuget global + nuget fallback + user-defined)
 
             // nuget
-            Assembly assembly = FindByAssemblyName(_nugetPackagesFolders, args.Name);
+            Assembly assembly = FindByPackageName(_nugetPackagesFolders, args.Name);
             if (assembly != null) return assembly;
 
             // user-defined
-            assembly = FindByAssemblyName(Directories, args.Name);
+            assembly = FindByPackageName(Directories, args.Name);
             if (assembly != null) return assembly;
 
-            // step 2 - search recursively (nuget global + nuget fallback + user-defined)
+            // step 2 - search recursively (shared + user-defined + nuget global + nuget fallback)
 
             string assemblyFileName = GetAssemblyFileName(args.Name);
             string assemblyVersion = GetAssemblyVersion(args.Name);
 
-            // nuget
-            assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
+            // shared
+            assembly = FindRecursive(_sharedFolder, assemblyFileName, assemblyVersion);
             if (assembly != null) return assembly;
 
             // user-defined
             assembly = FindRecursive(Directories, assemblyFileName, assemblyVersion);
+            if (assembly != null) return assembly;
+
+            // nuget
+            assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             if (assembly != null) return assembly;
 
             // exception if assembly not found
@@ -81,12 +92,12 @@ namespace TypeGen.Cli.Business
             throw new AssemblyResolutionException($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", Directories)}");
         }
 
-        private Assembly FindByAssemblyName(IEnumerable<string> directories, string assemblyFullName)
+        private Assembly FindByPackageName(IEnumerable<string> directories, string assemblyFullName)
         {
-            return directories.Select(directory => FindByAssemblyName(directory, assemblyFullName)).FirstOrDefault(assembly => assembly != null);
+            return directories.Select(directory => FindByPackageName(directory, assemblyFullName)).FirstOrDefault(assembly => assembly != null);
         }
 
-        private Assembly FindByAssemblyName(string directory, string assemblyFullName)
+        private Assembly FindByPackageName(string directory, string assemblyFullName)
         {
             string assemblyShortName = GetAssemblyShortName(assemblyFullName);
             string assemblyFileName = GetAssemblyFileName(assemblyFullName);
