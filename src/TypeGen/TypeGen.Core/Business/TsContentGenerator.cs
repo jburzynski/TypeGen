@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -112,7 +113,7 @@ namespace TypeGen.Core.Business
                 string fileName = fileNameConverters.Convert(typeDependencyName, typeDependency);
 
                 // get file path
-                string dependencyPath = pathDiff + fileName;
+                string dependencyPath = Path.Combine(pathDiff, fileName);
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = typeNameConverters.Convert(typeDependencyName, typeDependency);
