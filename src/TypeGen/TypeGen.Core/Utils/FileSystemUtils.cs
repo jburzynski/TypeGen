@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Storage;
 
 namespace TypeGen.Core.Utils
 {
@@ -23,6 +25,15 @@ namespace TypeGen.Core.Utils
         public static string GetFileNameFromPath(string path)
         {
             return SplitPathSeperator(path).Last();
+        }
+
+        public static string GetProjectFilePath(FileSystem fileSystem, string projectFolder)
+        {
+            string fileName = fileSystem.GetDirectoryFiles(projectFolder)
+                .Select(GetFileNameFromPath)
+                .FirstOrDefault(n => n.EndsWith(".csproj"));
+
+            return fileName == null ? null : Path.Combine(projectFolder, fileName);
         }
     }
 }

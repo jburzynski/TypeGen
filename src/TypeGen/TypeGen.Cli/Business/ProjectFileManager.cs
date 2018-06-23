@@ -25,13 +25,6 @@ namespace TypeGen.Cli.Business
             _fileSystem = fileSystem;
         }
 
-        private string GetProjectFileName(string projectFolder)
-        {
-            return _fileSystem.GetDirectoryFiles(projectFolder)
-                .Select(FileSystemUtils.GetFileNameFromPath)
-                .FirstOrDefault(n => n.EndsWith(".csproj"));
-        }
-
         public bool ContainsTsFile(XmlDocument projectFile, string filePath)
         {
             if (projectFile == null) throw new ArgumentNullException(nameof(projectFile));
@@ -43,23 +36,19 @@ namespace TypeGen.Cli.Business
 
         public XmlDocument ReadFromProjectFolder(string projectFolder)
         {
-            string projectFileName = GetProjectFileName(projectFolder);
-            if (string.IsNullOrEmpty(projectFileName)) return null;
-
-            string xmlPath = Path.Combine(projectFolder, projectFileName);
+            string projectFilePath = FileSystemUtils.GetProjectFilePath(_fileSystem, projectFolder);
+            if (string.IsNullOrEmpty(projectFilePath)) return null;
 
             var document = new XmlDocument();
-            document.Load(xmlPath);
+            document.Load(projectFilePath);
 
             return document;
         }
 
         public void SaveProjectFile(string projectFolder, XmlDocument projectFile)
         {
-            string projectFileName = GetProjectFileName(projectFolder);
-            string filePath = Path.Combine(projectFolder, projectFileName);
-
-            projectFile.Save(filePath);
+            string projectFilePath = FileSystemUtils.GetProjectFilePath(_fileSystem, projectFolder);
+            projectFile.Save(projectFilePath);
         }
 
         public void AddTsFile(XmlDocument projectFile, string filePath)
