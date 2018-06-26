@@ -27,5 +27,10 @@ namespace TypeGen.Core.Business
         /// Custom attributes of the property or field that is of the dependent type
         /// </summary>
         public Attribute[] MemberAttributes { get; set; }
+
+        /// <summary>
+        /// Indicates whether type dependency is a base class type
+        /// </summary>
+        public bool IsBase { get; set; }
     }
 }

@@ -98,6 +98,12 @@ namespace TypeGen.Core.Business
             var result = "";
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
+            // exclude base type dependency if TsCustomBaseAttribute is specified (it will be added in custom imports)
+            if (type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>() != null)
+            {
+                typeDependencies = typeDependencies.Where(td => !td.IsBase);
+            }
+
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
             {
                 Type typeDependency = typeDependencyInfo.Type;

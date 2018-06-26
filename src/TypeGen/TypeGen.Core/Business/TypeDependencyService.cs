@@ -70,7 +70,7 @@ namespace TypeGen.Core.Business
                 baseType = baseType.GetGenericTypeDefinition();
             }
 
-            yield return new TypeDependencyInfo(baseType);
+            yield return new TypeDependencyInfo(baseType) { IsBase = true };
         }
 
         /// <summary>
