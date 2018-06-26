@@ -10,7 +10,7 @@ namespace TypeGen.Core.TypeAnnotations
     public class TsTypeAttribute : Attribute
     {
         /// <summary>
-        /// The TypeScript property type name
+        /// The TypeScript property type name (or alias)
         /// </summary>
         public string TypeName { get; set; }
 
@@ -59,9 +59,9 @@ namespace TypeGen.Core.TypeAnnotations
         /// <summary>
         /// TsTypeAttribute constructor
         /// </summary>
-        /// <param name="typeName">The TypeScript property type name</param>
+        /// <param name="typeName">The TypeScript property type name (or alias)</param>
         /// <param name="importPath">The path of the file to import (optional)</param>
-        /// <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath (optional)</param>
+        /// <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
         public TsTypeAttribute(string typeName, string importPath = null, string originalTypeName = null)
         {
             TypeName = typeName;

@@ -124,13 +124,22 @@ namespace TypeGen.Core.Business
         }
 
         /// <summary>
-        /// Gets code for imports that are specified in TsTypeAttribute.ImportPath property
+        /// Gets code for imports that are specified in TsTypeAttribute.ImportPath or TsCustomBaseAttribute.ImportPath properties
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
         private string GetCustomImportsText(Type type)
         {
-            var result = "";
+            var resultLines = new List<string>();
+
+            resultLines.AddRange(GetCustomImportsFromCustomBase(type));
+            resultLines.AddRange(GetCustomImportsFromMembers(type));
+
+            return string.Join("", resultLines.Distinct());
+        }
+
+        private IEnumerable<string> GetCustomImportsFromMembers(Type type)
+        {
             IEnumerable<MemberInfo> members = _typeService.GetTsExportableMembers(type);
 
             IEnumerable<TsTypeAttribute> typeAttributes = members
@@ -140,14 +149,25 @@ namespace TypeGen.Core.Business
 
             foreach (TsTypeAttribute attribute in typeAttributes)
             {
-                bool withOriginalTypeName = !string.IsNullOrEmpty(attribute.OriginalTypeName);
-
-                string name = withOriginalTypeName ? attribute.OriginalTypeName : attribute.FlatTypeName;
-                string asAlias = withOriginalTypeName ? $" as {attribute.FlatTypeName}" : "";
-                result += _templateService.FillImportTemplate(name, asAlias, attribute.ImportPath);
+                yield return FillCustomImportTemplate(attribute.FlatTypeName, attribute.ImportPath, attribute.OriginalTypeName);
             }
+        }
 
-            return result;
+        private IEnumerable<string> GetCustomImportsFromCustomBase(Type type)
+        {
+            var tsCustomBaseAttribute = type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>();
+            if (tsCustomBaseAttribute == null || string.IsNullOrEmpty(tsCustomBaseAttribute.ImportPath)) yield break;
+
+            yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName);
+        }
+
+        private string FillCustomImportTemplate(string typeName, string importPath, string originalTypeName)
+        {
+            bool withOriginalTypeName = !string.IsNullOrEmpty(originalTypeName);
+
+            string name = withOriginalTypeName ? originalTypeName : typeName;
+            string asAlias = withOriginalTypeName ? $" as {typeName}" : "";
+            return _templateService.FillImportTemplate(name, asAlias, importPath);
         }
 
         /// <summary>
