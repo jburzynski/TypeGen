@@ -74,15 +74,11 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters)
         {
-            var extendsText = "";
-
             Type baseType = _typeService.GetBaseType(type);
-            if (baseType == null) return extendsText;
+            if (baseType == null) return "";
 
             string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters);
-            extendsText = $" extends {baseTypeName}";
-
-            return extendsText;
+            return _templateService.GetExtendsText(baseTypeName);
         }
 
         /// <summary>

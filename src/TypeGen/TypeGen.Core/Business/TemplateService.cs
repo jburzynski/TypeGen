@@ -41,11 +41,6 @@ namespace TypeGen.Core.Business
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
         }
 
-        private string GetTag(string tagName)
-        {
-            return $"$tg{{{tagName}}}";
-        }
-
         public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
         {
             return ReplaceSpecialChars(_classTemplate)
@@ -116,6 +111,10 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("asAlias"), asAlias)
                 .Replace(GetTag("path"), path);
         }
+
+        public string GetExtendsText(string name) => $" extends {name}";
+
+        private string GetTag(string tagName) => $"$tg{{{tagName}}}";
 
         private string ReplaceSpecialChars(string template)
         {

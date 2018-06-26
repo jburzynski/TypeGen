@@ -204,7 +204,7 @@ namespace TypeGen.Core
 
             if (tsCustomBaseAttribute != null)
             {
-                extendsText = tsCustomBaseAttribute.Base;
+                extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
             else if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
             {
