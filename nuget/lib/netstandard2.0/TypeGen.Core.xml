@@ -112,6 +112,11 @@
             Custom attributes of the property or field that is of the dependent type
             </summary>
         </member>
+        <member name="P:TypeGen.Core.Business.TypeDependencyInfo.IsBase">
+            <summary>
+            Indicates whether type dependency is a base class type
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.Business.TypeDependencyInfoTypeComparer`1">
             <summary>
             A comparer class that compares types of TypeDependencyInfo instances
