@@ -20,6 +20,8 @@ namespace TypeGen.Core.Business
         private string _interfaceTemplate;
         private string _interfacePropertyTemplate;
         private string _importTemplate;
+        private string _indexTemplate;
+        private string _indexExportTemplate;
 
         public GeneratorOptions GeneratorOptions { get; set; }
 
@@ -39,6 +41,8 @@ namespace TypeGen.Core.Business
             _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
             _interfacePropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
+            _indexTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl");
+            _indexExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl");
         }
 
         public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
@@ -110,6 +114,18 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("asAlias"), asAlias)
                 .Replace(GetTag("path"), path);
+        }
+
+        public string FillIndexTemplate(string exports)
+        {
+            return ReplaceSpecialChars(_indexTemplate)
+                .Replace(GetTag("exports"), exports);
+        }
+
+        public string FillIndexExportTemplate(string filename)
+        {
+            return ReplaceSpecialChars(_indexExportTemplate)
+                .Replace(GetTag("filename"), filename);
         }
 
         public string GetExtendsText(string name) => $" extends {name}";

@@ -26,6 +26,7 @@ namespace TypeGen.Cli
         private static readonly ConfigProvider _configProvider;
         private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
         private static readonly ProjectFileManager _projectFileManager;
+        private static readonly TemplateService _templateService;
         private static AssemblyResolver _assemblyResolver;
 
         static Program()
@@ -140,14 +141,20 @@ namespace TypeGen.Cli
                 {
                     typeScriptFileExtension = "." + generatorOptions.TypeScriptFileExtension;
                 }
+
+                var templateService = new TemplateService(new InternalStorage()) { GeneratorOptions = generatorOptions };
+
+                string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+                {
+                    string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                    return prevExports + templateService.FillIndexExportTemplate(fileNameWithoutExt);
+                });
+                string content = templateService.FillIndexTemplate(exports);
+
                 string indexFileName = Path.Combine(generatorOptions.BaseOutputDirectory, "index" + typeScriptFileExtension);
                 using (var indexFile = new StreamWriter(indexFileName))
                 {
-                    foreach (string file in generatedFiles)
-                    {
-                        string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
-                        indexFile.WriteLine($"export * from './{fileNameWithoutExt}';");
-                    }
+                    indexFile.Write(content);
                 }
             }
 
