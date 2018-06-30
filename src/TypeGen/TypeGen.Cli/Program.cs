@@ -133,6 +133,22 @@ namespace TypeGen.Cli
                 AddFilesToProject(projectFolder, generatedFiles);
             }
 
+            if (config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile)
+            {
+                using (var indexFile = new StreamWriter(Path.Combine(generatorOptions.BaseOutputDirectory, "index.ts")))
+                {
+                    foreach (string file in generatedFiles)
+                    {
+                        string fileNameWithoutExt = file.Replace("\\", "/");
+                        if (!string.IsNullOrEmpty(generatorOptions.TypeScriptFileExtension))
+                        {
+                            fileNameWithoutExt = fileNameWithoutExt.Remove(fileNameWithoutExt.Length - 1 - generatorOptions.TypeScriptFileExtension.Length);
+                        }
+                        indexFile.WriteLine($"export * from './{fileNameWithoutExt}';");
+                    }
+                }
+            }
+
             // unregister assembly resolver
 
             _assemblyResolver.Unregister();

@@ -20,6 +20,7 @@ namespace TypeGen.Core
         public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
+        public static bool DefaultCreateIndexFile => false;
         public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
 
