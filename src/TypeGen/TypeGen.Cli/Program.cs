@@ -135,15 +135,17 @@ namespace TypeGen.Cli
 
             if (config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile)
             {
-                using (var indexFile = new StreamWriter(Path.Combine(generatorOptions.BaseOutputDirectory, "index.ts")))
+                string typeScriptFileExtension = "";
+                if (!string.IsNullOrEmpty(generatorOptions.TypeScriptFileExtension))
+                {
+                    typeScriptFileExtension = "." + generatorOptions.TypeScriptFileExtension;
+                }
+                string indexFileName = Path.Combine(generatorOptions.BaseOutputDirectory, "index" + typeScriptFileExtension);
+                using (var indexFile = new StreamWriter(indexFileName))
                 {
                     foreach (string file in generatedFiles)
                     {
-                        string fileNameWithoutExt = file.Replace("\\", "/");
-                        if (!string.IsNullOrEmpty(generatorOptions.TypeScriptFileExtension))
-                        {
-                            fileNameWithoutExt = fileNameWithoutExt.Remove(fileNameWithoutExt.Length - 1 - generatorOptions.TypeScriptFileExtension.Length);
-                        }
+                        string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
                         indexFile.WriteLine($"export * from './{fileNameWithoutExt}';");
                     }
                 }
