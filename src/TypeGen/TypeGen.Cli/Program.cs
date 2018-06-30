@@ -26,7 +26,6 @@ namespace TypeGen.Cli
         private static readonly ConfigProvider _configProvider;
         private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
         private static readonly ProjectFileManager _projectFileManager;
-        private static readonly TemplateService _templateService;
         private static AssemblyResolver _assemblyResolver;
 
         static Program()
@@ -152,6 +151,7 @@ namespace TypeGen.Cli
                 string content = templateService.FillIndexTemplate(exports);
 
                 string indexFileName = Path.Combine(generatorOptions.BaseOutputDirectory, "index" + typeScriptFileExtension);
+                    // better: use templateservice and filesystem from generator class
                 using (var indexFile = new StreamWriter(indexFileName))
                 {
                     indexFile.Write(content);
