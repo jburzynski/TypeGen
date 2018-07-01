@@ -133,6 +133,31 @@ namespace TypeGen.Cli
                 AddFilesToProject(projectFolder, generatedFiles);
             }
 
+            if (config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile)
+            {
+                string typeScriptFileExtension = "";
+                if (!string.IsNullOrEmpty(generatorOptions.TypeScriptFileExtension))
+                {
+                    typeScriptFileExtension = "." + generatorOptions.TypeScriptFileExtension;
+                }
+
+                var templateService = new TemplateService(new InternalStorage()) { GeneratorOptions = generatorOptions };
+
+                string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+                {
+                    string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                    return prevExports + templateService.FillIndexExportTemplate(fileNameWithoutExt);
+                });
+                string content = templateService.FillIndexTemplate(exports);
+
+                string indexFileName = Path.Combine(generatorOptions.BaseOutputDirectory, "index" + typeScriptFileExtension);
+                    // better: use templateservice and filesystem from generator class
+                using (var indexFile = new StreamWriter(indexFileName))
+                {
+                    indexFile.Write(content);
+                }
+            }
+
             // unregister assembly resolver
 
             _assemblyResolver.Unregister();

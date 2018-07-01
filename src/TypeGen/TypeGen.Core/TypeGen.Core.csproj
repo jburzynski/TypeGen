@@ -12,6 +12,8 @@
     <None Remove="Templates\Import.tpl" />
     <None Remove="Templates\Interface.tpl" />
     <None Remove="Templates\InterfaceProperty.tpl" />
+    <None Remove="Templates\Index.tpl" />
+    <None Remove="Templates\IndexExport.tpl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
@@ -22,6 +24,8 @@
     <EmbeddedResource Include="Templates\Import.tpl" />
     <EmbeddedResource Include="Templates\Interface.tpl" />
     <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
+    <EmbeddedResource Include="Templates\Index.tpl" />
+    <EmbeddedResource Include="Templates\IndexExport.tpl" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
