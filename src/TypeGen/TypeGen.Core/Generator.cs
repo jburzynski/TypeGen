@@ -67,10 +67,78 @@ namespace TypeGen.Core
         }
 
         /// <summary>
+        /// Generates an `index.ts` file which exports all types within the generated files
+        /// </summary>
+        /// <param name="generatedFiles"></param>
+        public string GenerateIndexFile(IEnumerable<string> generatedFiles)
+        {
+            string typeScriptFileExtension = "";
+            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
+            {
+                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
+            }
+
+            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+            {
+                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
+            });
+            string content = _templateService.FillIndexTemplate(exports);
+
+            string filename = "index" + typeScriptFileExtension;
+            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
+            return filename;
+        }
+
+        /// <summary>
+        /// Generates TypeScript files for C# files in assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        public GenerationResult Generate(IEnumerable<Assembly> assemblies)
+        {
+            return Generate(assemblies, false);
+        }
+
+        /// <summary>
+        /// Generates TypeScript files for C# files in assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <param name="skipCreateIndexFile">Wheter to ignore Options.CreateIndexFile</param>
+        public GenerationResult Generate(IEnumerable<Assembly> assemblies, bool skipCreateIndexFile)
+        {
+            IEnumerable<string> files = Enumerable.Empty<string>();
+            foreach (Assembly assembly in assemblies)
+            {
+                files = files.Concat(Generate(assembly).GeneratedFiles);
+            }
+
+            if (Options.CreateIndexFile && !skipCreateIndexFile)
+            {
+                files = files.Concat(new[] { GenerateIndexFile(files) });
+            }
+
+            return new GenerationResult
+            {
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = files.Distinct()
+            };
+        }
+
+        /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
+        {
+            return Generate(assembly, false);
+        }
+
+        /// <summary>
+        /// Generates TypeScript files for C# files in an assembly
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <param name="skipCreateIndexFile">Wheter to ignore Options.CreateIndexFile</param>
+        public GenerationResult Generate(Assembly assembly, bool skipCreateIndexFile)
         {
             _generationContext.InitializeAssemblyGeneratedTypes();
             IEnumerable<string> files = Enumerable.Empty<string>();
@@ -85,6 +153,11 @@ namespace TypeGen.Core
             });
 
             _generationContext.ClearAssemblyGeneratedTypes();
+
+            if (Options.CreateIndexFile && !skipCreateIndexFile)
+            {
+                files = files.Concat(new[] { GenerateIndexFile(files) });
+            }
 
             return new GenerationResult
             {
@@ -272,7 +345,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-            
+
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
             {

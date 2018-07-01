@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace TypeGen.Core
@@ -8,6 +9,12 @@ namespace TypeGen.Core
     /// </summary>
     public interface IGenerator
     {
+        /// <summary>
+        /// Generates TypeScript files for C# files in assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        GenerationResult Generate(IEnumerable<Assembly> assemblies);
+
         /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
