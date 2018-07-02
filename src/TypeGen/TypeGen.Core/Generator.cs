@@ -91,70 +91,38 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Generates TypeScript files for C# files in assemblies
-        /// </summary>
-        /// <param name="assemblies"></param>
-        public GenerationResult Generate(IEnumerable<Assembly> assemblies)
-        {
-            return Generate(assemblies, false);
-        }
-
-        /// <summary>
-        /// Generates TypeScript files for C# files in assemblies
-        /// </summary>
-        /// <param name="assemblies"></param>
-        /// <param name="skipCreateIndexFile">Wheter to ignore Options.CreateIndexFile</param>
-        public GenerationResult Generate(IEnumerable<Assembly> assemblies, bool skipCreateIndexFile)
-        {
-            IEnumerable<string> files = Enumerable.Empty<string>();
-            foreach (Assembly assembly in assemblies)
-            {
-                files = files.Concat(Generate(assembly).GeneratedFiles);
-            }
-
-            if (Options.CreateIndexFile && !skipCreateIndexFile)
-            {
-                files = files.Concat(new[] { GenerateIndexFile(files) });
-            }
-
-            return new GenerationResult
-            {
-                BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files.Distinct()
-            };
-        }
-
-        /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            return Generate(assembly, false);
+            var result = Generate(new[] { assembly });
+
+            return result;
         }
 
         /// <summary>
-        /// Generates TypeScript files for C# files in an assembly
+        /// Generates TypeScript files for C# files in assemblies
         /// </summary>
-        /// <param name="assembly"></param>
-        /// <param name="skipCreateIndexFile">Wheter to ignore Options.CreateIndexFile</param>
-        public GenerationResult Generate(Assembly assembly, bool skipCreateIndexFile)
+        /// <param name="assemblies"></param>
+        public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
             _generationContext.InitializeAssemblyGeneratedTypes();
             IEnumerable<string> files = Enumerable.Empty<string>();
-
-            ExecuteWithTypeContextLogging(() =>
+            foreach (Assembly assembly in assemblies)
             {
-                foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                ExecuteWithTypeContextLogging(() =>
                 {
-                    if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
-                    files = files.Concat(Generate(type).GeneratedFiles);
-                }
-            });
-
+                    foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                    {
+                        if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
+                        files = files.Concat(Generate(type).GeneratedFiles);
+                    }
+                });
+            }
             _generationContext.ClearAssemblyGeneratedTypes();
 
-            if (Options.CreateIndexFile && !skipCreateIndexFile)
+            if (Options.CreateIndexFile)
             {
                 files = files.Concat(new[] { GenerateIndexFile(files) });
             }
