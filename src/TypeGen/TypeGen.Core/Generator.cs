@@ -12,7 +12,7 @@ using TypeGen.Core.TypeAnnotations;
 namespace TypeGen.Core
 {
     /// <summary>
-    /// Class used for generating TypeScript files from C# files
+    /// Class used for generating TypeScript files from C# types
     /// </summary>
     public class Generator : IGenerator
     {
@@ -66,51 +66,21 @@ namespace TypeGen.Core
                 new TsContentParser(_fileSystem));
         }
 
-        /// <summary>
-        /// Generates an `index.ts` file which exports all types within the generated files
-        /// </summary>
-        /// <param name="generatedFiles"></param>
-        public string GenerateIndexFile(IEnumerable<string> generatedFiles)
-        {
-            string typeScriptFileExtension = "";
-            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
-            {
-                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
-            }
-
-            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
-            {
-                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
-                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
-            });
-            string content = _templateService.FillIndexTemplate(exports);
-
-            string filename = "index" + typeScriptFileExtension;
-            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
-            return filename;
-        }
-
-        /// <summary>
-        /// Generates TypeScript files for C# files in an assembly
-        /// </summary>
-        /// <param name="assembly"></param>
+        /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
-            var result = Generate(new[] { assembly });
-
-            return result;
+            return Generate(new[] { assembly });
         }
 
-        /// <summary>
-        /// Generates TypeScript files for C# files in assemblies
-        /// </summary>
-        /// <param name="assemblies"></param>
+        /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
-            _generationContext.InitializeAssemblyGeneratedTypes();
             IEnumerable<string> files = Enumerable.Empty<string>();
+
             foreach (Assembly assembly in assemblies)
             {
+                _generationContext.InitializeAssemblyGeneratedTypes();
+
                 ExecuteWithTypeContextLogging(() =>
                 {
                     foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
@@ -119,8 +89,9 @@ namespace TypeGen.Core
                         files = files.Concat(Generate(type).GeneratedFiles);
                     }
                 });
+
+                _generationContext.ClearAssemblyGeneratedTypes();
             }
-            _generationContext.ClearAssemblyGeneratedTypes();
 
             if (Options.CreateIndexFile)
             {
@@ -134,10 +105,7 @@ namespace TypeGen.Core
             };
         }
 
-        /// <summary>
-        /// Generates TypeScript files for a given type
-        /// </summary>
-        /// <param name="type"></param>
+        /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
             _generationContext.InitializeTypeGeneratedTypes();
@@ -161,6 +129,30 @@ namespace TypeGen.Core
                 BaseOutputDirectory = Options.BaseOutputDirectory,
                 GeneratedFiles = files.Distinct()
             };
+        }
+
+        /// <summary>
+        /// Generates an `index.ts` file which exports all types within the generated files
+        /// </summary>
+        /// <param name="generatedFiles"></param>
+        private string GenerateIndexFile(IEnumerable<string> generatedFiles)
+        {
+            var typeScriptFileExtension = "";
+            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
+            {
+                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
+            }
+
+            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+            {
+                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
+            });
+            string content = _templateService.FillIndexTemplate(exports);
+
+            string filename = "index" + typeScriptFileExtension;
+            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
+            return filename;
         }
 
         /// <summary>

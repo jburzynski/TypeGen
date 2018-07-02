@@ -10,13 +10,13 @@ namespace TypeGen.Core
     public interface IGenerator
     {
         /// <summary>
-        /// Generates TypeScript files for C# files in assemblies
+        /// Generates TypeScript files for C# types in assemblies
         /// </summary>
         /// <param name="assemblies"></param>
         GenerationResult Generate(IEnumerable<Assembly> assemblies);
 
         /// <summary>
-        /// Generates TypeScript files for C# files in an assembly
+        /// Generates TypeScript files for C# types in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         GenerationResult Generate(Assembly assembly);
