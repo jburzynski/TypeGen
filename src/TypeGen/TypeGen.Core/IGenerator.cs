@@ -10,6 +10,11 @@ namespace TypeGen.Core
     public interface IGenerator
     {
         /// <summary>
+        /// The generator options
+        /// </summary>
+        GeneratorOptions Options { get; set; }
+
+        /// <summary>
         /// Generates TypeScript files for C# types in assemblies
         /// </summary>
         /// <param name="assemblies"></param>
