@@ -33,6 +33,7 @@ namespace TypeGen.Core
             TypeScriptFileExtension = DefaultTypeScriptFileExtension;
             TabLength = DefaultTabLength;
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
+            CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
         }
 
@@ -81,6 +82,11 @@ namespace TypeGen.Core
         /// Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
         /// </summary>
         public string BaseOutputDirectory { get; set; }
+
+        /// <summary>
+        /// Wheter to create an index file which exports all generated types
+        /// </summary>
+        public bool CreateIndexFile { get; set; }
 
         /// <summary>
         /// Whether to enable --strictNullChecks functionality in generated TypeScript code

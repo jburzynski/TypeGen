@@ -67,24 +67,65 @@ namespace TypeGen.Core
         }
 
         /// <summary>
+        /// Generates an `index.ts` file which exports all types within the generated files
+        /// </summary>
+        /// <param name="generatedFiles"></param>
+        public string GenerateIndexFile(IEnumerable<string> generatedFiles)
+        {
+            string typeScriptFileExtension = "";
+            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
+            {
+                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
+            }
+
+            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+            {
+                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
+            });
+            string content = _templateService.FillIndexTemplate(exports);
+
+            string filename = "index" + typeScriptFileExtension;
+            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
+            return filename;
+        }
+
+        /// <summary>
         /// Generates TypeScript files for C# files in an assembly
         /// </summary>
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
+            var result = Generate(new[] { assembly });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates TypeScript files for C# files in assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        public GenerationResult Generate(IEnumerable<Assembly> assemblies)
+        {
             _generationContext.InitializeAssemblyGeneratedTypes();
             IEnumerable<string> files = Enumerable.Empty<string>();
-
-            ExecuteWithTypeContextLogging(() =>
+            foreach (Assembly assembly in assemblies)
             {
-                foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                ExecuteWithTypeContextLogging(() =>
                 {
-                    if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
-                    files = files.Concat(Generate(type).GeneratedFiles);
-                }
-            });
-
+                    foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                    {
+                        if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
+                        files = files.Concat(Generate(type).GeneratedFiles);
+                    }
+                });
+            }
             _generationContext.ClearAssemblyGeneratedTypes();
+
+            if (Options.CreateIndexFile)
+            {
+                files = files.Concat(new[] { GenerateIndexFile(files) });
+            }
 
             return new GenerationResult
             {
@@ -272,7 +313,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-            
+
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
             {
