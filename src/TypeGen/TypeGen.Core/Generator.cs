@@ -96,9 +96,7 @@ namespace TypeGen.Core
         /// <param name="assembly"></param>
         public GenerationResult Generate(Assembly assembly)
         {
-            var result = Generate(new[] { assembly });
-
-            return result;
+            return Generate(new[] { assembly });
         }
 
         /// <summary>
