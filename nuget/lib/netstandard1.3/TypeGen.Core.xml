@@ -683,7 +683,7 @@
         </member>
         <member name="T:TypeGen.Core.Generator">
             <summary>
-            Class used for generating TypeScript files from C# files
+            Class used for generating TypeScript files from C# types
             </summary>
         </member>
         <member name="P:TypeGen.Core.Generator.Options">
@@ -692,16 +692,19 @@
             </summary>
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
-            <summary>
-            Generates TypeScript files for C# files in an assembly
-            </summary>
-            <param name="assembly"></param>
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <inheritdoc />
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerateIndexFile(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            Generates TypeScript files for a given type
+            Generates an `index.ts` file which exports all types within the generated files
             </summary>
-            <param name="type"></param>
+            <param name="generatedFiles"></param>
         </member>
         <member name="M:TypeGen.Core.Generator.GenerateType(System.Type)">
             <summary>
@@ -863,6 +866,11 @@
             Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.CreateIndexFile">
+            <summary>
+            Wheter to create an index file which exports all generated types
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.GeneratorOptions.StrictNullChecks">
             <summary>
             Whether to enable --strictNullChecks functionality in generated TypeScript code
@@ -878,9 +886,20 @@
             Interface for a TypeScript generator class
             </summary>
         </member>
+        <member name="P:TypeGen.Core.IGenerator.Options">
+            <summary>
+            The generator options
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.IGenerator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Generates TypeScript files for C# types in assemblies
+            </summary>
+            <param name="assemblies"></param>
+        </member>
         <member name="M:TypeGen.Core.IGenerator.Generate(System.Reflection.Assembly)">
             <summary>
-            Generates TypeScript files for C# files in an assembly
+            Generates TypeScript files for C# types in an assembly
             </summary>
             <param name="assembly"></param>
         </member>
