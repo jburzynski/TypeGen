@@ -1,4 +1,4 @@
-﻿namespace CoreWebApp.TestEntities
+﻿namespace TypeGen.TestWebApp.TestEntities
 {
     public abstract class BaseClass2<T>
     {

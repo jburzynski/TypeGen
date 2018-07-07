@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoreWebApp.TestEntities;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.TestWebApp.TestEntities;
 
-namespace CoreWebApp.ErrorCase2
+namespace TypeGen.TestWebApp.ErrorCase2
 {
     [ExportTsClass(OutputDir = "error-case2")]
     public class MyClass : BaseClass<Guid>

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.ErrorCase
+namespace TypeGen.TestWebApp.ErrorCase
 {
     [ExportTsClass]
     public class Foo

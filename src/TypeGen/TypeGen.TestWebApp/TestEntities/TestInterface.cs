@@ -1,6 +1,6 @@
 ﻿using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsInterface(OutputDir = "test-interfaces")]
     public class TestInterface

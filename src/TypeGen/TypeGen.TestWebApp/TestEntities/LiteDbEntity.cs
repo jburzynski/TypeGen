@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LiteDB;
+﻿using LiteDB;
 using TypeGen.Core.TypeAnnotations;
 
-namespace Core2WebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsClass]
     public class LiteDbEntity

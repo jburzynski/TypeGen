@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoreWebApp.TestEntities;
-using TypeGen.Core.TypeAnnotations;
+﻿using System.Collections.Generic;
+using TypeGen.TestWebApp.TestEntities;
 
-namespace CoreWebApp.ErrorCase
+namespace TypeGen.TestWebApp.ErrorCase
 {
     public class Bar
     {

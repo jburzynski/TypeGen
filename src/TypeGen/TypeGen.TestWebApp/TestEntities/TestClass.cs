@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsClass(OutputDir = "test-classes")]
     public class TestClass<T, U> : BaseClass<int> where U : BaseClass2<string>

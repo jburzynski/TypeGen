@@ -1,6 +1,4 @@
-﻿using TypeGen.Core.TypeAnnotations;
-
-namespace CoreWebApp.ErrorCase
+﻿namespace TypeGen.TestWebApp.ErrorCase
 {
     public enum FooType
     {

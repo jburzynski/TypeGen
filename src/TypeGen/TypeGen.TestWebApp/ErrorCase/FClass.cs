@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using CoreWebApp.TestEntities;
+﻿using System.ComponentModel.DataAnnotations;
+using TypeGen.TestWebApp.TestEntities;
 
-namespace CoreWebApp.ErrorCase
+namespace TypeGen.TestWebApp.ErrorCase
 {
     public class FClass : GenericClass<int>
     {

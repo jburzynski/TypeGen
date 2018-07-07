@@ -1,7 +1,6 @@
-﻿using Core2WebApp.TestEntities;
-using TypeGen.Core.TypeAnnotations;
+﻿using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsClass]
     public class GenericClass<T> : GenericBaseClass<T>

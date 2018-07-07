@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TypeGen.Core.TypeAnnotations;
+﻿using TypeGen.Core.TypeAnnotations;
 
-namespace Core2WebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsClass]
     [TsCustomBase("AcmeCustomBase<string>")]

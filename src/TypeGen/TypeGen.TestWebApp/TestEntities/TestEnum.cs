@@ -1,6 +1,6 @@
 ﻿using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsEnum(OutputDir = "test-enums", IsConst = true)]
     public enum TestEnum

@@ -1,6 +1,4 @@
-using System;
-
-namespace Core2WebApp.Models
+namespace TypeGen.TestWebApp.Models
 {
     public class ErrorViewModel
     {

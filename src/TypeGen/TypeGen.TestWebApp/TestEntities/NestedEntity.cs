@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoreWebApp.TestEntities;
-using TypeGen.Core.TypeAnnotations;
+﻿using TypeGen.Core.TypeAnnotations;
 
-namespace Core2WebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     [ExportTsInterface(OutputDir = "./very/nested/directory/")]
     public class NestedEntity

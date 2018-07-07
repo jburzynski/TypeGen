@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TypeGen.Core.TypeAnnotations;
 
-namespace CoreWebApp.TestEntities
+namespace TypeGen.TestWebApp.TestEntities
 {
     public class CircularRefClass1
     {

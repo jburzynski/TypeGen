@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Core2WebApp.Models;
+using TypeGen.TestWebApp.Models;
 
-namespace Core2WebApp.Controllers
+namespace TypeGen.TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
