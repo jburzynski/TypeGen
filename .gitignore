@@ -259,3 +259,4 @@ paket-files/
 /local-chocolatey-path.txt
 /local-nuget-path.txt
 /src/TypeGen/TypeGen.Cli/Properties/launchSettings.json
+/src/TypeGen/TypeGen.TestWebApp/wwwroot/lib/**
