@@ -24,7 +24,7 @@ namespace TypeGen.Core.Converters
 
         private static string ConvertTypeInvariant(string name)
         {
-            name = name.ToTitleCase().Replace("_", "");
+            name = name.ToTitleCase();
             return char.ToLowerInvariant(name[0]) + name.Remove(0, 1);
         }
     }

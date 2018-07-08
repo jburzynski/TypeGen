@@ -8,25 +8,15 @@ namespace TypeGen.Core.Test.Utils
 {
     public class StringUtilsTest : TestBase
     {
-        [Fact]
-        public void GetTabText_0Spaces_Empty()
+        [Theory]
+        [InlineData(0, "")]
+        [InlineData(1, " ")]
+        [InlineData(2, "  ")]
+        [InlineData(4, "    ")]
+        public void GetTabText_TabLengthGiven_TabTextReturned(int tabLength, string expectedTabText)
         {
-            string tab = StringUtils.GetTabText(0);
-            Assert.Equal("", tab);
-        }
-
-        [Fact]
-        public void GetTabText_1Space_Returned()
-        {
-            string tab = StringUtils.GetTabText(1);
-            Assert.Equal(" ", tab);
-        }
-
-        [Fact]
-        public void GetTabText_4Spaces_Returned()
-        {
-            string tab = StringUtils.GetTabText(4);
-            Assert.Equal("    ", tab);
+            string tab = StringUtils.GetTabText(tabLength);
+            Assert.Equal(expectedTabText, tab);
         }
     }
 }

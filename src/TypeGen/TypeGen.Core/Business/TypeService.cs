@@ -261,7 +261,7 @@ namespace TypeGen.Core.Business
             var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
             if (typeAttribute != null)
             {
-                if (typeAttribute.TypeName.IsNullOrWhitespace())
+                if (string.IsNullOrWhiteSpace(typeAttribute.TypeName))
                 {
                     throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
                 }

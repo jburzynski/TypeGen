@@ -40,17 +40,7 @@ namespace TypeGen.Core.Extensions
                 tokens[i] = token.Substring(0, 1).ToUpperInvariant() + token.Substring(1);
             }
 
-            return string.Join("_", tokens);
-        }
-
-        /// <summary>
-        /// Determines whether the string is null or consists only of whitespace characters
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static bool IsNullOrWhitespace(this string value)
-        {
-            return value == null || value.ToCharArray().All(char.IsWhiteSpace);
+            return string.Join("", tokens);
         }
 
         /// <summary>

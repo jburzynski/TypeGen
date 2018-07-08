@@ -10,55 +10,23 @@ namespace TypeGen.Core.Test.Utils
 {
     public class FileSystemUtilsTest : TestBase
     {
-        [Fact]
-        public void SplitPathSeparator_ForwardSlash_Split()
+        [Theory]
+        [InlineData("some/test/path")]
+        [InlineData(@"some\test\path")]
+        [InlineData(@"some\test/path")]
+        public void SplitPathSeparator_PathGiven_PathSplit(string path)
         {
-            const string path = "some/test/path";
             string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
 
             Assert.Equal(new[] { "some", "test", "path" }, splitPath);
         }
 
-        [Fact]
-        public void SplitPathSeparator_Backslash_Split()
+        [Theory]
+        [InlineData("some/test/file.ext")]
+        [InlineData(@"some\test\file.ext")]
+        [InlineData(@"some\test/file.ext")]
+        public void GetFileNameFromPath_PathGiven_FileNameReturned(string path)
         {
-            const string path = @"some\test\path";
-            string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
-
-            Assert.Equal(new[] { "some", "test", "path" }, splitPath);
-        }
-
-        [Fact]
-        public void SplitPathSeparator_MixedSlashes_Split()
-        {
-            const string path = @"some\test/path";
-            string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
-
-            Assert.Equal(new[] { "some", "test", "path" }, splitPath);
-        }
-
-        [Fact]
-        public void GetFileNameFromPath_ForwardSlash_Return()
-        {
-            const string path = "some/test/file.ext";
-            string fileName = FileSystemUtils.GetFileNameFromPath(path);
-
-            Assert.Equal("file.ext", fileName);
-        }
-
-        [Fact]
-        public void GetFileNameFromPath_Backslash_Return()
-        {
-            const string path = @"some\test\file.ext";
-            string fileName = FileSystemUtils.GetFileNameFromPath(path);
-
-            Assert.Equal("file.ext", fileName);
-        }
-
-        [Fact]
-        public void GetFileNameFromPath_MixedSlashes_Return()
-        {
-            const string path = @"some\test/file.ext";
             string fileName = FileSystemUtils.GetFileNameFromPath(path);
 
             Assert.Equal("file.ext", fileName);

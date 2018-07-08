@@ -38,11 +38,11 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool HasIndex<T>(this T[] array, int index)
         {
-            return array?.Length >= index + 1;
+            return index >= 0 && array?.Length >= index + 1;
         }
 
         /// <summary>
-        /// Checks if an enumerable is empty
+        /// Checks if an enumerable is null or empty
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerable"></param>
