@@ -27,7 +27,7 @@ namespace TypeGen.Core.Utils
             return SplitPathSeperator(path).Last();
         }
 
-        public static string GetProjectFilePath(FileSystem fileSystem, string projectFolder)
+        public static string GetProjectFilePath(IFileSystem fileSystem, string projectFolder)
         {
             string fileName = fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(GetFileNameFromPath)

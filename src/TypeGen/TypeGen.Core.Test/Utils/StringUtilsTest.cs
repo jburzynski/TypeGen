@@ -6,7 +6,7 @@ using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Test.Utils
 {
-    public class StringUtilsTest
+    public class StringUtilsTest : TestBase
     {
         [Fact]
         public void GetTabText_0Spaces_Empty()
