@@ -129,7 +129,7 @@ namespace TypeGen.Cli.Business
 
         private Assembly FindRecursive(string directory, string assemblyFileName, string assemblyVersion)
         {
-            string[] foundPaths = _fileSystem.GetFilesRecursive(directory, assemblyFileName);
+            IEnumerable<string> foundPaths = _fileSystem.GetFilesRecursive(directory, assemblyFileName);
             return foundPaths.Any() ? ResolveFromPaths(foundPaths, assemblyVersion) : null;
         }
 
