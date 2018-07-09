@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TypeGen.Cli.Business
 {
-    internal class Logger
+    internal class Logger : ILogger
     {
         public void Log(params string[] messageLines)
         {

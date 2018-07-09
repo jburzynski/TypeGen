@@ -11,12 +11,12 @@ using TypeGen.Core.Business;
 
 namespace TypeGen.Cli.Business
 {
-    internal class AssemblyResolver
+    internal class AssemblyResolver : IAssemblyResolver
     {
         private const string GlobalFallbackPath = @"C:\Program Files\dotnet\sdk\NuGetFallbackFolder";
         private const string SharedPath = @"C:\Program Files\dotnet\shared";
 
-        private readonly FileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
         private readonly string _projectFolder;
 
         private IEnumerable<string> _directories;
@@ -29,7 +29,7 @@ namespace TypeGen.Cli.Business
         private string _sharedFolder;
         private List<string> _nugetPackagesFolders;
 
-        public AssemblyResolver(FileSystem fileSystem, string projectFolder)
+        public AssemblyResolver(IFileSystem fileSystem, string projectFolder)
         {
             _fileSystem = fileSystem;
             _projectFolder = projectFolder.ToAbsolutePath();

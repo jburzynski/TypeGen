@@ -10,13 +10,13 @@ using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {
-    internal class JsonSerializer
+    internal class JsonSerializer : IJsonSerializer
     {
-        private readonly FileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
-        public JsonSerializer()
+        public JsonSerializer(IFileSystem fileSystem)
         {
-            _fileSystem = new FileSystem();
+            _fileSystem = fileSystem;
         }
 
         public TObj DeserializeFromFile<TObj>(string filePath) where TObj : class

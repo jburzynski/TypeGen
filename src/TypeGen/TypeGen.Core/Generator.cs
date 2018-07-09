@@ -18,11 +18,11 @@ namespace TypeGen.Core
     {
         // dependencies
 
-        private readonly TypeService _typeService;
-        private readonly TypeDependencyService _typeDependencyService;
-        private readonly TemplateService _templateService;
-        private readonly TsContentGenerator _tsContentGenerator;
-        private readonly FileSystem _fileSystem;
+        private readonly ITypeService _typeService;
+        private readonly ITypeDependencyService _typeDependencyService;
+        private readonly ITemplateService _templateService;
+        private readonly ITsContentGenerator _tsContentGenerator;
+        private readonly IFileSystem _fileSystem;
         private GeneratorOptions _options;
 
         // per-generation shared variables

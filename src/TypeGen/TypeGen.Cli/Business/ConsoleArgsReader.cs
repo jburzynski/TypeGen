@@ -7,7 +7,7 @@ using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Business
 {
-    internal class ConsoleArgsReader
+    internal class ConsoleArgsReader : IConsoleArgsReader
     {
         /// <summary>
         /// Used to separate two or more paths; not a directory separator

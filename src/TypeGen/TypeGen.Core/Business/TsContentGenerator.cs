@@ -15,23 +15,23 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for generating TypeScript file contents
     /// </summary>
-    internal class TsContentGenerator
+    internal class TsContentGenerator : ITsContentGenerator
     {
-        private readonly TypeDependencyService _typeDependencyService;
-        private readonly TypeService _typeService;
-        private readonly TemplateService _templateService;
-        private readonly FileSystem _fileSystem;
-        private readonly TsContentParser _tsContentParser;
+        private readonly ITypeDependencyService _typeDependencyService;
+        private readonly ITypeService _typeService;
+        private readonly ITemplateService _templateService;
+        private readonly IFileSystem _fileSystem;
+        private readonly ITsContentParser _tsContentParser;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
         private const string CustomBodyTagName = "custom-body";
 
-        public TsContentGenerator(TypeDependencyService typeDependencyService,
-            TypeService typeService,
-            TemplateService templateService,
-            FileSystem fileSystem,
-            TsContentParser tsContentParser)
+        public TsContentGenerator(ITypeDependencyService typeDependencyService,
+            ITypeService typeService,
+            ITemplateService templateService,
+            IFileSystem fileSystem,
+            ITsContentParser tsContentParser)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;

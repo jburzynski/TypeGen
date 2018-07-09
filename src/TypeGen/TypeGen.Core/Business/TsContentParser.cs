@@ -11,11 +11,11 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for parsing TypeScript file contents
     /// </summary>
-    internal class TsContentParser
+    internal class TsContentParser : ITsContentParser
     {
-        private readonly FileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
-        public TsContentParser(FileSystem fileSystem)
+        public TsContentParser(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }

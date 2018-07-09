@@ -12,7 +12,7 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
     /// </summary>
-    internal class TypeService
+    internal class TypeService : ITypeService
     {
         /// <summary>
         /// Determines if a type has a TypeScript simple type representation

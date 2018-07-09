@@ -14,12 +14,12 @@ using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {
-    internal class GeneratorOptionsProvider
+    internal class GeneratorOptionsProvider : IGeneratorOptionsProvider
     {
-        private readonly FileSystem _fileSystem;
-        private readonly Logger _logger;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
 
-        public GeneratorOptionsProvider(FileSystem fileSystem, Logger logger)
+        public GeneratorOptionsProvider(IFileSystem fileSystem, ILogger logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;

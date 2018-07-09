@@ -10,11 +10,11 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for handling type dependencies (i.e. types that a type depends on)
     /// </summary>
-    internal class TypeDependencyService
+    internal class TypeDependencyService : ITypeDependencyService
     {
-        private readonly TypeService _typeService;
+        private readonly ITypeService _typeService;
 
-        public TypeDependencyService(TypeService typeService)
+        public TypeDependencyService(ITypeService typeService)
         {
             _typeService = typeService;
         }

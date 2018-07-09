@@ -20,20 +20,20 @@ namespace TypeGen.Cli
 {
     internal class Program
     {
-        private static readonly ConsoleArgsReader _consoleArgsReader;
-        private static readonly Logger _logger;
-        private static readonly FileSystem _fileSystem;
-        private static readonly ConfigProvider _configProvider;
-        private static readonly GeneratorOptionsProvider _generatorOptionsProvider;
-        private static readonly ProjectFileManager _projectFileManager;
-        private static AssemblyResolver _assemblyResolver;
+        private static readonly IConsoleArgsReader _consoleArgsReader;
+        private static readonly ILogger _logger;
+        private static readonly IFileSystem _fileSystem;
+        private static readonly IConfigProvider _configProvider;
+        private static readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        private static readonly IProjectFileManager _projectFileManager;
+        private static IAssemblyResolver _assemblyResolver;
 
         static Program()
         {
             _consoleArgsReader = new ConsoleArgsReader();
             _logger = new Logger();
             _fileSystem = new FileSystem();
-            _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer());
+            _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer(_fileSystem));
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
         }

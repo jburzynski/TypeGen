@@ -10,13 +10,9 @@ namespace TypeGen.Core.Storage
     /// <summary>
     /// Represents the internal storage
     /// </summary>
-    internal class InternalStorage
+    internal class InternalStorage : IInternalStorage
     {
-        /// <summary>
-        /// Gets embedded resource as string
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public string GetEmbeddedResource(string name)
         {
             using (Stream stream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream(name))

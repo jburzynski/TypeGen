@@ -6,11 +6,11 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for filling templates with data
     /// </summary>
-    internal class TemplateService
+    internal class TemplateService : ITemplateService
     {
         // dependencies
 
-        private readonly InternalStorage _internalStorage;
+        private readonly IInternalStorage _internalStorage;
 
         private string _enumTemplate;
         private string _enumValueTemplate;
@@ -25,7 +25,7 @@ namespace TypeGen.Core.Business
 
         public GeneratorOptions GeneratorOptions { get; set; }
 
-        public TemplateService(InternalStorage internalStorage)
+        public TemplateService(IInternalStorage internalStorage)
         {
             _internalStorage = internalStorage;
             LoadTemplates();
