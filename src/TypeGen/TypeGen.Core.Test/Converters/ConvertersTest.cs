@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TypeGen.Core.Test.Converters
 {
-    public class ConvertersTest : TestBase
+    public class ConvertersTest
     {
         [Theory]
         [InlineData("SomeName", "someName")]

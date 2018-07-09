@@ -7,7 +7,7 @@ using Xunit;
 
 namespace TypeGen.Core.Test.Extensions
 {
-    public class EnumerableExtensionsTest : TestBase
+    public class EnumerableExtensionsTest
     {
         [Theory]
         [InlineData(1, new object[] { 1, 2, 3 }, true)]

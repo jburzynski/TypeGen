@@ -8,7 +8,7 @@ using Xunit;
 
 namespace TypeGen.Core.Test.Utils
 {
-    public class FileSystemUtilsTest : TestBase
+    public class FileSystemUtilsTest
     {
         [Theory]
         [InlineData("some/test/path")]
@@ -39,7 +39,7 @@ namespace TypeGen.Core.Test.Utils
             const string projectFolder = @"my\project\folder";
             var files = new[] { "abc", "def.txt", ".ghi", "jkl.csproj" };
 
-            var fileSystem = GetInstance<IFileSystem>();
+            var fileSystem = Substitute.For<IFileSystem>();
             fileSystem.GetDirectoryFiles(Arg.Any<string>()).Returns(files);
 
             //act, assert

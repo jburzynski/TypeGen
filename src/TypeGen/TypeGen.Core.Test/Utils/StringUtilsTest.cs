@@ -6,7 +6,7 @@ using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Test.Utils
 {
-    public class StringUtilsTest : TestBase
+    public class StringUtilsTest
     {
         [Theory]
         [InlineData(0, "")]

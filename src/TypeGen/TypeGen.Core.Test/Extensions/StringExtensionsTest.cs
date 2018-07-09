@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TypeGen.Core.Test.Extensions
 {
-    public class StringExtensionsTest : TestBase
+    public class StringExtensionsTest
     {
         [Theory]
         [InlineData("I like hitchhike.", "i", "1", "I l1ke hitchhike.")]
