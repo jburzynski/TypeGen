@@ -11,38 +11,54 @@ namespace TypeGen.Core.Storage
     /// </summary>
     internal class FileSystem : IFileSystem
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a text file to the specified location
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="content"></param>
         public void SaveFile(string filePath, string content)
         {
             new FileInfo(filePath).Directory?.Create();
             File.WriteAllText(filePath, content);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads file as string
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public string ReadFile(string filePath) => File.ReadAllText(filePath);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Checks if the file exists
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public bool FileExists(string filePath) => File.Exists(filePath);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Searches recursively for a file in a directory
+        /// </summary>
+        /// <param name="rootDirectory"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public IEnumerable<string> GetFilesRecursive(string rootDirectory, string fileName)
         {
             return Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Checks if the directory exists
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
         public bool DirectoryExists(string directory) => Directory.Exists(directory);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets all files in a directory (only files, not directories)
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
         public IEnumerable<string> GetDirectoryFiles(string directory) => Directory.GetFiles(directory);
-
-        /// <inheritdoc />
-        public string GetPathDiff(string pathFrom, string pathTo)
-        {
-            var pathFromUri = new Uri("file:///" + pathFrom);
-            var pathToUri = new Uri("file:///" + pathTo);
-
-            return pathFromUri.MakeRelativeUri(pathToUri).ToString();
-        }
     }
 }

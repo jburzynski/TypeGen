@@ -62,7 +62,6 @@ namespace TypeGen.Core
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
-                _fileSystem,
                 new TsContentParser(_fileSystem));
         }
 

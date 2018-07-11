@@ -46,14 +46,5 @@ namespace TypeGen.Core.Storage
         /// <param name="directory"></param>
         /// <returns></returns>
         IEnumerable<string> GetDirectoryFiles(string directory);
-
-        /// <summary>
-        /// Gets path prefix required to navigate from pathFrom to pathTo.
-        /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "..\"
-        /// </summary>
-        /// <param name="pathFrom"></param>
-        /// <param name="pathTo"></param>
-        /// <returns></returns>
-        string GetPathDiff(string pathFrom, string pathTo);
     }
 }

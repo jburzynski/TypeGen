@@ -20,7 +20,6 @@ namespace TypeGen.Core.Business
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITypeService _typeService;
         private readonly ITemplateService _templateService;
-        private readonly IFileSystem _fileSystem;
         private readonly ITsContentParser _tsContentParser;
 
         private const string KeepTsTagName = "keep-ts";
@@ -30,13 +29,11 @@ namespace TypeGen.Core.Business
         public TsContentGenerator(ITypeDependencyService typeDependencyService,
             ITypeService typeService,
             ITemplateService templateService,
-            IFileSystem fileSystem,
             ITsContentParser tsContentParser)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
-            _fileSystem = fileSystem;
             _tsContentParser = tsContentParser;
         }
 
@@ -107,7 +104,7 @@ namespace TypeGen.Core.Business
                 string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
 
                 // get path diff
-                string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
+                string pathDiff = FileSystemUtils.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
 
                 // get type & file name

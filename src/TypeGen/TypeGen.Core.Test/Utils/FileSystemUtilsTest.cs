@@ -17,7 +17,6 @@ namespace TypeGen.Core.Test.Utils
         public void SplitPathSeparator_PathGiven_PathSplit(string path)
         {
             string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
-
             Assert.Equal(new[] { "some", "test", "path" }, splitPath);
         }
 
@@ -28,15 +27,15 @@ namespace TypeGen.Core.Test.Utils
         public void GetFileNameFromPath_PathGiven_FileNameReturned(string path)
         {
             string fileName = FileSystemUtils.GetFileNameFromPath(path);
-
             Assert.Equal("file.ext", fileName);
         }
 
-        [Fact]
-        public void GetProjectFilePath_PathGiven_GetsProjectFile()
+        [Theory]
+        [InlineData(@"my\project\folder", @"my\project\folder\jkl.csproj")]
+        [InlineData("my/project/folder", @"my/project/folder\jkl.csproj")]
+        public void GetProjectFilePath_PathGiven_GetsProjectFile(string projectFolder, string expectedResult)
         {
             //arrange
-            const string projectFolder = @"my\project\folder";
             var files = new[] { "abc", "def.txt", ".ghi", "jkl.csproj" };
 
             var fileSystem = Substitute.For<IFileSystem>();
@@ -44,8 +43,22 @@ namespace TypeGen.Core.Test.Utils
 
             //act, assert
             string filePath = FileSystemUtils.GetProjectFilePath(fileSystem, projectFolder);
+            Assert.Equal(expectedResult, filePath);
+        }
 
-            Assert.Equal(@"my\project\folder\jkl.csproj", filePath);
+        [Theory]
+        [InlineData(@"path\to\file.txt", @"path\file.txt", @"../file.txt")]
+        [InlineData("path/to/file.txt", "path/file.txt", @"../file.txt")]
+        [InlineData("path/to/some/nested/file.txt", "path/file.txt", @"../../../file.txt")]
+        [InlineData("path/to/some/nested", "path/file.txt", @"../../file.txt")]
+        [InlineData("path/to/some/nested/", "path/", @"../../../")]
+        [InlineData(@"path\file.txt", "path/to/some/nested/file.txt", @"to/some/nested/file.txt")]
+        [InlineData("path/files/file.txt", @"path\to\some\nested\file.txt", @"../to/some/nested/file.txt")]
+        [InlineData("path/files/", @"path\to\some\nested\file.txt", @"../to/some/nested/file.txt")]
+        public void GetPathDiff_Test(string pathFrom, string pathTo, string expectedResult)
+        {
+            string actualResult = FileSystemUtils.GetPathDiff(pathFrom, pathTo);
+            Assert.Equal(expectedResult, actualResult);
         }
     }
 }

@@ -35,5 +35,20 @@ namespace TypeGen.Core.Utils
 
             return fileName == null ? null : Path.Combine(projectFolder, fileName);
         }
+
+        /// <summary>
+        /// Gets path prefix required to navigate from pathFrom to pathTo.
+        /// E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "../file.txt"
+        /// </summary>
+        /// <param name="pathFrom"></param>
+        /// <param name="pathTo"></param>
+        /// <returns></returns>
+        public static string GetPathDiff(string pathFrom, string pathTo)
+        {
+            var pathFromUri = new Uri("file:///" + pathFrom);
+            var pathToUri = new Uri("file:///" + pathTo);
+
+            return pathFromUri.MakeRelativeUri(pathToUri).ToString();
+        }
     }
 }
