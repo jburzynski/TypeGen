@@ -37,6 +37,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillClassTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillClassTemplate("", "", "", "", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillClassTemplate("", "", "", "", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillClassPropertyWithDefaultValueTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl")
@@ -45,6 +61,22 @@ namespace TypeGen.Core.Test.Business
 
             string actual = templateService.FillClassPropertyWithDefaultValueTemplate("a", "B", "c", "D");
             Assert.Equal("a | B | c | D", actual);
+        }
+
+        [Fact]
+        public void FillClassPropertyWithDefaultValueTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillClassPropertyWithDefaultValueTemplate("", "", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillClassPropertyWithDefaultValueTemplate("", "", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
         }
 
         [Fact]
@@ -59,6 +91,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillClassPropertyTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillClassPropertyTemplate("", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillClassPropertyTemplate("", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillInterfaceTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl")
@@ -67,6 +115,22 @@ namespace TypeGen.Core.Test.Business
 
             string actual = templateService.FillInterfaceTemplate("a", "B", "c", "D", "e", "F");
             Assert.Equal("a | B | c | D | e | F", actual);
+        }
+
+        [Fact]
+        public void FillInterfaceTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillInterfaceTemplate("", "", "", "", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillInterfaceTemplate("", "", "", "", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
         }
 
         [Fact]
@@ -84,6 +148,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillInterfacePropertyTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillInterfacePropertyTemplate("", "", false);
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillInterfacePropertyTemplate("", "", false);
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillEnumTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl")
@@ -98,6 +178,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillEnumTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillEnumTemplate("", "", "", false);
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillEnumTemplate("", "", "", false);
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillEnumValueTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl")
@@ -106,6 +202,22 @@ namespace TypeGen.Core.Test.Business
 
             string actual = templateService.FillEnumValueTemplate("a", 42);
             Assert.Equal("a | 42", actual);
+        }
+
+        [Fact]
+        public void FillEnumValueTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillEnumValueTemplate("", 0);
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillEnumValueTemplate("", 0);
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
         }
 
         [Fact]
@@ -120,6 +232,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillImportTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillImportTemplate("", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillImportTemplate("", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillIndexTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl")
@@ -131,6 +259,22 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillIndexTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillIndexTemplate("");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillIndexTemplate("");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+
+        [Fact]
         public void FillIndexExportTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl")
@@ -139,6 +283,22 @@ namespace TypeGen.Core.Test.Business
 
             string actual = templateService.FillIndexExportTemplate("a");
             Assert.Equal("a", actual);
+        }
+
+        [Fact]
+        public void FillIndexExportTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillIndexExportTemplate("");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillIndexExportTemplate("");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
         }
     }
 }
