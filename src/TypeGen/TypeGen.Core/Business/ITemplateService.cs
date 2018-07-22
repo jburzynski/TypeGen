@@ -10,7 +10,7 @@
         string FillInterfacePropertyTemplate(string name, string type, bool isOptional);
         string FillEnumTemplate(string imports, string name, string values, bool isConst);
         string FillEnumValueTemplate(string name, int intValue);
-        string FillImportTemplate(string name, string asAlias, string path);
+        string FillImportTemplate(string name, string typeAlias, string path);
         string FillIndexTemplate(string exports);
         string FillIndexExportTemplate(string filename);
         string GetExtendsText(string name);

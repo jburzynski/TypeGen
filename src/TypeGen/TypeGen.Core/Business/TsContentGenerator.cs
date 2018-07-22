@@ -41,7 +41,7 @@ namespace TypeGen.Core.Business
         /// Gets code for the 'imports' section for a given type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="outputDir"></param>
+        /// <param name="outputDir">ExportTs... attribute's output dir</param>
         /// <param name="fileNameConverters"></param>
         /// <param name="typeNameConverters"></param>
         /// <returns></returns>
@@ -165,17 +165,17 @@ namespace TypeGen.Core.Business
             bool withOriginalTypeName = !string.IsNullOrEmpty(originalTypeName);
 
             string name = withOriginalTypeName ? originalTypeName : typeName;
-            string asAlias = withOriginalTypeName ? $" as {typeName}" : "";
-            return _templateService.FillImportTemplate(name, asAlias, importPath);
+            string typeAlias = withOriginalTypeName ? typeName : null;
+            return _templateService.FillImportTemplate(name, typeAlias, importPath);
         }
 
         /// <summary>
         /// Gets the output directory for a type dependency
         /// </summary>
         /// <param name="typeDependencyInfo"></param>
-        /// <param name="exportedTypeOutputDir"></param>
+        /// <param name="parentTypeOutputDir"></param>
         /// <returns></returns>
-        private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string exportedTypeOutputDir)
+        private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string parentTypeOutputDir)
         {
             var classAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
             var interfaceAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
@@ -187,7 +187,7 @@ namespace TypeGen.Core.Business
                     ?.SingleOrDefault(a => a.GetType() == typeof(TsDefaultTypeOutputAttribute))
                     as TsDefaultTypeOutputAttribute;
 
-                return defaultTypeOutputAttribute?.OutputDir ?? exportedTypeOutputDir;
+                return defaultTypeOutputAttribute?.OutputDir ?? parentTypeOutputDir;
             }
 
             return classAttribute?.OutputDir

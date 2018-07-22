@@ -108,11 +108,13 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("number"), intValue.ToString());
         }
 
-        public string FillImportTemplate(string name, string asAlias, string path)
+        public string FillImportTemplate(string name, string typeAlias, string path)
         {
+            string aliasText = string.IsNullOrEmpty(typeAlias) ? "" : $" as {typeAlias}";
+
             return ReplaceSpecialChars(_importTemplate)
                 .Replace(GetTag("name"), name)
-                .Replace(GetTag("asAlias"), asAlias)
+                .Replace(GetTag("aliasText"), aliasText)
                 .Replace(GetTag("path"), path);
         }
 
