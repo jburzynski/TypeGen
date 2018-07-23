@@ -12,10 +12,11 @@ namespace TypeGen.Core.Business
         {
         }
 
-        public TypeDependencyInfo(Type type, Attribute[] memberAttributes = null)
+        public TypeDependencyInfo(Type type, Attribute[] memberAttributes = null, bool isBase = false)
         {
             Type = type;
             MemberAttributes = memberAttributes;
+            IsBase = isBase;
         }
 
         /// <summary>
