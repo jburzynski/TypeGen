@@ -10,12 +10,7 @@ namespace TypeGen.Core.Test.Business
 {
     public class TemplateServiceTest
     {
-        private readonly IInternalStorage _internalStorage;
-
-        public TemplateServiceTest()
-        {
-            _internalStorage = Substitute.For<IInternalStorage>();
-        }
+        private readonly IInternalStorage _internalStorage = Substitute.For<IInternalStorage>();
 
         [Fact]
         public void GetExtendsText_NameGiven_ExtendsTextReturned()

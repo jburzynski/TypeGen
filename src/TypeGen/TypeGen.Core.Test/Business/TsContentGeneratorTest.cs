@@ -13,18 +13,10 @@ namespace TypeGen.Core.Test.Business
 {
     public class TsContentGeneratorTest
     {
-        private readonly ITypeDependencyService _typeDependencyService;
-        private readonly ITypeService _typeService;
-        private readonly ITemplateService _templateService;
-        private readonly ITsContentParser _tsContentParser;
-
-        public TsContentGeneratorTest()
-        {
-            _typeDependencyService = Substitute.For<ITypeDependencyService>();
-            _typeService = Substitute.For<ITypeService>();
-            _templateService = Substitute.For<ITemplateService>();
-            _tsContentParser = Substitute.For<ITsContentParser>();
-        }
+        private readonly ITypeDependencyService _typeDependencyService = Substitute.For<ITypeDependencyService>();
+        private readonly ITypeService _typeService = Substitute.For<ITypeService>();
+        private readonly ITemplateService _templateService = Substitute.For<ITemplateService>();
+        private readonly ITsContentParser _tsContentParser = Substitute.For<ITsContentParser>();
 
         #region GetImportsText
         
