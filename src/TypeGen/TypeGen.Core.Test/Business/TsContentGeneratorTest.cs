@@ -26,6 +26,8 @@ namespace TypeGen.Core.Test.Business
             _tsContentParser = Substitute.For<ITsContentParser>();
         }
 
+        #region GetImportsText
+        
         [Theory]
         [MemberData(nameof(GetImportsText_TestCases))]
         public void GetImportsText_TypeGiven_ImportsTextGenerated(Type type,
@@ -170,5 +172,9 @@ namespace TypeGen.Core.Test.Business
             [ExportTsEnum(OutputDir = "child/dir/child-enum-dir")]
             public enum ChildEnum { }
         }
+        
+        #endregion
+
+        // GetExtendsText, GetCustomBody and GetCustomHead not tested, because unit test would be useless
     }
 }
