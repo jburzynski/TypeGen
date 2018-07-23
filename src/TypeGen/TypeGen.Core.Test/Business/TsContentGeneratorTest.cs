@@ -32,10 +32,12 @@ namespace TypeGen.Core.Test.Business
             string outputDir,
             TypeNameConverterCollection fileNameConverters,
             TypeNameConverterCollection typeNameConverters,
-            string expectedOutput)
+            IEnumerable<object> typeDependencies,
+            IEnumerable<MemberInfo> tsExportableMembers,
+                string expectedOutput)
         {
-            _typeDependencyService.GetTypeDependencies(Arg.Any<Type>()).Returns(GetImportsText_TestData.ParentTypeDependencies);
-            _typeService.GetTsExportableMembers(Arg.Any<Type>()).Returns(GetImportsText_TestData.ParentMemberInfos);
+            _typeDependencyService.GetTypeDependencies(Arg.Any<Type>()).Returns(typeDependencies);
+            _typeService.GetTsExportableMembers(Arg.Any<Type>()).Returns(tsExportableMembers);
             _templateService.FillImportTemplate(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(i => $"{i.ArgAt<string>(0)} | {i.ArgAt<string>(1)} | {i.ArgAt<string>(2)};");
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
 
@@ -47,6 +49,8 @@ namespace TypeGen.Core.Test.Business
         public static readonly IEnumerable<object[]> GetImportsText_TestCases = new[]
         {
             new object[] { typeof(GetImportsText_TestData.Parent), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
+                GetImportsText_TestData.ParentTypeDependencies,
+                GetImportsText_TestData.ParentMemberInfos,
                 "Base |  | ./base;" +
                 "DataType1 |  | ./data-type1;" +
                 "DataType2 |  | ./data-type2;" +
@@ -59,17 +63,31 @@ namespace TypeGen.Core.Test.Business
                 "OtherType | OT | other/directory/other-type;\r\n"
             },
 
-            new object[] { typeof(GetImportsText_TestData.Parent), "./child/dir", new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
+            new object[] { typeof(GetImportsText_TestData.Parent), "./child/dir/", new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
+                GetImportsText_TestData.ParentTypeDependencies,
+                GetImportsText_TestData.ParentMemberInfos,
                 "Base |  | ./base;" +
                 "DataType1 |  | ./data-type1;" +
                 "DataType2 |  | ./data-type2;" +
                 "Child1 |  | ./child1;" +
                 "Child2 |  | ./child2dir/child2;" +
                 "Child3 |  | ./child3dir/child3;" +
-                "Child4 |  | ./child4/default/output/dir/child4;" +
+                "Child4 |  | ../../child4/default/output/dir/child4;" +
                 "ChildEnum |  | ./child-enum-dir/child-enum;" +
                 "CustomType |  | custom/directory/custom-type;" +
                 "OtherType | OT | other/directory/other-type;\r\n"
+            },
+            
+            new object[] { typeof(GetImportsText_TestData.ParentCustomBase), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
+                new TypeDependencyInfo[] {},
+                new MemberInfo[] {},
+                "Base |  | base/directory/base;\r\n"
+            },
+            
+            new object[] { typeof(GetImportsText_TestData.ParentCustomBaseAlias), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
+                new TypeDependencyInfo[] {},
+                new MemberInfo[] {},
+                "Base | B | other/directory/base;\r\n"
             },
         };
 
