@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -244,6 +245,15 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
+            // handle IDictionary
+
+            if (type.GetInterface("System.Collections.IDictionary") != null)
+            {
+                return "{ [key: string]: string; }";
+            }
+            
+            // handl IDictionary<,>
+            
             Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
             Type keyType = interfaceType.GetGenericArguments()[0];
             Type valueType = interfaceType.GetGenericArguments()[1];
@@ -331,7 +341,7 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Type GetTsCollectionElementType(Type type)
+        private Type GetTsCollectionElementType(Type type)
         {
             // handle array types
             Type elementType = type.GetElementType();
@@ -340,15 +350,21 @@ namespace TypeGen.Core.Business
                 return elementType;
             }
 
-            // handle IEnumerable<>
-            if (type.Name == "IEnumerable`1")
+            switch (type.Name)
             {
-                return type.GetGenericArguments()[0];
+                // handle IEnumerable
+                case "IEnumerable":
+                    return typeof(object);
+                // handle IEnumerable<>
+                case "IEnumerable`1":
+                    return type.GetGenericArguments()[0];
             }
 
-            // handle types implementing IEnumerable<>
+            // handle types implementing IEnumerable or IEnumerable<>
             foreach (Type interfaceType in type.GetTypeInfo().ImplementedInterfaces)
             {
+                if (interfaceType == typeof(IEnumerable)) return typeof(object);
+                
                 if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     return interfaceType.GetGenericArguments()[0];

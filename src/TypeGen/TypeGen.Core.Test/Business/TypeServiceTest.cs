@@ -16,11 +16,11 @@ namespace TypeGen.Core.Test.Business
     {
         private readonly ITypeService _typeService = new TypeService();
 
-        public class Class {}
+        public class MyClass {}
         public class GenericClass1<T> {}
         public class GenericClass2<T, U> {}
         public class GenericClass3<T, U, V> where U: IEnumerable {}
-        public enum Enum {}
+        public enum MyEnum {}
         [ExportTsClass] public class TsClass {}
         [ExportTsInterface] public class TsInterface {}
         [ExportTsEnum] public enum TsEnum {}
@@ -42,7 +42,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(double), true)]
         [InlineData(typeof(decimal), true)]
         [InlineData(typeof(DateTime), true)]
-        [InlineData(typeof(Class), false)]
+        [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(int?), false)]
         [InlineData(typeof(DateTime?), false)]
         public void IsTsSimpleType_TypeGiven_DeterminedIfTsSimpleType(Type type, bool expectedResult)
@@ -68,7 +68,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(double), "number")]
         [InlineData(typeof(decimal), "number")]
         [InlineData(typeof(DateTime), "Date")]
-        [InlineData(typeof(Class), null)]
+        [InlineData(typeof(MyClass), null)]
         [InlineData(typeof(int?), null)]
         [InlineData(typeof(DateTime?), null)]
         public void GetTsSimpleTypeName_TypeGiven_TsSimpleTypeNameReturned(Type type, string expectedResult)
@@ -78,8 +78,8 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Theory]
-        [InlineData(typeof(Class), true)]
-        [InlineData(typeof(Enum), false)]
+        [InlineData(typeof(MyClass), true)]
+        [InlineData(typeof(MyEnum), false)]
         [InlineData(typeof(TsClass), true)]
         [InlineData(typeof(TsInterface), false)]
         [InlineData(typeof(TsEnum), false)]
@@ -90,8 +90,8 @@ namespace TypeGen.Core.Test.Business
         }
         
         [Theory]
-        [InlineData(typeof(Class), false)]
-        [InlineData(typeof(Enum), false)]
+        [InlineData(typeof(MyClass), false)]
+        [InlineData(typeof(MyEnum), false)]
         [InlineData(typeof(TsClass), false)]
         [InlineData(typeof(TsInterface), true)]
         [InlineData(typeof(TsEnum), false)]
@@ -166,9 +166,9 @@ namespace TypeGen.Core.Test.Business
         {
             new object[] { typeof(GetMemberType_TestClass).GetField("a"), typeof(string) },
             new object[] { typeof(GetMemberType_TestClass).GetField("b"), typeof(int) },
-            new object[] { typeof(GetMemberType_TestClass).GetProperty("C"), typeof(Class) },
-            new object[] { typeof(GetMemberType_TestClass).GetField("d"), typeof(Enum) },
-            new object[] { typeof(GetMemberType_TestClass).GetProperty("E"), typeof(Enum) },
+            new object[] { typeof(GetMemberType_TestClass).GetProperty("C"), typeof(MyClass) },
+            new object[] { typeof(GetMemberType_TestClass).GetField("d"), typeof(MyEnum) },
+            new object[] { typeof(GetMemberType_TestClass).GetProperty("E"), typeof(MyEnum) },
             new object[] { typeof(GetMemberType_TestClass).GetProperty("F"), typeof(object) },
             new object[] { typeof(GetMemberType_TestClass).GetField("g"), typeof(string[]) },
             new object[] { typeof(GetMemberType_TestClass).GetField("h"), typeof(int[][][]) },
@@ -181,9 +181,9 @@ namespace TypeGen.Core.Test.Business
         {
             public string a;
             public int? b;
-            public Class C { get; set; }
-            public Enum d;
-            public Enum? E { get; set; }
+            public MyClass C { get; set; }
+            public MyEnum d;
+            public MyEnum? E { get; set; }
             public dynamic F { get; set; }
             public string[] g;
             public int[][][] h;
@@ -198,8 +198,8 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(object), false)]
         [InlineData(typeof(IDictionary<,>), false)]
         [InlineData(typeof(Dictionary<int, string>), false)]
-        [InlineData(typeof(Class), false)]
-        [InlineData(typeof(Enum), false)]
+        [InlineData(typeof(MyClass), false)]
+        [InlineData(typeof(MyEnum), false)]
         [InlineData(typeof(int[]), true)]
         [InlineData(typeof(string[]), true)]
         [InlineData(typeof(object[]), true)]
@@ -218,8 +218,8 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(string), false)]
         [InlineData(typeof(int), false)]
         [InlineData(typeof(object), false)]
-        [InlineData(typeof(Class), false)]
-        [InlineData(typeof(Enum), false)]
+        [InlineData(typeof(MyClass), false)]
+        [InlineData(typeof(MyEnum), false)]
         [InlineData(typeof(int[]), false)]
         [InlineData(typeof(string[]), false)]
         [InlineData(typeof(object[]), false)]
@@ -254,11 +254,35 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Theory]
-        
+        [MemberData(nameof(GetTsTypeName_TestData))]
         public void GetTsTypeName_TypeGiven_TsTypeNameReturned(Type type, TypeNameConverterCollection converters, bool forTypeDeclaration, string expectedResult)
         {
             string actualResult = _typeService.GetTsTypeName(type, converters, forTypeDeclaration);
             Assert.Equal(expectedResult, actualResult);
         }
+
+        public static IEnumerable<object[]> GetTsTypeName_TestData = new[]
+        {
+            new object[] { typeof(object), new TypeNameConverterCollection(), false, "Object" },
+            new object[] { typeof(object), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), false, "Object" },
+            new object[] { typeof(bool), new TypeNameConverterCollection(), false, "boolean" },
+            new object[] { typeof(char), new TypeNameConverterCollection(), false, "string" },
+            new object[] { typeof(string), new TypeNameConverterCollection(), false, "string" },
+            new object[] { typeof(sbyte), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(byte), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(short), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(ushort), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(int), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(uint), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), false, "number" },
+            new object[] { typeof(long), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(ulong), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(float), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(double), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(decimal), new TypeNameConverterCollection(), false, "number" },
+            new object[] { typeof(DateTime), new TypeNameConverterCollection(), false, "Date" },
+            new object[] { typeof(MyClass), new TypeNameConverterCollection(), false, "MyClass" },
+            new object[] { typeof(MyClass), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), false, "my-class" },
+            new object[] { typeof(MyEnum), new TypeNameConverterCollection(), false, "MyEnum" }
+        };
     }
 }
