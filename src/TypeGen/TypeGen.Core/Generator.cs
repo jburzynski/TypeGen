@@ -248,7 +248,7 @@ namespace TypeGen.Core
 
             // generate the file content
 
-            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
@@ -280,7 +280,7 @@ namespace TypeGen.Core
 
             // create TypeScript source code for the enum
 
-            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
@@ -303,7 +303,7 @@ namespace TypeGen.Core
 
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
 
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
@@ -348,7 +348,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
             bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);

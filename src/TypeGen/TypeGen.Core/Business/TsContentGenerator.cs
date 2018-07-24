@@ -74,7 +74,7 @@ namespace TypeGen.Core.Business
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
-            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters);
+            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters, true);
             return _templateService.GetExtendsText(baseTypeName);
         }
 

@@ -77,25 +77,15 @@ namespace TypeGen.Core.Business
         bool IsCustomGenericType(Type type);
 
         /// <summary>
-        /// Gets TypeScript type name for a member
-        /// </summary>
-        /// <param name="memberInfo"></param>
-        /// <param name="typeNameConverters"></param>
-        /// <param name="isMember"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool isMember = false);
-
-        /// <summary>
         /// Gets TypeScript type name for a type
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
-        /// <param name="isMember"></param>
+        /// <param name="forTypeDeclaration"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
         /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
-        string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool isMember = false);
+        string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false);
 
         /// <summary>
         /// Gets the TypeScript type name to generate for a member
@@ -105,7 +95,7 @@ namespace TypeGen.Core.Business
         /// <param name="strictNullChecks"></param>
         /// <param name="csNullableTranslation"></param>
         /// <returns></returns>
-        string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation);
+        string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation);
 
         /// <summary>
         /// Gets the type of the deepest element from a jagged collection of the given type.

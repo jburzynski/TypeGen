@@ -14,11 +14,7 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeService : ITypeService
     {
-        /// <summary>
-        /// Determines if a type has a TypeScript simple type representation
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True if a corresponding TypeScript simple type exists; false otherwise.</returns>
+        /// <inheritdoc />
         public bool IsTsSimpleType(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -26,12 +22,7 @@ namespace TypeGen.Core.Business
             return GetTsSimpleTypeName(type) != null;
         }
 
-        /// <summary>
-        /// Gets TypeScript type name for a simple type.
-        /// Simple type must be one of: object, bool, string, int, long, float, double, decimal.
-        /// </summary>
-        /// <param name="type">one of: object, bool, string, int, long, float, double, decimal</param>
-        /// <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
+        /// <inheritdoc />
         public string GetTsSimpleTypeName(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -64,12 +55,7 @@ namespace TypeGen.Core.Business
             }
         }
 
-        /// <summary>
-        /// Determines whether the type represents a TypeScript class
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True if the type represents a TypeScript class; false otherwise</returns>
-        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
+        /// <inheritdoc />
         public bool IsTsClass(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -81,12 +67,7 @@ namespace TypeGen.Core.Business
             return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
         }
 
-        /// <summary>
-        /// Determines whether the type represents a TypeScript class
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True is the type represents a TypeScript class; false otherwise</returns>
-        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
+        /// <inheritdoc />
         public bool IsTsInterface(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -98,13 +79,7 @@ namespace TypeGen.Core.Business
             return exportAttribute is ExportTsInterfaceAttribute;
         }
 
-        /// <summary>
-        /// Gets MemberInfos of all members in a type that can be exported to TypeScript.
-        /// Members marked with TsIgnore attribute are not included in the result.
-        /// If the passed type is not a class type, empty enumeration is returned.
-        /// </summary>
-        /// <param name="type">Class type</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public IEnumerable<MemberInfo> GetTsExportableMembers(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -123,12 +98,7 @@ namespace TypeGen.Core.Business
             return fieldInfos.Union(propertyInfos);
         }
 
-        /// <summary>
-        /// Gets member's type.
-        /// MemberInfo must be a PropertyInfo or a FieldInfo.
-        /// </summary>
-        /// <param name="memberInfo">PropertyInfo or FieldInfo</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public Type GetMemberType(MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
@@ -143,11 +113,7 @@ namespace TypeGen.Core.Business
                 : GetUnderlyingType(((FieldInfo)memberInfo).FieldType);
         }
 
-        /// <summary>
-        /// Determines if a type is a collection type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public bool IsCollectionType(Type type)
         {
             return type.FullName != "System.String" // not a string
@@ -155,62 +121,23 @@ namespace TypeGen.Core.Business
                 && type.GetInterface("IEnumerable") != null; // implements IEnumerable
         }
 
-        /// <summary>
-        /// Determines if a type is a dictionary type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public bool IsDictionaryType(Type type)
         {
             return type.GetInterface("System.Collections.Generic.IDictionary`2") != null
-                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"));
+                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
+                   || type.GetInterface("System.Collections.IDictionary") != null
+                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.IDictionary"));
         }
 
-        /// <summary>
-        /// Determines if a type is a user-defined generic type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public bool IsCustomGenericType(Type type)
         {
             return type.GetTypeInfo().IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
         }
 
-        /// <summary>
-        /// Gets TypeScript type name for a member
-        /// </summary>
-        /// <param name="memberInfo"></param>
-        /// <param name="typeNameConverters"></param>
-        /// <param name="isMember"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool isMember = false)
-        {
-            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
-
-            // special case - dynamic property/field
-
-            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
-            {
-                return "any";
-            }
-
-            // otherwise, resolve by type
-
-            Type type = GetMemberType(memberInfo);
-            return GetTsTypeName(type, typeNameConverters, isMember);
-        }
-
-        /// <summary>
-        /// Gets TypeScript type name for a type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
-        /// <param name="isMember"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
-        /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
-        public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool isMember = false)
+        /// <inheritdoc />
+        public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
@@ -238,7 +165,7 @@ namespace TypeGen.Core.Business
             // handle custom generic types
             if (IsCustomGenericType(type))
             {
-                return GetGenericTsTypeName(type, typeNameConverters, isMember);
+                return GetGenericTsTypeName(type, typeNameConverters, forTypeDeclaration);
             }
 
             // handle custom types & generic parameters
@@ -246,15 +173,8 @@ namespace TypeGen.Core.Business
             return type.IsGenericParameter ? typeNameNoArity : typeNameConverters.Convert(typeNameNoArity, type);
         }
 
-        /// <summary>
-        /// Gets the TypeScript type name to generate for a member
-        /// </summary>
-        /// <param name="memberInfo"></param>
-        /// <param name="typeNameConverters"></param>
-        /// <param name="strictNullChecks"></param>
-        /// <param name="csNullableTranslation"></param>
-        /// <returns></returns>
-        public string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation)
+        /// <inheritdoc />
+        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation)
         {
             string typeUnionSuffix = strictNullChecks ? GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation) : "";
 
@@ -268,7 +188,31 @@ namespace TypeGen.Core.Business
                 return typeAttribute.TypeName + typeUnionSuffix;
             }
 
-            return GetTsTypeName(memberInfo, typeNameConverters, isMember: true) + typeUnionSuffix;
+            return GetTsTypeNameForMember(memberInfo, typeNameConverters) + typeUnionSuffix;
+        }
+        
+        /// <summary>
+        /// Gets TypeScript type name for a member
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <param name="typeNameConverters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
+        private string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        {
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+
+            // special case - dynamic property/field
+
+            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
+            {
+                return "any";
+            }
+
+            // otherwise, resolve by type
+
+            Type type = GetMemberType(memberInfo);
+            return GetTsTypeName(type, typeNameConverters);
         }
 
         private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo, StrictNullFlags csNullableTranslation)
@@ -333,48 +277,47 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
-        /// <param name="isMember"></param>
+        /// <param name="forTypeDeclaration"></param>
         /// <returns></returns>
-        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool isMember = false)
+        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
         {
-            if (isMember) return GetGenericNonDefinitionTsTypeName(type, typeNameConverters);
+            if (!forTypeDeclaration) return GetGenericTsTypeNameForNonDeclaration(type, typeNameConverters);
 
             return type.GetTypeInfo().IsGenericTypeDefinition
-                ? GetGenericDefinitionTsTypeName(type, typeNameConverters)
-                : GetGenericNonDefinitionTsTypeName(type, typeNameConverters);
+                ? GetGenericTsTypeNameForDeclaration(type, typeNameConverters)
+                : GetGenericTsTypeNameForNonDeclaration(type, typeNameConverters);
         }
 
         /// <summary>
-        /// Gets TypeScript type name for a generic definition type
+        /// Gets TypeScript type name for a generic type - used in type declarations
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetGenericDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetGenericTsTypeNameForDeclaration(Type type, TypeNameConverterCollection typeNameConverters)
         {
-            Type[] genericArguments = type.GetGenericArguments();
-
-            string[] genericArgumentNames = (from t in genericArguments
-                                             select t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
-                                                 ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, typeNameConverters)}"
-                                                 : t.Name)
-                                            .ToArray();
-
-            string typeName = type.Name.RemoveTypeArity();
-            string genericArgumentDef = string.Join(", ", genericArgumentNames);
-            return $"{typeNameConverters.Convert(typeName, type)}<{genericArgumentDef}>";
+            return GetGenericTsTypeNameDeclarationAgnostic(type, typeNameConverters,
+                t => t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
+                    ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, typeNameConverters, true)}"
+                    : t.Name);
         }
 
         /// <summary>
-        /// Gets TypeScript type name for a generic (not generic definition) type
+        /// Gets TypeScript type name for a generic type - used NOT in type declarations
         /// </summary>
         /// <param name="type"></param>
         /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetGenericNonDefinitionTsTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetGenericTsTypeNameForNonDeclaration(Type type, TypeNameConverterCollection typeNameConverters)
+        {
+            return GetGenericTsTypeNameDeclarationAgnostic(type, typeNameConverters,
+                t => t.IsGenericParameter ? t.Name : GetTsTypeName(t, typeNameConverters));
+        }
+
+        private string GetGenericTsTypeNameDeclarationAgnostic(Type type, TypeNameConverterCollection typeNameConverters, Func<Type, string> genericArgumentsSelector)
         {
             string[] genericArgumentNames = type.GetGenericArguments()
-                .Select(t => t.IsGenericParameter ? t.Name : GetTsTypeName(t, typeNameConverters))
+                .Select(genericArgumentsSelector)
                 .ToArray();
 
             string typeName = type.Name.RemoveTypeArity();
@@ -415,12 +358,7 @@ namespace TypeGen.Core.Business
             return null;
         }
 
-        /// <summary>
-        /// Gets the type of the deepest element from a jagged collection of the given type.
-        /// If the passed type is not an array type or does not implement IEnumerable interface, the type itself is returned.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public Type GetFlatType(Type type)
         {
             while (true)
@@ -430,27 +368,14 @@ namespace TypeGen.Core.Business
             }
         }
 
-        /// <summary>
-        /// Converts a type to a 'TS-exportable' type.
-        /// If the type is nullable, returns the underlying type.
-        /// Otherwise, returns the passed type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public Type GetUnderlyingType(Type type)
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;
         }
 
-        /// <summary>
-        /// Gets custom base type for a class type.
-        /// If no custom base type exists, null is returned.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown if type is null</exception>
-        /// <exception cref="CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
+        /// <inheritdoc />
         public Type GetBaseType(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));

@@ -61,7 +61,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
         {
-            return memberInfos.Where(i => i.CanRead && !i.GetMethod.IsStatic);
+            return memberInfos.Where(i => i.GetMethod.IsPublic && !i.GetMethod.IsStatic);
         }
 
         /// <summary>
