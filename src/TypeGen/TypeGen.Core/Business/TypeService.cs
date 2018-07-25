@@ -119,7 +119,7 @@ namespace TypeGen.Core.Business
         {
             return type.FullName != "System.String" // not a string
                 && !IsDictionaryType(type) // not a dictionary
-                && type.GetInterface("IEnumerable") != null; // implements IEnumerable
+                && (type.GetInterface("IEnumerable") != null || (type.FullName != null && type.FullName.StartsWith("System.Collections.IEnumerable"))); // implements IEnumerable or is IEnumerable
         }
 
         /// <inheritdoc />
@@ -352,24 +352,21 @@ namespace TypeGen.Core.Business
 
             switch (type.Name)
             {
-                // handle IEnumerable
-                case "IEnumerable":
-                    return typeof(object);
                 // handle IEnumerable<>
                 case "IEnumerable`1":
                     return type.GetGenericArguments()[0];
+                // handle IEnumerable
+                case "IEnumerable":
+                    return typeof(object);
             }
 
             // handle types implementing IEnumerable or IEnumerable<>
-            foreach (Type interfaceType in type.GetTypeInfo().ImplementedInterfaces)
-            {
-                if (interfaceType == typeof(IEnumerable)) return typeof(object);
-                
-                if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                {
-                    return interfaceType.GetGenericArguments()[0];
-                }
-            }
+
+            Type ienumerable1Interface = type.GetTypeInfo().GetInterface("IEnumerable`1");
+            if (ienumerable1Interface != null) return ienumerable1Interface.GetGenericArguments()[0];
+            
+            Type ienumerableInterface = type.GetTypeInfo().GetInterface("IEnumerable");
+            if (ienumerableInterface != null) return typeof(object);
 
             return null;
         }
