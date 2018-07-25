@@ -35,7 +35,7 @@ namespace TypeGen.Core.Business
                 Type baseType = genericArgumentType.GetTypeInfo().BaseType;
                 if (baseType == null || baseType == typeof(object)) continue;
 
-                baseType = _typeService.GetUnderlyingType(baseType);
+                baseType = _typeService.AsNotNullable(baseType);
                 Type baseFlatType = _typeService.GetFlatType(baseType);
                 if (_typeService.IsTsSimpleType(baseFlatType) || baseFlatType.IsGenericParameter) continue;
 
@@ -122,7 +122,7 @@ namespace TypeGen.Core.Business
 
             foreach (Type genericArgument in type.GetGenericArguments())
             {
-                Type argumentType = _typeService.GetUnderlyingType(genericArgument);
+                Type argumentType = _typeService.AsNotNullable(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
                 if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
@@ -148,7 +148,7 @@ namespace TypeGen.Core.Business
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
 
-            type = _typeService.GetUnderlyingType(type);
+            type = _typeService.AsNotNullable(type);
 
             return GetGenericTypeDefinitionDependencies(type)
                 .Concat(GetBaseTypeDependency(type)

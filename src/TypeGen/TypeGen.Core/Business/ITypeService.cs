@@ -112,7 +112,7 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        Type GetUnderlyingType(Type type);
+        Type AsNotNullable(Type type);
 
         /// <summary>
         /// Gets custom base type for a class type.

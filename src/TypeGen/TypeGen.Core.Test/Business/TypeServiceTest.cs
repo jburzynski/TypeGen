@@ -197,6 +197,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(int), false)]
         [InlineData(typeof(object), false)]
         [InlineData(typeof(IDictionary<,>), false)]
+        [InlineData(typeof(IDictionary), false)]
         [InlineData(typeof(Dictionary<int, string>), false)]
         [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(MyEnum), false)]
@@ -206,6 +207,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(int[][][][]), true)]
         [InlineData(typeof(IList<>), true)]
         [InlineData(typeof(IList), true)]
+        [InlineData(typeof(IEnumerable), true)]
         [InlineData(typeof(IEnumerable<>), true)]
         [InlineData(typeof(IEnumerable<string>), true)]
         public void IsCollectionType_TypeGiven_DeterminedIfCollectionType(Type type, bool expectedResult)
@@ -410,5 +412,35 @@ namespace TypeGen.Core.Test.Business
             Type actualResult = _typeService.GetFlatType(type);
             Assert.Equal(expectedResult, actualResult);
         }
+
+        [Theory]
+        [InlineData(typeof(string), typeof(string))]
+        [InlineData(typeof(int?), typeof(int))]
+        [InlineData(typeof(MyClass), typeof(MyClass))]
+        [InlineData(typeof(MyEnum), typeof(MyEnum))]
+        [InlineData(typeof(MyEnum?), typeof(MyEnum))]
+        [InlineData(typeof(GenericClass2<int, string>), typeof(GenericClass2<int, string>))]
+        [InlineData(typeof(GenericClass2<,>), typeof(GenericClass2<,>))]
+        public void AsNotNullable_TypeGiven_NotNullableTypeReturned(Type type, Type expectedResult)
+        {
+            Type actualResult = _typeService.AsNotNullable(type);
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        [Theory]
+        [InlineData(typeof(GetBaseType_TestData1), typeof(MyClass))]
+        [InlineData(typeof(GetBaseType_TestData2<int>), typeof(GenericClass1<int>))]
+        [InlineData(typeof(GetBaseType_TestData3), typeof(GenericClass3<int, MyClass, string>))]
+        [InlineData(typeof(GetBaseType_TestData4<int, string>), typeof(GenericClass3<int, MyClass, string>))]
+        public void GetBaseType_TypeGiven_BaseTypeReturned(Type type, Type expectedResult)
+        {
+            Type actualResult = _typeService.GetBaseType(type);
+            Assert.Equal(expectedResult, actualResult);
+        }
+        
+        public class GetBaseType_TestData1 : MyClass {}
+        public class GetBaseType_TestData2<T> : GenericClass1<T> {}
+        public class GetBaseType_TestData3 : GenericClass3<int, MyClass, string> {}
+        public class GetBaseType_TestData4<T, V> : GenericClass3<T, MyClass, V> {}
     }
 }
