@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeGen.TestWebApp", "TypeG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.Core.Test", "TypeGen.Core.Test\TypeGen.Core.Test.csproj", "{80270C4D-B3D6-47E4-8386-761E1BF2184A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.Cli.Test", "TypeGen.Cli.Test\TypeGen.Cli.Test.csproj", "{7A524558-A065-44EB-B9BC-1DC46ED4042C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{80270C4D-B3D6-47E4-8386-761E1BF2184A}.Release|x64.Build.0 = Release|Any CPU
 		{80270C4D-B3D6-47E4-8386-761E1BF2184A}.Release|x86.ActiveCfg = Release|Any CPU
 		{80270C4D-B3D6-47E4-8386-761E1BF2184A}.Release|x86.Build.0 = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|x64.Build.0 = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|x64.ActiveCfg = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|x64.Build.0 = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7A524558-A065-44EB-B9BC-1DC46ED4042C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

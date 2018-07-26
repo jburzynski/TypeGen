@@ -46,5 +46,11 @@ namespace TypeGen.Core.Storage
         /// <param name="directory"></param>
         /// <returns></returns>
         IEnumerable<string> GetDirectoryFiles(string directory);
+
+        /// <summary>
+        /// Gets the current directory
+        /// </summary>
+        /// <returns></returns>
+        string GetCurrentDirectory();
     }
 }

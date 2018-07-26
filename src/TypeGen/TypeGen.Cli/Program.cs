@@ -50,7 +50,7 @@ namespace TypeGen.Cli
 
                 if (_consoleArgsReader.ContainsGetCwdParam(args))
                 {
-                    string cwd = Directory.GetCurrentDirectory();
+                    string cwd = _fileSystem.GetCurrentDirectory();
                     _logger.Log($"Current working directory is: {cwd}");
                     return;
                 }

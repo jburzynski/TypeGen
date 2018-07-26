@@ -32,7 +32,7 @@ namespace TypeGen.Cli.Business
         public AssemblyResolver(IFileSystem fileSystem, string projectFolder)
         {
             _fileSystem = fileSystem;
-            _projectFolder = projectFolder.ToAbsolutePath();
+            _projectFolder = projectFolder.ToAbsolutePath(_fileSystem);
 
             if (Directory.Exists(SharedPath)) _sharedFolder = SharedPath;
             PopulateNuGetPackageFolders();
