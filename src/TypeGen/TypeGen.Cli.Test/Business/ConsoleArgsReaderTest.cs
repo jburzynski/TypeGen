@@ -67,5 +67,48 @@ namespace TypeGen.Cli.Test.Business
             new object[] { new[] { "asdf", "d" }, false },
             new object[] { new string[] {}, false }
         };
+
+        [Theory]
+        [MemberData(nameof(GetConfigPaths_TestData))]
+        public void GetConfigPaths_Test(string[] args, IEnumerable<string> expectedResult)
+        {
+            IEnumerable<string> actualResult = _consoleArgsReader.GetConfigPaths(args);
+            Assert.Equal(expectedResult, actualResult);
+        }
+        
+        public static IEnumerable<object[]> GetConfigPaths_TestData = new[]
+        {
+            new object[] { new[] { "asdf", "-Config-Path", "zxcv" }, new [] { "zxcv" } },
+            new object[] { new[] { "asdf", "-CoNfIg-PaTh", "zxcv" }, new [] { "zxcv" } },
+            new object[] { new[] { "asdf", "-Config-Path", "zxcv", "qwer" }, new [] { "zxcv" } },
+            new object[] { new[] { "asdf", "-Config-Path", "zxcv|qwer" }, new [] { "zxcv", "qwer" } },
+            new object[] { new[] { "asdf", "-Config-Path", @"my\path|C:\Program Files\path" }, new [] { @"my\path", @"C:\Program Files\path" } },
+            new object[] { new[] { "asdf", "-Config-Path", @"my\path|C:\Program Files\path|other/path" }, new [] { @"my\path", @"C:\Program Files\path", "other/path" } },
+            new object[] { new[] { "asdf" }, new string[] {} }
+        };
+
+        [Fact]
+        public void GetConfigPaths_ParameterPresentAndNoPathsSpecified_ExceptionThrown()
+        {
+            var args = new[] { "-Config-Path" };
+            Assert.Throws<CliException>(() => _consoleArgsReader.GetConfigPaths(args));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetProjectFolders_TestData))]
+        public void GetProjectFolders_Test(string[] args, IEnumerable<string> expectedResult)
+        {
+            IEnumerable<string> actualResult = _consoleArgsReader.GetProjectFolders(args);
+            Assert.Equal(expectedResult, actualResult);
+        }
+        
+        public static IEnumerable<object[]> GetProjectFolders_TestData = new[]
+        {
+            new object[] { new[] { "asdf", "project/folder" }, new [] { "asdf" } },
+            new object[] { new[] { "asdf", @"C:\project\folder" }, new [] { "asdf" } },
+            new object[] { new[] { "asdf|qwer", "-Config-Path", "zxcv" }, new [] { "asdf", "qwer" } },
+            new object[] { new[] { @"D:\my\folder|some/other/folder|that/folder", "-Config-Path", "zxcv|qwer" }, new [] { @"D:\my\folder", "some/other/folder", "that/folder" } },
+            new object[] { new string[] { }, new string[] { } }
+        };
     }
 }

@@ -31,9 +31,7 @@ namespace TypeGen.Cli.Business
 
         public IEnumerable<string> GetConfigPaths(string[] args)
         {
-            List<string> argsList = args.ToList();
-            int index = argsList.IndexOf("-Config-Path");
-
+            int index = Array.FindIndex(args, a => a.Equals("-Config-Path", StringComparison.InvariantCultureIgnoreCase));
             if (index < 0) return Enumerable.Empty<string>();
 
             if (args.Length < index + 2) // index of the next element + 1
@@ -46,6 +44,7 @@ namespace TypeGen.Cli.Business
 
         public IEnumerable<string> GetProjectFolders(string[] args)
         {
+            if (args.IsNullOrEmpty()) return Enumerable.Empty<string>();
             return args[0].Split(PathSeparator);
         }
     }
