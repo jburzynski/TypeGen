@@ -12,5 +12,8 @@
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
 	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
     <tags>code-generator generator typescript ts</tags>
+	<dependencies>
+      <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
+    </dependencies>
   </metadata>
 </package>

@@ -14,5 +14,8 @@
 	<packageSourceUrl>https://github.com/jburzynski/TypeGen</packageSourceUrl>
 	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
     <tags>code-generator generator typescript ts</tags>
+	<dependencies>
+      <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
+    </dependencies>
   </metadata>
 </package>
