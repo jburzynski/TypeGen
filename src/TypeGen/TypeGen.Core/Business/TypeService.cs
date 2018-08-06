@@ -252,7 +252,7 @@ namespace TypeGen.Core.Business
                 return "{ [key: string]: string; }";
             }
             
-            // handl IDictionary<,>
+            // handle IDictionary<,>
             
             Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
             Type keyType = interfaceType.GetGenericArguments()[0];
@@ -362,10 +362,10 @@ namespace TypeGen.Core.Business
 
             // handle types implementing IEnumerable or IEnumerable<>
 
-            Type ienumerable1Interface = type.GetTypeInfo().GetInterface("IEnumerable`1");
+            Type ienumerable1Interface = type.GetInterface("IEnumerable`1");
             if (ienumerable1Interface != null) return ienumerable1Interface.GetGenericArguments()[0];
             
-            Type ienumerableInterface = type.GetTypeInfo().GetInterface("IEnumerable");
+            Type ienumerableInterface = type.GetInterface("IEnumerable");
             if (ienumerableInterface != null) return typeof(object);
 
             return null;

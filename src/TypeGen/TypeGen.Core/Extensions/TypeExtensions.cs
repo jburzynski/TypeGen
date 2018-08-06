@@ -74,5 +74,17 @@ namespace TypeGen.Core.Extensions
             return enumerable
                 .Select(c => c.GetType().Name);
         }
+        
+        /// <summary>
+        /// Shim for Type.GetInterface
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="interfaceName"></param>
+        /// <returns></returns>
+        public static Type GetInterface(this Type type, string interfaceName)
+        {
+            return type.GetInterfaces()
+                .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
+        }
     }
 }
