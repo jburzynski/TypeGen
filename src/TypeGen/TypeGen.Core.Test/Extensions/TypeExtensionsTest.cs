@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -118,10 +119,24 @@ namespace TypeGen.Core.Test.Extensions
         [Fact]
         public void GetTypeNames_Test()
         {
-            IEnumerable<object> objects = new object[] { "a", 2, new List<string>(), new PlainClass(), TsEnum.A, new TsClass(), new object(), DateTime.MinValue };
+            IEnumerable<object> objects = new[] { "a", 2, new List<string>(), new PlainClass(), TsEnum.A, new TsClass(), new object(), DateTime.MinValue };
             IEnumerable<string> expectedResult = new[] { "String", "Int32", "List`1", "PlainClass", "TsEnum", "TsClass", "Object", "DateTime" };
 
             IEnumerable<string> actualResult = objects.GetTypeNames();
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        [Theory]
+        [InlineData(typeof(List<>), "IEnumerable", typeof(IEnumerable))]
+        [InlineData(typeof(List<string>), "IEnumerable", typeof(IEnumerable))]
+        [InlineData(typeof(List<string>), "IEnumerable`1", typeof(IEnumerable<string>))]
+        [InlineData(typeof(Dictionary<int, string>), "IEnumerable", typeof(IEnumerable))]
+        [InlineData(typeof(Dictionary<int, string>), "IDictionary`2", typeof(IDictionary<int, string>))]
+        [InlineData(typeof(Dictionary<int, string>), "asdf", null)]
+        [InlineData(typeof(PlainClass), "IEnumerable", null)]
+        public void GetInterface_Test(Type type, string interfaceName, Type expectedResult)
+        {
+            Type actualResult = type.GetInterface(interfaceName);
             Assert.Equal(expectedResult, actualResult);
         }
     }
