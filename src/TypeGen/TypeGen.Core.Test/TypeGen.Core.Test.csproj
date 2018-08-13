@@ -13,6 +13,77 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TypeGen.Cli\TypeGen.Cli.csproj" />
     <ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Acceptance\Expected\bar.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\bar.ts" />
+    <None Remove="Acceptance\Expected\base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\base-class.ts" />
+    <None Remove="Acceptance\Expected\c.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\c.ts" />
+    <None Remove="Acceptance\Expected\custom-base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\custom-base-class.ts" />
+    <None Remove="Acceptance\Expected\custom-base-custom-import.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\custom-base-custom-import.ts" />
+    <None Remove="Acceptance\Expected\custom-empty-base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\custom-empty-base-class.ts" />
+    <None Remove="Acceptance\Expected\d.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\d.ts" />
+    <None Remove="Acceptance\Expected\e-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\e-class.ts" />
+    <None Remove="Acceptance\Expected\external-deps-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\external-deps-class.ts" />
+    <None Remove="Acceptance\Expected\f-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\f-class.ts" />
+    <None Remove="Acceptance\Expected\foo-type.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\foo-type.ts" />
+    <None Remove="Acceptance\Expected\foo.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\foo.ts" />
+    <None Remove="Acceptance\Expected\generic-base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\generic-base-class.ts" />
+    <None Remove="Acceptance\Expected\generic-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\generic-class.ts" />
+    <None Remove="Acceptance\Expected\index.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\index.ts" />
+    <None Remove="Acceptance\Expected\lite-db-entity.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\lite-db-entity.ts" />
+    <None Remove="Acceptance\Expected\standalone-enum.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\standalone-enum.ts" />
+    <None Remove="Acceptance\Expected\strict-nulls-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\strict-nulls-class.ts" />
+    <None Remove="Acceptance\Expected\with-generic-base-class-custom-type.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\with-generic-base-class-custom-type.ts" />
+    <None Remove="Acceptance\Expected\with-ignored-base-and-custom-base.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\with-ignored-base-and-custom-base.ts" />
+    <None Remove="Acceptance\Expected\with-ignored-base.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\with-ignored-base.ts" />
+    <None Remove="Acceptance\Expected\error-case2\base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\error-case2\base-class.ts" />
+    <None Remove="Acceptance\Expected\error-case2\base-class2.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\error-case2\base-class2.ts" />
+    <None Remove="Acceptance\Expected\error-case2\my-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\error-case2\my-class.ts" />
+    <None Remove="Acceptance\Expected\error-case2\my-join-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\error-case2\my-join-class.ts" />
+    <None Remove="Acceptance\Expected\test-classes\base-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-classes\base-class.ts" />
+    <None Remove="Acceptance\Expected\test-classes\base-class2.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-classes\base-class2.ts" />
+    <None Remove="Acceptance\Expected\test-classes\circular-ref-class1.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-classes\circular-ref-class1.ts" />
+    <None Remove="Acceptance\Expected\test-classes\circular-ref-class2.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-classes\circular-ref-class2.ts" />
+    <None Remove="Acceptance\Expected\test-classes\test-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-classes\test-class.ts" />
+    <None Remove="Acceptance\Expected\test-enums\test-enum.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-enums\test-enum.ts" />
+    <None Remove="Acceptance\Expected\test-interfaces\test-interface.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\test-interfaces\test-interface.ts" />
+	<None Remove="Acceptance\Expected\no\slash\output\dir\no-slash-output-dir.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\no\slash\output\dir\no-slash-output-dir.ts" />
+	<None Remove="Acceptance\Expected\very\nested\directory\nested-entity.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\very\nested\directory\nested-entity.ts" />
   </ItemGroup>
 </Project>

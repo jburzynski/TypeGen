@@ -65,6 +65,12 @@ namespace TypeGen.Core
                 new TsContentParser(_fileSystem));
         }
 
+        /// <summary>
+        /// For unit testing (mocking FileSystem)
+        /// </summary>
+        /// <param name="fileSystem"></param>
+        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
+
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
@@ -493,9 +499,7 @@ namespace TypeGen.Core
         private string GetFilePath(Type type, string outputDir)
         {
             string fileName = GetRelativeFilePath(type, outputDir);
-
-            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : Path.DirectorySeparatorChar + "";
-            return Options.BaseOutputDirectory + separator + fileName;
+            return Path.Combine(Options.BaseOutputDirectory ?? "", fileName);
         }
 
         /// <summary>
