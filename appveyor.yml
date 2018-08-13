@@ -1,0 +1,9 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+
+platform: Any CPU
+configuration: Release
+
+build:
+  parallel: true
+  project: src/TypeGen/TypeGen.sln
