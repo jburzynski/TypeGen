@@ -5,5 +5,4 @@ platform: Any CPU
 configuration: Release
 
 build:
-  parallel: true
   project: src/TypeGen/TypeGen.sln
