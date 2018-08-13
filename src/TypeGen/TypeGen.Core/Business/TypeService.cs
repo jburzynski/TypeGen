@@ -245,29 +245,36 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
         {
+            // handle IDictionary<,>
+            
+            Type dictionary2Interface = type.GetInterface("System.Collections.Generic.IDictionary`2");
+            if (dictionary2Interface != null || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2")))
+            {
+                Type dictionaryType = dictionary2Interface ?? type;
+                Type keyType = dictionaryType.GetGenericArguments()[0];
+                Type valueType = dictionaryType.GetGenericArguments()[1];
+
+                string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
+                string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
+
+                if (!keyTypeName.In("number", "string"))
+                {
+                    throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
+                                            " TypeScript dictionary key type must be either 'number' or 'string'");
+                }
+
+                return $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+            }
+            
             // handle IDictionary
 
-            if (type.GetInterface("System.Collections.IDictionary") != null)
+            if (type.GetInterface("System.Collections.IDictionary") != null ||
+                (type.FullName != null && type.FullName.StartsWith("System.Collections.IDictionary")))
             {
                 return "{ [key: string]: string; }";
             }
-            
-            // handle IDictionary<,>
-            
-            Type interfaceType = type.GetInterface("System.Collections.Generic.IDictionary`2") ?? type;
-            Type keyType = interfaceType.GetGenericArguments()[0];
-            Type valueType = interfaceType.GetGenericArguments()[1];
 
-            string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
-            string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
-
-            if (!keyTypeName.In("number", "string"))
-            {
-                throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
-                                        " TypeScript dictionary key type must be either 'number' or 'string'");
-            }
-
-            return $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+            return null;
         }
 
         /// <summary>

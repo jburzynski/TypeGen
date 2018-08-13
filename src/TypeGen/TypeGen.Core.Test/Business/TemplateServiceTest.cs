@@ -215,15 +215,17 @@ namespace TypeGen.Core.Test.Business
             Assert.Equal("    | '", actualSingleQuote);
         }
 
-        [Fact]
-        public void FillImportTemplate_ValuesGiven_TemplateFilledWithValues()
+        [Theory]
+        [InlineData("B", "a |  as B | c")]
+        [InlineData("", "a |  | c")]
+        public void FillImportTemplate_ValuesGiven_TemplateFilledWithValues(string typeAlias, string expectedResult)
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl")
-                .Returns("$tg{name} | $tg{asAlias} | $tg{path}");
+                .Returns("$tg{name} | $tg{aliasText} | $tg{path}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
-            string actual = templateService.FillImportTemplate("a", "B", "c");
-            Assert.Equal("a | B | c", actual);
+            string actual = templateService.FillImportTemplate("a", typeAlias, "c");
+            Assert.Equal(expectedResult, actual);
         }
 
         [Fact]
