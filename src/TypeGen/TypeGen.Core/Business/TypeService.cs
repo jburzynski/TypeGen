@@ -263,7 +263,7 @@ namespace TypeGen.Core.Business
                                             " TypeScript dictionary key type must be either 'number' or 'string'");
                 }
 
-                return $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+                return GetTsDictionaryTypeText(keyTypeName, valueTypeName);
             }
             
             // handle IDictionary
@@ -271,11 +271,13 @@ namespace TypeGen.Core.Business
             if (type.GetInterface("System.Collections.IDictionary") != null ||
                 (type.FullName != null && type.FullName.StartsWith("System.Collections.IDictionary")))
             {
-                return "{ [key: string]: string; }";
+                return GetTsDictionaryTypeText("string", "string");
             }
 
             return null;
         }
+
+        private string GetTsDictionaryTypeText(string keyTypeName, string valueTypeName) => $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
 
         /// <summary>
         /// Gets TypeScript type name for a collection type
