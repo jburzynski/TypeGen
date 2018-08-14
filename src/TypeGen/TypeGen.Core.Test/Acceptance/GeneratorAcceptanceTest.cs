@@ -34,6 +34,7 @@ namespace TypeGen.Core.Test.Acceptance
             {
                 { "bar.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.bar.ts") },
                 { "base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.base-class.ts") },
+                { "base-class2.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.base-class2.ts") },
                 { "c.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.c.ts") },
                 { "custom-base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.custom-base-class.ts") },
                 { "custom-base-custom-import.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.custom-base-custom-import.ts") },
@@ -46,6 +47,7 @@ namespace TypeGen.Core.Test.Acceptance
                 { "foo.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.foo.ts") },
                 { "generic-base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.generic-base-class.ts") },
                 { "generic-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.generic-class.ts") },
+                { "generic-with-restrictions.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.generic-with-restrictions.ts") },
 //                { "index.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.index.ts") },
                 { "lite-db-entity.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.lite-db-entity.ts") },
                 { "standalone-enum.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.standalone-enum.ts") },
@@ -53,11 +55,6 @@ namespace TypeGen.Core.Test.Acceptance
                 { "with-generic-base-class-custom-type.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.with-generic-base-class-custom-type.ts") },
                 { "with-ignored-base-and-custom-base.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.with-ignored-base-and-custom-base.ts") },
                 { "with-ignored-base.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.with-ignored-base.ts") },
-                
-                { @"error-case2\base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.error_case2.base-class.ts") },
-                { @"error-case2\base-class2.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.error_case2.base-class2.ts") },
-                { @"error-case2\my-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.error_case2.my-class.ts") },
-                { @"error-case2\my-join-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.error_case2.my-join-class.ts") },
                 
                 { @"no\slash\output\dir\no-slash-output-dir.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.no.slash.output.dir.no-slash-output-dir.ts") },
                 
@@ -84,6 +81,7 @@ namespace TypeGen.Core.Test.Acceptance
             
             _fileSystem.Received().SaveFile(outputPath + "bar.ts", content["bar.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "base-class.ts", content["base-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "base-class2.ts", content["base-class2.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "c.ts", content["c.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-base-class.ts", content["custom-base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-base-custom-import.ts", content["custom-base-custom-import.ts"]);
@@ -96,18 +94,14 @@ namespace TypeGen.Core.Test.Acceptance
             _fileSystem.Received().SaveFile(outputPath + "foo.ts", content["foo.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "generic-base-class.ts", content["generic-base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "generic-class.ts", content["generic-class.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + "index.ts", Arg.Any<string>());
+            _fileSystem.Received().SaveFile(outputPath + "generic-with-restrictions.ts", content["generic-with-restrictions.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "index.ts", Arg.Any<string>()); // any content, because file order in index.ts is different each time
             _fileSystem.Received().SaveFile(outputPath + "lite-db-entity.ts", content["lite-db-entity.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "standalone-enum.ts", content["standalone-enum.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "strict-nulls-class.ts", content["strict-nulls-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-generic-base-class-custom-type.ts", content["with-generic-base-class-custom-type.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base-and-custom-base.ts", content["with-ignored-base-and-custom-base.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base.ts", content["with-ignored-base.ts"]);
-            
-            _fileSystem.Received().SaveFile(outputPath + @"error-case2\base-class.ts", content[@"error-case2\base-class.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"error-case2\base-class2.ts", content[@"error-case2\base-class2.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"error-case2\my-class.ts", content[@"error-case2\my-class.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"error-case2\my-join-class.ts", content[@"error-case2\my-join-class.ts"]);
             
             _fileSystem.Received().SaveFile(outputPath + @"no/slash/output/dir\no-slash-output-dir.ts", content[@"no\slash\output\dir\no-slash-output-dir.ts"]);
             

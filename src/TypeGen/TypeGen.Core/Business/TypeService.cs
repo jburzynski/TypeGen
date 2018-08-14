@@ -110,8 +110,8 @@ namespace TypeGen.Core.Business
             }
 
             return memberInfo is PropertyInfo info
-                ? AsNotNullable(info.PropertyType)
-                : AsNotNullable(((FieldInfo)memberInfo).FieldType);
+                ? StripNullable(info.PropertyType)
+                : StripNullable(((FieldInfo)memberInfo).FieldType);
         }
 
         /// <inheritdoc />
@@ -143,7 +143,7 @@ namespace TypeGen.Core.Business
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
 
-            type = AsNotNullable(type);
+            type = StripNullable(type);
 
             // handle simple types
             if (IsTsSimpleType(type))
@@ -391,7 +391,7 @@ namespace TypeGen.Core.Business
         }
 
         /// <inheritdoc />
-        public Type AsNotNullable(Type type)
+        public Type StripNullable(Type type)
         {
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;

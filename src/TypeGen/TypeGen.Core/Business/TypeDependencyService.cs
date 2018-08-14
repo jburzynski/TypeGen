@@ -18,6 +18,28 @@ namespace TypeGen.Core.Business
         {
             _typeService = typeService;
         }
+        
+        /// <summary>
+        /// Gets all non-simple and non-collection types the given type depends on.
+        /// Types of properties/fields marked with TsIgnoreAttribute will be omitted.
+        /// Returns an empty array if no dependencies were detected.
+        /// Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
+        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
+
+            type = _typeService.StripNullable(type);
+
+            return GetGenericTypeDefinitionDependencies(type)
+                .Concat(GetBaseTypeDependency(type)
+                .Concat(GetMemberTypeDependencies(type)))
+                .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>());
+        }
 
         /// <summary>
         /// Gets type dependencies related to generic type definition
@@ -35,19 +57,10 @@ namespace TypeGen.Core.Business
                 Type baseType = genericArgumentType.GetTypeInfo().BaseType;
                 if (baseType == null || baseType == typeof(object)) continue;
 
-                baseType = _typeService.AsNotNullable(baseType);
+                baseType = _typeService.StripNullable(baseType);
                 Type baseFlatType = _typeService.GetFlatType(baseType);
-                if (_typeService.IsTsSimpleType(baseFlatType) || baseFlatType.IsGenericParameter) continue;
 
-                if (baseFlatType.GetTypeInfo().IsGenericType)
-                {
-                    result = result.Concat(GetGenericTypeNonDefinitionDependencies(baseFlatType)
-                        .Select(t => new TypeDependencyInfo(t)));
-                }
-                else
-                {
-                    result = result.Concat(new[] { new TypeDependencyInfo(baseFlatType) });
-                }
+                result = result.Concat(GetFlatTypeDependencies(baseFlatType));
             }
 
             return result;
@@ -60,17 +73,12 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() != null) yield break;
+            if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() != null) return Enumerable.Empty<TypeDependencyInfo>();
 
             Type baseType = _typeService.GetBaseType(type);
-            if (baseType == null) yield break;
+            if (baseType == null) return Enumerable.Empty<TypeDependencyInfo>();
 
-            if (baseType.GetTypeInfo().IsGenericType)
-            {
-                baseType = baseType.GetGenericTypeDefinition();
-            }
-
-            yield return new TypeDependencyInfo(baseType, null, true);
+            return GetFlatTypeDependencies(baseType, null, true);
         }
 
         /// <summary>
@@ -91,22 +99,25 @@ namespace TypeGen.Core.Business
                 Type memberFlatType = _typeService.GetFlatType(memberType);
 
                 if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
-                if (_typeService.IsTsSimpleType(memberFlatType) || memberFlatType.IsGenericParameter) continue;
 
                 var memberAttributes = memberInfo.GetCustomAttributes(typeof(Attribute), false) as Attribute[];
-
-                if (memberFlatType.GetTypeInfo().IsGenericType)
-                {
-                    result = result.Concat(GetGenericTypeNonDefinitionDependencies(memberFlatType)
-                        .Select(t => new TypeDependencyInfo(t, memberAttributes)));
-                }
-                else
-                {
-                    result = result.Concat(new[] { new TypeDependencyInfo(memberFlatType, memberAttributes) });
-                }
+                result = result.Concat(GetFlatTypeDependencies(memberFlatType, memberAttributes));
             }
 
             return result;
+        }
+
+        private IEnumerable<TypeDependencyInfo> GetFlatTypeDependencies(Type flatType, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
+        {
+            if (_typeService.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
+            
+            if (flatType.GetTypeInfo().IsGenericType)
+            {
+                return GetGenericTypeNonDefinitionDependencies(flatType)
+                    .Select(t => new TypeDependencyInfo(t, memberAttributes, isBase));
+            }
+
+            return new[] { new TypeDependencyInfo(flatType, memberAttributes, isBase) };
         }
 
         /// <summary>
@@ -116,13 +127,15 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private IEnumerable<Type> GetGenericTypeNonDefinitionDependencies(Type type)
         {
+            if (!type.GetTypeInfo().IsGenericType) throw new CoreException($"Type {type.FullName} must be a generic type");
+            
             IEnumerable<Type> result = _typeService.IsDictionaryType(type)
                 ? new Type[0]
                 : new[] { type.GetGenericTypeDefinition() };
 
             foreach (Type genericArgument in type.GetGenericArguments())
             {
-                Type argumentType = _typeService.AsNotNullable(genericArgument);
+                Type argumentType = _typeService.StripNullable(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
                 if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
@@ -132,28 +145,6 @@ namespace TypeGen.Core.Business
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Gets all non-simple and non-collection types the given type depends on.
-        /// Types of properties/fields marked with TsIgnoreAttribute will be omitted.
-        /// Returns an empty array if no dependencies were detected.
-        /// Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
-        public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
-        {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
-
-            type = _typeService.AsNotNullable(type);
-
-            return GetGenericTypeDefinitionDependencies(type)
-                .Concat(GetBaseTypeDependency(type)
-                .Concat(GetMemberTypeDependencies(type)))
-                .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>());
         }
     }
 }

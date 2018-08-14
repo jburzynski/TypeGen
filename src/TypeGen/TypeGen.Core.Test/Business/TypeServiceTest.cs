@@ -423,7 +423,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(GenericClass2<,>), typeof(GenericClass2<,>))]
         public void AsNotNullable_TypeGiven_NotNullableTypeReturned(Type type, Type expectedResult)
         {
-            Type actualResult = _typeService.AsNotNullable(type);
+            Type actualResult = _typeService.StripNullable(type);
             Assert.Equal(expectedResult, actualResult);
         }
 
