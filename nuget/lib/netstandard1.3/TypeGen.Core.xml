@@ -165,7 +165,7 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.ITypeService.AsNotNullable(System.Type)">
+        <member name="M:TypeGen.Core.Business.ITypeService.StripNullable(System.Type)">
             <summary>
             Converts a type to a 'TS-exportable' type.
             If the type is nullable, returns the underlying type.
@@ -302,6 +302,17 @@
             Contains logic for handling type dependencies (i.e. types that a type depends on)
             </summary>
         </member>
+        <member name="M:TypeGen.Core.Business.TypeDependencyService.GetTypeDependencies(System.Type)">
+            <summary>
+            Gets all non-simple and non-collection types the given type depends on.
+            Types of properties/fields marked with TsIgnoreAttribute will be omitted.
+            Returns an empty array if no dependencies were detected.
+            Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the type is null</exception>
+        </member>
         <member name="M:TypeGen.Core.Business.TypeDependencyService.GetGenericTypeDefinitionDependencies(System.Type)">
             <summary>
             Gets type dependencies related to generic type definition
@@ -329,17 +340,6 @@
             </summary>
             <param name="type"></param>
             <returns></returns>
-        </member>
-        <member name="M:TypeGen.Core.Business.TypeDependencyService.GetTypeDependencies(System.Type)">
-            <summary>
-            Gets all non-simple and non-collection types the given type depends on.
-            Types of properties/fields marked with TsIgnoreAttribute will be omitted.
-            Returns an empty array if no dependencies were detected.
-            Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when the type is null</exception>
         </member>
         <member name="T:TypeGen.Core.Business.TypeService">
             <summary>
@@ -440,7 +440,7 @@
         <member name="M:TypeGen.Core.Business.TypeService.GetFlatType(System.Type)">
             <inheritdoc />
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.AsNotNullable(System.Type)">
+        <member name="M:TypeGen.Core.Business.TypeService.StripNullable(System.Type)">
             <inheritdoc />
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.GetBaseType(System.Type)">
@@ -769,6 +769,12 @@
             <summary>
             Generator options. Cannot be null.
             </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.#ctor(TypeGen.Core.Storage.IFileSystem)">
+            <summary>
+            For unit testing (mocking FileSystem)
+            </summary>
+            <param name="fileSystem"></param>
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
             <inheritdoc />
@@ -1308,6 +1314,31 @@
             </summary>
             <param name="tabLength">The number of spaces per tab.</param>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNull(System.Object,System.String)">
+            <summary>
+            Throws exception if value of the object is null
+            </summary>
+            <param name="obj"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNullOrEmpty(System.String,System.String)">
+            <summary>
+            Throws an exception if the specified parameter's value is null or empty
+            </summary>
+            <param name="value"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNullOrEmpty(System.Collections.IEnumerable,System.String)">
+            <summary>
+            Throws an exception if the specified parameter's value is null,
+            has no elements or has an element with a null value
+            </summary>
+            <param name="values"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentException"></exception>
         </member>
     </members>
 </doc>
