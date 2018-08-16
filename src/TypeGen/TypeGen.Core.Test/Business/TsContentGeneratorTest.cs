@@ -19,6 +19,27 @@ namespace TypeGen.Core.Test.Business
         private readonly ITsContentParser _tsContentParser = Substitute.For<ITsContentParser>();
 
         #region GetImportsText
+
+        [Fact]
+        public void GetImportsText_TypeNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(null, "asdf", new TypeNameConverterCollection(), new TypeNameConverterCollection()));
+        }
+        
+        [Fact]
+        public void GetImportsText_FileNameConvertersNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf", null, new TypeNameConverterCollection()));
+        }
+        
+        [Fact]
+        public void GetImportsText_TypeNameConvertersNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf", new TypeNameConverterCollection(), null));
+        }
         
         [Theory]
         [MemberData(nameof(GetImportsText_TestCases))]
@@ -167,6 +188,32 @@ namespace TypeGen.Core.Test.Business
         
         #endregion
 
-        // GetExtendsText, GetCustomBody and GetCustomHead not tested, because unit test would be useless
+        [Fact]
+        public void GetExtendsText_TypeNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(null, new TypeNameConverterCollection()));
+        }
+        
+        [Fact]
+        public void GetExtendsText_TypeNameConvertersNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(typeof(string), null));
+        }
+        
+        [Fact]
+        public void GetCustomBody_FilePathNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetCustomBody(null, 0));
+        }
+        
+        [Fact]
+        public void GetCustomHead_FilePathNull_ExceptionThrown()
+        {
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetCustomHead(null));
+        }
     }
 }

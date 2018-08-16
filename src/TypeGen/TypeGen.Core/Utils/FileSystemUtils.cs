@@ -51,9 +51,6 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string GetPathDiff(string pathFrom, string pathTo)
         {
-            Requires.NotNull(pathFrom, nameof(pathFrom));
-            Requires.NotNull(pathTo, nameof(pathTo));
-            
             var pathFromUri = new Uri("file:///" + pathFrom);
             var pathToUri = new Uri("file:///" + pathTo);
 

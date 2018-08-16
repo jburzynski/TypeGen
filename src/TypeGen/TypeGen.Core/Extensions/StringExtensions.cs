@@ -19,7 +19,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(text, nameof(text));
             Requires.NotNull(search, nameof(search));
 
-            int pos = text.IndexOf(search, StringComparison.InvariantCulture);
+            int pos = text.IndexOf(search, StringComparison.Ordinal);
             if (pos < 0)
             {
                 return text;

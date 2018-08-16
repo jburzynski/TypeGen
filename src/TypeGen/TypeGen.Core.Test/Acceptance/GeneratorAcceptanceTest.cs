@@ -17,8 +17,8 @@ namespace TypeGen.Core.Test.Acceptance
 
         private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
 
-        [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (CI etc.) should not pick it up.")]
-//        [Theory]
+//        [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (CI etc.) should not pick it up.")]
+        [Theory]
 		[InlineData("")]
 		[InlineData("generated-typescript/")]
 		[InlineData("nested/directory/generated-typescript/")]

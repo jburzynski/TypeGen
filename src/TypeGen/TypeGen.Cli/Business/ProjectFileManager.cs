@@ -8,6 +8,7 @@ using System.Xml;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
