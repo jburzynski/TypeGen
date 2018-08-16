@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Cli.Models;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
@@ -21,12 +22,16 @@ namespace TypeGen.Cli.Business
 
         public TObj DeserializeFromFile<TObj>(string filePath) where TObj : class
         {
+            Requires.NotNullOrEmpty(filePath, nameof(filePath));
+            
             string jsonString = _fileSystem.ReadFile(filePath);
             return Deserialize<TObj>(jsonString);
         }
 
         public TObj Deserialize<TObj>(string jsonString) where TObj : class
         {
+            Requires.NotNullOrEmpty(jsonString, nameof(jsonString));
+            
             var serializer = new DataContractJsonSerializer(typeof(TObj));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
 

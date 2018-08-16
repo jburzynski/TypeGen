@@ -11,6 +11,7 @@ using TypeGen.Core;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
@@ -35,6 +36,10 @@ namespace TypeGen.Cli.Business
         /// <returns></returns>
         public GeneratorOptions GetGeneratorOptions(TgConfig config, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
         {
+            Requires.NotNull(config, nameof(config));
+            Requires.NotNull(assemblies, nameof(assemblies));
+            Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
+            
             return new GeneratorOptions
             {
                 TypeScriptFileExtension = config.TypeScriptFileExtension,

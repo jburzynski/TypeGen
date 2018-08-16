@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Models;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
@@ -34,6 +35,9 @@ namespace TypeGen.Cli.Business
         /// <returns></returns>
         public TgConfig GetConfig(string configPath, string projectFolder, bool logVerbose)
         {
+            Requires.NotNullOrEmpty(configPath, nameof(configPath));
+            Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
+            
             if (!_fileSystem.FileExists(configPath))
             {
                 if (logVerbose) _logger.Log($"No config file found for project \"{projectFolder}\". Default configuration will be used.");
