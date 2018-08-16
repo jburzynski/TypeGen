@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
@@ -15,9 +16,10 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static string ReplaceFirst(this string text, string search, string replace)
         {
-            if (text == null) return null;
+            Requires.NotNull(text, nameof(text));
+            Requires.NotNull(search, nameof(search));
 
-            int pos = text.IndexOf(search);
+            int pos = text.IndexOf(search, StringComparison.InvariantCulture);
             if (pos < 0)
             {
                 return text;
@@ -32,6 +34,8 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static string ToTitleCase(this string value)
         {
+            Requires.NotNull(value, nameof(value));
+            
             string[] tokens = value.ToLowerInvariant().Split(new[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries);
 
             for (var i = 0; i < tokens.Length; i++)
@@ -50,6 +54,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static string RemoveTypeArity(this string value)
         {
+            Requires.NotNull(value, nameof(value));
             return value.Split('`')[0];
         }
     }

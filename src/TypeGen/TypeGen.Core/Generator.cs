@@ -8,6 +8,7 @@ using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
 {
@@ -74,12 +75,15 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
+            Requires.NotNull(assembly, nameof(assembly));
             return Generate(new[] { assembly });
         }
 
         /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
+            Requires.NotNull(assemblies, nameof(assemblies));
+            
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
@@ -113,6 +117,8 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
 

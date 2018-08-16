@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -9,12 +10,10 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeDependencyInfo
     {
-        public TypeDependencyInfo()
-        {
-        }
-
         public TypeDependencyInfo(Type type, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
         {
+            Requires.NotNull(type, nameof(type));
+            
             Type = type;
             MemberAttributes = memberAttributes;
             IsBase = isBase;

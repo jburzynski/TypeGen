@@ -9,6 +9,7 @@ using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Utils;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -48,9 +49,9 @@ namespace TypeGen.Core.Business
         /// <exception cref="ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
         public string GetImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (fileNameConverters == null) throw new ArgumentNullException(nameof(fileNameConverters));
-            if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(fileNameConverters, nameof(fileNameConverters));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
 
             string result = GetTypeDependencyImportsText(type, outputDir, fileNameConverters, typeNameConverters);
             result += GetCustomImportsText(type);
@@ -71,6 +72,9 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters)
         {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
@@ -205,6 +209,8 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetCustomBody(string filePath, int indentSize)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            
             string content = _tsContentParser.GetTagContent(filePath, indentSize, KeepTsTagName, CustomBodyTagName);
             string tab = StringUtils.GetTabText(indentSize);
 
@@ -221,8 +227,9 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetCustomHead(string filePath)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            
             string content = _tsContentParser.GetTagContent(filePath, 0, CustomHeadTagName);
-
             return string.IsNullOrEmpty(content)
                 ? ""
                 : $"//<{CustomHeadTagName}>\r\n{content}//</{CustomHeadTagName}>\r\n\r\n";

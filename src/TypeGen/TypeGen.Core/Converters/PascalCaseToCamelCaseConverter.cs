@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Converters
 {
@@ -10,11 +11,13 @@ namespace TypeGen.Core.Converters
     {
         public string Convert(string name)
         {
+            Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);
         }
 
         public string Convert(string name, Type type)
         {
+            Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);
         }
 

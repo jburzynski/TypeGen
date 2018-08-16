@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -18,7 +19,7 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsTsSimpleType(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
 
             return GetTsSimpleTypeName(type) != null;
         }
@@ -26,7 +27,7 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public string GetTsSimpleTypeName(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
 
             switch (type.FullName)
             {
@@ -59,7 +60,7 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsTsClass(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
             if (!typeInfo.IsClass) return false;
@@ -71,7 +72,7 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsTsInterface(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
             if (!typeInfo.IsClass) return false;
@@ -83,7 +84,7 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public IEnumerable<MemberInfo> GetTsExportableMembers(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
             if (!typeInfo.IsClass) return Enumerable.Empty<MemberInfo>();
@@ -102,11 +103,11 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public Type GetMemberType(MemberInfo memberInfo)
         {
-            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+            Requires.NotNull(memberInfo, nameof(memberInfo));
 
             if (!memberInfo.Is<FieldInfo>() && !memberInfo.Is<PropertyInfo>())
             {
-                throw new CoreException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
+                throw new ArgumentException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
             }
 
             return memberInfo is PropertyInfo info
@@ -117,6 +118,8 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsCollectionType(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             return type.FullName != "System.String" // not a string
                 && !IsDictionaryType(type) // not a dictionary
                 && (type.GetInterface("IEnumerable") != null || (type.FullName != null && type.FullName.StartsWith("System.Collections.IEnumerable"))); // implements IEnumerable or is IEnumerable
@@ -125,6 +128,8 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsDictionaryType(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             return type.GetInterface("System.Collections.Generic.IDictionary`2") != null
                    || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
                    || type.GetInterface("System.Collections.IDictionary") != null
@@ -134,14 +139,15 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public bool IsCustomGenericType(Type type)
         {
+            Requires.NotNull(type, nameof(type));
             return type.GetTypeInfo().IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
         }
 
         /// <inheritdoc />
         public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
 
             type = StripNullable(type);
 
@@ -177,6 +183,9 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation)
         {
+            Requires.NotNull(memberInfo, nameof(memberInfo));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            
             string typeUnionSuffix = strictNullChecks ? GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation) : "";
 
             var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
@@ -201,10 +210,8 @@ namespace TypeGen.Core.Business
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
         private string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
         {
-            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
-
             // special case - dynamic property/field
-
+            
             if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
             {
                 return "any";
@@ -383,6 +390,8 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public Type GetFlatType(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             while (true)
             {
                 if (!IsCollectionType(type)) return type;
@@ -393,6 +402,8 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public Type StripNullable(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
             return nullableUnderlyingType ?? type;
         }
@@ -400,8 +411,8 @@ namespace TypeGen.Core.Business
         /// <inheritdoc />
         public Type GetBaseType(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!type.GetTypeInfo().IsClass) throw new CoreException($"Type '{type.FullName}' should be a class type");
+            Requires.NotNull(type, nameof(type));
+            if (!type.GetTypeInfo().IsClass) throw new ArgumentException($"Type '{type.FullName}' should be a class type");
 
             Type baseType = type.GetTypeInfo().BaseType;
             if (baseType == null || baseType == typeof(object)) return null;

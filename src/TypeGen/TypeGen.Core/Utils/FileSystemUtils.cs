@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Utils
 {
@@ -19,16 +20,21 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string[] SplitPathSeperator(string path)
         {
+            Requires.NotNullOrEmpty(path, nameof(path));
             return path.Split('\\', '/');
         }
 
         public static string GetFileNameFromPath(string path)
         {
+            Requires.NotNullOrEmpty(path, nameof(path));
             return SplitPathSeperator(path).Last();
         }
 
         public static string GetProjectFilePath(IFileSystem fileSystem, string projectFolder)
         {
+            Requires.NotNull(fileSystem, nameof(fileSystem));
+            Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
+            
             string fileName = fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(GetFileNameFromPath)
                 .FirstOrDefault(n => n.EndsWith(".csproj"));
@@ -45,6 +51,9 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string GetPathDiff(string pathFrom, string pathTo)
         {
+            Requires.NotNull(pathFrom, nameof(pathFrom));
+            Requires.NotNull(pathTo, nameof(pathTo));
+            
             var pathFromUri = new Uri("file:///" + pathFrom);
             var pathToUri = new Uri("file:///" + pathTo);
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Storage
 {
@@ -15,6 +16,8 @@ namespace TypeGen.Core.Storage
         /// <inheritdoc />
         public string GetEmbeddedResource(string name)
         {
+            Requires.NotNullOrEmpty(name, nameof(name));
+            
             using (Stream stream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream(name))
             {
                 if (stream == null)

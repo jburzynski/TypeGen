@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -31,8 +32,10 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetTagContent(string filePath, int indentSize, params string[] tags)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            Requires.NotNullOrEmpty(tags, nameof(tags));
+            
             if (!_fileSystem.FileExists(filePath)) return "";
-
             string content = _fileSystem.ReadFile(filePath);
 
             string tagRegex = $"({string.Join("|", tags)})";

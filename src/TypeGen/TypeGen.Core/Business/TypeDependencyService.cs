@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -30,7 +31,8 @@ namespace TypeGen.Core.Business
         /// <exception cref="ArgumentNullException">Thrown when the type is null</exception>
         public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            Requires.NotNull(type, nameof(type));
+            
             if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
 
             type = _typeService.StripNullable(type);

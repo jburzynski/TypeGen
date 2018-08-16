@@ -104,14 +104,14 @@ namespace TypeGen.Core.Test.Business
 
             public static readonly IEnumerable<TypeDependencyInfo> ParentTypeDependencies = new[]
             {
-                new TypeDependencyInfo { Type = typeof(Base<,>) },
-                new TypeDependencyInfo { Type = typeof(DataType1) },
-                new TypeDependencyInfo { Type = typeof(DataType2) },
-                new TypeDependencyInfo { Type = typeof(Child1) },
-                new TypeDependencyInfo { Type = typeof(Child2) },
-                new TypeDependencyInfo { Type = typeof(Child3) },
-                new TypeDependencyInfo { Type = typeof(Child4), MemberAttributes = new Attribute[] { new TsDefaultTypeOutputAttribute("child4/default/output/dir") }},
-                new TypeDependencyInfo { Type = typeof(ChildEnum) }
+                new TypeDependencyInfo(typeof(Base<,>)),
+                new TypeDependencyInfo(typeof(DataType1)),
+                new TypeDependencyInfo(typeof(DataType2)),
+                new TypeDependencyInfo(typeof(Child1)),
+                new TypeDependencyInfo(typeof(Child2)),
+                new TypeDependencyInfo(typeof(Child3)),
+                new TypeDependencyInfo(typeof(Child4), new Attribute[] { new TsDefaultTypeOutputAttribute("child4/default/output/dir") }),
+                new TypeDependencyInfo(typeof(ChildEnum))
             };
 
             public static readonly IEnumerable<MemberInfo> ParentMemberInfos = new MemberInfo[]

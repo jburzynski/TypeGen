@@ -27,7 +27,7 @@ namespace TypeGen.Cli.Business
 
         public bool ContainsTsFile(XmlDocument projectFile, string filePath)
         {
-            if (projectFile == null) throw new ArgumentNullException(nameof(projectFile));
+            Requires.NotNull(projectFile, nameof(projectFile));
 
             XmlNodeList itemGroups = projectFile.DocumentElement?.SelectNodes($"{TypeScriptCompileXPath}[@Include='{filePath}']");
 
@@ -53,7 +53,7 @@ namespace TypeGen.Cli.Business
 
         public void AddTsFile(XmlDocument projectFile, string filePath)
         {
-            if (projectFile == null) throw new ArgumentNullException(nameof(projectFile));
+            Requires.NotNull(projectFile, nameof(projectFile));
 
             XmlElement documentElement = projectFile.DocumentElement;
             if (documentElement == null) throw new CliException("Project file has no XML document element");

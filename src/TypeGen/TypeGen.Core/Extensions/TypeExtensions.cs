@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
@@ -17,6 +18,8 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool HasExportAttribute(this Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             return type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>() != null ||
                    type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>() != null ||
                    type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>() != null;
@@ -29,6 +32,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<Type> GetExportMarkedTypes(this IEnumerable<Type> types)
         {
+            Requires.NotNull(types, nameof(types));
             return types.Where(t => t.HasExportAttribute());
         }
 
@@ -39,6 +43,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
         {
+            Requires.NotNull(memberInfos, nameof(memberInfos));
             return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
         }
 
@@ -50,6 +55,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
         {
+            Requires.NotNull(memberInfos, nameof(memberInfos));
             return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
         }
 
@@ -61,6 +67,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
         {
+            Requires.NotNull(memberInfos, nameof(memberInfos));
             return memberInfos.Where(i => i.GetMethod.IsPublic && !i.GetMethod.IsStatic);
         }
 
@@ -71,6 +78,8 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<string> GetTypeNames(this IEnumerable<object> enumerable)
         {
+            Requires.NotNull(enumerable, nameof(enumerable));
+            
             return enumerable
                 .Select(c => c.GetType().Name);
         }
@@ -83,6 +92,9 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static Type GetInterface(this Type type, string interfaceName)
         {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNullOrEmpty(interfaceName, nameof(interfaceName));
+            
             return type.GetInterfaces()
                 .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
