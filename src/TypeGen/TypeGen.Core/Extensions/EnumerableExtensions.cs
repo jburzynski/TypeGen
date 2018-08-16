@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
@@ -15,6 +16,9 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool In<T>(this T element, params T[] elements)
         {
+            Requires.NotNull(element, nameof(element));
+            Requires.NotNull(elements, nameof(elements));
+            
             return elements.Contains(element);
         }
 
@@ -26,6 +30,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> enumerable)
         {
+            Requires.NotNull(enumerable, nameof(enumerable));
             return enumerable.Where(v => v != null);
         }
 
@@ -38,11 +43,12 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool HasIndex<T>(this T[] array, int index)
         {
-            return array?.Length >= index + 1;
+            Requires.NotNull(array, nameof(array));
+            return index >= 0 && array.Length >= index + 1;
         }
 
         /// <summary>
-        /// Checks if an enumerable is empty
+        /// Checks if an enumerable is null or empty
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerable"></param>

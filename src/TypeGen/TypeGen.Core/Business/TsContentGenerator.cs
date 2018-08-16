@@ -9,34 +9,32 @@ using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Utils;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for generating TypeScript file contents
     /// </summary>
-    internal class TsContentGenerator
+    internal class TsContentGenerator : ITsContentGenerator
     {
-        private readonly TypeDependencyService _typeDependencyService;
-        private readonly TypeService _typeService;
-        private readonly TemplateService _templateService;
-        private readonly FileSystem _fileSystem;
-        private readonly TsContentParser _tsContentParser;
+        private readonly ITypeDependencyService _typeDependencyService;
+        private readonly ITypeService _typeService;
+        private readonly ITemplateService _templateService;
+        private readonly ITsContentParser _tsContentParser;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
         private const string CustomBodyTagName = "custom-body";
 
-        public TsContentGenerator(TypeDependencyService typeDependencyService,
-            TypeService typeService,
-            TemplateService templateService,
-            FileSystem fileSystem,
-            TsContentParser tsContentParser)
+        public TsContentGenerator(ITypeDependencyService typeDependencyService,
+            ITypeService typeService,
+            ITemplateService templateService,
+            ITsContentParser tsContentParser)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
-            _fileSystem = fileSystem;
             _tsContentParser = tsContentParser;
         }
 
@@ -44,16 +42,16 @@ namespace TypeGen.Core.Business
         /// Gets code for the 'imports' section for a given type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="outputDir"></param>
+        /// <param name="outputDir">ExportTs... attribute's output dir</param>
         /// <param name="fileNameConverters"></param>
         /// <param name="typeNameConverters"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
         public string GetImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (fileNameConverters == null) throw new ArgumentNullException(nameof(fileNameConverters));
-            if (typeNameConverters == null) throw new ArgumentNullException(nameof(typeNameConverters));
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(fileNameConverters, nameof(fileNameConverters));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
 
             string result = GetTypeDependencyImportsText(type, outputDir, fileNameConverters, typeNameConverters);
             result += GetCustomImportsText(type);
@@ -74,10 +72,13 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters)
         {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
-            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters);
+            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters, true);
             return _templateService.GetExtendsText(baseTypeName);
         }
 
@@ -91,6 +92,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetTypeDependencyImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters)
         {
+            if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "\\";
             var result = "";
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
@@ -107,7 +109,7 @@ namespace TypeGen.Core.Business
                 string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
 
                 // get path diff
-                string pathDiff = _fileSystem.GetPathDiff(outputDir, dependencyOutputDir);
+                string pathDiff = FileSystemUtils.GetPathDiff(outputDir, dependencyOutputDir);
                 pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
 
                 // get type & file name
@@ -168,17 +170,17 @@ namespace TypeGen.Core.Business
             bool withOriginalTypeName = !string.IsNullOrEmpty(originalTypeName);
 
             string name = withOriginalTypeName ? originalTypeName : typeName;
-            string asAlias = withOriginalTypeName ? $" as {typeName}" : "";
-            return _templateService.FillImportTemplate(name, asAlias, importPath);
+            string typeAlias = withOriginalTypeName ? typeName : null;
+            return _templateService.FillImportTemplate(name, typeAlias, importPath);
         }
 
         /// <summary>
         /// Gets the output directory for a type dependency
         /// </summary>
         /// <param name="typeDependencyInfo"></param>
-        /// <param name="exportedTypeOutputDir"></param>
+        /// <param name="parentTypeOutputDir"></param>
         /// <returns></returns>
-        private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string exportedTypeOutputDir)
+        private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string parentTypeOutputDir)
         {
             var classAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
             var interfaceAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
@@ -190,7 +192,7 @@ namespace TypeGen.Core.Business
                     ?.SingleOrDefault(a => a.GetType() == typeof(TsDefaultTypeOutputAttribute))
                     as TsDefaultTypeOutputAttribute;
 
-                return defaultTypeOutputAttribute?.OutputDir ?? exportedTypeOutputDir;
+                return defaultTypeOutputAttribute?.OutputDir ?? parentTypeOutputDir;
             }
 
             return classAttribute?.OutputDir
@@ -207,6 +209,8 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetCustomBody(string filePath, int indentSize)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            
             string content = _tsContentParser.GetTagContent(filePath, indentSize, KeepTsTagName, CustomBodyTagName);
             string tab = StringUtils.GetTabText(indentSize);
 
@@ -223,8 +227,9 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetCustomHead(string filePath)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            
             string content = _tsContentParser.GetTagContent(filePath, 0, CustomHeadTagName);
-
             return string.IsNullOrEmpty(content)
                 ? ""
                 : $"//<{CustomHeadTagName}>\r\n{content}//</{CustomHeadTagName}>\r\n\r\n";

@@ -1,1 +1,1 @@
-import { $tg{name}$tg{asAlias} } from $tg{quot}$tg{path}$tg{quot};
+import { $tg{name}$tg{aliasText} } from $tg{quot}$tg{path}$tg{quot};

@@ -8,6 +8,7 @@ using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
 {
@@ -18,11 +19,11 @@ namespace TypeGen.Core
     {
         // dependencies
 
-        private readonly TypeService _typeService;
-        private readonly TypeDependencyService _typeDependencyService;
-        private readonly TemplateService _templateService;
-        private readonly TsContentGenerator _tsContentGenerator;
-        private readonly FileSystem _fileSystem;
+        private readonly ITypeService _typeService;
+        private readonly ITypeDependencyService _typeDependencyService;
+        private readonly ITemplateService _templateService;
+        private readonly ITsContentGenerator _tsContentGenerator;
+        private readonly IFileSystem _fileSystem;
         private GeneratorOptions _options;
 
         // per-generation shared variables
@@ -62,19 +63,27 @@ namespace TypeGen.Core
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
-                _fileSystem,
                 new TsContentParser(_fileSystem));
         }
+
+        /// <summary>
+        /// For unit testing (mocking FileSystem)
+        /// </summary>
+        /// <param name="fileSystem"></param>
+        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
 
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
+            Requires.NotNull(assembly, nameof(assembly));
             return Generate(new[] { assembly });
         }
 
         /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
+            Requires.NotNull(assemblies, nameof(assemblies));
+            
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
@@ -108,6 +117,8 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
 
@@ -249,7 +260,7 @@ namespace TypeGen.Core
 
             // generate the file content
 
-            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
@@ -281,7 +292,7 @@ namespace TypeGen.Core
 
             // create TypeScript source code for the enum
 
-            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters);
+            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
@@ -304,7 +315,7 @@ namespace TypeGen.Core
 
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
 
             var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
             if (defaultValueAttribute != null)
@@ -349,7 +360,7 @@ namespace TypeGen.Core
             var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = _typeService.GetTsTypeNameForMember(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
             bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
@@ -494,9 +505,7 @@ namespace TypeGen.Core
         private string GetFilePath(Type type, string outputDir)
         {
             string fileName = GetRelativeFilePath(type, outputDir);
-
-            string separator = string.IsNullOrEmpty(Options.BaseOutputDirectory) ? "" : Path.DirectorySeparatorChar + "";
-            return Options.BaseOutputDirectory + separator + fileName;
+            return Path.Combine(Options.BaseOutputDirectory ?? "", fileName);
         }
 
         /// <summary>

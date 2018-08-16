@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
@@ -8,14 +10,13 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeDependencyInfo
     {
-        public TypeDependencyInfo()
+        public TypeDependencyInfo(Type type, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
         {
-        }
-
-        public TypeDependencyInfo(Type type, Attribute[] memberAttributes = null)
-        {
+            Requires.NotNull(type, nameof(type));
+            
             Type = type;
             MemberAttributes = memberAttributes;
+            IsBase = isBase;
         }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace TypeGen.Core.Business
         /// <summary>
         /// Custom attributes of the property or field that is of the dependent type
         /// </summary>
-        public Attribute[] MemberAttributes { get; set; }
+        public IEnumerable<Attribute> MemberAttributes { get; set; }
 
         /// <summary>
         /// Indicates whether type dependency is a base class type

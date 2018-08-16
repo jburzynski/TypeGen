@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
 {
@@ -25,6 +26,8 @@ namespace TypeGen.Core
         /// <param name="type"></param>
         public void Add(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             AssemblyGeneratedTypes?.Add(type);
             TypeGeneratedTypes?.Add(type);
         }
@@ -45,6 +48,7 @@ namespace TypeGen.Core
         /// <returns></returns>
         public bool HasBeenGeneratedForAssembly(Type type)
         {
+            Requires.NotNull(type, nameof(type));
             return AssemblyGeneratedTypes?.Contains(type) ?? false;
         }
 
@@ -56,6 +60,7 @@ namespace TypeGen.Core
         /// <returns></returns>
         public bool HasBeenGeneratedForType(Type type)
         {
+            Requires.NotNull(type, nameof(type));
             return TypeGeneratedTypes?.Contains(type) ?? false;
         }
 

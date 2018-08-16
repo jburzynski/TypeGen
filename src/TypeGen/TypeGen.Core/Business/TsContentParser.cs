@@ -5,17 +5,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
     /// <summary>
     /// Contains logic for parsing TypeScript file contents
     /// </summary>
-    internal class TsContentParser
+    internal class TsContentParser : ITsContentParser
     {
-        private readonly FileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
-        public TsContentParser(FileSystem fileSystem)
+        public TsContentParser(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }
@@ -31,8 +32,10 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public string GetTagContent(string filePath, int indentSize, params string[] tags)
         {
+            Requires.NotNull(filePath, nameof(filePath));
+            Requires.NotNullOrEmpty(tags, nameof(tags));
+            
             if (!_fileSystem.FileExists(filePath)) return "";
-
             string content = _fileSystem.ReadFile(filePath);
 
             string tagRegex = $"({string.Join("|", tags)})";

@@ -11,25 +11,10 @@ namespace TypeGen.Core.TypeAnnotations
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class TsCustomBaseAttribute : Attribute
     {
-        private string _base;
-
         /// <summary>
         /// Base class/interface type name
         /// </summary>
-        public string Base
-        {
-            get => _base;
-            set
-            {
-                _base = value;
-                BaseDeclarationText = string.IsNullOrWhiteSpace(value) ? "" : $" extends {value}";
-            }
-        }
-
-        /// <summary>
-        /// Base class/interface declaration text
-        /// </summary>
-        public string BaseDeclarationText { get; private set; }
+        public string Base { get; set; }
 
         /// <summary>
         /// The path of custom base type file to import (can be left null if no imports are required)

@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Models;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
-    internal class ConfigProvider
+    internal class ConfigProvider : IConfigProvider
     {
-        private readonly FileSystem _fileSystem;
-        private readonly Logger _logger;
-        private readonly JsonSerializer _jsonSerializer;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
+        private readonly IJsonSerializer _jsonSerializer;
 
-        public ConfigProvider(FileSystem fileSystem,
-            Logger logger,
-            JsonSerializer jsonSerializer)
+        public ConfigProvider(IFileSystem fileSystem,
+            ILogger logger,
+            IJsonSerializer jsonSerializer)
         {
             _fileSystem = fileSystem;
             _logger = logger;
@@ -34,6 +35,9 @@ namespace TypeGen.Cli.Business
         /// <returns></returns>
         public TgConfig GetConfig(string configPath, string projectFolder, bool logVerbose)
         {
+            Requires.NotNullOrEmpty(configPath, nameof(configPath));
+            Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
+            
             if (!_fileSystem.FileExists(configPath))
             {
                 if (logVerbose) _logger.Log($"No config file found for project \"{projectFolder}\". Default configuration will be used.");

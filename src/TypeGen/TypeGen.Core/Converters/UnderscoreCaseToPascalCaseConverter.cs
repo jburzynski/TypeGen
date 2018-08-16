@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Converters
 {
@@ -14,17 +15,19 @@ namespace TypeGen.Core.Converters
     {
         public string Convert(string name)
         {
+            Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);
         }
 
         public string Convert(string name, Type type)
         {
+            Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);
         }
 
         private static string ConvertTypeInvariant(string name)
         {
-            return name.ToTitleCase().Replace("_", "");
+            return name.ToTitleCase();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TypeGen.Core.Business;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
@@ -17,7 +18,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            Requires.NotNull(assembly, nameof(assembly));
 
             try
             {

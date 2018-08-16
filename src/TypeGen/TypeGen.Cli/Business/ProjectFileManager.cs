@@ -8,26 +8,27 @@ using System.Xml;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
     /// <summary>
     /// For ASP.NET versions older than ASP.NET Core (addFilesToProject parameter)
     /// </summary>
-    internal class ProjectFileManager
+    internal class ProjectFileManager : IProjectFileManager
     {
         private const string TypeScriptCompileXPath = "/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='TypeScriptCompile']";
 
-        private readonly FileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
-        public ProjectFileManager(FileSystem fileSystem)
+        public ProjectFileManager(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }
 
         public bool ContainsTsFile(XmlDocument projectFile, string filePath)
         {
-            if (projectFile == null) throw new ArgumentNullException(nameof(projectFile));
+            Requires.NotNull(projectFile, nameof(projectFile));
 
             XmlNodeList itemGroups = projectFile.DocumentElement?.SelectNodes($"{TypeScriptCompileXPath}[@Include='{filePath}']");
 
@@ -53,7 +54,7 @@ namespace TypeGen.Cli.Business
 
         public void AddTsFile(XmlDocument projectFile, string filePath)
         {
-            if (projectFile == null) throw new ArgumentNullException(nameof(projectFile));
+            Requires.NotNull(projectFile, nameof(projectFile));
 
             XmlElement documentElement = projectFile.DocumentElement;
             if (documentElement == null) throw new CliException("Project file has no XML document element");

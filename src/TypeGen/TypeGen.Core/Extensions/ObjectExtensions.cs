@@ -11,9 +11,6 @@ namespace TypeGen.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static bool Is<T>(this object obj)
-        {
-            return obj is T;
-        }
+        public static bool Is<T>(this object obj) => obj is T;
     }
 }

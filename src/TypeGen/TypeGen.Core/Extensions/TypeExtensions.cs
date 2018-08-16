@@ -5,38 +5,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
     internal static class TypeExtensions
     {
-        /// <summary>
-        /// Shim for .NET Framework Type.GetInterface
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static Type GetInterface(this Type type, string name)
-        {
-            return type.GetTypeInfo().ImplementedInterfaces
-                .WhereNotNull()
-                .FirstOrDefault(i => i.FullName?.Split('[')[0] == name || i.Name?.Split('[')[0] == name);
-        }
-
-        /// <summary>
-        /// Shim for .NET Framework Type.GetGenericArguments
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static Type[] GetGenericArguments(this Type type)
-        {
-            TypeInfo typeInfo = type.GetTypeInfo();
-
-            return typeInfo.GenericTypeArguments
-                .Concat(typeInfo.GenericTypeParameters)
-                .ToArray();
-        }
-
         /// <summary>
         /// Checks if a type is marked with an ExportTs... attribute
         /// </summary>
@@ -44,6 +18,8 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static bool HasExportAttribute(this Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             return type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>() != null ||
                    type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>() != null ||
                    type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>() != null;
@@ -56,6 +32,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<Type> GetExportMarkedTypes(this IEnumerable<Type> types)
         {
+            Requires.NotNull(types, nameof(types));
             return types.Where(t => t.HasExportAttribute());
         }
 
@@ -66,6 +43,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
         {
+            Requires.NotNull(memberInfos, nameof(memberInfos));
             return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
         }
 
@@ -77,6 +55,7 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
         {
+            Requires.NotNull(memberInfos, nameof(memberInfos));
             return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
         }
 
@@ -88,7 +67,8 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
         {
-            return memberInfos.Where(i => i.CanRead && !i.GetMethod.IsStatic);
+            Requires.NotNull(memberInfos, nameof(memberInfos));
+            return memberInfos.Where(i => i.GetMethod.IsPublic && !i.GetMethod.IsStatic);
         }
 
         /// <summary>
@@ -98,8 +78,25 @@ namespace TypeGen.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<string> GetTypeNames(this IEnumerable<object> enumerable)
         {
+            Requires.NotNull(enumerable, nameof(enumerable));
+            
             return enumerable
                 .Select(c => c.GetType().Name);
+        }
+        
+        /// <summary>
+        /// Shim for Type.GetInterface
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="interfaceName"></param>
+        /// <returns></returns>
+        public static Type GetInterface(this Type type, string interfaceName)
+        {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNullOrEmpty(interfaceName, nameof(interfaceName));
+            
+            return type.GetInterfaces()
+                .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
     }
 }

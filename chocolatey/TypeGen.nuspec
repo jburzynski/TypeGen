@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
 	<title>TypeGen</title>
@@ -10,9 +10,12 @@
     <projectUrl>http://jburzynski.net/TypeGen</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>TypeGen is a C# to TypeScript file generator with support for one-class-per-file generation</description>
+    <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
 	<packageSourceUrl>https://github.com/jburzynski/TypeGen</packageSourceUrl>
 	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
     <tags>code-generator generator typescript ts</tags>
+	<dependencies>
+      <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
+    </dependencies>
   </metadata>
 </package>

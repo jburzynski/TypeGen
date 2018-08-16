@@ -11,15 +11,16 @@ using TypeGen.Core;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
-    internal class GeneratorOptionsProvider
+    internal class GeneratorOptionsProvider : IGeneratorOptionsProvider
     {
-        private readonly FileSystem _fileSystem;
-        private readonly Logger _logger;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
 
-        public GeneratorOptionsProvider(FileSystem fileSystem, Logger logger)
+        public GeneratorOptionsProvider(IFileSystem fileSystem, ILogger logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
@@ -35,6 +36,10 @@ namespace TypeGen.Cli.Business
         /// <returns></returns>
         public GeneratorOptions GetGeneratorOptions(TgConfig config, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
         {
+            Requires.NotNull(config, nameof(config));
+            Requires.NotNull(assemblies, nameof(assemblies));
+            Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
+            
             return new GeneratorOptions
             {
                 TypeScriptFileExtension = config.TypeScriptFileExtension,

@@ -1,0 +1,7 @@
+{
+  "externalAssemblyPaths": ["<global-packages>", "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"],
+  "outputPath": "generated-typescript",
+  "strictNullChecks": true,
+  "csNullableTranslation": null,
+  "createIndexFile": true
+}
