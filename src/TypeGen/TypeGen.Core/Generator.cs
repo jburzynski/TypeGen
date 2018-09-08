@@ -341,13 +341,7 @@ namespace TypeGen.Core
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(memberInfo));
 
-            if (propertiesText != "")
-            {
-                // remove the last new line symbol
-                propertiesText = propertiesText.Remove(propertiesText.Length - 2);
-            }
-
-            return propertiesText;
+            return RemoveLastLineEnding(propertiesText);
         }
 
         /// <summary>
@@ -381,13 +375,7 @@ namespace TypeGen.Core
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetInterfacePropertyText(memberInfo));
 
-            if (propertiesText != "")
-            {
-                // remove the last new line symbol
-                propertiesText = propertiesText.Remove(propertiesText.Length - 2);
-            }
-
-            return propertiesText;
+            return RemoveLastLineEnding(propertiesText);
         }
 
         /// <summary>
@@ -415,13 +403,7 @@ namespace TypeGen.Core
             valuesText += enumValues.Cast<object>()
                 .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue));
 
-            if (valuesText != "")
-            {
-                // remove the last new line symbol
-                valuesText = valuesText.Remove(valuesText.Length - 2);
-            }
-
-            return valuesText;
+            return RemoveLastLineEnding(valuesText);
         }
 
         /// <summary>
@@ -528,6 +510,11 @@ namespace TypeGen.Core
 
                 throw;
             }
+        }
+
+        private static string RemoveLastLineEnding(string propertiesText)
+        {
+            return propertiesText.TrimEnd('\r', '\n');
         }
     }
 }

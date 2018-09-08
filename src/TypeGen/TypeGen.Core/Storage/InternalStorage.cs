@@ -24,10 +24,10 @@ namespace TypeGen.Core.Storage
                 {
                     throw new CoreException($"Could not find embedded resource '{name}'");
                 }
-
+                
                 var contentBytes = new byte[stream.Length];
                 stream.Read(contentBytes, 0, (int)stream.Length);
-                return Encoding.ASCII.GetString(contentBytes);
+                return Encoding.UTF8.GetString(contentBytes);
             }
         }
     }
