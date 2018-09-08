@@ -34,7 +34,7 @@ namespace TypeGen.Core.Utils
         {
             Requires.NotNull(fileSystem, nameof(fileSystem));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
-            
+            projectFolder = projectFolder.Replace('\\', '/');
             string fileName = fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(GetFileNameFromPath)
                 .FirstOrDefault(n => n.EndsWith(".csproj"));
@@ -51,8 +51,8 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string GetPathDiff(string pathFrom, string pathTo)
         {
-            var pathFromUri = new Uri("file:///" + pathFrom);
-            var pathToUri = new Uri("file:///" + pathTo);
+            var pathFromUri = new Uri("file:///" + pathFrom?.Replace('\\', '/'));
+            var pathToUri = new Uri("file:///" + pathTo?.Replace('\\', '/'));
 
             return pathFromUri.MakeRelativeUri(pathToUri).ToString();
         }
