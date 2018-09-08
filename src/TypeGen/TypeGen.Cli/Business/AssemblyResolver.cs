@@ -13,9 +13,16 @@ namespace TypeGen.Cli.Business
 {
     internal class AssemblyResolver : IAssemblyResolver
     {
-        private const string GlobalFallbackPath = @"C:\Program Files\dotnet\sdk\NuGetFallbackFolder";
-        private const string SharedPath = @"C:\Program Files\dotnet\shared";
+        private static readonly string GlobalFallbackPath;
+        private static readonly string SharedPath;
 
+        static AssemblyResolver()
+        {
+            string dotnetInstallPath = GetDotnetInstallPath();
+            GlobalFallbackPath = Path.Combine(dotnetInstallPath, "sdk/NuGetFallbackFolder");
+            SharedPath = Path.Combine(dotnetInstallPath, "shared");
+        }
+       
         private readonly IFileSystem _fileSystem;
         private readonly string _projectFolder;
 
@@ -33,7 +40,6 @@ namespace TypeGen.Cli.Business
         {
             _fileSystem = fileSystem;
             _projectFolder = projectFolder.ToAbsolutePath(_fileSystem);
-
             if (Directory.Exists(SharedPath)) _sharedFolder = SharedPath;
             PopulateNuGetPackageFolders();
         }
@@ -165,5 +171,31 @@ namespace TypeGen.Cli.Business
             Match match = Regex.Match(assemblyFullName, "Version=(.+?),");
             return match.Success ? match.Groups[1].Value : throw new CliException($"Could not determine assembly version of assembly: ${assemblyFullName}");
         }
+
+        private static string GetDotnetInstallPath()
+        {
+            string programFiles = Environment.GetEnvironmentVariable("programfiles");
+            if (!String.IsNullOrWhiteSpace(programFiles)) 
+            {
+                string dotnetDirWin64 = Path.Combine(Environment.GetEnvironmentVariable("programfiles"), "dotnet");
+                if (Directory.Exists(dotnetDirWin64)) return dotnetDirWin64;
+            }
+            
+            string programFilesX86 = Environment.GetEnvironmentVariable("programfiles(x86)");
+            if (!String.IsNullOrWhiteSpace(programFilesX86)) 
+            {
+                string dotnetDirWinX86 = Path.Combine(Environment.GetEnvironmentVariable("programfiles(x86)"), "dotnet");
+                if (Directory.Exists(dotnetDirWinX86)) return dotnetDirWinX86;
+            }
+            
+            string osxPath = "/usr/local/share/dotnet";
+            if (Directory.Exists(osxPath)) return osxPath;
+
+            string linuxPath = "/usr/share/dotnet"; 
+            if (Directory.Exists(linuxPath)) return linuxPath;
+
+            return @"C:\Program Files\dotnet"; // old behavior
+        }
+
     }
 }
