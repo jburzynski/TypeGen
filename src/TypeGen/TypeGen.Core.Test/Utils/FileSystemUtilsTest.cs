@@ -16,7 +16,7 @@ namespace TypeGen.Core.Test.Utils
         [InlineData(@"some\test/path")]
         public void SplitPathSeparator_PathGiven_PathSplit(string path)
         {
-            string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
+            string[] splitPath = FileSystemUtils.SplitPathSeparator(path);
             Assert.Equal(new[] { "some", "test", "path" }, splitPath);
         }
 

@@ -11,14 +11,14 @@ namespace TypeGen.Core.Utils
     /// <summary>
     /// File system-related utility class
     /// </summary>
-    internal class FileSystemUtils
+    internal static class FileSystemUtils
     {
         /// <summary>
-        /// Split paths by seperator with \\ and /
+        /// Split paths by separator with \\ and /
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string[] SplitPathSeperator(string path)
+        public static string[] SplitPathSeparator(string path)
         {
             Requires.NotNullOrEmpty(path, nameof(path));
             return path.Split('\\', '/');
@@ -27,7 +27,7 @@ namespace TypeGen.Core.Utils
         public static string GetFileNameFromPath(string path)
         {
             Requires.NotNullOrEmpty(path, nameof(path));
-            return SplitPathSeperator(path).Last();
+            return SplitPathSeparator(path).Last();
         }
 
         public static string GetProjectFilePath(IFileSystem fileSystem, string projectFolder)
@@ -39,7 +39,7 @@ namespace TypeGen.Core.Utils
                 .Select(GetFileNameFromPath)
                 .FirstOrDefault(n => n.EndsWith(".csproj"));
 
-            return fileName == null ? null : Path.Combine(projectFolder, fileName);
+            return fileName == null ? null : Path.Combine(projectFolder, fileName).Replace('\\', '/');
         }
 
         /// <summary>
