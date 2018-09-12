@@ -16,7 +16,7 @@ namespace TypeGen.Core.Test.Utils
         [InlineData(@"some\test/path")]
         public void SplitPathSeparator_PathGiven_PathSplit(string path)
         {
-            string[] splitPath = FileSystemUtils.SplitPathSeperator(path);
+            string[] splitPath = FileSystemUtils.SplitPathSeparator(path);
             Assert.Equal(new[] { "some", "test", "path" }, splitPath);
         }
 
@@ -31,8 +31,8 @@ namespace TypeGen.Core.Test.Utils
         }
 
         [Theory]
-        [InlineData(@"my\project\folder", @"my\project\folder\jkl.csproj")]
-        [InlineData("my/project/folder", @"my/project/folder\jkl.csproj")]
+        [InlineData(@"my\project\folder", @"my/project/folder/jkl.csproj")]
+        [InlineData("my/project/folder", @"my/project/folder/jkl.csproj")]
         public void GetProjectFilePath_PathGiven_GetsProjectFile(string projectFolder, string expectedResult)
         {
             //arrange

@@ -11,14 +11,14 @@ namespace TypeGen.Core.Utils
     /// <summary>
     /// File system-related utility class
     /// </summary>
-    internal class FileSystemUtils
+    internal static class FileSystemUtils
     {
         /// <summary>
-        /// Split paths by seperator with \\ and /
+        /// Split paths by separator with \\ and /
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string[] SplitPathSeperator(string path)
+        public static string[] SplitPathSeparator(string path)
         {
             Requires.NotNullOrEmpty(path, nameof(path));
             return path.Split('\\', '/');
@@ -27,19 +27,19 @@ namespace TypeGen.Core.Utils
         public static string GetFileNameFromPath(string path)
         {
             Requires.NotNullOrEmpty(path, nameof(path));
-            return SplitPathSeperator(path).Last();
+            return SplitPathSeparator(path).Last();
         }
 
         public static string GetProjectFilePath(IFileSystem fileSystem, string projectFolder)
         {
             Requires.NotNull(fileSystem, nameof(fileSystem));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
-            
+            projectFolder = projectFolder.Replace('\\', '/');
             string fileName = fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(GetFileNameFromPath)
                 .FirstOrDefault(n => n.EndsWith(".csproj"));
 
-            return fileName == null ? null : Path.Combine(projectFolder, fileName);
+            return fileName == null ? null : Path.Combine(projectFolder, fileName).Replace('\\', '/');
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string GetPathDiff(string pathFrom, string pathTo)
         {
-            var pathFromUri = new Uri("file:///" + pathFrom);
-            var pathToUri = new Uri("file:///" + pathTo);
+            var pathFromUri = new Uri("file:///" + pathFrom?.Replace('\\', '/'));
+            var pathToUri = new Uri("file:///" + pathTo?.Replace('\\', '/'));
 
             return pathFromUri.MakeRelativeUri(pathToUri).ToString();
         }
