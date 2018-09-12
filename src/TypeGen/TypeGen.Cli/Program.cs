@@ -124,8 +124,9 @@ namespace TypeGen.Cli
 
             // generate
 
-            IEnumerable<string> generatedFiles = generator.Generate(assemblies).GeneratedFiles;
-
+            GenerationResult result = generator.Generate(assemblies);
+            IEnumerable<string> generatedFiles = result.GeneratedFiles.ToArray();
+            _logger.Log(generatedFiles.Select(x => $"Generated {x}").ToArray());
             if (config.AddFilesToProject ?? TgConfig.DefaultAddFilesToProject)
             {
                 AddFilesToProject(projectFolder, generatedFiles);
