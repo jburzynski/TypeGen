@@ -113,7 +113,7 @@ namespace TypeGen.Cli
             _assemblyResolver.Directories = config.ExternalAssemblyPaths;
             _assemblyResolver.Register();
 
-            IEnumerable<Assembly> assemblies = GetAssemblies(config.GetAssemblies());
+            IEnumerable<Assembly> assemblies = GetAssemblies(config.GetAssemblies()).ToArray();
 
             // create generator
 
@@ -126,7 +126,11 @@ namespace TypeGen.Cli
 
             GenerationResult result = generator.Generate(assemblies);
             IEnumerable<string> generatedFiles = result.GeneratedFiles.ToArray();
+            
+            _logger.Log("");
             _logger.Log(generatedFiles.Select(x => $"Generated {x}").ToArray());
+            _logger.Log("");
+            
             if (config.AddFilesToProject ?? TgConfig.DefaultAddFilesToProject)
             {
                 AddFilesToProject(projectFolder, generatedFiles);

@@ -13,7 +13,7 @@ using TypeGen.Core.Validation;
 namespace TypeGen.Cli.Business
 {
     /// <summary>
-    /// For ASP.NET versions older than ASP.NET Core (addFilesToProject parameter)
+    /// For ASP.NET (.NET Framework) versions (addFilesToProject parameter in TypeGen CLI)
     /// </summary>
     internal class ProjectFileManager : IProjectFileManager
     {

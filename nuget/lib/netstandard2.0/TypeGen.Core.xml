@@ -1287,9 +1287,9 @@
             File system-related utility class
             </summary>
         </member>
-        <member name="M:TypeGen.Core.Utils.FileSystemUtils.SplitPathSeperator(System.String)">
+        <member name="M:TypeGen.Core.Utils.FileSystemUtils.SplitPathSeparator(System.String)">
             <summary>
-            Split paths by seperator with \\ and /
+            Split paths by separator with \\ and /
             </summary>
             <param name="path"></param>
             <returns></returns>
