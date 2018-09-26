@@ -91,11 +91,9 @@ namespace TypeGen.Cli.Business
 
             // nuget
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
-            if (assembly != null) return assembly;
-
-            // exception if assembly not found
-
-            throw new AssemblyResolutionException($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", Directories)}");
+            
+            // return assembly or null
+            return assembly;
         }
 
         private Assembly FindByPackageName(IEnumerable<string> directories, string assemblyFullName)
