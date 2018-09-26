@@ -18,7 +18,7 @@ namespace TypeGen.Core.Test.Acceptance
         private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
 
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (CI etc.) should not pick it up.")]
-        //[Theory]
+//        [Theory]
 		[InlineData("")]
 		[InlineData("generated-typescript/")]
 		[InlineData("nested/directory/generated-typescript/")]
@@ -28,7 +28,7 @@ namespace TypeGen.Core.Test.Acceptance
             
             var generator = new Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, StrictNullChecks = true } };
             Assembly assembly = Assembly.LoadFrom(AssemblyPath);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new Logger(), ProjectPath);
             
             var content = new Dictionary<string, string>
             {

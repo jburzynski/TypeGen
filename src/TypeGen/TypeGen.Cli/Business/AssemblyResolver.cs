@@ -13,19 +13,10 @@ namespace TypeGen.Cli.Business
 {
     internal class AssemblyResolver : IAssemblyResolver
     {
-        private static readonly string GlobalFallbackPath;
-        private static readonly string SharedPath;
-
-        static AssemblyResolver()
-        {
-            string dotnetInstallPath = GetDotnetInstallPath();
-            GlobalFallbackPath = Path.Combine(dotnetInstallPath, "sdk/NuGetFallbackFolder");
-            SharedPath = Path.Combine(dotnetInstallPath, "shared");
-        }
-       
         private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
         private readonly string _projectFolder;
-
+        
         private IEnumerable<string> _directories;
         public IEnumerable<string> Directories
         {
@@ -33,14 +24,22 @@ namespace TypeGen.Cli.Business
             set => _directories = value?.Select(d => Path.IsPathRooted(d) ? d : Path.Combine(_projectFolder, d));
         }
 
-        private string _sharedFolder;
+        private readonly string _globalFallbackPath;
+        private readonly string _sharedFolder;
         private List<string> _nugetPackagesFolders;
 
-        public AssemblyResolver(IFileSystem fileSystem, string projectFolder)
+        public AssemblyResolver(IFileSystem fileSystem, ILogger logger, string projectFolder)
         {
             _fileSystem = fileSystem;
+            _logger = logger;
             _projectFolder = projectFolder.ToAbsolutePath(_fileSystem);
-            if (Directory.Exists(SharedPath)) _sharedFolder = SharedPath;
+            
+            string dotnetInstallPath = GetDotnetInstallPath();
+            _globalFallbackPath = Path.Combine(dotnetInstallPath, "sdk/NuGetFallbackFolder");
+            string dotNetInstallSharedPath = Path.Combine(dotnetInstallPath, "shared");
+            
+            if (_fileSystem.DirectoryExists(dotNetInstallSharedPath)) _sharedFolder = dotNetInstallSharedPath;
+            
             PopulateNuGetPackageFolders();
         }
 
@@ -51,7 +50,7 @@ namespace TypeGen.Cli.Business
 
             if (!string.IsNullOrWhiteSpace(nugetPathContext.UserPackageFolder)) _nugetPackagesFolders.Add(nugetPathContext.UserPackageFolder);
             _nugetPackagesFolders.AddRange(nugetPathContext.FallbackPackageFolders);
-            if (!_nugetPackagesFolders.Contains(GlobalFallbackPath) && Directory.Exists(GlobalFallbackPath)) _nugetPackagesFolders.Add(GlobalFallbackPath);
+            if (!_nugetPackagesFolders.Contains(_globalFallbackPath) && Directory.Exists(_globalFallbackPath)) _nugetPackagesFolders.Add(_globalFallbackPath);
         }
 
         public void Register()
@@ -82,8 +81,11 @@ namespace TypeGen.Cli.Business
             string assemblyVersion = GetAssemblyVersion(args.Name);
 
             // shared
-            assembly = FindRecursive(_sharedFolder, assemblyFileName, assemblyVersion);
-            if (assembly != null) return assembly;
+            if (_sharedFolder != null)
+            {
+                assembly = FindRecursive(_sharedFolder, assemblyFileName, assemblyVersion);
+                if (assembly != null) return assembly;
+            }
 
             // user-defined
             assembly = FindRecursive(Directories, assemblyFileName, assemblyVersion);
@@ -91,6 +93,9 @@ namespace TypeGen.Cli.Business
 
             // nuget
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
+            
+            // log if assembly not found
+            if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", Directories)}");
             
             // return assembly or null
             return assembly;
@@ -170,27 +175,27 @@ namespace TypeGen.Cli.Business
             return match.Success ? match.Groups[1].Value : throw new CliException($"Could not determine assembly version of assembly: ${assemblyFullName}");
         }
 
-        private static string GetDotnetInstallPath()
+        private string GetDotnetInstallPath()
         {
             string programFiles = Environment.GetEnvironmentVariable("programfiles");
-            if (!String.IsNullOrWhiteSpace(programFiles)) 
+            if (!string.IsNullOrWhiteSpace(programFiles)) 
             {
                 string dotnetDirWin64 = Path.Combine(Environment.GetEnvironmentVariable("programfiles"), "dotnet");
-                if (Directory.Exists(dotnetDirWin64)) return dotnetDirWin64;
+                if (_fileSystem.DirectoryExists(dotnetDirWin64)) return dotnetDirWin64;
             }
             
             string programFilesX86 = Environment.GetEnvironmentVariable("programfiles(x86)");
-            if (!String.IsNullOrWhiteSpace(programFilesX86)) 
+            if (!string.IsNullOrWhiteSpace(programFilesX86)) 
             {
                 string dotnetDirWinX86 = Path.Combine(Environment.GetEnvironmentVariable("programfiles(x86)"), "dotnet");
-                if (Directory.Exists(dotnetDirWinX86)) return dotnetDirWinX86;
+                if (_fileSystem.DirectoryExists(dotnetDirWinX86)) return dotnetDirWinX86;
             }
             
-            string osxPath = "/usr/local/share/dotnet";
-            if (Directory.Exists(osxPath)) return osxPath;
+            var osxPath = "/usr/local/share/dotnet";
+            if (_fileSystem.DirectoryExists(osxPath)) return osxPath;
 
-            string linuxPath = "/usr/share/dotnet"; 
-            if (Directory.Exists(linuxPath)) return linuxPath;
+            var linuxPath = "/usr/share/dotnet"; 
+            if (_fileSystem.DirectoryExists(linuxPath)) return linuxPath;
 
             return @"C:\Program Files\dotnet"; // old behavior
         }
