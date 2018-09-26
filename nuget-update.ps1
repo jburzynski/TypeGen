@@ -19,26 +19,9 @@ copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.dll nuget\
 copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.xml nuget\lib\netstandard2.0
 
 nuget pack nuget\TypeGen.nuspec
-move TypeGen.1.6.6.nupkg nuget -force
+move TypeGen.1.6.7.nupkg nuget -force
 
 if (Test-Path "local-nuget-path.txt") {
   $localNuGetPath = Get-Content "local-nuget-path.txt"
-  copy nuget\TypeGen.1.6.6.nupkg $localNuGetPath
-}
-
-
-#chocolatey
-
-rm -Recurse -Force chocolatey\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.0\publish\* chocolatey
-rm chocolatey\TypeGen.Cli.pdb
-rm chocolatey\TypeGen.Core.pdb
-rm chocolatey\TypeGen.Core.xml
-
-choco pack chocolatey\TypeGen.nuspec
-move TypeGen.1.6.6.nupkg chocolatey -force
-
-if (Test-Path "local-chocolatey-path.txt") {
-  $localChocolateyPath = Get-Content "local-chocolatey-path.txt"
-  copy chocolatey\TypeGen.1.6.6.nupkg $localChocolateyPath
+  copy nuget\TypeGen.1.6.7.nupkg $localNuGetPath
 }
