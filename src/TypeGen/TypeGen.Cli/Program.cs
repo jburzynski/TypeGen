@@ -64,7 +64,7 @@ namespace TypeGen.Cli
                     string projectFolder = projectFolders[i];
                     string configPath = configPaths.HasIndex(i) ? configPaths[i] : null;
 
-                    _assemblyResolver = new AssemblyResolver(_fileSystem, projectFolder);
+                    _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
                     _logger.Log($"Generating files for project \"{projectFolder}\"...");
                     Generate(projectFolder, configPath, verbose);
