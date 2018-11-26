@@ -84,5 +84,7 @@
     <EmbeddedResource Include="Acceptance\Expected\very\nested\directory\nested-entity.ts" />
     <None Remove="Acceptance\Expected\generic-with-restrictions.ts" />
     <EmbeddedResource Include="Acceptance\Expected\generic-with-restrictions.ts" />
+    <None Remove="Acceptance\Expected\extended-primitives-class.ts" />
+    <EmbeddedResource Include="Acceptance\Expected\extended-primitives-class.ts" />
   </ItemGroup>
 </Project>

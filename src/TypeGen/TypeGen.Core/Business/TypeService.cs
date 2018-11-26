@@ -37,6 +37,7 @@ namespace TypeGen.Core.Business
                     return "boolean";
                 case "System.Char":
                 case "System.String":
+                case "System.Guid":
                     return "string";
                 case "System.SByte":
                 case "System.Byte":
@@ -51,6 +52,8 @@ namespace TypeGen.Core.Business
                 case "System.Decimal":
                     return "number";
                 case "System.DateTime":
+                case "System.DateTimeOffset":
+                case "System.TimeSpan":
                     return "Date";
                 default:
                     return null;

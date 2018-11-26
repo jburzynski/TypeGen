@@ -39,6 +39,7 @@ namespace TypeGen.Core.Test.Acceptance
                 { "custom-base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.custom-base-class.ts") },
                 { "custom-base-custom-import.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.custom-base-custom-import.ts") },
                 { "custom-empty-base-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.custom-empty-base-class.ts") },
+                { "extended-primitives-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.extended-primitives-class.ts") },
                 { "d.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.d.ts") },
                 { "e-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.e-class.ts") },
                 { "external-deps-class.ts", GetEmbeddedResource("TypeGen.Core.Test.Acceptance.Expected.external-deps-class.ts") },
@@ -86,6 +87,7 @@ namespace TypeGen.Core.Test.Acceptance
             _fileSystem.Received().SaveFile(outputPath + "custom-base-class.ts", content["custom-base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-base-custom-import.ts", content["custom-base-custom-import.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-empty-base-class.ts", content["custom-empty-base-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "extended-primitives-class.ts", content["extended-primitives-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "d.ts", content["d.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "e-class.ts", content["e-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "external-deps-class.ts", content["external-deps-class.ts"]);
