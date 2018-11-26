@@ -251,9 +251,6 @@ paket-files/
 .idea/
 *.sln.iml
 
-# TypeScript files
-*.ts
-
 # do not ignore TypeGen specific files
 !TypeGen.[0-9].[0-9].[0-9].nupkg
 /local-chocolatey-path.txt
