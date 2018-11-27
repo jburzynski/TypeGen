@@ -51,8 +51,57 @@ namespace TypeGen.Cli.Business
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assemblies, projectFolder, logVerbose),
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose),
                 StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
-                CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags()
+                CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
+                GenerateEmptyValues = GetGenerateEmptyValues(config.GenerateEmptyValues)
             };
+        }
+
+        private IEnumerable<Type> GetGenerateEmptyValues(string[] configGenerateEmptyValues)
+        {
+            foreach (string typeString in configGenerateEmptyValues)
+            {
+                if (typeString.Contains("."))
+                {
+                    Type type = null;
+                    
+                    try
+                    {
+                        type = Type.GetType(typeString);
+                    }
+                    catch (TypeLoadException e)
+                    {
+                        _logger.Log($"Could not load type specified in 'generateEmptyValues' CLI option: '{typeString}'");
+                        _logger.Log("Details:");
+                        _logger.Log(e.Message);
+                    }
+
+                    if (type != null) yield return type;
+                }
+                else
+                {
+                    switch (typeString)
+                    {
+                        case "Object":
+                            yield return typeof(object);
+                            break;
+                        case "boolean":
+                            yield return typeof(bool);
+                            break;
+                        case "string":
+                            yield return typeof(string);
+                            break;
+                        case "number":
+                            yield return typeof(int);
+                            break;
+                        case "Date":
+                            yield return typeof(DateTime);
+                            break;
+                        default:
+                            _logger.Log($"Unexpected value in 'generateEmptyValues' CLI option: '{typeString}'");
+                            break;
+                    }
+                }
+            }
         }
 
         private TypeNameConverterCollection GetTypeNameConvertersFromConfig(string[] typeNameConverters, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)

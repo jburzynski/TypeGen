@@ -23,7 +23,6 @@ namespace TypeGen.Core
         public static bool DefaultCreateIndexFile => false;
         public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
-        public static IList<Type> DefaultGenerateEmptyValues => new List<Type>();
 
         public GeneratorOptions()
         {
@@ -36,7 +35,7 @@ namespace TypeGen.Core
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
-            GenerateEmptyValues = DefaultGenerateEmptyValues;
+            GenerateEmptyValues = new List<Type>();
         }
 
         /// <summary>
@@ -103,6 +102,6 @@ namespace TypeGen.Core
         /// <summary>
         /// Specifies which types to generate empty values for
         /// </summary>
-        public IList<Type> GenerateEmptyValues { get; set; }
+        public IEnumerable<Type> GenerateEmptyValues { get; set; }
     }
 }

@@ -65,6 +65,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "csNullableTranslation")]
         public string CsNullableTranslation { get; set; }
+        
+        [DataMember(Name = "generateEmptyValues")]
+        public string[] GenerateEmptyValues { get; set; }
 
         public TgConfig Normalize()
         {
@@ -95,6 +98,7 @@ namespace TypeGen.Cli.Models
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (OutputPath == null) OutputPath = "";
+            if (GenerateEmptyValues == null) GenerateEmptyValues = new string[0];
             return this;
         }
 
