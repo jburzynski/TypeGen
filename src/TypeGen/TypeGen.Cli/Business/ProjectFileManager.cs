@@ -37,7 +37,7 @@ namespace TypeGen.Cli.Business
 
         public XmlDocument ReadFromProjectFolder(string projectFolder)
         {
-            string projectFilePath = FileSystemUtils.GetProjectFilePath(_fileSystem, projectFolder);
+            string projectFilePath = FileSystemUtils.GetProjectFilePath(projectFolder, _fileSystem);
             if (string.IsNullOrEmpty(projectFilePath)) return null;
 
             var document = new XmlDocument();
@@ -48,7 +48,7 @@ namespace TypeGen.Cli.Business
 
         public void SaveProjectFile(string projectFolder, XmlDocument projectFile)
         {
-            string projectFilePath = FileSystemUtils.GetProjectFilePath(_fileSystem, projectFolder);
+            string projectFilePath = FileSystemUtils.GetProjectFilePath(projectFolder, _fileSystem);
             projectFile.Save(projectFilePath);
         }
 

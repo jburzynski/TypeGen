@@ -23,6 +23,7 @@ namespace TypeGen.Core
         public static bool DefaultCreateIndexFile => false;
         public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
+        public static IList<Type> DefaultGenerateEmptyValues => new List<Type>();
 
         public GeneratorOptions()
         {
@@ -35,6 +36,7 @@ namespace TypeGen.Core
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
+            GenerateEmptyValues = DefaultGenerateEmptyValues;
         }
 
         /// <summary>
@@ -97,5 +99,10 @@ namespace TypeGen.Core
         /// Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
         /// </summary>
         public StrictNullFlags CsNullableTranslation { get; set; }
+
+        /// <summary>
+        /// Specifies which types to generate empty values for
+        /// </summary>
+        public IList<Type> GenerateEmptyValues { get; set; }
     }
 }

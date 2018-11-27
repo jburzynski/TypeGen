@@ -8,6 +8,7 @@ using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
@@ -321,6 +322,16 @@ namespace TypeGen.Core
             if (defaultValueAttribute != null)
             {
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
+            }
+
+            if (Options.GenerateEmptyValues.Any())
+            {
+                Type memberType = _typeService.GetMemberType(memberInfo);
+                if (Options.GenerateEmptyValues.Contains(memberType) && EmptyValue.ExistsFor(memberType))
+                {
+                    string defaultValue = EmptyValue.For(memberType, Options.SingleQuotes);
+                    return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValue);
+                }
             }
 
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);

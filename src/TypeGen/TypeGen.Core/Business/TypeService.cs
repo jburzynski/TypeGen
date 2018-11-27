@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
@@ -16,50 +17,6 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeService : ITypeService
     {
-        /// <inheritdoc />
-        public bool IsTsSimpleType(Type type)
-        {
-            Requires.NotNull(type, nameof(type));
-
-            return GetTsSimpleTypeName(type) != null;
-        }
-
-        /// <inheritdoc />
-        public string GetTsSimpleTypeName(Type type)
-        {
-            Requires.NotNull(type, nameof(type));
-
-            switch (type.FullName)
-            {
-                case "System.Object":
-                    return "Object";
-                case "System.Boolean":
-                    return "boolean";
-                case "System.Char":
-                case "System.String":
-                case "System.Guid":
-                    return "string";
-                case "System.SByte":
-                case "System.Byte":
-                case "System.Int16":
-                case "System.UInt16":
-                case "System.Int32":
-                case "System.UInt32":
-                case "System.Int64":
-                case "System.UInt64":
-                case "System.Single":
-                case "System.Double":
-                case "System.Decimal":
-                    return "number";
-                case "System.DateTime":
-                case "System.DateTimeOffset":
-                case "System.TimeSpan":
-                    return "Date";
-                default:
-                    return null;
-            }
-        }
-
         /// <inheritdoc />
         public bool IsTsClass(Type type)
         {
@@ -155,9 +112,9 @@ namespace TypeGen.Core.Business
             type = StripNullable(type);
 
             // handle simple types
-            if (IsTsSimpleType(type))
+            if (TypeUtils.IsTsSimpleType(type))
             {
-                return GetTsSimpleTypeName(type);
+                return TypeUtils.GetTsSimpleTypeName(type);
             }
 
             // handle collection types

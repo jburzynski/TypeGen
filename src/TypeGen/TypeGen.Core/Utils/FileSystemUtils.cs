@@ -30,7 +30,7 @@ namespace TypeGen.Core.Utils
             return SplitPathSeparator(path).Last();
         }
 
-        public static string GetProjectFilePath(IFileSystem fileSystem, string projectFolder)
+        public static string GetProjectFilePath(string projectFolder, IFileSystem fileSystem)
         {
             Requires.NotNull(fileSystem, nameof(fileSystem));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));

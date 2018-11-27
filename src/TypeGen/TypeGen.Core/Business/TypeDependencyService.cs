@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
@@ -111,7 +112,7 @@ namespace TypeGen.Core.Business
 
         private IEnumerable<TypeDependencyInfo> GetFlatTypeDependencies(Type flatType, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
         {
-            if (_typeService.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
+            if (TypeUtils.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
             
             if (flatType.GetTypeInfo().IsGenericType)
             {
@@ -139,7 +140,7 @@ namespace TypeGen.Core.Business
             {
                 Type argumentType = _typeService.StripNullable(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
-                if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
+                if (TypeUtils.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
                 result = result.Concat(flatArgumentType.GetTypeInfo().IsGenericType
                     ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)
