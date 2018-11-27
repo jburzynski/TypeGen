@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TypeGen.Core.Business;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Utils
 {
@@ -11,13 +12,16 @@ namespace TypeGen.Core.Utils
     {
         public static bool ExistsFor(Type type)
         {
+            Requires.NotNull(type, nameof(type));
+            
             return TypeUtils.GetTsSimpleTypeName(type) != null;
         }
 
         public static string For(Type type, bool singleQuotes)
         {
+            Requires.NotNull(type, nameof(type));
+            
             string tsSimpleTypeName = TypeUtils.GetTsSimpleTypeName(type);
-
             switch (tsSimpleTypeName)
             {
                 case "Object":
