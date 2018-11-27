@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Configuration" Version="4.3.0" />
-	<PackageReference Include="TypeGen" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj" />
   </ItemGroup>
 </Project>
