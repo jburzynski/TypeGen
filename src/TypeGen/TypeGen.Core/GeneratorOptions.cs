@@ -35,7 +35,7 @@ namespace TypeGen.Core
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
-            GenerateEmptyValues = new List<Type>();
+            GenerateEmptyValues = new List<string>();
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace TypeGen.Core
         public StrictNullFlags CsNullableTranslation { get; set; }
 
         /// <summary>
-        /// Specifies which types to generate empty values for
+        /// Specifies which TypeScript types to generate empty values for
         /// </summary>
-        public IEnumerable<Type> GenerateEmptyValues { get; set; }
+        public IEnumerable<string> GenerateEmptyValues { get; set; }
     }
 }

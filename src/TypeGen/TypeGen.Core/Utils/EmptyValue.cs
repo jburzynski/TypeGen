@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TypeGen.Core.Business;
+using TypeGen.Core.Extensions;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Utils
@@ -10,19 +11,18 @@ namespace TypeGen.Core.Utils
     /// </summary>
     internal class EmptyValue
     {
-        public static bool ExistsFor(Type type)
+        public static bool ExistsFor(string tsTypeName)
         {
-            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(tsTypeName, nameof(tsTypeName));
             
-            return TypeUtils.GetTsSimpleTypeName(type) != null;
+            return tsTypeName.In("Object", "boolean", "string", "number", "Date");
         }
 
-        public static string For(Type type, bool singleQuotes)
+        public static string For(string tsTypeName, bool singleQuotes)
         {
-            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(tsTypeName, nameof(tsTypeName));
             
-            string tsSimpleTypeName = TypeUtils.GetTsSimpleTypeName(type);
-            switch (tsSimpleTypeName)
+            switch (tsTypeName)
             {
                 case "Object":
                     return "{}";

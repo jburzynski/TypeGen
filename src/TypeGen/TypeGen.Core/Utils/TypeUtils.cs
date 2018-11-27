@@ -57,5 +57,7 @@ namespace TypeGen.Core.Utils
                     return null;
             }
         }
+
+        public static string StripOptionalAndTypeUnion(string tsTypeName) => tsTypeName.Split('?', '|')[0].Trim();
     }
 }

@@ -56,52 +56,40 @@ namespace TypeGen.Cli.Business
             };
         }
 
-        private IEnumerable<Type> GetGenerateEmptyValues(string[] configGenerateEmptyValues)
+        private IEnumerable<string> GetGenerateEmptyValues(string[] configGenerateEmptyValues)
         {
             foreach (string typeString in configGenerateEmptyValues)
             {
-                if (typeString.Contains("."))
+//                if (typeString.Contains("."))
+//                {
+//                    Type type = null;
+//                    
+//                    try
+//                    {
+//                        type = Type.GetType(typeString);
+//                    }
+//                    catch (TypeLoadException e)
+//                    {
+//                        _logger.Log($"Could not load type specified in 'generateEmptyValues' CLI option: '{typeString}'");
+//                        _logger.Log("Details:");
+//                        _logger.Log(e.Message);
+//                    }
+//
+//                    if (type != null) yield return type;
+//                }
+//                else
+//                {
+                if (typeString.In("Object", "boolean", "string", "number", "Date"))
                 {
-                    Type type = null;
-                    
-                    try
-                    {
-                        type = Type.GetType(typeString);
-                    }
-                    catch (TypeLoadException e)
-                    {
-                        _logger.Log($"Could not load type specified in 'generateEmptyValues' CLI option: '{typeString}'");
-                        _logger.Log("Details:");
-                        _logger.Log(e.Message);
-                    }
-
-                    if (type != null) yield return type;
+                    yield return typeString;
                 }
                 else
                 {
-                    switch (typeString)
-                    {
-                        case "Object":
-                            yield return typeof(object);
-                            break;
-                        case "boolean":
-                            yield return typeof(bool);
-                            break;
-                        case "string":
-                            yield return typeof(string);
-                            break;
-                        case "number":
-                            yield return typeof(int);
-                            break;
-                        case "Date":
-                            yield return typeof(DateTime);
-                            break;
-                        default:
-                            _logger.Log($"Unexpected value in 'generateEmptyValues' CLI option: '{typeString}'");
-                            break;
-                    }
+                    _logger.Log($"Unexpected value in 'generateEmptyValues' CLI option: '{typeString}'");
                 }
             }
+
+//            }
         }
 
         private TypeNameConverterCollection GetTypeNameConvertersFromConfig(string[] typeNameConverters, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)

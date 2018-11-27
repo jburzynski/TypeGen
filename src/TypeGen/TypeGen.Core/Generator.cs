@@ -326,10 +326,12 @@ namespace TypeGen.Core
 
             if (Options.GenerateEmptyValues.Any())
             {
-                Type memberType = _typeService.GetMemberType(memberInfo);
-                if (Options.GenerateEmptyValues.Contains(memberType) && EmptyValue.ExistsFor(memberType))
+                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+                memberTsTypeName = TypeUtils.StripOptionalAndTypeUnion(memberTsTypeName);
+                
+                if (Options.GenerateEmptyValues.Contains(memberTsTypeName) && EmptyValue.ExistsFor(memberTsTypeName))
                 {
-                    string defaultValue = EmptyValue.For(memberType, Options.SingleQuotes);
+                    string defaultValue = EmptyValue.For(memberTsTypeName, Options.SingleQuotes);
                     return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValue);
                 }
             }
