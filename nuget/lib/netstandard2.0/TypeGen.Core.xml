@@ -67,21 +67,6 @@
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">Thrown when the type is null</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.ITypeService.IsTsSimpleType(System.Type)">
-            <summary>
-            Determines if a type has a TypeScript simple type representation
-            </summary>
-            <param name="type"></param>
-            <returns>True if a corresponding TypeScript simple type exists; false otherwise.</returns>
-        </member>
-        <member name="M:TypeGen.Core.Business.ITypeService.GetTsSimpleTypeName(System.Type)">
-            <summary>
-            Gets TypeScript type name for a simple type.
-            Simple type must be one of: object, bool, string, int, long, float, double, decimal.
-            </summary>
-            <param name="type">one of: object, bool, string, int, long, float, double, decimal</param>
-            <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
-        </member>
         <member name="M:TypeGen.Core.Business.ITypeService.IsTsClass(System.Type)">
             <summary>
             Determines whether the type represents a TypeScript class
@@ -345,12 +330,6 @@
             <summary>
             Contains logic for retrieving information about types, relevant to generating TypeScript files.
             </summary>
-        </member>
-        <member name="M:TypeGen.Core.Business.TypeService.IsTsSimpleType(System.Type)">
-            <inheritdoc />
-        </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsSimpleTypeName(System.Type)">
-            <inheritdoc />
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.IsTsClass(System.Type)">
             <inheritdoc />
@@ -966,6 +945,11 @@
             Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.GenerateEmptyValues">
+            <summary>
+            Specifies which TypeScript types to generate empty values for
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.IGenerator">
             <summary>
             Interface for a TypeScript generator class
@@ -1282,6 +1266,11 @@
             Identifies a TypeScript property that can be set to undefined (used only with enabled strict null checking mode)
             </summary>
         </member>
+        <member name="T:TypeGen.Core.Utils.EmptyValue">
+            <summary>
+            Determines empty values for types
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.Utils.FileSystemUtils">
             <summary>
             File system-related utility class
@@ -1314,6 +1303,21 @@
             </summary>
             <param name="tabLength">The number of spaces per tab.</param>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Utils.TypeUtils.IsTsSimpleType(System.Type)">
+            <summary>
+            Determines if a type has a TypeScript simple type representation
+            </summary>
+            <param name="type"></param>
+            <returns>True if a corresponding TypeScript simple type exists; false otherwise.</returns>
+        </member>
+        <member name="M:TypeGen.Core.Utils.TypeUtils.GetTsSimpleTypeName(System.Type)">
+            <summary>
+            Gets TypeScript type name for a simple type.
+            Simple type must be one of: object, bool, string, int, long, float, double, decimal.
+            </summary>
+            <param name="type">one of: object, bool, string, int, long, float, double, decimal</param>
+            <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
         </member>
         <member name="M:TypeGen.Core.Validation.Requires.NotNull(System.Object,System.String)">
             <summary>

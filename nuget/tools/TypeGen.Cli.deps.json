@@ -545,28 +545,28 @@
     "Microsoft.Win32.Registry/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-q+eLtROUAQ3OxYA5mpQrgyFgzLQxIyrfT2eLpYX5IEPlHmIio2nh4F5bgOaQoGOV865kFKZZso9Oq9RlazvXtg==",
+      "sha512": "sha512-mYUxH/YY9PwvuWY93/qsovFHAh+Lu2CNxNHWxB/x0dnpaEy6oIy/9d7R2J6dFaLZ7jhE7emLjn7A8kSzsP1A+Q==",
       "path": "microsoft.win32.registry/4.0.0",
       "hashPath": "microsoft.win32.registry.4.0.0.nupkg.sha512"
     },
     "NuGet.Common/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-FkS5SWrcJOPRSogvLdMXKDcaBKAlcUXIOWAPhnRMBCvbveSHXoA+8DoHZO6LMl1K4uShoy9hD+eJuG4M61SXPw==",
+      "sha512": "sha512-LknFiPzBH+WTsWjKHzjLs2Zn7EQClq2Vc5Zyqs3ydFFvs8AAea4ragReAOY82+bqpDK+EGEZgATyg/3dfMrsrQ==",
       "path": "nuget.common/4.3.0",
       "hashPath": "nuget.common.4.3.0.nupkg.sha512"
     },
     "NuGet.Configuration/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-b3AfHRFWd61sbYS611GZFLcYpBuCoAH1p/u5KH4gJIGzFlLlkmvPOIUgyaNyLLtAo4X+wdCk0Y9v9+3Qmgi3KA==",
+      "sha512": "sha512-DyBJaZjVrgae3miH4pL02U6EMj4OlGtJUyvxukBbKe0Y7UVo982vCgJXiBmvQLbzJ177PCdb+iKAZqrriD6InA==",
       "path": "nuget.configuration/4.3.0",
       "hashPath": "nuget.configuration.4.3.0.nupkg.sha512"
     },
     "NuGet.Frameworks/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xxe0Nz0/Ye65m3sIhCLzLjYRHheZIQQm7/LYZ+eTJyoSuCPSHiwEXlUjjyJkGIcDYhCcklTc6DXIa5+x1tBPtA==",
+      "sha512": "sha512-52h9yEBefCYRYHaLp+KjO/bcg3qHsm6xvXXolFbcfHAvvNgvZ6vdL7Xuh0HoZF/7OfGfeG4aKGaywbP9QGb0Bw==",
       "path": "nuget.frameworks/4.3.0",
       "hashPath": "nuget.frameworks.4.3.0.nupkg.sha512"
     },
@@ -608,7 +608,7 @@
     "System.Diagnostics.Process/4.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mpVZ5bnlSs3tTeJ6jYyDJEIa6tavhAd88lxq1zbYhkkCu0Pno2+gHXcvZcoygq2d8JxW3gojXqNJMTAshduqZA==",
+      "sha512": "sha512-4dlFhzwmI3hl32P+8c9hnytYtV7Xldhsokm5i7Fvv5PmTS68TQCfsuJrREIyF9N1B8zlsSomp7AVrXLe45kKFQ==",
       "path": "system.diagnostics.process/4.1.0",
       "hashPath": "system.diagnostics.process.4.1.0.nupkg.sha512"
     },
@@ -727,7 +727,7 @@
     "System.Reflection.TypeExtensions/4.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jdK7She37kK5gtXbznOVwcfbtCb2vIs8UfMsYd2OFiGLmj+3oXrA3bgUQPzbe3boNJApkA7oLb42nCHQ0g813A==",
+      "sha512": "sha512-uMN7DMjm6e8LRqaTUW4nlaLwJvqYbtryac/0J0bJJEKRDM+s6+cNpZLi+MhPq5gGJ2m4UamzUL1q3l8U6Vz1JA==",
       "path": "system.reflection.typeextensions/4.5.0",
       "hashPath": "system.reflection.typeextensions.4.5.0.nupkg.sha512"
     },
@@ -797,7 +797,7 @@
     "System.Security.Cryptography.ProtectedData/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-glbkgV1ridcd6No8gYKU93QeXqJHaQvIve/jI0QUOxiD69JpG5pLVXSneMjuhX5SfjdILeOAuFh9PnCkTZ/aaA==",
+      "sha512": "sha512-tCm6YIExUBE5ksyJXOPgrMG5SZp87s3igXBvjfwMUSLBk9KEi1sM1DfUfdlTY1vKX1DGoVeQbHkXjtBCJzycWA==",
       "path": "system.security.cryptography.protecteddata/4.0.0",
       "hashPath": "system.security.cryptography.protecteddata.4.0.0.nupkg.sha512"
     },
@@ -846,14 +846,14 @@
     "System.Threading.Thread/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-gIdJqDXlOr5W9zeqFErLw3dsOsiShSCYtF9SEHitACycmvNvY8odf9kiKvp6V7aibc8C4HzzNBkWXjyfn7plbQ==",
+      "sha512": "sha512-Tlo/QJ5w4UhgO7Abxz3k9LL/nfQ9/2ioc88cQIMOjNhzK1QGJvvH+A6w5Sx+u99D6lgR+1Nj1YZ9/lknR963kQ==",
       "path": "system.threading.thread/4.0.0",
       "hashPath": "system.threading.thread.4.0.0.nupkg.sha512"
     },
     "System.Threading.ThreadPool/4.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-IMXgB5Vf/5Qw1kpoVgJMOvUO1l32aC+qC3OaIZjWJOjvcxuxNWOK2ZTWWYXfij22NHxT2j1yWX5vlAeQWld9vA==",
+      "sha512": "sha512-pA0DnoJ59NlilSdLLwPLKECkTaVF4lbPSM70UqdJQgzJ0r3UHthhlN1T4TmrN6uiXDwPcc2+rI4+5FGtMCdj3g==",
       "path": "system.threading.threadpool/4.0.10",
       "hashPath": "system.threading.threadpool.4.0.10.nupkg.sha512"
     },

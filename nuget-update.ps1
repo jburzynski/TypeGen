@@ -19,9 +19,9 @@ copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.dll nuget\
 copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.xml nuget\lib\netstandard2.0
 
 nuget pack nuget\TypeGen.nuspec
-move TypeGen.1.6.7.nupkg nuget -force
+move TypeGen.2.0.0.nupkg nuget -force
 
 if (Test-Path "local-nuget-path.txt") {
   $localNuGetPath = Get-Content "local-nuget-path.txt"
-  copy nuget\TypeGen.1.6.7.nupkg $localNuGetPath
+  copy nuget\TypeGen.2.0.0.nupkg $localNuGetPath
 }
