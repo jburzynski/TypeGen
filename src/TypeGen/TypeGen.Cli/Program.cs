@@ -42,22 +42,25 @@ namespace TypeGen.Cli
         {
             try
             {
-                if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpParam(args))
+                if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpOption(args) || _consoleArgsReader.ContainsAnyCommand(args) == false)
                 {
                     ShowHelp();
                     return;
                 }
 
-                if (_consoleArgsReader.ContainsGetCwdParam(args))
+                if (_consoleArgsReader.ContainsGetCwdCommand(args))
                 {
                     string cwd = _fileSystem.GetCurrentDirectory();
                     _logger.Log($"Current working directory is: {cwd}");
                     return;
                 }
 
-                bool verbose = _consoleArgsReader.ContainsVerboseParam(args);
-                string[] projectFolders = _consoleArgsReader.GetProjectFolders(args).ToArray();
+                bool verbose = _consoleArgsReader.ContainsVerboseOption(args);
                 string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
+
+                string[] projectFolders = _consoleArgsReader.ContainsProjectFolderOption(args) ?
+                    _consoleArgsReader.GetProjectFolders(args).ToArray() :
+                    new [] { "." };
 
                 for (var i = 0; i < projectFolders.Length; i++)
                 {
@@ -160,8 +163,21 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            _logger.Log($"TypeGen v{AppConfig.Version}",
-                "Usage: TypeGen ProjectFolder1[|ProjectFolder2|(...)] [-Config-Path \"path1[|path2|(...)]\"] [Get-Cwd] [-h | -Help] [-v | -Verbose]",
+            _logger.Log($"TypeGen CLI v{AppConfig.CliVersion}",
+                $"Running TypeGen v{AppConfig.CoreVersion}",
+                "",
+                "Usage: [dotnet] typegen [options] [command]",
+                "",
+                "Options:",
+                "-h|--help               Show help information",
+                "-v|--verbose            Show verbose output",
+                "-p|--project-folder     Set project folder path(s)",
+                "-c|--config-path        Set config path(s) to use",
+                "",
+                "Commands:",
+                "generate     Generate TypeScript files",
+                "getcwd       Get current working directory",
+                "",
                 "For more information please visit project's website: http://jburzynski.net/TypeGen");
         }
     }

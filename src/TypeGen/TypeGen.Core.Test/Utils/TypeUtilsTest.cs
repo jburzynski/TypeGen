@@ -65,6 +65,19 @@ namespace TypeGen.Core.Test.Utils
             Assert.Equal(expectedResult, actualResult);
         }
 
+        [Theory]
+        [InlineData("string", "string")]
+        [InlineData("number?", "number")]
+        [InlineData("Object[][]", "Object[][]")]
+        [InlineData("boolean | undefined", "boolean")]
+        [InlineData("boolean | null | undefined", "boolean")]
+        [InlineData("boolean | string", "boolean")]
+        public void StripOptionalAndTypeUnion_TsTypeNameGiven_StrippedTsTypeNameReturned(string tsTypeName, string expectedResult)
+        {
+            string actualResult = TypeUtils.StripOptionalAndTypeUnion(tsTypeName);
+            Assert.Equal(expectedResult, actualResult);
+        }
+
         private class MyClass
         {
         }

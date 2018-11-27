@@ -8,6 +8,7 @@ namespace TypeGen.Cli
 {
     internal class AppConfig
     {
-        public static string Version => "2.0.0";
+        public static string CliVersion => "2.0.0";
+        public static string CoreVersion => "2.0.0";
     }
 }
