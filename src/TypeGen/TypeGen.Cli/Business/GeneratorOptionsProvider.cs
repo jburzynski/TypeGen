@@ -52,36 +52,22 @@ namespace TypeGen.Cli.Business
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose),
                 StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
-                GenerateEmptyValues = GetGenerateEmptyValues(config.GenerateEmptyValues)
+                CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
+                GenerateEmptyValues = GetGenerateEmptyValues(config.GenerateEmptyValues),
+                CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
             };
         }
 
         private IEnumerable<string> GetGenerateEmptyValues(string[] configGenerateEmptyValues)
         {
+            if (configGenerateEmptyValues == null) return GeneratorOptions.DefaultGenerateEmptyValues;
+
+            var result = new List<string>();
             foreach (string typeString in configGenerateEmptyValues)
             {
-//                if (typeString.Contains("."))
-//                {
-//                    Type type = null;
-//                    
-//                    try
-//                    {
-//                        type = Type.GetType(typeString);
-//                    }
-//                    catch (TypeLoadException e)
-//                    {
-//                        _logger.Log($"Could not load type specified in 'generateEmptyValues' CLI option: '{typeString}'");
-//                        _logger.Log("Details:");
-//                        _logger.Log(e.Message);
-//                    }
-//
-//                    if (type != null) yield return type;
-//                }
-//                else
-//                {
                 if (typeString.In("Object", "boolean", "string", "number", "Date"))
                 {
-                    yield return typeString;
+                    result.Add(typeString);
                 }
                 else
                 {
@@ -89,7 +75,7 @@ namespace TypeGen.Cli.Business
                 }
             }
 
-//            }
+            return result;
         }
 
         private TypeNameConverterCollection GetTypeNameConvertersFromConfig(string[] typeNameConverters, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)

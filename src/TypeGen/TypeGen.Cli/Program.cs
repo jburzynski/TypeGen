@@ -122,7 +122,6 @@ namespace TypeGen.Cli
 
             GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder, verbose);
             generatorOptions.BaseOutputDirectory = Path.Combine(projectFolder, config.OutputPath);
-            generatorOptions.CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile;
             var generator = new Generator { Options = generatorOptions };
 
             // generate

@@ -32,7 +32,11 @@ namespace TypeGen.Cli.Business
         {
             Requires.NotNullOrEmpty(jsonString, nameof(jsonString));
             
-            var serializer = new DataContractJsonSerializer(typeof(TObj));
+            var serializer = new DataContractJsonSerializer(typeof(TObj),
+                new DataContractJsonSerializerSettings
+            {
+                UseSimpleDictionaryFormat = true
+            });
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
 
             return (TObj)serializer.ReadObject(stream);

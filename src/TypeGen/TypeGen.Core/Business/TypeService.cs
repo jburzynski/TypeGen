@@ -17,6 +17,58 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeService : ITypeService
     {
+        public GeneratorOptions GeneratorOptions { get; set; }
+        
+        /// <inheritdoc />
+        public bool IsTsSimpleType(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+
+            return GetTsSimpleTypeName(type) != null;
+        }
+
+        /// <inheritdoc />
+        public string GetTsSimpleTypeName(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            if (string.IsNullOrEmpty(type.FullName)) return null;
+
+            if (GeneratorOptions.CustomTypeMappings != null && GeneratorOptions.CustomTypeMappings.Any() && GeneratorOptions.CustomTypeMappings.ContainsKey(type.FullName))
+            {
+                return GeneratorOptions.CustomTypeMappings[type.FullName];
+            }
+
+            switch (type.FullName)
+            {
+                case "System.Object":
+                    return "Object";
+                case "System.Boolean":
+                    return "boolean";
+                case "System.Char":
+                case "System.String":
+                case "System.Guid":
+                    return "string";
+                case "System.SByte":
+                case "System.Byte":
+                case "System.Int16":
+                case "System.UInt16":
+                case "System.Int32":
+                case "System.UInt32":
+                case "System.Int64":
+                case "System.UInt64":
+                case "System.Single":
+                case "System.Double":
+                case "System.Decimal":
+                    return "number";
+                case "System.DateTime":
+                case "System.DateTimeOffset":
+                case "System.TimeSpan":
+                    return "Date";
+                default:
+                    return null;
+            }
+        }
+        
         /// <inheritdoc />
         public bool IsTsClass(Type type)
         {
@@ -112,9 +164,9 @@ namespace TypeGen.Core.Business
             type = StripNullable(type);
 
             // handle simple types
-            if (TypeUtils.IsTsSimpleType(type))
+            if (IsTsSimpleType(type))
             {
-                return TypeUtils.GetTsSimpleTypeName(type);
+                return GetTsSimpleTypeName(type);
             }
 
             // handle collection types

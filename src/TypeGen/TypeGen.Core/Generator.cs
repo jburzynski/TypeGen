@@ -45,6 +45,7 @@ namespace TypeGen.Core
 
                 if (_templateService != null)
                 {
+                    _typeService.GeneratorOptions = value;
                     _templateService.GeneratorOptions = value;
                 }
             }
@@ -57,7 +58,7 @@ namespace TypeGen.Core
 
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _typeService = new TypeService();
+            _typeService = new TypeService() { GeneratorOptions = Options };
             _typeDependencyService = new TypeDependencyService(_typeService);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
@@ -327,7 +328,7 @@ namespace TypeGen.Core
             if (Options.GenerateEmptyValues.Any())
             {
                 string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-                memberTsTypeName = TypeUtils.StripOptionalAndTypeUnion(memberTsTypeName);
+                memberTsTypeName = memberTsTypeName.StripOptionalAndTypeUnion();
                 
                 if (Options.GenerateEmptyValues.Contains(memberTsTypeName) && EmptyValue.ExistsFor(memberTsTypeName))
                 {

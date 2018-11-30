@@ -112,7 +112,7 @@ namespace TypeGen.Core.Business
 
         private IEnumerable<TypeDependencyInfo> GetFlatTypeDependencies(Type flatType, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
         {
-            if (TypeUtils.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
+            if (_typeService.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
             
             if (flatType.GetTypeInfo().IsGenericType)
             {
@@ -140,7 +140,7 @@ namespace TypeGen.Core.Business
             {
                 Type argumentType = _typeService.StripNullable(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
-                if (TypeUtils.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
+                if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
                 result = result.Concat(flatArgumentType.GetTypeInfo().IsGenericType
                     ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)
