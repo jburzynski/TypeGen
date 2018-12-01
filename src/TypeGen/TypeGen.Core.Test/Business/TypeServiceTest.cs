@@ -14,7 +14,7 @@ namespace TypeGen.Core.Test.Business
 {
     public class TypeServiceTest
     {
-        private readonly ITypeService _typeService = new TypeService();
+        private readonly ITypeService _typeService = new TypeService { GeneratorOptions = new GeneratorOptions() };
 
         public class MyClass {}
         public class GenericClass1<T> {}
