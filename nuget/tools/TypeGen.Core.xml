@@ -973,9 +973,9 @@
             Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
             </summary>
         </member>
-        <member name="P:TypeGen.Core.GeneratorOptions.GenerateEmptyValues">
+        <member name="P:TypeGen.Core.GeneratorOptions.DefaultValuesForTypes">
             <summary>
-            Specifies which TypeScript types to generate empty values for
+            Specifies default values to generate for given TypeScript types
             </summary>
         </member>
         <member name="P:TypeGen.Core.GeneratorOptions.CustomTypeMappings">
@@ -1298,11 +1298,6 @@
         <member name="T:TypeGen.Core.TypeAnnotations.TsUndefinedAttribute">
             <summary>
             Identifies a TypeScript property that can be set to undefined (used only with enabled strict null checking mode)
-            </summary>
-        </member>
-        <member name="T:TypeGen.Core.Utils.EmptyValue">
-            <summary>
-            Determines empty values for types
             </summary>
         </member>
         <member name="T:TypeGen.Core.Utils.FileSystemUtils">
