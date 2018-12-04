@@ -23,7 +23,7 @@ namespace TypeGen.Core
         public static bool DefaultCreateIndexFile => false;
         public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
-        public static List<string> DefaultGenerateEmptyValues => new List<string>();
+        public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
 
         public GeneratorOptions()
@@ -37,7 +37,7 @@ namespace TypeGen.Core
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
-            GenerateEmptyValues = DefaultGenerateEmptyValues;
+            DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
         }
 
@@ -103,9 +103,9 @@ namespace TypeGen.Core
         public StrictNullFlags CsNullableTranslation { get; set; }
 
         /// <summary>
-        /// Specifies which TypeScript types to generate empty values for
+        /// Specifies default values to generate for given TypeScript types
         /// </summary>
-        public IEnumerable<string> GenerateEmptyValues { get; set; }
+        public IDictionary<string, string> DefaultValuesForTypes { get; set; }
 
         /// <summary>
         /// Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").

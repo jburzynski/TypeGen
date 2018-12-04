@@ -66,8 +66,8 @@ namespace TypeGen.Cli.Models
         [DataMember(Name = "csNullableTranslation")]
         public string CsNullableTranslation { get; set; }
         
-        [DataMember(Name = "generateEmptyValues")]
-        public string[] GenerateEmptyValues { get; set; }
+        [DataMember(Name = "defaultValuesForTypes")]
+        public Dictionary<string, string> DefaultValuesForTypes { get; set; }
         
         [DataMember(Name = "customTypeMappings")]
         public Dictionary<string, string> CustomTypeMappings { get; set; }
@@ -101,7 +101,7 @@ namespace TypeGen.Cli.Models
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (OutputPath == null) OutputPath = "";
-            if (GenerateEmptyValues == null) GenerateEmptyValues = GeneratorOptions.DefaultGenerateEmptyValues.ToArray();
+            if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             return this;
         }

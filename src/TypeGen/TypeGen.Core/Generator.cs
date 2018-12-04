@@ -325,15 +325,13 @@ namespace TypeGen.Core
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
-            if (Options.GenerateEmptyValues.Any())
+            if (Options.DefaultValuesForTypes.Any())
             {
                 string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-                memberTsTypeName = memberTsTypeName.StripOptionalAndTypeUnion();
                 
-                if (Options.GenerateEmptyValues.Contains(memberTsTypeName) && EmptyValue.ExistsFor(memberTsTypeName))
+                if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
-                    string defaultValue = EmptyValue.For(memberTsTypeName, Options.SingleQuotes);
-                    return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValue);
+                    return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
                 }
             }
 
