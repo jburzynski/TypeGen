@@ -15,32 +15,39 @@ if (-not ($oldVersion -match $versionRegex) -or  -not ($newVersion -match $versi
 
 # replace files' contents
 
-$paths = #"nuget-update.ps1",
-         "nuget\TypeGen.nuspec",
-         #"src\TypeGen\TypeGen.Cli\AppConfig.cs",
-         "src\TypeGen\TypeGen.Cli\TypeGen.Cli.csproj",
-         "..\TypeGenDocs\source\conf.py"
-
-foreach ($path in $paths) {
-  if (Test-Path $path) {
-    (Get-Content $path).Replace($oldVersion, $newVersion) | Set-Content $path
-  }
+$nuspecPath = "nuget\TypeGen.nuspec" 
+if (Test-Path $nuspecPath) {
+  (Get-Content $nuspecPath).Replace("<version>$($oldVersion)</version>", "<version>$($newVersion)</version>") | Set-Content $nuspecPath
 }
 
-if (Test-Path "src\TypeGen\TypeGen.Cli\AppConfig.cs") {
-  (Get-Content "src\TypeGen\TypeGen.Cli\AppConfig.cs".Replace("CoreVersion => $($oldVersion)", "CoreVersion => $($newVersion)") | Set-Content "src\TypeGen\TypeGen.Cli\AppConfig.cs"
+$dotNetCliNuspecPath = "nuget-dotnetcli\TypeGen.DotNetCli.nuspec"
+if (Test-Path $dotNetCliNuspecPath) {
+  (Get-Content $dotNetCliNuspecPath).Replace("<version>$($oldVersion)</version>", "<version>$($newVersion)</version>").Replace("id=""TypeGen"" version=""$($oldVersion)""", "id=""TypeGen"" version=""$($newVersion)""") | Set-Content $dotNetCliNuspecPath
 }
 
-if (Test-Path "nuget-update.ps1") {
-  (Get-Content "nuget-update.ps1".Replace("TypeGen.$($oldVersion)", "TypeGen.$($newVersion)") | Set-Content "nuget-update.ps1"
+$docsConfPath = "..\TypeGenDocs\source\conf.py"
+if (Test-Path $docsConfPath) {
+  (Get-Content $docsConfPath).Replace("version = u'$($oldVersion)'", "version = u'$($newVersion)'") | Set-Content $docsConfPath
 }
 
-if (Test-Path "nuget-dotnetcli\TypeGen.DotNetCli.nuspec") {
-  (Get-Content "nuget-dotnetcli\TypeGen.DotNetCli.nuspec".Replace("id=""TypeGen"" version=""$($oldVersion)""", "id=""TypeGen"" version=""$($newVersion)""") | Set-Content "nuget-dotnetcli\TypeGen.DotNetCli.nuspec"
+$appConfigPath = "src\TypeGen\TypeGen.Cli\AppConfig.cs"
+if (Test-Path $appConfigPath) {
+  (Get-Content $appConfigPath).Replace("Version => ""$($oldVersion)""", "Version => ""$($newVersion)""") | Set-Content $appConfigPath
+}
+
+$nugetUpdatePath = "nuget-update.ps1"
+if (Test-Path $nugetUpdatePath) {
+  (Get-Content $nugetUpdatePath).Replace("TypeGen.$($oldVersion)", "TypeGen.$($newVersion)").Replace("TypeGen.DotNetCli.$($oldVersion)", "TypeGen.DotNetCli.$($newVersion)") | Set-Content $nugetUpdatePath
 }
 
 # remove old NuGet package
 
-if (Test-Path "nuget\TypeGen.$($oldVersion).nupkg") {
-  rm "nuget\TypeGen.$($oldVersion).nupkg"
+$oldNupkgPath = "nuget\TypeGen.$($oldVersion).nupkg"
+if (Test-Path $oldNupkgPath) {
+  rm $oldNupkgPath
+}
+
+$oldDotNetCliNupkgPath = "nuget-dotnetcli\TypeGen.DotNetCli.$($oldVersion).nupkg"
+if (Test-Path $oldDotNetCliNupkgPath) {
+  rm $oldDotNetCliNupkgPath
 }
