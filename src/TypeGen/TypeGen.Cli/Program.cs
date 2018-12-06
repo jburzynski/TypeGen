@@ -162,8 +162,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            _logger.Log($"TypeGen CLI v{AppConfig.CliVersion}",
-                $"Running TypeGen v{AppConfig.CoreVersion}",
+            _logger.Log($"TypeGen v{AppConfig.Version}",
                 "",
                 "Usage: [dotnet] typegen [options] [command]",
                 "",
