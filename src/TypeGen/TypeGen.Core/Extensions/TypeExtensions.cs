@@ -98,5 +98,12 @@ namespace TypeGen.Core.Extensions
             return type.GetInterfaces()
                 .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
+        
+        /// <summary>
+        /// Strips the TypeScript type name of the 'optional' character ('?') and type union characters ('|')
+        /// </summary>
+        /// <param name="tsTypeName"></param>
+        /// <returns></returns>
+        public static string StripOptionalAndTypeUnion(this string tsTypeName) => tsTypeName.Split('?', '|')[0].Trim();
     }
 }

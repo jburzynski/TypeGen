@@ -42,7 +42,7 @@ namespace TypeGen.Core.Test.Utils
             fileSystem.GetDirectoryFiles(Arg.Any<string>()).Returns(files);
 
             //act, assert
-            string filePath = FileSystemUtils.GetProjectFilePath(fileSystem, projectFolder);
+            string filePath = FileSystemUtils.GetProjectFilePath(projectFolder, fileSystem);
             Assert.Equal(expectedResult, filePath);
         }
 

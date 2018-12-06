@@ -23,6 +23,8 @@ namespace TypeGen.Core
         public static bool DefaultCreateIndexFile => false;
         public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
+        public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
+        public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
 
         public GeneratorOptions()
         {
@@ -35,6 +37,8 @@ namespace TypeGen.Core
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
+            DefaultValuesForTypes = DefaultDefaultValuesForTypes;
+            CustomTypeMappings = DefaultCustomTypeMappings;
         }
 
         /// <summary>
@@ -97,5 +101,16 @@ namespace TypeGen.Core
         /// Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
         /// </summary>
         public StrictNullFlags CsNullableTranslation { get; set; }
+
+        /// <summary>
+        /// Specifies default values to generate for given TypeScript types
+        /// </summary>
+        public IDictionary<string, string> DefaultValuesForTypes { get; set; }
+
+        /// <summary>
+        /// Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").
+        /// Specified C# types will be always translated to the corresponding TypeScript types.
+        /// </summary>
+        public IDictionary<string, string> CustomTypeMappings { get; set; }
     }
 }

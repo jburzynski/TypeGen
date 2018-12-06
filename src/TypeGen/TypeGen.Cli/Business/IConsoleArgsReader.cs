@@ -4,10 +4,13 @@ namespace TypeGen.Cli.Business
 {
     internal interface IConsoleArgsReader
     {
-        bool ContainsHelpParam(string[] args);
-        bool ContainsGetCwdParam(string[] args);
-        bool ContainsVerboseParam(string[] args);
-        IEnumerable<string> GetConfigPaths(string[] args);
+        bool ContainsGetCwdCommand(string[] args);
+        bool ContainsGenerateCommand(string[] args);
+        bool ContainsAnyCommand(string[] args);
+        bool ContainsHelpOption(string[] args);
+        bool ContainsProjectFolderOption(string[] args);
+        bool ContainsVerboseOption(string[] args);
         IEnumerable<string> GetProjectFolders(string[] args);
+        IEnumerable<string> GetConfigPaths(string[] args);
     }
 }

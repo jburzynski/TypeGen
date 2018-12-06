@@ -139,5 +139,18 @@ namespace TypeGen.Core.Test.Extensions
             Type actualResult = type.GetInterface(interfaceName);
             Assert.Equal(expectedResult, actualResult);
         }
+        
+        [Theory]
+        [InlineData("string", "string")]
+        [InlineData("number?", "number")]
+        [InlineData("Object[][]", "Object[][]")]
+        [InlineData("boolean | undefined", "boolean")]
+        [InlineData("boolean | null | undefined", "boolean")]
+        [InlineData("boolean | string", "boolean")]
+        public void StripOptionalAndTypeUnion_TsTypeNameGiven_StrippedTsTypeNameReturned(string tsTypeName, string expectedResult)
+        {
+            string actualResult = tsTypeName.StripOptionalAndTypeUnion();
+            Assert.Equal(expectedResult, actualResult);
+        }
     }
 }

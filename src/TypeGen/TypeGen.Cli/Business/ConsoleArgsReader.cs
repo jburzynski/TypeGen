@@ -4,56 +4,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Core.Extensions;
-using TypeGen.Core.Validation;
 
 namespace TypeGen.Cli.Business
 {
     internal class ConsoleArgsReader : IConsoleArgsReader
     {
+        private const string GetCwdCommand = "GETCWD";
+        private const string GenerateCommand = "GENERATE";
+
         /// <summary>
         /// Used to separate two or more paths; not a directory separator
         /// </summary>
         private const string PathSeparator = "|";
 
-        public bool ContainsHelpParam(string[] args)
-        {
-            Requires.NotNull(args, nameof(args));
-            return args.Any(arg => arg.ToUpperInvariant() == "-H" || arg.ToUpperInvariant() == "-HELP");
-        }
+        public bool ContainsGetCwdCommand(string[] args) => ContainsCommand(args, GetCwdCommand);
+        public bool ContainsGenerateCommand(string[] args) => ContainsCommand(args, GenerateCommand);
+        public bool ContainsAnyCommand(string[] args) => ContainsGenerateCommand(args) || ContainsGetCwdCommand(args);
+        private bool ContainsCommand(string[] args, string command) => args.Any(arg => string.Equals(arg, command, StringComparison.InvariantCultureIgnoreCase));
 
-        public bool ContainsGetCwdParam(string[] args)
-        {
-            Requires.NotNull(args, nameof(args));
-            return args.Any(arg => arg.ToUpperInvariant() == "GET-CWD");
-        }
+        public bool ContainsHelpOption(string[] args) => ContainsOption(args, "-h", "--help");
+        public bool ContainsProjectFolderOption(string[] args) => ContainsOption(args, "-p", "--project-folder");
+        public bool ContainsVerboseOption(string[] args) => ContainsOption(args, "-v", "--verbose");
+        private bool ContainsOption(string[] args, string optionShortName, string optionFullName) => args.Any(arg => string.Equals(arg, optionShortName, StringComparison.InvariantCultureIgnoreCase) || string.Equals(arg, optionFullName, StringComparison.InvariantCultureIgnoreCase));
 
-        public bool ContainsVerboseParam(string[] args)
-        {
-            Requires.NotNull(args, nameof(args));
-            return args.Any(arg => arg.ToUpperInvariant() == "-V" || arg.ToUpperInvariant() == "-VERBOSE");
-        }
+        public IEnumerable<string> GetProjectFolders(string[] args) => GetPathsParam(args, "-p", "--project-folder");
+        public IEnumerable<string> GetConfigPaths(string[] args) => GetPathsParam(args, "-c", "--config-path");
 
-        public IEnumerable<string> GetConfigPaths(string[] args)
+        private IEnumerable<string> GetPathsParam(string[] args, string paramShortName, string paramFullName)
         {
-            Requires.NotNull(args, nameof(args));
-            
-            int index = Array.FindIndex(args, a => a.Equals("-Config-Path", StringComparison.InvariantCultureIgnoreCase));
-            if (index < 0) return Enumerable.Empty<string>();
+            int index = -1;
 
-            if (args.Length < index + 2) // index of the next element + 1
+            for (var i = 0; i < args.Length; i++)
             {
-                throw new CliException("-Config-Path parameter present, but no path specified");
+                if (args[i].Equals(paramShortName, StringComparison.InvariantCultureIgnoreCase) ||
+                    args[i].Equals(paramFullName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    index = i;
+                    break;
+                }
             }
 
-            return args[index + 1].Split(PathSeparator);
-        }
+            if (index < 0) return Enumerable.Empty<string>();
 
-        public IEnumerable<string> GetProjectFolders(string[] args)
-        {
-            Requires.NotNull(args, nameof(args));
-            
-            if (args.IsNullOrEmpty()) return Enumerable.Empty<string>();
-            return args[0].Split(PathSeparator);
+            if (args.Length < index + 2) throw new CliException($"{paramShortName}|{paramFullName} parameter present, but no path specified");
+            return args[index + 1].Split(PathSeparator);
         }
     }
 }

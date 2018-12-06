@@ -77,9 +77,9 @@
         <member name="M:TypeGen.Core.Business.ITypeService.GetTsSimpleTypeName(System.Type)">
             <summary>
             Gets TypeScript type name for a simple type.
-            Simple type must be one of: object, bool, string, int, long, float, double, decimal.
+            Simple type must be one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings.
             </summary>
-            <param name="type">one of: object, bool, string, int, long, float, double, decimal</param>
+            <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
             <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
         </member>
         <member name="M:TypeGen.Core.Business.ITypeService.IsTsClass(System.Type)">
@@ -683,6 +683,13 @@
             <param name="interfaceName"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.StripOptionalAndTypeUnion(System.String)">
+            <summary>
+            Strips the TypeScript type name of the 'optional' character ('?') and type union characters ('|')
+            </summary>
+            <param name="tsTypeName"></param>
+            <returns></returns>
+        </member>
         <member name="T:TypeGen.Core.GenerationContext">
             <summary>
             File generation context (used per Generator.Generate() invocation)
@@ -964,6 +971,17 @@
         <member name="P:TypeGen.Core.GeneratorOptions.CsNullableTranslation">
             <summary>
             Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.DefaultValuesForTypes">
+            <summary>
+            Specifies default values to generate for given TypeScript types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.CustomTypeMappings">
+            <summary>
+            Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").
+            Specified C# types will be always translated to the corresponding TypeScript types.
             </summary>
         </member>
         <member name="T:TypeGen.Core.IGenerator">

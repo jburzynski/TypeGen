@@ -14,7 +14,7 @@ namespace TypeGen.Core.Test.Business
 {
     public class TypeServiceTest
     {
-        private readonly ITypeService _typeService = new TypeService();
+        private readonly ITypeService _typeService = new TypeService { GeneratorOptions = new GeneratorOptions() };
 
         public class MyClass {}
         public class GenericClass1<T> {}
@@ -30,6 +30,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(bool), true)]
         [InlineData(typeof(char), true)]
         [InlineData(typeof(string), true)]
+        [InlineData(typeof(Guid), true)]
         [InlineData(typeof(sbyte), true)]
         [InlineData(typeof(byte), true)]
         [InlineData(typeof(short), true)]
@@ -42,6 +43,8 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(double), true)]
         [InlineData(typeof(decimal), true)]
         [InlineData(typeof(DateTime), true)]
+        [InlineData(typeof(DateTimeOffset), true)]
+        [InlineData(typeof(TimeSpan), true)]
         [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(int?), false)]
         [InlineData(typeof(DateTime?), false)]
@@ -56,6 +59,7 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(bool), "boolean")]
         [InlineData(typeof(char), "string")]
         [InlineData(typeof(string), "string")]
+        [InlineData(typeof(Guid), "string")]
         [InlineData(typeof(sbyte), "number")]
         [InlineData(typeof(byte), "number")]
         [InlineData(typeof(short), "number")]
@@ -68,6 +72,8 @@ namespace TypeGen.Core.Test.Business
         [InlineData(typeof(double), "number")]
         [InlineData(typeof(decimal), "number")]
         [InlineData(typeof(DateTime), "Date")]
+        [InlineData(typeof(DateTimeOffset), "Date")]
+        [InlineData(typeof(TimeSpan), "Date")]
         [InlineData(typeof(MyClass), null)]
         [InlineData(typeof(int?), null)]
         [InlineData(typeof(DateTime?), null)]
@@ -76,7 +82,7 @@ namespace TypeGen.Core.Test.Business
             string actualResult = _typeService.GetTsSimpleTypeName(type);
             Assert.Equal(expectedResult, actualResult);
         }
-
+        
         [Theory]
         [InlineData(typeof(MyClass), true)]
         [InlineData(typeof(MyEnum), false)]

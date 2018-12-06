@@ -8,6 +8,7 @@ using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
@@ -44,6 +45,7 @@ namespace TypeGen.Core
 
                 if (_templateService != null)
                 {
+                    _typeService.GeneratorOptions = value;
                     _templateService.GeneratorOptions = value;
                 }
             }
@@ -56,7 +58,7 @@ namespace TypeGen.Core
 
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _typeService = new TypeService();
+            _typeService = new TypeService() { GeneratorOptions = Options };
             _typeDependencyService = new TypeDependencyService(_typeService);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
@@ -321,6 +323,16 @@ namespace TypeGen.Core
             if (defaultValueAttribute != null)
             {
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
+            }
+
+            if (Options.DefaultValuesForTypes.Any())
+            {
+                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+                
+                if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
+                {
+                    return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
+                }
             }
 
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
+using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business

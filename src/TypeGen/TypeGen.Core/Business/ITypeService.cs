@@ -7,6 +7,8 @@ namespace TypeGen.Core.Business
 {
     internal interface ITypeService
     {
+        GeneratorOptions GeneratorOptions { get; set; }
+        
         /// <summary>
         /// Determines if a type has a TypeScript simple type representation
         /// </summary>
@@ -16,12 +18,12 @@ namespace TypeGen.Core.Business
 
         /// <summary>
         /// Gets TypeScript type name for a simple type.
-        /// Simple type must be one of: object, bool, string, int, long, float, double, decimal.
+        /// Simple type must be one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings.
         /// </summary>
-        /// <param name="type">one of: object, bool, string, int, long, float, double, decimal</param>
+        /// <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
         /// <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
         string GetTsSimpleTypeName(Type type);
-
+        
         /// <summary>
         /// Determines whether the type represents a TypeScript class
         /// </summary>

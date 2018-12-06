@@ -51,7 +51,10 @@ namespace TypeGen.Cli.Business
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters, assemblies, projectFolder, logVerbose),
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters, assemblies, projectFolder, logVerbose),
                 StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
-                CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags()
+                CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
+                CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
+                DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
+                CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings
             };
         }
 
