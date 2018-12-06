@@ -1,4 +1,0 @@
-1. ./version-update [old-version] [new-version]
-2. build TypeGen.Core -> netstandard1.3, netstandard2.0; TypeGen.Cli -> netcoreapp2.0
-3. publish TypeGen.Cli to bin\Release\netcoreapp2.0\publish\
-4. ./nuget-update

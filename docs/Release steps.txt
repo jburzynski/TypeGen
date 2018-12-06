@@ -1,0 +1,17 @@
+TypeGen:
+	- version update
+	- build-publish
+	- nuget-update
+
+- Docs
+ + content
+ + API reference
+
+- website
+ + changelog
+
+- git merge dev to master
+
+Upload:
+- nuget
+- nuget-dotnetcli
