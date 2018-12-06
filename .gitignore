@@ -251,8 +251,9 @@ paket-files/
 .idea/
 *.sln.iml
 
-# do not ignore TypeGen specific files
+# TypeGen specific files
 !TypeGen.[0-9].[0-9].[0-9].nupkg
+!TypeGen.DotNetCli.[0-9].[0-9].[0-9].nupkg
 /local-chocolatey-path.txt
 /local-nuget-path.txt
 /src/TypeGen/TypeGen.Cli/Properties/launchSettings.json

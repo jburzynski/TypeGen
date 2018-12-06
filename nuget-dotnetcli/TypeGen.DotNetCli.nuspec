@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen.DotNetCli</id>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <licenseUrl>https://github.com/jburzynski/type-gen/blob/master/docs/LICENSE</licenseUrl>
@@ -17,7 +17,7 @@
     </packageTypes>
 	<dependencies>
       <group targetFramework=".NETCoreApp2.1">
-        <dependency id="TypeGen" version="2.0.0" exclude="Build,Analyzers" />
+        <dependency id="TypeGen" version="2.0.1" exclude="Build,Analyzers" />
         <dependency id="Microsoft.NETCore.App" version="2.1.0" exclude="Build,Analyzers" />
         <dependency id="NuGet.Configuration" version="4.3.0" exclude="Build,Analyzers" />
       </group>
