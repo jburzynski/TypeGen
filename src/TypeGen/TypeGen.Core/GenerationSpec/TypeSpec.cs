@@ -4,19 +4,20 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.GenerationSpec
 {
-    internal class ClassSpec
+    internal class TypeSpec
     {
-        public ExportTsClassAttribute ExportAttribute { get; set; }
+        public ExportAttribute ExportAttribute { get; }
         public IList<Attribute> AdditionalAttributes { get; }
-
+        
         public IDictionary<string, IList<Attribute>> MemberAttributes { get; }
-
-        public ClassSpec()
+        
+        public TypeSpec(ExportAttribute exportAttribute)
         {
+            ExportAttribute = exportAttribute;
             MemberAttributes = new Dictionary<string, IList<Attribute>>();
             AdditionalAttributes = new List<Attribute>();
         }
-
+        
         public void AddMember(string memberName)
         {
             MemberAttributes[memberName] = new List<Attribute>();
