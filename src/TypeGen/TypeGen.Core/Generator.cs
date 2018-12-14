@@ -20,6 +20,7 @@ namespace TypeGen.Core
     {
         // dependencies
 
+        private readonly IMetadataReader _metadataReader;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITemplateService _templateService;
@@ -58,14 +59,16 @@ namespace TypeGen.Core
 
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _typeService = new TypeService() { GeneratorOptions = Options };
-            _typeDependencyService = new TypeDependencyService(_typeService);
+            _metadataReader = new MetadataReader();
+            _typeService = new TypeService(_metadataReader) { GeneratorOptions = Options };
+            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReader);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
-                new TsContentParser(_fileSystem));
+                new TsContentParser(_fileSystem),
+                _metadataReader);
         }
 
         /// <summary>
@@ -94,7 +97,7 @@ namespace TypeGen.Core
 
                 ExecuteWithTypeContextLogging(() =>
                 {
-                    foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                    foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes(_metadataReader))
                     {
                         if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
                         files = files.Concat(Generate(type).GeneratedFiles);
@@ -175,9 +178,9 @@ namespace TypeGen.Core
         /// <returns></returns>
         private GenerationResult GenerateType(Type type)
         {
-            var classAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
-            var interfaceAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var enumAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
+            var classAttribute = _metadataReader.GetAttribute<ExportTsClassAttribute>(type);
+            var interfaceAttribute = _metadataReader.GetAttribute<ExportTsInterfaceAttribute>(type);
+            var enumAttribute = _metadataReader.GetAttribute<ExportTsEnumAttribute>(type);
 
             if (classAttribute != null)
             {
@@ -245,14 +248,14 @@ namespace TypeGen.Core
 
             // get text for sections
 
-            var tsCustomBaseAttribute = type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>();
+            var tsCustomBaseAttribute = _metadataReader.GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
-            else if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
+            else if (_metadataReader.GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             }
@@ -315,11 +318,11 @@ namespace TypeGen.Core
         {
             string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
 
-            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
 
-            var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
+            var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
@@ -363,11 +366,11 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
-            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-            bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
+            bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
         }
@@ -436,7 +439,7 @@ namespace TypeGen.Core
 
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute (AND hasn't been generated yet)
                 if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
-                    && typeDependency.HasExportAttribute()
+                    && typeDependency.HasExportAttribute(_metadataReader)
                     && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
@@ -444,14 +447,14 @@ namespace TypeGen.Core
                 }
 
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
+                if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(GenerateType(typeDependency).GeneratedFiles);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
-                if (!typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForType(typeDependency))
+                if (!typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForType(typeDependency))
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)

@@ -15,10 +15,12 @@ namespace TypeGen.Core.Business
     internal class TypeDependencyService : ITypeDependencyService
     {
         private readonly ITypeService _typeService;
+        private readonly IMetadataReader _metadataReader;
 
-        public TypeDependencyService(ITypeService typeService)
+        public TypeDependencyService(ITypeService typeService, IMetadataReader metadataReader)
         {
             _typeService = typeService;
+            _metadataReader = metadataReader;
         }
         
         /// <summary>
@@ -76,7 +78,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() != null) return Enumerable.Empty<TypeDependencyInfo>();
+            if (_metadataReader.GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
 
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return Enumerable.Empty<TypeDependencyInfo>();
@@ -96,14 +98,14 @@ namespace TypeGen.Core.Business
             IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
             {
-                if (memberInfo.GetCustomAttribute<TsTypeAttribute>() != null) continue;
+                if (_metadataReader.GetAttribute<TsTypeAttribute>(memberInfo) != null) continue;
 
                 Type memberType = _typeService.GetMemberType(memberInfo);
                 Type memberFlatType = _typeService.GetFlatType(memberType);
 
                 if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
 
-                var memberAttributes = memberInfo.GetCustomAttributes(typeof(Attribute), false) as Attribute[];
+                IEnumerable<Attribute> memberAttributes = _metadataReader.GetAttributes<Attribute>(memberInfo);
                 result = result.Concat(GetFlatTypeDependencies(memberFlatType, memberAttributes));
             }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TypeGen.Core.Business;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Validation;
 
@@ -15,36 +16,39 @@ namespace TypeGen.Core.Extensions
         /// Checks if a type is marked with an ExportTs... attribute
         /// </summary>
         /// <param name="type"></param>
+        /// <param name="reader"></param>
         /// <returns></returns>
-        public static bool HasExportAttribute(this Type type)
+        public static bool HasExportAttribute(this Type type, IMetadataReader reader)
         {
             Requires.NotNull(type, nameof(type));
             
-            return type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>() != null ||
-                   type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>() != null ||
-                   type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>() != null;
+            return reader.GetAttribute<ExportTsClassAttribute>(type) != null ||
+                   reader.GetAttribute<ExportTsInterfaceAttribute>(type) != null ||
+                   reader.GetAttribute<ExportTsEnumAttribute>(type) != null;
         }
 
         /// <summary>
         /// Gets all types marked with ExportTs... attributes
         /// </summary>
         /// <param name="types"></param>
+        /// <param name="reader"></param>
         /// <returns></returns>
-        public static IEnumerable<Type> GetExportMarkedTypes(this IEnumerable<Type> types)
+        public static IEnumerable<Type> GetExportMarkedTypes(this IEnumerable<Type> types, IMetadataReader reader)
         {
             Requires.NotNull(types, nameof(types));
-            return types.Where(t => t.HasExportAttribute());
+            return types.Where(t => t.HasExportAttribute(reader));
         }
 
         /// <summary>
         /// Removes members marked with TsIgnore attribute
         /// </summary>
         /// <param name="memberInfos"></param>
+        /// <param name="reader"></param>
         /// <returns></returns>
-        public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos) where T : MemberInfo
+        public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos, IMetadataReader reader) where T : MemberInfo
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
-            return memberInfos.Where(i => i.GetCustomAttribute<TsIgnoreAttribute>() == null);
+            return memberInfos.Where(i => reader.GetAttribute<TsIgnoreAttribute>(i) == null);
         }
 
         /// <summary>
@@ -98,12 +102,5 @@ namespace TypeGen.Core.Extensions
             return type.GetInterfaces()
                 .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
-        
-        /// <summary>
-        /// Strips the TypeScript type name of the 'optional' character ('?') and type union characters ('|')
-        /// </summary>
-        /// <param name="tsTypeName"></param>
-        /// <returns></returns>
-        public static string StripOptionalAndTypeUnion(this string tsTypeName) => tsTypeName.Split('?', '|')[0].Trim();
     }
 }

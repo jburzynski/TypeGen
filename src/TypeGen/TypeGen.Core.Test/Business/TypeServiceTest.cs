@@ -14,7 +14,10 @@ namespace TypeGen.Core.Test.Business
 {
     public class TypeServiceTest
     {
-        private readonly ITypeService _typeService = new TypeService { GeneratorOptions = new GeneratorOptions() };
+        /// <summary>
+        /// this needs to be changed to use mocked MetadataReader
+        /// </summary>
+        private readonly ITypeService _typeService = new TypeService(new MetadataReader()) { GeneratorOptions = new GeneratorOptions() };
 
         public class MyClass {}
         public class GenericClass1<T> {}
