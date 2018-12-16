@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Utils;
@@ -52,25 +53,14 @@ namespace TypeGen.Core
             }
         }
         
-        private enum GenerationType { Attribute, GenerationSpec }
-        
         public Generator()
         {
             Options = new GeneratorOptions();
             _generationContext = new GenerationContext();
-        }
-        
-        /// <summary>
-        /// For unit testing (mocking FileSystem)
-        /// </summary>
-        /// <param name="fileSystem"></param>
-        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
-
-        private void InitializeServices(GenerationType generationType, GenerationSpec.GenerationSpec generationSpec = null)
-        {
+            
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _metadataReader = generationType == GenerationType.Attribute ? (IMetadataReader) new AttributeMetadataReader() : new GenerationSpecMetadataReader(generationSpec);
+            _metadataReader = new AttributeMetadataReader();
             _typeService = new TypeService(_metadataReader) { GeneratorOptions = Options };
             _typeDependencyService = new TypeDependencyService(_typeService, _metadataReader);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
@@ -80,6 +70,53 @@ namespace TypeGen.Core
                 _templateService,
                 new TsContentParser(_fileSystem),
                 _metadataReader);
+        }
+        
+        /// <summary>
+        /// For unit testing (mocking FileSystem)
+        /// </summary>
+        /// <param name="fileSystem"></param>
+        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
+
+        private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
+        {
+            _metadataReader = generationType == GenerationType.Attribute ? (IMetadataReader) new AttributeMetadataReader() : new GenerationSpecMetadataReader(generationSpec);
+            ((TypeService)_typeService).SetMetadataReader(_metadataReader);
+            ((TypeDependencyService)_typeDependencyService).SetMetadataReader(_metadataReader);
+            ((TsContentGenerator)_tsContentGenerator).SetMetadataReader(_metadataReader);
+        }
+
+        /// <summary>
+        /// Generates TypeScript files from a GenerationSpec
+        /// </summary>
+        /// <param name="generationSpec"></param>
+        /// <returns></returns>
+        public GenerationResult Generate(GenerationSpec generationSpec)
+        {
+            Requires.NotNull(generationSpec, nameof(generationSpec));
+            
+            if (_generationContext.LastGenerationType != GenerationType.GenerationSpec)
+            {
+                InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
+            }
+            
+            IEnumerable<string> files = Enumerable.Empty<string>();
+
+            files = generationSpec.TypeSpecs
+                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
+
+            if (Options.CreateIndexFile)
+            {
+                files = files.Concat(new[] { GenerateIndexFile(files) });
+            }
+
+            _generationContext.LastGenerationType = GenerationType.GenerationSpec;
+
+            return new GenerationResult
+            {
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = files.Distinct()
+            };
         }
         
         /// <inheritdoc />
@@ -103,8 +140,12 @@ namespace TypeGen.Core
         private GenerationResult Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
         {
             Requires.NotNull(assemblies, nameof(assemblies));
+
+            if (initializeGeneration && _generationContext.LastGenerationType != GenerationType.Attribute)
+            {
+                InitializeGeneration(GenerationType.Attribute);
+            }
             
-            if (initializeGeneration) InitializeServices(GenerationType.Attribute);
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
@@ -128,6 +169,8 @@ namespace TypeGen.Core
                 files = files.Concat(new[] { GenerateIndexFile(files) });
             }
 
+            if (initializeGeneration) _generationContext.LastGenerationType = GenerationType.Attribute;
+
             return new GenerationResult
             {
                 BaseOutputDirectory = Options.BaseOutputDirectory,
@@ -145,7 +188,10 @@ namespace TypeGen.Core
         {
             Requires.NotNull(type, nameof(type));
             
-            if (initializeGeneration) InitializeServices(GenerationType.Attribute);
+            if (initializeGeneration && _generationContext.LastGenerationType != GenerationType.Attribute)
+            {
+                InitializeGeneration(GenerationType.Attribute);
+            }
             
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
@@ -162,6 +208,8 @@ namespace TypeGen.Core
             }
 
             _generationContext.ClearTypeGeneratedTypes();
+
+            if (initializeGeneration) _generationContext.LastGenerationType = GenerationType.Attribute;
 
             return new GenerationResult
             {

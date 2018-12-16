@@ -11,6 +11,11 @@ namespace TypeGen.Core
     internal class GenerationContext
     {
         /// <summary>
+        /// Type of the last file generation
+        /// </summary>
+        public GenerationType LastGenerationType { get; set; }
+        
+        /// <summary>
         /// Types that have already been generated for an assembly in the current call to Generator.Generate()
         /// </summary>
         public IList<Type> AssemblyGeneratedTypes { get; private set; }
@@ -19,6 +24,11 @@ namespace TypeGen.Core
         /// Types that have already been generated for a type in the current call to Generator.Generate()
         /// </summary>
         public IList<Type> TypeGeneratedTypes { get; private set; }
+
+        public GenerationContext()
+        {
+            LastGenerationType = GenerationType.Attribute;
+        }
 
         /// <summary>
         /// Adds the type to the generation context

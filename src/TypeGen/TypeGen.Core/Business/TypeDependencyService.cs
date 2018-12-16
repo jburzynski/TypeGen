@@ -15,11 +15,16 @@ namespace TypeGen.Core.Business
     internal class TypeDependencyService : ITypeDependencyService
     {
         private readonly ITypeService _typeService;
-        private readonly IMetadataReader _metadataReader;
+        private IMetadataReader _metadataReader;
 
         public TypeDependencyService(ITypeService typeService, IMetadataReader metadataReader)
         {
             _typeService = typeService;
+            _metadataReader = metadataReader;
+        }
+        
+        public void SetMetadataReader(IMetadataReader metadataReader)
+        {
             _metadataReader = metadataReader;
         }
         

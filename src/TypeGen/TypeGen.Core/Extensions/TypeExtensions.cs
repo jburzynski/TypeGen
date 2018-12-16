@@ -21,6 +21,7 @@ namespace TypeGen.Core.Extensions
         public static bool HasExportAttribute(this Type type, IMetadataReader reader)
         {
             Requires.NotNull(type, nameof(type));
+            Requires.NotNull(reader, nameof(reader));
             
             return reader.GetAttribute<ExportTsClassAttribute>(type) != null ||
                    reader.GetAttribute<ExportTsInterfaceAttribute>(type) != null ||
@@ -36,6 +37,8 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<Type> GetExportMarkedTypes(this IEnumerable<Type> types, IMetadataReader reader)
         {
             Requires.NotNull(types, nameof(types));
+            Requires.NotNull(reader, nameof(reader));
+            
             return types.Where(t => t.HasExportAttribute(reader));
         }
 
@@ -48,6 +51,8 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<T> WithoutTsIgnore<T>(this IEnumerable<T> memberInfos, IMetadataReader reader) where T : MemberInfo
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
+            Requires.NotNull(reader, nameof(reader));
+            
             return memberInfos.Where(i => reader.GetAttribute<TsIgnoreAttribute>(i) == null);
         }
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace TypeGen.Core.GenerationSpec
+namespace TypeGen.Core.SpecGeneration
 {
     public abstract class TypeSpecBuilder<T>
     {

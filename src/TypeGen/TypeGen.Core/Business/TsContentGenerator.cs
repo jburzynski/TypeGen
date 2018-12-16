@@ -22,7 +22,7 @@ namespace TypeGen.Core.Business
         private readonly ITypeService _typeService;
         private readonly ITemplateService _templateService;
         private readonly ITsContentParser _tsContentParser;
-        private readonly IMetadataReader _metadataReader;
+        private IMetadataReader _metadataReader;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
@@ -38,6 +38,11 @@ namespace TypeGen.Core.Business
             _typeService = typeService;
             _templateService = templateService;
             _tsContentParser = tsContentParser;
+            _metadataReader = metadataReader;
+        }
+        
+        public void SetMetadataReader(IMetadataReader metadataReader)
+        {
             _metadataReader = metadataReader;
         }
 

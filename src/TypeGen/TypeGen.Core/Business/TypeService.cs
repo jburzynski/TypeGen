@@ -19,9 +19,14 @@ namespace TypeGen.Core.Business
     {
         public GeneratorOptions GeneratorOptions { get; set; }
 
-        private readonly IMetadataReader _metadataReader;
+        private IMetadataReader _metadataReader;
 
         public TypeService(IMetadataReader metadataReader)
+        {
+            _metadataReader = metadataReader;
+        }
+
+        public void SetMetadataReader(IMetadataReader metadataReader)
         {
             _metadataReader = metadataReader;
         }

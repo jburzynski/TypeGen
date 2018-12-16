@@ -1,7 +1,7 @@
 using System;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core.GenerationSpec
+namespace TypeGen.Core.SpecGeneration
 {
     public class InterfaceSpecBuilder<T> : ClassOrInterfaceSpecBuilder<T>
     {

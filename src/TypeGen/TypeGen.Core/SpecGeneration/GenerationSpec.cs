@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.Core.GenerationSpec
+namespace TypeGen.Core.SpecGeneration
 {
     public abstract class GenerationSpec
     {
         internal IDictionary<Type, TypeSpec> TypeSpecs { get; }
 
-        private GenerationSpec()
+        protected GenerationSpec()
         {
             TypeSpecs = new Dictionary<Type, TypeSpec>();
         }

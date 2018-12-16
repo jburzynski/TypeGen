@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
     internal class GenerationSpecMetadataReader : IMetadataReader
     {
-        private readonly GenerationSpec.GenerationSpec _spec;
+        private readonly GenerationSpec _spec;
 
-        public GenerationSpecMetadataReader(GenerationSpec.GenerationSpec spec)
+        public GenerationSpecMetadataReader(GenerationSpec spec)
         {
             _spec = spec;
         }

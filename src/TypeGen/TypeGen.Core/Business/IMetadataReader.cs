@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using TypeGen.Core.GenerationSpec;
 
 namespace TypeGen.Core.Business
 {
