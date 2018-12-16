@@ -20,12 +20,12 @@ namespace TypeGen.Core
     {
         // dependencies
 
-        private readonly IMetadataReader _metadataReader;
-        private readonly ITypeService _typeService;
-        private readonly ITypeDependencyService _typeDependencyService;
-        private readonly ITemplateService _templateService;
-        private readonly ITsContentGenerator _tsContentGenerator;
-        private readonly IFileSystem _fileSystem;
+        private IMetadataReader _metadataReader;
+        private ITypeService _typeService;
+        private ITypeDependencyService _typeDependencyService;
+        private ITemplateService _templateService;
+        private ITsContentGenerator _tsContentGenerator;
+        private IFileSystem _fileSystem;
         private GeneratorOptions _options;
 
         // per-generation shared variables
@@ -51,15 +51,26 @@ namespace TypeGen.Core
                 }
             }
         }
-
+        
+        private enum GenerationType { Attribute, GenerationSpec }
+        
         public Generator()
         {
             Options = new GeneratorOptions();
             _generationContext = new GenerationContext();
+        }
+        
+        /// <summary>
+        /// For unit testing (mocking FileSystem)
+        /// </summary>
+        /// <param name="fileSystem"></param>
+        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
 
+        private void InitializeServices(GenerationType generationType, GenerationSpec.GenerationSpec generationSpec = null)
+        {
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _metadataReader = new MetadataReader();
+            _metadataReader = generationType == GenerationType.Attribute ? (IMetadataReader) new AttributeMetadataReader() : new GenerationSpecMetadataReader(generationSpec);
             _typeService = new TypeService(_metadataReader) { GeneratorOptions = Options };
             _typeDependencyService = new TypeDependencyService(_typeService, _metadataReader);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
@@ -70,25 +81,30 @@ namespace TypeGen.Core
                 new TsContentParser(_fileSystem),
                 _metadataReader);
         }
-
-        /// <summary>
-        /// For unit testing (mocking FileSystem)
-        /// </summary>
-        /// <param name="fileSystem"></param>
-        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
-
+        
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
-            Requires.NotNull(assembly, nameof(assembly));
-            return Generate(new[] { assembly });
+            return Generate(assembly, true);
         }
-
+        
+        private GenerationResult Generate(Assembly assembly, bool initializeGeneration)
+        {
+            Requires.NotNull(assembly, nameof(assembly));
+            return Generate(new[] { assembly }, initializeGeneration);
+        }
+        
         /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
+            return Generate(assemblies, true);
+        }
+
+        private GenerationResult Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
+        {
             Requires.NotNull(assemblies, nameof(assemblies));
             
+            if (initializeGeneration) InitializeServices(GenerationType.Attribute);
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
@@ -100,7 +116,7 @@ namespace TypeGen.Core
                     foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes(_metadataReader))
                     {
                         if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
-                        files = files.Concat(Generate(type).GeneratedFiles);
+                        files = files.Concat(Generate(type, false).GeneratedFiles);
                     }
                 });
 
@@ -122,7 +138,14 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
+            return Generate(type, true);
+        }
+
+        private GenerationResult Generate(Type type, bool initializeGeneration)
+        {
             Requires.NotNull(type, nameof(type));
+            
+            if (initializeGeneration) InitializeServices(GenerationType.Attribute);
             
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
@@ -443,7 +466,7 @@ namespace TypeGen.Core
                     && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
+                    generatedFiles = generatedFiles.Concat(Generate(typeDependency, false).GeneratedFiles); // don't initialize generation, because type dependencies are generated after the generation has been initialized
                 }
 
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)

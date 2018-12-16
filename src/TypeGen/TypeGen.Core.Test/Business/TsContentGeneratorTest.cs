@@ -21,7 +21,7 @@ namespace TypeGen.Core.Test.Business
         /// <summary>
         /// this needs to be changed to use mocked MetadataReader
         /// </summary>
-        private readonly IMetadataReader _metadataReader = new MetadataReader();
+        private readonly IMetadataReader _metadataReader = new AttributeMetadataReader();
 
         #region GetImportsText
 

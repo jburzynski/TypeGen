@@ -17,7 +17,7 @@ namespace TypeGen.Core.Test.Business
         /// <summary>
         /// this needs to be changed to use mocked MetadataReader
         /// </summary>
-        private readonly ITypeService _typeService = new TypeService(new MetadataReader()) { GeneratorOptions = new GeneratorOptions() };
+        private readonly ITypeService _typeService = new TypeService(new AttributeMetadataReader()) { GeneratorOptions = new GeneratorOptions() };
 
         public class MyClass {}
         public class GenericClass1<T> {}
