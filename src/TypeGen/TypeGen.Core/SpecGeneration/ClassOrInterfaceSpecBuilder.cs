@@ -2,7 +2,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
-    public abstract class ClassOrInterfaceSpecBuilder<T, TDerived> : TypeSpecBuilder<T> where TDerived : class
+    public abstract class ClassOrInterfaceSpecBuilder<T, TDerived> : TypeSpecBuilder<T, TDerived> where TDerived : ClassOrInterfaceSpecBuilder<T, TDerived>
     {
         internal ClassOrInterfaceSpecBuilder(TypeSpec spec) : base(spec)
         {
