@@ -19,6 +19,8 @@ namespace TypeGen.Core.Business
         public TAttribute GetAttribute<TAttribute>(Type type) where TAttribute : Attribute
         {
             Requires.NotNull(type, nameof(type));
+
+            if (!_spec.TypeSpecs.ContainsKey(type)) return null;
             
             if (_spec.TypeSpecs[type].ExportAttribute is TAttribute attribute) return attribute;
             return _spec.TypeSpecs[type].AdditionalAttributes.FirstOrDefault(a => a is TAttribute) as TAttribute;
@@ -27,6 +29,12 @@ namespace TypeGen.Core.Business
         public TAttribute GetAttribute<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
+
+            if (!_spec.TypeSpecs.ContainsKey(memberInfo.DeclaringType) ||
+                !_spec.TypeSpecs[memberInfo.DeclaringType].MemberAttributes.ContainsKey(memberInfo.Name))
+            {
+                return null;
+            }
             
             return _spec.TypeSpecs[memberInfo.DeclaringType]
                 .MemberAttributes[memberInfo.Name]
@@ -36,6 +44,12 @@ namespace TypeGen.Core.Business
         public IEnumerable<TAttribute> GetAttributes<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
+            
+            if (!_spec.TypeSpecs.ContainsKey(memberInfo.DeclaringType) ||
+                !_spec.TypeSpecs[memberInfo.DeclaringType].MemberAttributes.ContainsKey(memberInfo.Name))
+            {
+                return null;
+            }
             
             return _spec.TypeSpecs[memberInfo.DeclaringType]
                     .MemberAttributes[memberInfo.Name]

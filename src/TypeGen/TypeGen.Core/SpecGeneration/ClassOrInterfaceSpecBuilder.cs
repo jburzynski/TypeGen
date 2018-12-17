@@ -2,76 +2,76 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
-    public abstract class ClassOrInterfaceSpecBuilder<T> : TypeSpecBuilder<T>
+    public abstract class ClassOrInterfaceSpecBuilder<T, TDerived> : TypeSpecBuilder<T> where TDerived : class
     {
         internal ClassOrInterfaceSpecBuilder(TypeSpec spec) : base(spec)
         {
         }
         
-        public ClassOrInterfaceSpecBuilder<T> CustomBase(string @base, string importType = null, string originalTypeName = null)
+        public TDerived CustomBase(string @base = null, string importType = null, string originalTypeName = null)
         {
             AddTypeAttribute(new TsCustomBaseAttribute(@base, importType, originalTypeName));
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> DefaultTypeOutput(string outputDir)
+        public TDerived DefaultTypeOutput(string outputDir)
         {
             AddActiveMemberAttribute(new TsDefaultTypeOutputAttribute(outputDir));
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> DefaultValue(string defaultValue)
+        public TDerived DefaultValue(string defaultValue)
         {
             AddActiveMemberAttribute(new TsDefaultValueAttribute(defaultValue));
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> Ignore()
+        public TDerived Ignore()
         {
             AddActiveMemberAttribute(new TsIgnoreAttribute());
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> IgnoreBase()
+        public TDerived IgnoreBase()
         {
             AddTypeAttribute(new TsIgnoreBaseAttribute());
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> MemberName(string name)
+        public TDerived MemberName(string name)
         {
             AddActiveMemberAttribute(new TsMemberNameAttribute(name));
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> NotNull()
+        public TDerived NotNull()
         {
             AddActiveMemberAttribute(new TsNotNullAttribute());
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> NotUndefined()
+        public TDerived NotUndefined()
         {
             AddActiveMemberAttribute(new TsNotUndefinedAttribute());
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> Null()
+        public TDerived Null()
         {
             AddActiveMemberAttribute(new TsNullAttribute());
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> Type(string typeName, string importPath = null, string originalTypeName = null)
+        public TDerived Type(string typeName, string importPath = null, string originalTypeName = null)
         {
             AddActiveMemberAttribute(new TsTypeAttribute(typeName, importPath, originalTypeName));
-            return this;
+            return this as TDerived;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> Undefined()
+        public TDerived Undefined()
         {
             AddActiveMemberAttribute(new TsUndefinedAttribute());
-            return this;
+            return this as TDerived;
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace TypeGen.Core.SpecGeneration
 {
-    public class ClassSpecBuilder<T> : ClassOrInterfaceSpecBuilder<T>
+    public class ClassSpecBuilder<T> : ClassOrInterfaceSpecBuilder<T, ClassSpecBuilder<T>>
     {
         internal ClassSpecBuilder(TypeSpec spec) : base(spec)
         {

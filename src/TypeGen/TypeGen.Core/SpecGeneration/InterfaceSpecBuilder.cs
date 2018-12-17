@@ -3,7 +3,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
-    public class InterfaceSpecBuilder<T> : ClassOrInterfaceSpecBuilder<T>
+    public class InterfaceSpecBuilder<T> : ClassOrInterfaceSpecBuilder<T, InterfaceSpecBuilder<T>>
     {
         internal InterfaceSpecBuilder(TypeSpec spec) : base(spec)
         {
@@ -20,7 +20,7 @@ namespace TypeGen.Core.SpecGeneration
             return this;
         }
         
-        public ClassOrInterfaceSpecBuilder<T> Optional()
+        public InterfaceSpecBuilder<T> Optional()
         {
             AddActiveMemberAttribute(new TsOptionalAttribute());
             return this;
