@@ -80,10 +80,14 @@ namespace TypeGen.Core
 
         private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
         {
+            if (_generationContext.LastGenerationType == generationType) return;
+            
             _metadataReader = generationType == GenerationType.Attribute ? (IMetadataReader) new AttributeMetadataReader() : new GenerationSpecMetadataReader(generationSpec);
             ((TypeService)_typeService).SetMetadataReader(_metadataReader);
             ((TypeDependencyService)_typeDependencyService).SetMetadataReader(_metadataReader);
             ((TsContentGenerator)_tsContentGenerator).SetMetadataReader(_metadataReader);
+
+            _generationContext.LastGenerationType = generationType;
         }
 
         /// <summary>
@@ -95,22 +99,23 @@ namespace TypeGen.Core
         {
             Requires.NotNull(generationSpec, nameof(generationSpec));
             
-            if (_generationContext.LastGenerationType != GenerationType.GenerationSpec)
-            {
-                InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
-            }
+            InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
             
             IEnumerable<string> files = Enumerable.Empty<string>();
 
-            files = generationSpec.TypeSpecs
-                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
+            _generationContext.InitializeGroupGeneratedTypes();
+            
+            foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
+            {
+                files = files.Concat(Generate(kvp.Key, false).GeneratedFiles);
+            }
+            
+            _generationContext.ClearGroupGeneratedTypes();
 
             if (Options.CreateIndexFile)
             {
                 files = files.Concat(new[] { GenerateIndexFile(files) });
             }
-
-            _generationContext.LastGenerationType = GenerationType.GenerationSpec;
 
             return new GenerationResult
             {
@@ -141,35 +146,30 @@ namespace TypeGen.Core
         {
             Requires.NotNull(assemblies, nameof(assemblies));
 
-            if (initializeGeneration && _generationContext.LastGenerationType != GenerationType.Attribute)
-            {
-                InitializeGeneration(GenerationType.Attribute);
-            }
+            if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
             
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
             {
-                _generationContext.InitializeAssemblyGeneratedTypes();
+                _generationContext.InitializeGroupGeneratedTypes();
 
                 ExecuteWithTypeContextLogging(() =>
                 {
                     foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes(_metadataReader))
                     {
-                        if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
+                        if (_generationContext.HasBeenGeneratedForGroup(type)) continue;
                         files = files.Concat(Generate(type, false).GeneratedFiles);
                     }
                 });
 
-                _generationContext.ClearAssemblyGeneratedTypes();
+                _generationContext.ClearGroupGeneratedTypes();
             }
 
             if (Options.CreateIndexFile)
             {
                 files = files.Concat(new[] { GenerateIndexFile(files) });
             }
-
-            if (initializeGeneration) _generationContext.LastGenerationType = GenerationType.Attribute;
 
             return new GenerationResult
             {
@@ -188,17 +188,14 @@ namespace TypeGen.Core
         {
             Requires.NotNull(type, nameof(type));
             
-            if (initializeGeneration && _generationContext.LastGenerationType != GenerationType.Attribute)
-            {
-                InitializeGeneration(GenerationType.Attribute);
-            }
+            if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
+            
+            IEnumerable<string> files = Enumerable.Empty<string>();
             
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
 
-            IEnumerable<string> files = Enumerable.Empty<string>();
-
-            if (_generationContext.IsAssemblyContext())
+            if (_generationContext.IsGroupContext())
             {
                 files = GenerateType(type).GeneratedFiles;
             }
@@ -208,8 +205,6 @@ namespace TypeGen.Core
             }
 
             _generationContext.ClearTypeGeneratedTypes();
-
-            if (initializeGeneration) _generationContext.LastGenerationType = GenerationType.Attribute;
 
             return new GenerationResult
             {
@@ -511,14 +506,14 @@ namespace TypeGen.Core
                 // dependency type NOT in the same assembly, but HAS ExportTsX attribute (AND hasn't been generated yet)
                 if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
                     && typeDependency.HasExportAttribute(_metadataReader)
-                    && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
+                    && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(Generate(typeDependency, false).GeneratedFiles); // don't initialize generation, because type dependencies are generated after the generation has been initialized
                 }
 
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
+                if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(GenerateType(typeDependency).GeneratedFiles);

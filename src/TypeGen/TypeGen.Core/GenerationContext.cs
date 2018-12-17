@@ -16,9 +16,9 @@ namespace TypeGen.Core
         public GenerationType LastGenerationType { get; set; }
         
         /// <summary>
-        /// Types that have already been generated for an assembly in the current call to Generator.Generate()
+        /// Types that have already been generated for a group of types in the current call to Generator.Generate()
         /// </summary>
-        public IList<Type> AssemblyGeneratedTypes { get; private set; }
+        public IList<Type> GroupGeneratedTypes { get; private set; }
 
         /// <summary>
         /// Types that have already been generated for a type in the current call to Generator.Generate()
@@ -38,28 +38,28 @@ namespace TypeGen.Core
         {
             Requires.NotNull(type, nameof(type));
             
-            AssemblyGeneratedTypes?.Add(type);
+            GroupGeneratedTypes?.Add(type);
             TypeGeneratedTypes?.Add(type);
         }
 
         /// <summary>
-        /// Checks if the generation context is for assembly generation
+        /// Checks if the generation context is for type group generation
         /// </summary>
         /// <returns></returns>
-        public bool IsAssemblyContext()
+        public bool IsGroupContext()
         {
-            return AssemblyGeneratedTypes != null;
+            return GroupGeneratedTypes != null;
         }
 
         /// <summary>
-        /// Checks if a type has already been generated for an assembly in the current context
+        /// Checks if a type has already been generated for a type group in the current context
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool HasBeenGeneratedForAssembly(Type type)
+        public bool HasBeenGeneratedForGroup(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return AssemblyGeneratedTypes?.Contains(type) ?? false;
+            return GroupGeneratedTypes?.Contains(type) ?? false;
         }
 
         /// <summary>
@@ -75,19 +75,19 @@ namespace TypeGen.Core
         }
 
         /// <summary>
-        /// Initializes the assembly generated types collection
+        /// Initializes the group generated types collection
         /// </summary>
-        public void InitializeAssemblyGeneratedTypes()
+        public void InitializeGroupGeneratedTypes()
         {
-            AssemblyGeneratedTypes = new List<Type>();
+            GroupGeneratedTypes = new List<Type>();
         }
 
         /// <summary>
-        /// Clears the assembly generated types collection
+        /// Clears the group generated types collection
         /// </summary>
-        public void ClearAssemblyGeneratedTypes()
+        public void ClearGroupGeneratedTypes()
         {
-            AssemblyGeneratedTypes = null;
+            GroupGeneratedTypes = null;
         }
 
         /// <summary>
