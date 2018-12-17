@@ -83,9 +83,10 @@ namespace TypeGen.Core
             if (_generationContext.LastGenerationType == generationType) return;
             
             _metadataReader = generationType == GenerationType.Attribute ? (IMetadataReader) new AttributeMetadataReader() : new GenerationSpecMetadataReader(generationSpec);
-            ((TypeService)_typeService).SetMetadataReader(_metadataReader);
-            ((TypeDependencyService)_typeDependencyService).SetMetadataReader(_metadataReader);
-            ((TsContentGenerator)_tsContentGenerator).SetMetadataReader(_metadataReader);
+            
+            if (_typeService is IMetadataReaderSetter typeService) typeService.SetMetadataReader(_metadataReader);
+            if (_typeDependencyService is IMetadataReaderSetter typeDependencyService) typeDependencyService.SetMetadataReader(_metadataReader);
+            if (_tsContentGenerator is IMetadataReaderSetter tsContentGenerator) tsContentGenerator.SetMetadataReader(_metadataReader);
 
             _generationContext.LastGenerationType = generationType;
         }
@@ -99,10 +100,9 @@ namespace TypeGen.Core
         {
             Requires.NotNull(generationSpec, nameof(generationSpec));
             
+            IEnumerable<string> files = Enumerable.Empty<string>();
             InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
             
-            IEnumerable<string> files = Enumerable.Empty<string>();
-
             _generationContext.InitializeGroupGeneratedTypes();
             
             foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
@@ -147,7 +147,6 @@ namespace TypeGen.Core
             Requires.NotNull(assemblies, nameof(assemblies));
 
             if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
-            
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
@@ -189,7 +188,6 @@ namespace TypeGen.Core
             Requires.NotNull(type, nameof(type));
             
             if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
-            
             IEnumerable<string> files = Enumerable.Empty<string>();
             
             _generationContext.InitializeTypeGeneratedTypes();

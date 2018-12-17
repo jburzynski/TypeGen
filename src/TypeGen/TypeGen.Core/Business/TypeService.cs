@@ -15,7 +15,7 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
     /// </summary>
-    internal class TypeService : ITypeService
+    internal class TypeService : ITypeService, IMetadataReaderSetter
     {
         public GeneratorOptions GeneratorOptions { get; set; }
 

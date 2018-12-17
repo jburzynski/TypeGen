@@ -16,7 +16,7 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for generating TypeScript file contents
     /// </summary>
-    internal class TsContentGenerator : ITsContentGenerator
+    internal class TsContentGenerator : ITsContentGenerator, IMetadataReaderSetter
     {
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITypeService _typeService;

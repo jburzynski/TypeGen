@@ -12,7 +12,7 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for handling type dependencies (i.e. types that a type depends on)
     /// </summary>
-    internal class TypeDependencyService : ITypeDependencyService
+    internal class TypeDependencyService : ITypeDependencyService, IMetadataReaderSetter
     {
         private readonly ITypeService _typeService;
         private IMetadataReader _metadataReader;
