@@ -126,8 +126,13 @@ namespace TypeGen.Cli
             var generator = new Generator { Options = generatorOptions };
 
             // generate
+            
+            IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
-            IEnumerable<string> generatedFiles = generator.Generate(assemblies).GeneratedFiles;
+            if (config.GenerateFromAssemblies == true)
+            {
+                generatedFiles = generator.Generate(assemblies).GeneratedFiles;
+            }
 
             if (config.GenerationSpecs.Any())
             {

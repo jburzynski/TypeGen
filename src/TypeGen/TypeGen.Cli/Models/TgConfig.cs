@@ -74,6 +74,9 @@ namespace TypeGen.Cli.Models
         
         [DataMember(Name = "customTypeMappings")]
         public Dictionary<string, string> CustomTypeMappings { get; set; }
+        
+        [DataMember(Name = "generateFromAssemblies")]
+        public bool? GenerateFromAssemblies { get; set; }
 
         public TgConfig Normalize()
         {
@@ -107,12 +110,13 @@ namespace TypeGen.Cli.Models
             if (OutputPath == null) OutputPath = "";
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            if (GenerateFromAssemblies == null) GenerateFromAssemblies = true;
             return this;
         }
 
         public string[] GetAssemblies()
         {
-            return Assemblies.IsNullOrEmpty() ?
+            return Assemblies.IsNullOrEmpty() && !string.IsNullOrWhiteSpace(AssemblyPath) ?
                 new[] { AssemblyPath } :
                 Assemblies;
         }
