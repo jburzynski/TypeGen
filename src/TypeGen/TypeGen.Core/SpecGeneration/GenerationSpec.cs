@@ -1,16 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
     public abstract class GenerationSpec
     {
+        internal IDictionary<Assembly, AssemblySpec> AssemblySpecs { get; }
         internal IDictionary<Type, TypeSpec> TypeSpecs { get; }
 
         protected GenerationSpec()
         {
+            AssemblySpecs = new Dictionary<Assembly, AssemblySpec>();
             TypeSpecs = new Dictionary<Type, TypeSpec>();
+        }
+
+        protected AssemblySpecBuilder ForAssembly(Assembly assembly)
+        {
+            var assemblySpec = new AssemblySpec();
+            AssemblySpecs[assembly] = assemblySpec;
+            
+            return new AssemblySpecBuilder(assemblySpec);
         }
 
         protected ClassSpecBuilder AddClass(Type type, string outputDir = null)

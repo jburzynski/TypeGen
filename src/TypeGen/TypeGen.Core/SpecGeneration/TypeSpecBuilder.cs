@@ -4,9 +4,10 @@ namespace TypeGen.Core.SpecGeneration
 {
     public abstract class TypeSpecBuilder<T, TDerived> where TDerived : TypeSpecBuilder<T, TDerived>
     {
-        internal readonly TypeSpec _spec;
+        private readonly TypeSpec _spec;
+        private string _activeMemberName;
+        
         protected internal readonly T _instance;
-        protected internal string _activeMemberName;
 
         internal TypeSpecBuilder(TypeSpec spec)
         {
