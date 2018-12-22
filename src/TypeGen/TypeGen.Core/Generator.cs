@@ -86,7 +86,7 @@ namespace TypeGen.Core
                     _metadataReader = new GenerationSpecTypeMetadataReader(generationSpec);
                     break;
                 case GenerationType.GenerationSpecAssembly:
-                    _metadataReader = new GenerationSpecAssemblyMetadataReader(generationSpec, new AttributeMetadataReader());
+                    _metadataReader = new GenerationSpecAssemblyMetadataReader(generationSpec);
                     break;
                 case GenerationType.Attribute:
                     _metadataReader = new AttributeMetadataReader();

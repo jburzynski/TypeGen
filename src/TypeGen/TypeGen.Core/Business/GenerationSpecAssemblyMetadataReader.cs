@@ -11,12 +11,10 @@ namespace TypeGen.Core.Business
     internal class GenerationSpecAssemblyMetadataReader : IMetadataReader
     {
         private readonly GenerationSpec _spec;
-        private readonly IMetadataReader _attributeMetadataReader;
 
-        public GenerationSpecAssemblyMetadataReader(GenerationSpec spec, IMetadataReader attributeMetadataReader)
+        public GenerationSpecAssemblyMetadataReader(GenerationSpec spec)
         {
             _spec = spec;
-            _attributeMetadataReader = attributeMetadataReader;
         }
 
         private TAttribute GetAttributeFromRegexExportRule<TAttribute>(RegexExportRule rule) where TAttribute : Attribute
@@ -52,12 +50,12 @@ namespace TypeGen.Core.Business
 
         public TAttribute GetAttribute<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
-            return _attributeMetadataReader.GetAttribute<TAttribute>(memberInfo);
+            return null;
         }
 
         public IEnumerable<TAttribute> GetAttributes<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
-            return _attributeMetadataReader.GetAttributes<TAttribute>(memberInfo);
+            return Enumerable.Empty<TAttribute>();
         }
     }
 }
