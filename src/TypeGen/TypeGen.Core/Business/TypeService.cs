@@ -236,7 +236,7 @@ namespace TypeGen.Core.Business
         {
             // special case - dynamic property/field
             
-            if (_metadataReader.GetAttribute<DynamicAttribute>(memberInfo) != null)
+            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
             {
                 return "any";
             }

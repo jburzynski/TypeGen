@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core
@@ -24,6 +25,11 @@ namespace TypeGen.Core
         /// Types that have already been generated for a type in the current call to Generator.Generate()
         /// </summary>
         public IList<Type> TypeGeneratedTypes { get; private set; }
+
+        /// <summary>
+        /// Generation spec used in current file generation
+        /// </summary>
+        public GenerationSpec GenerationSpec { get; set; }
 
         public GenerationContext()
         {

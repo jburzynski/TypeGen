@@ -7,11 +7,11 @@ using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
-    internal class GenerationSpecMetadataReader : IMetadataReader
+    internal class GenerationSpecTypeMetadataReader : IMetadataReader
     {
         private readonly GenerationSpec _spec;
 
-        public GenerationSpecMetadataReader(GenerationSpec spec)
+        public GenerationSpecTypeMetadataReader(GenerationSpec spec)
         {
             _spec = spec;
         }

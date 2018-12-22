@@ -136,13 +136,13 @@ namespace TypeGen.AcceptanceTest.Generator
         [InlineData("")]
         [InlineData("generated-typescript/")]
         [InlineData("nested/directory/generated-typescript/")]
-        public void Generate_GenerationSpecGiven_TypeScriptContentGenerated(string outputPath)
+        public void Generate_GenerationSpecGiven_IndividualTypesGenerated(string outputPath)
         {
             //arrange
             
             var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, StrictNullChecks = true } };
             var assemblyResolver = new AssemblyResolver(new FileSystem(), new Logger(), ProjectPath);
-            var generationSpec = new TestGenerationSpec();
+            var generationSpec = new IndividualTypesGenerationSpec();
             
             //act
             
@@ -157,20 +157,62 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "custom-empty-base-class.ts", Content["custom-empty-base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "extended-primitives-class.ts", Content["extended-primitives-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "external-deps-class.ts", Content["external-deps-class.ts"]);
-//            _fileSystem.Received().SaveFile(outputPath + "generic-base-class.ts", Content["generic-base-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "generic-base-class.ts", Content["generic-base-class.ts"]);
         }
         
-        private class TestGenerationSpec : GenerationSpec
+        private class IndividualTypesGenerationSpec : GenerationSpec
         {
-            public TestGenerationSpec()
+            public IndividualTypesGenerationSpec()
             {
                 AddClass<CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
                 AddInterface<CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
                 AddInterface<CustomEmptyBaseClass>().CustomBase();
                 AddClass<ExtendedPrimitivesClass>();
                 AddClass<ExternalDepsClass>().Member(x => nameof(x.User)).Ignore();
-//                AddClass<GenericBaseClass<>>();
-                
+                AddClass(typeof(GenericBaseClass<>));
+                AddClass(typeof(GenericClass<>));
+                AddClass(typeof(GenericWithRestrictions<>));
+                AddClass<LiteDbEntity>().Member(nameof(LiteDbEntity.MyBsonArray)).Ignore();
+                AddInterface<NestedEntity>("./very/nested/directory/").Member(x => nameof(x.OptionalProperty)).Optional();
+            }
+        }
+        
+        [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
+//        [Theory]
+        [InlineData("")]
+        [InlineData("generated-typescript/")]
+        [InlineData("nested/directory/generated-typescript/")]
+        public void Generate_GenerationSpecGiven_AssemblyRegexTypesGenerated(string outputPath)
+        {
+            //arrange
+            
+            var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, StrictNullChecks = true } };
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new Logger(), ProjectPath);
+            var generationSpec = new AssemblyRegexTypesGenerationSpec();
+            
+            //act
+            
+            assemblyResolver.Register();
+            generator.Generate(generationSpec);
+            assemblyResolver.Unregister();
+            
+            //assert
+            
+            _fileSystem.Received().SaveFile(outputPath + "bar.ts", Content["bar.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "c.ts", Content["c.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "d.ts", Content["d.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "e-class.ts", Content["e-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "f-class.ts", Content["f-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "foo.ts", Content["foo.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "foo-type.ts", Content["foo-type.ts"]);
+        }
+
+        private class AssemblyRegexTypesGenerationSpec : GenerationSpec
+        {
+            public AssemblyRegexTypesGenerationSpec()
+            {
+                ForAssembly(typeof(LiteDbEntity).Assembly)
+                    .AddClasses(@"TypeGen\.TestWebApp\.ErrorCase\.(.+)");
             }
         }
         

@@ -21,32 +21,32 @@ namespace TypeGen.Core.SpecGeneration
             _spec = spec;
         }
 
-        public AssemblySpecBuilder AddClasses(string regex, string outputDir = null)
+        public AssemblySpecBuilder AddClasses(string typeNameRegex, string outputDir = null)
         {
             _activeFeature = ActiveFeature.ClassRegexExport;
-            _activeRegex = regex;
+            _activeRegex = typeNameRegex;
             
-            _spec.AddClassRegexExportRule(regex, new ExportTsClassAttribute { OutputDir = outputDir });
+            _spec.AddClassRegexExportRule(typeNameRegex, new ExportTsClassAttribute { OutputDir = outputDir });
 
             return this;
         }
         
-        public AssemblySpecBuilder AddInterfaces(string regex, string outputDir = null)
+        public AssemblySpecBuilder AddInterfaces(string typeNameRegex, string outputDir = null)
         {
             _activeFeature = ActiveFeature.InterfaceRegexExport;
-            _activeRegex = regex;
+            _activeRegex = typeNameRegex;
             
-            _spec.AddInterfaceRegexExportRule(regex, new ExportTsInterfaceAttribute { OutputDir = outputDir });
+            _spec.AddInterfaceRegexExportRule(typeNameRegex, new ExportTsInterfaceAttribute { OutputDir = outputDir });
 
             return this;
         }
         
-        public AssemblySpecBuilder AddEnums(string regex, string outputDir = null, bool isConst = false)
+        public AssemblySpecBuilder AddEnums(string typeNameRegex, string outputDir = null, bool isConst = false)
         {
             _activeFeature = ActiveFeature.EnumRegexExport;
-            _activeRegex = regex;
+            _activeRegex = typeNameRegex;
             
-            _spec.AddEnumRegexExportRule(regex, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
+            _spec.AddEnumRegexExportRule(typeNameRegex, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
 
             return this;
         }

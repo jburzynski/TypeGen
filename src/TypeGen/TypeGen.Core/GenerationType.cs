@@ -2,6 +2,8 @@ namespace TypeGen.Core
 {
     public enum GenerationType
     {
-        Attribute, GenerationSpec
+        Attribute,
+        GenerationSpecType,
+        GenerationSpecAssembly
     }
 }
