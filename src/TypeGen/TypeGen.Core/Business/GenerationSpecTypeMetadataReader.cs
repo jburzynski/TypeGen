@@ -48,7 +48,7 @@ namespace TypeGen.Core.Business
             if (!_spec.TypeSpecs.ContainsKey(memberInfo.DeclaringType) ||
                 !_spec.TypeSpecs[memberInfo.DeclaringType].MemberAttributes.ContainsKey(memberInfo.Name))
             {
-                return null;
+                return Enumerable.Empty<TAttribute>();
             }
             
             return _spec.TypeSpecs[memberInfo.DeclaringType]

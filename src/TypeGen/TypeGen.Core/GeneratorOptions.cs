@@ -25,6 +25,7 @@ namespace TypeGen.Core
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
+        public static bool DefaultUseAttributesWithGenerationSpec => false;
 
         public GeneratorOptions()
         {
@@ -39,6 +40,7 @@ namespace TypeGen.Core
             SingleQuotes = DefaultSingleQuotes;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
+            UseAttributesWithGenerationSpec = DefaultUseAttributesWithGenerationSpec;
         }
 
         /// <summary>
@@ -112,5 +114,10 @@ namespace TypeGen.Core
         /// Specified C# types will be always translated to the corresponding TypeScript types.
         /// </summary>
         public IDictionary<string, string> CustomTypeMappings { get; set; }
+        
+        /// <summary>
+        /// Indicates whether to use attribute annotations in conjunction with generation spec metadata
+        /// </summary>
+        public bool UseAttributesWithGenerationSpec { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace TypeGen.Core.Business
         {
             Requires.NotNull(type, nameof(type));
 
-            if (type.FullName == null) return null;
+            if (type.FullName == null || !_spec.AssemblySpecs.ContainsKey(type.GetTypeInfo().Assembly)) return null;
 
             AssemblySpec assemblySpec = _spec.AssemblySpecs[type.GetTypeInfo().Assembly];
 

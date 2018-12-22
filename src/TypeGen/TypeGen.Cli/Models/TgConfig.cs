@@ -77,6 +77,9 @@ namespace TypeGen.Cli.Models
         
         [DataMember(Name = "generateFromAssemblies")]
         public bool? GenerateFromAssemblies { get; set; }
+        
+        [DataMember(Name = "useAttributesWithGenerationSpec")]
+        public bool? UseAttributesWithGenerationSpec { get; set; }
 
         public TgConfig Normalize()
         {
@@ -111,6 +114,7 @@ namespace TypeGen.Cli.Models
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (GenerateFromAssemblies == null) GenerateFromAssemblies = true;
+            if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             return this;
         }
 

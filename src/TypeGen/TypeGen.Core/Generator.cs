@@ -83,14 +83,17 @@ namespace TypeGen.Core
             switch (generationType)
             {
                 case GenerationType.GenerationSpecType:
-                    _metadataReader = new GenerationSpecTypeMetadataReader(generationSpec);
-                    break;
                 case GenerationType.GenerationSpecAssembly:
-                    _metadataReader = new GenerationSpecAssemblyMetadataReader(generationSpec);
+                    _metadataReader = new ComboMetadataReader(new GenerationSpecTypeMetadataReader(generationSpec), new GenerationSpecAssemblyMetadataReader(generationSpec));
                     break;
                 case GenerationType.Attribute:
                     _metadataReader = new AttributeMetadataReader();
                     break;
+            }
+
+            if (generationType.IsGenerationSpecGenerationType() && Options.UseAttributesWithGenerationSpec)
+            {
+                _metadataReader = new ComboMetadataReader(_metadataReader, new AttributeMetadataReader());
             }
 
             if (_typeService is IMetadataReaderSetter typeService) typeService.SetMetadataReader(_metadataReader);
