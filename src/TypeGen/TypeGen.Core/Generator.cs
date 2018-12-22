@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Utils;
@@ -20,6 +21,7 @@ namespace TypeGen.Core
     {
         // dependencies
 
+        private IMetadataReader _metadataReader;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITemplateService _templateService;
@@ -50,58 +52,142 @@ namespace TypeGen.Core
                 }
             }
         }
-
+        
         public Generator()
         {
             Options = new GeneratorOptions();
             _generationContext = new GenerationContext();
-
+            
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _typeService = new TypeService() { GeneratorOptions = Options };
-            _typeDependencyService = new TypeDependencyService(_typeService);
+            _metadataReader = new AttributeMetadataReader();
+            _typeService = new TypeService(_metadataReader) { GeneratorOptions = Options };
+            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReader);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
-                new TsContentParser(_fileSystem));
+                new TsContentParser(_fileSystem),
+                _metadataReader);
         }
-
+        
         /// <summary>
         /// For unit testing (mocking FileSystem)
         /// </summary>
         /// <param name="fileSystem"></param>
         internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
 
+        private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
+        {
+            switch (generationType)
+            {
+                case GenerationType.GenerationSpecType:
+                case GenerationType.GenerationSpecAssembly:
+                    _metadataReader = new ComboMetadataReader(new GenerationSpecTypeMetadataReader(generationSpec), new GenerationSpecAssemblyMetadataReader(generationSpec));
+                    break;
+                case GenerationType.Attribute:
+                    _metadataReader = new AttributeMetadataReader();
+                    break;
+            }
+
+            if (generationType.IsGenerationSpecGenerationType() && Options.UseAttributesWithGenerationSpec)
+            {
+                _metadataReader = new ComboMetadataReader(_metadataReader, new AttributeMetadataReader());
+            }
+
+            if (_typeService is IMetadataReaderSetter typeService) typeService.SetMetadataReader(_metadataReader);
+            if (_typeDependencyService is IMetadataReaderSetter typeDependencyService) typeDependencyService.SetMetadataReader(_metadataReader);
+            if (_tsContentGenerator is IMetadataReaderSetter tsContentGenerator) tsContentGenerator.SetMetadataReader(_metadataReader);
+
+            _generationContext.LastGenerationType = generationType;
+            _generationContext.GenerationSpec = generationSpec;
+        }
+
+        /// <summary>
+        /// Generates TypeScript files from a GenerationSpec
+        /// </summary>
+        /// <param name="generationSpec"></param>
+        /// <returns></returns>
+        public GenerationResult Generate(GenerationSpec generationSpec)
+        {
+            Requires.NotNull(generationSpec, nameof(generationSpec));
+            
+            IEnumerable<string> files = Enumerable.Empty<string>();
+            
+            // generate for assemblies
+            
+            InitializeGeneration(GenerationType.GenerationSpecAssembly, generationSpec);
+
+            files = generationSpec.AssemblySpecs
+                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
+
+            // generate individual types
+            
+            InitializeGeneration(GenerationType.GenerationSpecType, generationSpec);
+            _generationContext.InitializeGroupGeneratedTypes();
+
+            files = generationSpec.TypeSpecs
+                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
+
+            _generationContext.ClearGroupGeneratedTypes();
+
+            if (Options.CreateIndexFile)
+            {
+                files = files.Concat(new[] { GenerateIndexFile(files) });
+            }
+
+            return new GenerationResult
+            {
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = files.Distinct()
+            };
+        }
+        
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
-            Requires.NotNull(assembly, nameof(assembly));
-            return Generate(new[] { assembly });
+            return Generate(assembly, true);
         }
-
+        
+        private GenerationResult Generate(Assembly assembly, bool initializeGeneration)
+        {
+            Requires.NotNull(assembly, nameof(assembly));
+            return Generate(new[] { assembly }, initializeGeneration);
+        }
+        
         /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
+            return Generate(assemblies, true);
+        }
+
+        private GenerationResult Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
+        {
             Requires.NotNull(assemblies, nameof(assemblies));
-            
+
+            if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
             IEnumerable<string> files = Enumerable.Empty<string>();
 
             foreach (Assembly assembly in assemblies)
             {
-                _generationContext.InitializeAssemblyGeneratedTypes();
+                _generationContext.InitializeGroupGeneratedTypes();
 
                 ExecuteWithTypeContextLogging(() =>
                 {
-                    foreach (Type type in assembly.GetLoadableTypes().GetExportMarkedTypes())
+                    IEnumerable<Type> types = assembly.GetLoadableTypes()
+                        .GetExportMarkedTypes(_metadataReader)
+                        .Where(type => !_generationContext.HasBeenGeneratedForGroup(type));
+
+                    if (_generationContext.LastGenerationType == GenerationType.GenerationSpecAssembly)
                     {
-                        if (_generationContext.HasBeenGeneratedForAssembly(type)) continue;
-                        files = files.Concat(Generate(type).GeneratedFiles);
+                        types = types.Where(t => !_generationContext.GenerationSpec.TypeSpecs.ContainsKey(t));
                     }
+                    
+                    files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false).GeneratedFiles));
                 });
 
-                _generationContext.ClearAssemblyGeneratedTypes();
+                _generationContext.ClearGroupGeneratedTypes();
             }
 
             if (Options.CreateIndexFile)
@@ -119,14 +205,25 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
+            return Generate(type, true);
+        }
+
+        private GenerationResult Generate(Type type, bool initializeGeneration)
+        {
             Requires.NotNull(type, nameof(type));
+
+            if (initializeGeneration)
+            {
+                InitializeGeneration(GenerationType.Attribute);
+                _generationContext.InitializeGroupGeneratedTypes();
+            }
+            
+            IEnumerable<string> files = Enumerable.Empty<string>();
             
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
 
-            IEnumerable<string> files = Enumerable.Empty<string>();
-
-            if (_generationContext.IsAssemblyContext())
+            if (_generationContext.IsGroupContext())
             {
                 files = GenerateType(type).GeneratedFiles;
             }
@@ -136,6 +233,7 @@ namespace TypeGen.Core
             }
 
             _generationContext.ClearTypeGeneratedTypes();
+            if (initializeGeneration) _generationContext.ClearGroupGeneratedTypes();
 
             return new GenerationResult
             {
@@ -175,9 +273,9 @@ namespace TypeGen.Core
         /// <returns></returns>
         private GenerationResult GenerateType(Type type)
         {
-            var classAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
-            var interfaceAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var enumAttribute = type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
+            var classAttribute = _metadataReader.GetAttribute<ExportTsClassAttribute>(type);
+            var interfaceAttribute = _metadataReader.GetAttribute<ExportTsInterfaceAttribute>(type);
+            var enumAttribute = _metadataReader.GetAttribute<ExportTsEnumAttribute>(type);
 
             if (classAttribute != null)
             {
@@ -245,14 +343,14 @@ namespace TypeGen.Core
 
             // get text for sections
 
-            var tsCustomBaseAttribute = type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>();
+            var tsCustomBaseAttribute = _metadataReader.GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
-            else if (type.GetTypeInfo().GetCustomAttribute<TsIgnoreBaseAttribute>() == null)
+            else if (_metadataReader.GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             }
@@ -315,11 +413,11 @@ namespace TypeGen.Core
         {
             string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
 
-            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
 
-            var defaultValueAttribute = memberInfo.GetCustomAttribute<TsDefaultValueAttribute>();
+            var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
@@ -363,11 +461,11 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
-            var nameAttribute = memberInfo.GetCustomAttribute<TsMemberNameAttribute>();
+            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
-            bool isOptional = memberInfo.GetCustomAttribute<TsOptionalAttribute>() != null;
+            bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
         }
@@ -434,24 +532,15 @@ namespace TypeGen.Core
 
                 // dependency type TypeScript file generation
 
-                // dependency type NOT in the same assembly, but HAS ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.GetTypeInfo().Assembly.FullName != type.GetTypeInfo().Assembly.FullName
-                    && typeDependency.HasExportAttribute()
-                    && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
-                {
-                    _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(Generate(typeDependency).GeneratedFiles);
-                }
-
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForAssembly(typeDependency))
+                if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(GenerateType(typeDependency).GeneratedFiles);
+                    generatedFiles = generatedFiles.Concat(Generate(typeDependency, false).GeneratedFiles);
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
-                if (!typeDependency.HasExportAttribute() && !_generationContext.HasBeenGeneratedForType(typeDependency))
+                if (!typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForType(typeDependency))
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)

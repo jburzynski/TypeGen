@@ -631,25 +631,28 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type)">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type,TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Checks if a type is marked with an ExportTs... attribute
             </summary>
             <param name="type"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type})">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type},TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Gets all types marked with ExportTs... attributes
             </summary>
             <param name="types"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0},TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Removes members marked with TsIgnore attribute
             </summary>
             <param name="memberInfos"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
@@ -683,26 +686,29 @@
             <param name="interfaceName"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.StripOptionalAndTypeUnion(System.String)">
-            <summary>
-            Strips the TypeScript type name of the 'optional' character ('?') and type union characters ('|')
-            </summary>
-            <param name="tsTypeName"></param>
-            <returns></returns>
-        </member>
         <member name="T:TypeGen.Core.GenerationContext">
             <summary>
             File generation context (used per Generator.Generate() invocation)
             </summary>
         </member>
-        <member name="P:TypeGen.Core.GenerationContext.AssemblyGeneratedTypes">
+        <member name="P:TypeGen.Core.GenerationContext.LastGenerationType">
             <summary>
-            Types that have already been generated for an assembly in the current call to Generator.Generate()
+            Type of the last file generation
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.GroupGeneratedTypes">
+            <summary>
+            Types that have already been generated for a group of types in the current call to Generator.Generate()
             </summary>
         </member>
         <member name="P:TypeGen.Core.GenerationContext.TypeGeneratedTypes">
             <summary>
             Types that have already been generated for a type in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.GenerationSpec">
+            <summary>
+            Generation spec used in current file generation
             </summary>
         </member>
         <member name="M:TypeGen.Core.GenerationContext.Add(System.Type)">
@@ -711,15 +717,15 @@
             </summary>
             <param name="type"></param>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.IsAssemblyContext">
+        <member name="M:TypeGen.Core.GenerationContext.IsGroupContext">
             <summary>
-            Checks if the generation context is for assembly generation
+            Checks if the generation context is for type group generation
             </summary>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForAssembly(System.Type)">
+        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForGroup(System.Type)">
             <summary>
-            Checks if a type has already been generated for an assembly in the current context
+            Checks if a type has already been generated for a type group in the current context
             </summary>
             <param name="type"></param>
             <returns></returns>
@@ -732,14 +738,14 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.InitializeAssemblyGeneratedTypes">
+        <member name="M:TypeGen.Core.GenerationContext.InitializeGroupGeneratedTypes">
             <summary>
-            Initializes the assembly generated types collection
+            Initializes the group generated types collection
             </summary>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.ClearAssemblyGeneratedTypes">
+        <member name="M:TypeGen.Core.GenerationContext.ClearGroupGeneratedTypes">
             <summary>
-            Clears the assembly generated types collection
+            Clears the group generated types collection
             </summary>
         </member>
         <member name="M:TypeGen.Core.GenerationContext.InitializeTypeGeneratedTypes">
@@ -782,6 +788,13 @@
             For unit testing (mocking FileSystem)
             </summary>
             <param name="fileSystem"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generate(TypeGen.Core.SpecGeneration.GenerationSpec)">
+            <summary>
+            Generates TypeScript files from a GenerationSpec
+            </summary>
+            <param name="generationSpec"></param>
+            <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
             <inheritdoc />
