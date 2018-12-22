@@ -23,6 +23,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "assemblies")]
         public string[] Assemblies { get; set; }
+        
+        [DataMember(Name = "generationSpecs")]
+        public string[] GenerationSpecs { get; set; }
 
         [DataMember(Name = "fileNameConverters")]
         public string[] FileNameConverters { get; set; }
@@ -87,6 +90,7 @@ namespace TypeGen.Cli.Models
         public TgConfig MergeWithDefaultParams()
         {
             if (Assemblies == null) Assemblies = new string[0];
+            if (GenerationSpecs == null) GenerationSpecs = new string[0];
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
             if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
             if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
