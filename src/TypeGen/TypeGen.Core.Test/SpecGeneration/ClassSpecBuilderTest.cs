@@ -1,0 +1,198 @@
+using System;
+using System.Linq;
+using TypeGen.Core.SpecGeneration;
+using TypeGen.Core.TypeAnnotations;
+using Xunit;
+
+namespace TypeGen.Core.Test.SpecGeneration
+{
+    public class ClassSpecBuilderTest
+    {
+        [Fact]
+        public void Member_Invoked_MemberAddedToSpec()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member);
+
+            Assert.True(spec.MemberAttributes.ContainsKey(member));
+        }
+
+        [Fact]
+        public void Member_AttributesSpecifiedForMember_AttributesAddedToCorrectMember()
+        {
+            const string member1 = "member1";
+            const string member2 = "member2";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member1).Ignore().Member(member2).Null();
+
+            Attribute attribute1 = spec.MemberAttributes[member1].FirstOrDefault();
+            Attribute attribute2 = spec.MemberAttributes[member2].FirstOrDefault();
+            Assert.IsType<TsIgnoreAttribute>(attribute1);
+            Assert.IsType<TsNullAttribute>(attribute2);
+        }
+        
+        [Fact]
+        public void CustomBase_Invoked_SpecUpdated()
+        {
+            const string @base = "base";
+            const string importPath = "importPath";
+            const string originalTypeName = "originalTypeName";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.CustomBase(@base, importPath, originalTypeName);
+
+            Attribute attribute = spec.AdditionalAttributes.FirstOrDefault();
+            Assert.IsType<TsCustomBaseAttribute>(attribute);
+            Assert.Equal(@base, ((TsCustomBaseAttribute)attribute).Base);
+            Assert.Equal(importPath, ((TsCustomBaseAttribute)attribute).ImportPath);
+            Assert.Equal(originalTypeName, ((TsCustomBaseAttribute)attribute).OriginalTypeName);
+        }
+        
+        [Fact]
+        public void DefaultTypeOutput_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            const string outputDir = "outputDir";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).DefaultTypeOutput(outputDir);
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsDefaultTypeOutputAttribute>(attribute);
+            Assert.Equal(outputDir, ((TsDefaultTypeOutputAttribute)attribute).OutputDir);
+        }
+        
+        [Fact]
+        public void DefaultValue_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            const string defaultValue = "defaultValue";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).DefaultValue(defaultValue);
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsDefaultValueAttribute>(attribute);
+            Assert.Equal(defaultValue, ((TsDefaultValueAttribute)attribute).DefaultValue);
+        }
+        
+        [Fact]
+        public void Ignore_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).Ignore();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsIgnoreAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void IgnoreBase_Invoked_SpecUpdated()
+        {
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.IgnoreBase();
+
+            Attribute attribute = spec.AdditionalAttributes.FirstOrDefault();
+            Assert.IsType<TsIgnoreBaseAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void MemberName_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            const string name = "name";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).MemberName(name);
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsMemberNameAttribute>(attribute);
+            Assert.Equal(name, ((TsMemberNameAttribute)attribute).Name);
+        }
+        
+        [Fact]
+        public void NotNull_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).NotNull();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsNotNullAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void NotUndefined_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).NotUndefined();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsNotUndefinedAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void Null_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).Null();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsNullAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void Type_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            const string typeName = "typeName";
+            const string importPath = "importPath";
+            const string originalTypeName = "originalTypeName";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).Type(typeName, importPath, originalTypeName);
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsTypeAttribute>(attribute);
+            Assert.Equal(typeName, ((TsTypeAttribute)attribute).TypeName);
+            Assert.Equal(importPath, ((TsTypeAttribute)attribute).ImportPath);
+            Assert.Equal(originalTypeName, ((TsTypeAttribute)attribute).OriginalTypeName);
+        }
+        
+        [Fact]
+        public void Undefined_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).Undefined();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsUndefinedAttribute>(attribute);
+        }
+    }
+}

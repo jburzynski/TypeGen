@@ -7,7 +7,7 @@ namespace TypeGen.Core.SpecGeneration
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TDerived"></typeparam>
-    public class CommonInterfaceSpecBuilder<T, TDerived> : ClassOrInterfaceSpecBuilder<T, TDerived> where TDerived : CommonInterfaceSpecBuilder<T, TDerived>
+    public abstract class CommonInterfaceSpecBuilder<T, TDerived> : ClassOrInterfaceSpecBuilder<T, TDerived> where TDerived : CommonInterfaceSpecBuilder<T, TDerived>
     {
         internal CommonInterfaceSpecBuilder(TypeSpec spec) : base(spec)
         {

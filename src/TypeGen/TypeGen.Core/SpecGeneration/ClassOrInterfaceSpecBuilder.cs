@@ -17,12 +17,12 @@ namespace TypeGen.Core.SpecGeneration
         /// Specifies custom base for the type (equivalent of TsCustomBaseAttribute)
         /// </summary>
         /// <param name="base"></param>
-        /// <param name="importType"></param>
+        /// <param name="importPath"></param>
         /// <param name="originalTypeName"></param>
         /// <returns></returns>
-        public TDerived CustomBase(string @base = null, string importType = null, string originalTypeName = null)
+        public TDerived CustomBase(string @base = null, string importPath = null, string originalTypeName = null)
         {
-            AddTypeAttribute(new TsCustomBaseAttribute(@base, importType, originalTypeName));
+            AddTypeAttribute(new TsCustomBaseAttribute(@base, importPath, originalTypeName));
             return this as TDerived;
         }
         
