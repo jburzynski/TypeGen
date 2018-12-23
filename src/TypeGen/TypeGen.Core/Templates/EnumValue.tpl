@@ -1,1 +1,1 @@
-$tg{tab}$tg{name} = $tg{number},
+$tg{tab}$tg{name} = $tg{value},

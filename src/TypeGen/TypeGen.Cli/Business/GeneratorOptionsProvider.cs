@@ -54,12 +54,14 @@ namespace TypeGen.Cli.Business
                 TypeNameConverters = GetTypeNameConvertersFromConfig(config.TypeNameConverters),
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters),
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters),
+                EnumStringInitializersConverters = GetNameConvertersFromConfig(config.EnumStringInitializersConverters),
                 StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,
-                UseAttributesWithGenerationSpec = config.UseAttributesWithGenerationSpec ?? GeneratorOptions.DefaultUseAttributesWithGenerationSpec
+                UseAttributesWithGenerationSpec = config.UseAttributesWithGenerationSpec ?? GeneratorOptions.DefaultUseAttributesWithGenerationSpec,
+                EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers
             };
         }
 

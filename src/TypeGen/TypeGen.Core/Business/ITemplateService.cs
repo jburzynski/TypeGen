@@ -9,7 +9,7 @@
         string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody);
         string FillInterfacePropertyTemplate(string name, string type, bool isOptional);
         string FillEnumTemplate(string imports, string name, string values, bool isConst);
-        string FillEnumValueTemplate(string name, int intValue);
+        string FillEnumValueTemplate(string name, int? intValue = null, string stringValue = null);
         string FillImportTemplate(string name, string typeAlias, string path);
         string FillIndexTemplate(string exports);
         string FillIndexExportTemplate(string filename);

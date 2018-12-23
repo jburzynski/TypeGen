@@ -132,15 +132,17 @@ namespace TypeGen.Core
 
             _generationContext.ClearGroupGeneratedTypes();
 
+            files = files.Distinct();
+            
             if (Options.CreateIndexFile)
             {
-                files = files.Concat(new[] { GenerateIndexFile(files) });
+                files = files.Concat(GenerateIndexFile(files).GeneratedFiles);
             }
 
             return new GenerationResult
             {
                 BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files.Distinct()
+                GeneratedFiles = files
             };
         }
         
@@ -190,15 +192,17 @@ namespace TypeGen.Core
                 _generationContext.ClearGroupGeneratedTypes();
             }
 
+            files = files.Distinct();
+            
             if (Options.CreateIndexFile)
             {
-                files = files.Concat(new[] { GenerateIndexFile(files) });
+                files = files.Concat(GenerateIndexFile(files).GeneratedFiles);
             }
 
             return new GenerationResult
             {
                 BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files.Distinct()
+                GeneratedFiles = files
             };
         }
 
@@ -246,7 +250,7 @@ namespace TypeGen.Core
         /// Generates an `index.ts` file which exports all types within the generated files
         /// </summary>
         /// <param name="generatedFiles"></param>
-        private string GenerateIndexFile(IEnumerable<string> generatedFiles)
+        private GenerationResult GenerateIndexFile(IEnumerable<string> generatedFiles)
         {
             var typeScriptFileExtension = "";
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
@@ -263,7 +267,12 @@ namespace TypeGen.Core
 
             string filename = "index" + typeScriptFileExtension;
             _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
-            return filename;
+
+            return new GenerationResult
+            {
+                BaseOutputDirectory = Options.BaseOutputDirectory,
+                GeneratedFiles = new[] { filename }
+            };
         }
 
         /// <summary>
@@ -496,6 +505,13 @@ namespace TypeGen.Core
         private string GetEnumValueText(object enumValue)
         {
             string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
+
+            if (Options.EnumStringInitializers)
+            {
+                string enumValueString = Options.EnumStringInitializersConverters.Convert(enumValue.ToString());
+                return _templateService.FillEnumValueTemplate(name, stringValue: enumValueString);
+            }
+            
             var enumValueInt = (int)enumValue;
             return _templateService.FillEnumValueTemplate(name, enumValueInt);
         }

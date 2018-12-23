@@ -38,6 +38,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "enumValueNameConverters")]
         public string[] EnumValueNameConverters { get; set; }
+        
+        [DataMember(Name = "enumStringInitializersConverters")]
+        public string[] EnumStringInitializersConverters { get; set; }
 
         [DataMember(Name = "externalAssemblyPaths")]
         public string[] ExternalAssemblyPaths { get; set; }
@@ -80,6 +83,9 @@ namespace TypeGen.Cli.Models
         
         [DataMember(Name = "useAttributesWithGenerationSpec")]
         public bool? UseAttributesWithGenerationSpec { get; set; }
+        
+        [DataMember(Name = "enumStringInitializers")]
+        public bool? EnumStringInitializers { get; set; }
 
         public TgConfig Normalize()
         {
@@ -106,6 +112,7 @@ namespace TypeGen.Cli.Models
             if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
+            if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
@@ -115,6 +122,7 @@ namespace TypeGen.Cli.Models
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (GenerateFromAssemblies == null) GenerateFromAssemblies = true;
             if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
+            if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             return this;
         }
 
