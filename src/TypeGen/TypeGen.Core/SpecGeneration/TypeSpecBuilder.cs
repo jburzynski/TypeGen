@@ -2,6 +2,11 @@ using System;
 
 namespace TypeGen.Core.SpecGeneration
 {
+    /// <summary>
+    /// Base class for all type spec builders
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TDerived"></typeparam>
     public abstract class TypeSpecBuilder<T, TDerived> where TDerived : TypeSpecBuilder<T, TDerived>
     {
         private readonly TypeSpec _spec;

@@ -3,6 +3,9 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
+    /// <summary>
+    /// Builds the assembly configuration section inside generation spec
+    /// </summary>
     public class AssemblySpecBuilder
     {
         private readonly AssemblySpec _spec;
@@ -21,6 +24,12 @@ namespace TypeGen.Core.SpecGeneration
             _spec = spec;
         }
 
+        /// <summary>
+        /// Specifies TS classes to be generated from the assembly by regex of a type's full name
+        /// </summary>
+        /// <param name="typeNameRegex"></param>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
         public AssemblySpecBuilder AddClasses(string typeNameRegex, string outputDir = null)
         {
             _activeFeature = ActiveFeature.ClassRegexExport;
@@ -31,6 +40,12 @@ namespace TypeGen.Core.SpecGeneration
             return this;
         }
         
+        /// <summary>
+        /// Specifies TS interfaces to be generated from the assembly by regex of a type's full name
+        /// </summary>
+        /// <param name="typeNameRegex"></param>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
         public AssemblySpecBuilder AddInterfaces(string typeNameRegex, string outputDir = null)
         {
             _activeFeature = ActiveFeature.InterfaceRegexExport;
@@ -41,6 +56,13 @@ namespace TypeGen.Core.SpecGeneration
             return this;
         }
         
+        /// <summary>
+        /// Specifies TS enums to be generated from the assembly by regex of a type's full name
+        /// </summary>
+        /// <param name="typeNameRegex"></param>
+        /// <param name="outputDir"></param>
+        /// <param name="isConst"></param>
+        /// <returns></returns>
         public AssemblySpecBuilder AddEnums(string typeNameRegex, string outputDir = null, bool isConst = false)
         {
             _activeFeature = ActiveFeature.EnumRegexExport;
@@ -51,6 +73,13 @@ namespace TypeGen.Core.SpecGeneration
             return this;
         }
 
+        /// <summary>
+        /// Specifies custom base for all types matching the selected regex (equivalent of TsCustomBaseAttribute)
+        /// </summary>
+        /// <param name="base"></param>
+        /// <param name="importType"></param>
+        /// <param name="originalTypeName"></param>
+        /// <returns></returns>
         public AssemblySpecBuilder CustomBase(string @base = null, string importType = null, string originalTypeName = null)
         {
             IDictionary<string, RegexExportRule> rules = GetActiveRegexExportRules();
@@ -59,6 +88,10 @@ namespace TypeGen.Core.SpecGeneration
             return this;
         }
 
+        /// <summary>
+        /// Indicates whether to ignore base class declaration for all types matching the selected regex (equivalent of TsIgnoreBaseAttribute)
+        /// </summary>
+        /// <returns></returns>
         public AssemblySpecBuilder IgnoreBase()
         {
             IDictionary<string, RegexExportRule> rules = GetActiveRegexExportRules();
