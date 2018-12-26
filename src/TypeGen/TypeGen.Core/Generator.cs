@@ -501,12 +501,15 @@ namespace TypeGen.Core
         /// Gets TypeScript enum value definition source code
         /// </summary>
         /// <param name="enumValue">an enum value (result of Enum.GetValues())</param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        private string GetEnumValueText(object enumValue)
+        private string GetEnumValueText(object enumValue, Type type)
         {
             string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
-
-            if (Options.EnumStringInitializers)
+            var stringInitializersAttribute = _metadataReader.GetAttribute<TsStringInitializersAttribute>(type);
+            
+            if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
+                (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
             {
                 string enumValueString = Options.EnumStringInitializersConverters.Convert(enumValue.ToString());
                 return _templateService.FillEnumValueTemplate(name, stringValue: enumValueString);
@@ -527,7 +530,7 @@ namespace TypeGen.Core
             Array enumValues = Enum.GetValues(type);
 
             valuesText += enumValues.Cast<object>()
-                .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue));
+                .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue, type));
 
             return RemoveLastLineEnding(valuesText);
         }

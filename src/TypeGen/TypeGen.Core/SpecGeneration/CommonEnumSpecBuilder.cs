@@ -1,4 +1,5 @@
 using TypeGen.Core.SpecGeneration.Generic;
+using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
 {
@@ -11,6 +12,16 @@ namespace TypeGen.Core.SpecGeneration
     {
         internal CommonEnumSpecBuilder(TypeSpec spec) : base(spec)
         {
+        }
+        
+        /// <summary>
+        /// Specifies whether to use TypeScript string initializers for an enum
+        /// </summary>
+        /// <returns></returns>
+        public TDerived StringInitializers(bool enabled = true)
+        {
+            AddTypeAttribute(new TsStringInitializersAttribute(enabled));
+            return this as TDerived;
         }
     }
 }
