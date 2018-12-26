@@ -120,7 +120,7 @@ namespace TypeGen.Cli.Models
             if (OutputPath == null) OutputPath = "";
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            if (GenerateFromAssemblies == null) GenerateFromAssemblies = true;
+            // GenerateFromAssemblies should stay null if no value is provided // if (GenerateFromAssemblies == null)
             if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             return this;

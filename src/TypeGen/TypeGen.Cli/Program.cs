@@ -129,7 +129,7 @@ namespace TypeGen.Cli
             
             IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
-            if (config.GenerateFromAssemblies == true)
+            if (!config.GenerationSpecs.Any() || config.GenerateFromAssemblies == true)
             {
                 generatedFiles = generator.Generate(assemblies).GeneratedFiles;
             }

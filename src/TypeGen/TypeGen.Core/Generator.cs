@@ -194,7 +194,7 @@ namespace TypeGen.Core
 
             files = files.Distinct();
             
-            if (Options.CreateIndexFile)
+            if (Options.CreateIndexFile && initializeGeneration)
             {
                 files = files.Concat(GenerateIndexFile(files).GeneratedFiles);
             }
