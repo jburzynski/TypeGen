@@ -123,6 +123,16 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
+        /// Specifies custom type for the selected member (equivalent of TsTypeAttribute)
+        /// </summary>
+        /// <returns></returns>
+        public TDerived Type(TsType tsType)
+        {
+            AddActiveMemberAttribute(new TsTypeAttribute(tsType));
+            return this as TDerived;
+        }
+        
+        /// <summary>
         /// Marks selected member as undefined (equivalent of TsUndefinedAttribute)
         /// </summary>
         /// <returns></returns>
