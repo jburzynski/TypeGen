@@ -5,6 +5,7 @@ Single-class-per-file C# to TypeScript generator
 [![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
 ***Please visit project's website: http://jburzynski.net/TypeGen***
+
 ***Complete documentation: http://typegen.readthedocs.io***
 
 ## How to get
@@ -14,7 +15,7 @@ Single-class-per-file C# to TypeScript generator
 
 ## Quick start
 
-Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project
+Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project.
 
 Mark your C# classes/enums as exportable to TypeScript:
 
@@ -29,7 +30,14 @@ public class ProductDto
 }
 
 // or with a generation spec
-public class
+
+public class MyGenerationSpec : GenerationSpec
+{
+    public MyGenerationSpec()
+	{
+	    AddClass<ProductDto>();
+	}
+}
 ```
 
 After building your project, type `TypeGen generate` into the Package Manager Console, or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool.
