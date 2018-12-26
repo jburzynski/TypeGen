@@ -35,7 +35,7 @@ public class MyGenerationSpec : GenerationSpec
 {
     public MyGenerationSpec()
     {
-	    AddClass<ProductDto>();
+        AddClass<ProductDto>();
     }
 }
 ```
