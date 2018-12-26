@@ -99,6 +99,18 @@ namespace TypeGen.Core.SpecGeneration
 
             return this;
         }
+        
+        /// <summary>
+        /// Specifies whether TypeScript string initializers should be used for all enum types matching the selected regex (equivalent of TsIgnoreBaseAttribute)
+        /// </summary>
+        /// <returns></returns>
+        public AssemblySpecBuilder StringInitializers(bool enabled = true)
+        {
+            IDictionary<string, RegexExportRule> rules = GetActiveRegexExportRules();
+            rules[_activeRegex].AddAdditionalAttribute(new TsStringInitializersAttribute(enabled));
+
+            return this;
+        }
 
         private IDictionary<string, RegexExportRule> GetActiveRegexExportRules()
         {
