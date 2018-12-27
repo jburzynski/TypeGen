@@ -5,7 +5,7 @@
     <version>2.1.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
-    <licenseUrl>https://github.com/jburzynski/type-gen/blob/master/LICENSE</licenseUrl>
+    <license type="file">LICENSE</license>
     <projectUrl>http://jburzynski.net/TypeGen</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
