@@ -1,10 +1,10 @@
 TypeGen:
-	- version update
+	- version-update
 	- nuget-update
 
 - Docs
- + content
- + API reference
+ + content (TypeGenDocs repo)
+ + API reference (docfx metadata; docfx build)
 
 - website
  + changelog
