@@ -22,7 +22,8 @@ if (Test-Path $nuspecPath) {
 
 $dotNetCliNuspecPath = "nuget-dotnetcli\TypeGen.DotNetCli.nuspec"
 if (Test-Path $dotNetCliNuspecPath) {
-  (Get-Content $dotNetCliNuspecPath).Replace("<version>$($oldVersion)</version>", "<version>$($newVersion)</version>").Replace("id=""TypeGen"" version=""$($oldVersion)""", "id=""TypeGen"" version=""$($newVersion)""") | Set-Content $dotNetCliNuspecPath
+  (Get-Content $dotNetCliNuspecPath).Replace("<version>$($oldVersion)</version>", "<version>$($newVersion)</version>") | Set-Content $dotNetCliNuspecPath
+  #.Replace("id=""TypeGen"" version=""$($oldVersion)""", "id=""TypeGen"" version=""$($newVersion)""")
 }
 
 $docsConfPath = "..\TypeGenDocs\source\conf.py"

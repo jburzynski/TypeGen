@@ -189,14 +189,25 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
-        public void FillEnumValueTemplate_ValuesGiven_TemplateFilledWithValues()
+        public void FillEnumValueTemplate_IntValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl")
-                .Returns("$tg{name} | $tg{number}");
+                .Returns("$tg{name} | $tg{value}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
             string actual = templateService.FillEnumValueTemplate("a", 42);
             Assert.Equal("a | 42", actual);
+        }
+        
+        [Fact]
+        public void FillEnumValueTemplate_StringValuesGiven_TemplateFilledWithValues()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl")
+                .Returns("$tg{name} | $tg{value}");
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
+
+            string actual = templateService.FillEnumValueTemplate("a", stringValue: "stringValue");
+            Assert.Equal(@"a | ""stringValue""", actual);
         }
 
         [Fact]

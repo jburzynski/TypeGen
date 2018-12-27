@@ -16,12 +16,13 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for generating TypeScript file contents
     /// </summary>
-    internal class TsContentGenerator : ITsContentGenerator
+    internal class TsContentGenerator : ITsContentGenerator, IMetadataReaderSetter
     {
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITypeService _typeService;
         private readonly ITemplateService _templateService;
         private readonly ITsContentParser _tsContentParser;
+        private IMetadataReader _metadataReader;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
@@ -30,12 +31,19 @@ namespace TypeGen.Core.Business
         public TsContentGenerator(ITypeDependencyService typeDependencyService,
             ITypeService typeService,
             ITemplateService templateService,
-            ITsContentParser tsContentParser)
+            ITsContentParser tsContentParser,
+            IMetadataReader metadataReader)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
             _tsContentParser = tsContentParser;
+            _metadataReader = metadataReader;
+        }
+        
+        public void SetMetadataReader(IMetadataReader metadataReader)
+        {
+            _metadataReader = metadataReader;
         }
 
         /// <summary>
@@ -97,7 +105,7 @@ namespace TypeGen.Core.Business
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
             // exclude base type dependency if TsCustomBaseAttribute is specified (it will be added in custom imports)
-            if (type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>() != null)
+            if (_metadataReader.GetAttribute<TsCustomBaseAttribute>(type) != null)
             {
                 typeDependencies = typeDependencies.Where(td => !td.IsBase);
             }
@@ -147,7 +155,7 @@ namespace TypeGen.Core.Business
             IEnumerable<MemberInfo> members = _typeService.GetTsExportableMembers(type);
 
             IEnumerable<TsTypeAttribute> typeAttributes = members
-                .Select(memberInfo => memberInfo.GetCustomAttribute<TsTypeAttribute>())
+                .Select(memberInfo => _metadataReader.GetAttribute<TsTypeAttribute>(memberInfo))
                 .Where(tsTypeAttribute => !string.IsNullOrEmpty(tsTypeAttribute?.ImportPath))
                 .Distinct(new TsTypeAttributeComparer());
 
@@ -159,7 +167,7 @@ namespace TypeGen.Core.Business
 
         private IEnumerable<string> GetCustomImportsFromCustomBase(Type type)
         {
-            var tsCustomBaseAttribute = type.GetTypeInfo().GetCustomAttribute<TsCustomBaseAttribute>();
+            var tsCustomBaseAttribute = _metadataReader.GetAttribute<TsCustomBaseAttribute>(type);
             if (tsCustomBaseAttribute == null || string.IsNullOrEmpty(tsCustomBaseAttribute.ImportPath)) yield break;
 
             yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName);
@@ -182,9 +190,9 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private string GetTypeDependencyOutputDir(TypeDependencyInfo typeDependencyInfo, string parentTypeOutputDir)
         {
-            var classAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsClassAttribute>();
-            var interfaceAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsInterfaceAttribute>();
-            var enumAttribute = typeDependencyInfo.Type.GetTypeInfo().GetCustomAttribute<ExportTsEnumAttribute>();
+            var classAttribute = _metadataReader.GetAttribute<ExportTsClassAttribute>(typeDependencyInfo.Type);
+            var interfaceAttribute = _metadataReader.GetAttribute<ExportTsInterfaceAttribute>(typeDependencyInfo.Type);
+            var enumAttribute = _metadataReader.GetAttribute<ExportTsEnumAttribute>(typeDependencyInfo.Type);
 
             if (classAttribute == null && enumAttribute == null && interfaceAttribute == null)
             {

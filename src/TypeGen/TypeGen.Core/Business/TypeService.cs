@@ -15,10 +15,22 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
     /// </summary>
-    internal class TypeService : ITypeService
+    internal class TypeService : ITypeService, IMetadataReaderSetter
     {
         public GeneratorOptions GeneratorOptions { get; set; }
-        
+
+        private IMetadataReader _metadataReader;
+
+        public TypeService(IMetadataReader metadataReader)
+        {
+            _metadataReader = metadataReader;
+        }
+
+        public void SetMetadataReader(IMetadataReader metadataReader)
+        {
+            _metadataReader = metadataReader;
+        }
+
         /// <inheritdoc />
         public bool IsTsSimpleType(Type type)
         {
@@ -77,7 +89,7 @@ namespace TypeGen.Core.Business
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = typeInfo.GetCustomAttribute<ExportAttribute>();
+            var exportAttribute = _metadataReader.GetAttribute<ExportAttribute>(type);
             return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
         }
 
@@ -89,7 +101,7 @@ namespace TypeGen.Core.Business
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = typeInfo.GetCustomAttribute<ExportAttribute>();
+            var exportAttribute = _metadataReader.GetAttribute<ExportAttribute>(type);
             return exportAttribute is ExportTsInterfaceAttribute;
         }
 
@@ -103,11 +115,11 @@ namespace TypeGen.Core.Business
 
             var fieldInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredFields
                 .WithMembersFilter()
-                .WithoutTsIgnore();
+                .WithoutTsIgnore(_metadataReader);
 
             var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
                 .WithMembersFilter()
-                .WithoutTsIgnore();
+                .WithoutTsIgnore(_metadataReader);
 
             return fieldInfos.Union(propertyInfos);
         }
@@ -200,7 +212,7 @@ namespace TypeGen.Core.Business
             
             string typeUnionSuffix = strictNullChecks ? GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation) : "";
 
-            var typeAttribute = memberInfo.GetCustomAttribute<TsTypeAttribute>();
+            var typeAttribute = _metadataReader.GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)
             {
                 if (string.IsNullOrWhiteSpace(typeAttribute.TypeName))
@@ -243,11 +255,11 @@ namespace TypeGen.Core.Business
 
             StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? csNullableTranslation : StrictNullFlags.Regular;
 
-            if (memberInfo.GetCustomAttribute<TsNullAttribute>() != null) flags |= StrictNullFlags.Null;
-            if (memberInfo.GetCustomAttribute<TsUndefinedAttribute>() != null) flags |= StrictNullFlags.Undefined;
+            if (_metadataReader.GetAttribute<TsNullAttribute>(memberInfo) != null) flags |= StrictNullFlags.Null;
+            if (_metadataReader.GetAttribute<TsUndefinedAttribute>(memberInfo) != null) flags |= StrictNullFlags.Undefined;
 
-            if (memberInfo.GetCustomAttribute<TsNotNullAttribute>() != null) flags &= ~StrictNullFlags.Null;
-            if (memberInfo.GetCustomAttribute<TsNotUndefinedAttribute>() != null) flags &= ~StrictNullFlags.Undefined;
+            if (_metadataReader.GetAttribute<TsNotNullAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Null;
+            if (_metadataReader.GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Undefined;
 
             var result = "";
             if (flags.HasFlag(StrictNullFlags.Null)) result += " | null";

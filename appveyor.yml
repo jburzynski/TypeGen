@@ -5,6 +5,7 @@ platform: Any CPU
 configuration: Release
 
 before_build:
+  - dotnet restore src/TypeGen/TypeGen.AcceptanceTest
   - dotnet restore src/TypeGen/TypeGen.Cli
   - dotnet restore src/TypeGen/TypeGen.Core
   - dotnet restore src/TypeGen/TypeGen.Cli.Test

@@ -101,11 +101,13 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("modifiers"), isConst ? " const" : "");
         }
 
-        public string FillEnumValueTemplate(string name, int intValue)
+        public string FillEnumValueTemplate(string name, int? intValue = null, string stringValue = null)
         {
+            string value = intValue != null ? intValue.ToString() : $@"""{stringValue}""";
+            
             return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace(GetTag("name"), name)
-                .Replace(GetTag("number"), intValue.ToString());
+                .Replace(GetTag("value"), value);
         }
 
         public string FillImportTemplate(string name, string typeAlias, string path)

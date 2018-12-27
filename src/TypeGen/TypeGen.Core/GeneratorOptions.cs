@@ -18,6 +18,7 @@ namespace TypeGen.Core
         public static TypeNameConverterCollection DefaultTypeNameConverters => new TypeNameConverterCollection();
         public static NameConverterCollection DefaultPropertyNameConverters => new NameConverterCollection(new PascalCaseToCamelCaseConverter());
         public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
+        public static NameConverterCollection DefaultEnumStringInitializersConverters => new NameConverterCollection();
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
@@ -25,6 +26,8 @@ namespace TypeGen.Core
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
+        public static bool DefaultUseAttributesWithGenerationSpec => false;
+        public static bool DefaultEnumStringInitializers => false;
 
         public GeneratorOptions()
         {
@@ -32,6 +35,7 @@ namespace TypeGen.Core
             TypeNameConverters = DefaultTypeNameConverters;
             PropertyNameConverters = DefaultPropertyNameConverters;
             EnumValueNameConverters = DefaultEnumValueNameConverters;
+            EnumStringInitializersConverters = DefaultEnumStringInitializersConverters;
             TypeScriptFileExtension = DefaultTypeScriptFileExtension;
             TabLength = DefaultTabLength;
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
@@ -39,6 +43,8 @@ namespace TypeGen.Core
             SingleQuotes = DefaultSingleQuotes;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
+            UseAttributesWithGenerationSpec = DefaultUseAttributesWithGenerationSpec;
+            EnumStringInitializers = DefaultEnumStringInitializers;
         }
 
         /// <summary>
@@ -60,6 +66,11 @@ namespace TypeGen.Core
         /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names
         /// </summary>
         public NameConverterCollection EnumValueNameConverters { get; set; }
+        
+        /// <summary>
+        /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum string initializers
+        /// </summary>
+        public NameConverterCollection EnumStringInitializersConverters { get; set; }
 
         /// <summary>
         /// Whether to generate explicit "public" accessor in TypeScript classes
@@ -88,7 +99,7 @@ namespace TypeGen.Core
         public string BaseOutputDirectory { get; set; }
 
         /// <summary>
-        /// Wheter to create an index file which exports all generated types
+        /// Whether to create an index file which exports all generated types
         /// </summary>
         public bool CreateIndexFile { get; set; }
 
@@ -112,5 +123,15 @@ namespace TypeGen.Core
         /// Specified C# types will be always translated to the corresponding TypeScript types.
         /// </summary>
         public IDictionary<string, string> CustomTypeMappings { get; set; }
+        
+        /// <summary>
+        /// Indicates whether to use attribute annotations in conjunction with generation spec metadata
+        /// </summary>
+        public bool UseAttributesWithGenerationSpec { get; set; }
+
+        /// <summary>
+        /// Indicates whether to use enum string initializers
+        /// </summary>
+        public bool EnumStringInitializers { get; set; }
     }
 }

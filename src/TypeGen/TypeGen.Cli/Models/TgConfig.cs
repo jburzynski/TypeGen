@@ -23,6 +23,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "assemblies")]
         public string[] Assemblies { get; set; }
+        
+        [DataMember(Name = "generationSpecs")]
+        public string[] GenerationSpecs { get; set; }
 
         [DataMember(Name = "fileNameConverters")]
         public string[] FileNameConverters { get; set; }
@@ -35,6 +38,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "enumValueNameConverters")]
         public string[] EnumValueNameConverters { get; set; }
+        
+        [DataMember(Name = "enumStringInitializersConverters")]
+        public string[] EnumStringInitializersConverters { get; set; }
 
         [DataMember(Name = "externalAssemblyPaths")]
         public string[] ExternalAssemblyPaths { get; set; }
@@ -71,6 +77,15 @@ namespace TypeGen.Cli.Models
         
         [DataMember(Name = "customTypeMappings")]
         public Dictionary<string, string> CustomTypeMappings { get; set; }
+        
+        [DataMember(Name = "generateFromAssemblies")]
+        public bool? GenerateFromAssemblies { get; set; }
+        
+        [DataMember(Name = "useAttributesWithGenerationSpec")]
+        public bool? UseAttributesWithGenerationSpec { get; set; }
+        
+        [DataMember(Name = "enumStringInitializers")]
+        public bool? EnumStringInitializers { get; set; }
 
         public TgConfig Normalize()
         {
@@ -87,6 +102,7 @@ namespace TypeGen.Cli.Models
         public TgConfig MergeWithDefaultParams()
         {
             if (Assemblies == null) Assemblies = new string[0];
+            if (GenerationSpecs == null) GenerationSpecs = new string[0];
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
             if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
             if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
@@ -96,6 +112,7 @@ namespace TypeGen.Cli.Models
             if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
+            if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
@@ -103,12 +120,15 @@ namespace TypeGen.Cli.Models
             if (OutputPath == null) OutputPath = "";
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            // GenerateFromAssemblies should stay null if no value is provided // if (GenerateFromAssemblies == null)
+            if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
+            if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             return this;
         }
 
         public string[] GetAssemblies()
         {
-            return Assemblies.IsNullOrEmpty() ?
+            return Assemblies.IsNullOrEmpty() && !string.IsNullOrWhiteSpace(AssemblyPath) ?
                 new[] { AssemblyPath } :
                 Assemblies;
         }

@@ -631,25 +631,28 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type)">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type,TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Checks if a type is marked with an ExportTs... attribute
             </summary>
             <param name="type"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type})">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type},TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Gets all types marked with ExportTs... attributes
             </summary>
             <param name="types"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0},TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Removes members marked with TsIgnore attribute
             </summary>
             <param name="memberInfos"></param>
+            <param name="reader"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
@@ -683,26 +686,29 @@
             <param name="interfaceName"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Extensions.TypeExtensions.StripOptionalAndTypeUnion(System.String)">
-            <summary>
-            Strips the TypeScript type name of the 'optional' character ('?') and type union characters ('|')
-            </summary>
-            <param name="tsTypeName"></param>
-            <returns></returns>
-        </member>
         <member name="T:TypeGen.Core.GenerationContext">
             <summary>
             File generation context (used per Generator.Generate() invocation)
             </summary>
         </member>
-        <member name="P:TypeGen.Core.GenerationContext.AssemblyGeneratedTypes">
+        <member name="P:TypeGen.Core.GenerationContext.LastGenerationType">
             <summary>
-            Types that have already been generated for an assembly in the current call to Generator.Generate()
+            Type of the last file generation
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.GroupGeneratedTypes">
+            <summary>
+            Types that have already been generated for a group of types in the current call to Generator.Generate()
             </summary>
         </member>
         <member name="P:TypeGen.Core.GenerationContext.TypeGeneratedTypes">
             <summary>
             Types that have already been generated for a type in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GenerationContext.GenerationSpec">
+            <summary>
+            Generation spec used in current file generation
             </summary>
         </member>
         <member name="M:TypeGen.Core.GenerationContext.Add(System.Type)">
@@ -711,15 +717,15 @@
             </summary>
             <param name="type"></param>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.IsAssemblyContext">
+        <member name="M:TypeGen.Core.GenerationContext.IsGroupContext">
             <summary>
-            Checks if the generation context is for assembly generation
+            Checks if the generation context is for type group generation
             </summary>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForAssembly(System.Type)">
+        <member name="M:TypeGen.Core.GenerationContext.HasBeenGeneratedForGroup(System.Type)">
             <summary>
-            Checks if a type has already been generated for an assembly in the current context
+            Checks if a type has already been generated for a type group in the current context
             </summary>
             <param name="type"></param>
             <returns></returns>
@@ -732,14 +738,14 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.InitializeAssemblyGeneratedTypes">
+        <member name="M:TypeGen.Core.GenerationContext.InitializeGroupGeneratedTypes">
             <summary>
-            Initializes the assembly generated types collection
+            Initializes the group generated types collection
             </summary>
         </member>
-        <member name="M:TypeGen.Core.GenerationContext.ClearAssemblyGeneratedTypes">
+        <member name="M:TypeGen.Core.GenerationContext.ClearGroupGeneratedTypes">
             <summary>
-            Clears the assembly generated types collection
+            Clears the group generated types collection
             </summary>
         </member>
         <member name="M:TypeGen.Core.GenerationContext.InitializeTypeGeneratedTypes">
@@ -782,6 +788,13 @@
             For unit testing (mocking FileSystem)
             </summary>
             <param name="fileSystem"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generate(TypeGen.Core.SpecGeneration.GenerationSpec)">
+            <summary>
+            Generates TypeScript files from a GenerationSpec
+            </summary>
+            <param name="generationSpec"></param>
+            <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generate(System.Reflection.Assembly)">
             <inheritdoc />
@@ -862,11 +875,12 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Generator.GetEnumValueText(System.Object)">
+        <member name="M:TypeGen.Core.Generator.GetEnumValueText(System.Object,System.Type)">
             <summary>
             Gets TypeScript enum value definition source code
             </summary>
             <param name="enumValue">an enum value (result of Enum.GetValues())</param>
+            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Generator.GetEnumValuesText(System.Type)">
@@ -932,6 +946,11 @@
             A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.EnumStringInitializersConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# enum value names to TypeScript enum string initializers
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.GeneratorOptions.ExplicitPublicAccessor">
             <summary>
             Whether to generate explicit "public" accessor in TypeScript classes
@@ -960,7 +979,7 @@
         </member>
         <member name="P:TypeGen.Core.GeneratorOptions.CreateIndexFile">
             <summary>
-            Wheter to create an index file which exports all generated types
+            Whether to create an index file which exports all generated types
             </summary>
         </member>
         <member name="P:TypeGen.Core.GeneratorOptions.StrictNullChecks">
@@ -982,6 +1001,16 @@
             <summary>
             Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").
             Specified C# types will be always translated to the corresponding TypeScript types.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.UseAttributesWithGenerationSpec">
+            <summary>
+            Indicates whether to use attribute annotations in conjunction with generation spec metadata
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.EnumStringInitializers">
+            <summary>
+            Indicates whether to use enum string initializers
             </summary>
         </member>
         <member name="T:TypeGen.Core.IGenerator">
@@ -1011,6 +1040,273 @@
             Generate TypeScript files for a given type
             </summary>
             <param name="type"></param>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.AssemblySpecBuilder">
+            <summary>
+            Builds the assembly configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.AddClasses(System.String,System.String)">
+            <summary>
+            Specifies TS classes to be generated from the assembly by regex of a type's full name
+            </summary>
+            <param name="typeNameRegex"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.AddInterfaces(System.String,System.String)">
+            <summary>
+            Specifies TS interfaces to be generated from the assembly by regex of a type's full name
+            </summary>
+            <param name="typeNameRegex"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.AddEnums(System.String,System.String,System.Boolean)">
+            <summary>
+            Specifies TS enums to be generated from the assembly by regex of a type's full name
+            </summary>
+            <param name="typeNameRegex"></param>
+            <param name="outputDir"></param>
+            <param name="isConst"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.CustomBase(System.String,System.String,System.String)">
+            <summary>
+            Specifies custom base for all types matching the selected regex (equivalent of TsCustomBaseAttribute)
+            </summary>
+            <param name="base"></param>
+            <param name="importType"></param>
+            <param name="originalTypeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.IgnoreBase">
+            <summary>
+            Indicates whether to ignore base class declaration for all types matching the selected regex (equivalent of TsIgnoreBaseAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.AssemblySpecBuilder.StringInitializers(System.Boolean)">
+            <summary>
+            Specifies whether TypeScript string initializers should be used for all enum types matching the selected regex (equivalent of TsIgnoreBaseAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2">
+            <summary>
+            Base class for class and interface spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.CustomBase(System.String,System.String,System.String)">
+            <summary>
+            Specifies custom base for the type (equivalent of TsCustomBaseAttribute)
+            </summary>
+            <param name="base"></param>
+            <param name="importPath"></param>
+            <param name="originalTypeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultTypeOutput(System.String)">
+            <summary>
+            Specifies the default type output path for the selected member (equivalent of TsDefaultTypeOutputAttribute)
+            </summary>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultValue(System.String)">
+            <summary>
+            Specifies default value for the selected member (equivalent of TsDefaultValueAttribute)
+            </summary>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Ignore">
+            <summary>
+            Marks selected member as ignored (equivalent of TsIgnoreAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.IgnoreBase">
+            <summary>
+            Indicates whether to ignore base class declaration for type (equivalent of TsIgnoreBaseAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.MemberName(System.String)">
+            <summary>
+            Specifies name for the selected member (equivalent of TsMemberNameAttribute)
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.NotNull">
+            <summary>
+            Marks selected member as not null (equivalent of TsNotNullAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.NotUndefined">
+            <summary>
+            Marks selected member as not undefined (equivalent of TsNotUndefinedAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Null">
+            <summary>
+            Marks selected member as null (equivalent of TsNullAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(System.String,System.String,System.String)">
+            <summary>
+            Specifies custom type for the selected member (equivalent of TsTypeAttribute)
+            </summary>
+            <param name="typeName"></param>
+            <param name="importPath"></param>
+            <param name="originalTypeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(TypeGen.Core.TypeAnnotations.TsType)">
+            <summary>
+            Specifies custom type for the selected member (equivalent of TsTypeAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Undefined">
+            <summary>
+            Marks selected member as undefined (equivalent of TsUndefinedAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.ClassSpecBuilder">
+            <summary>
+            Builds the class configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2">
+            <summary>
+            Base class for enum spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2.StringInitializers(System.Boolean)">
+            <summary>
+            Specifies whether to use TypeScript string initializers for an enum
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.CommonInterfaceSpecBuilder`2">
+            <summary>
+            Base class for interface spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonInterfaceSpecBuilder`2.Optional">
+            <summary>
+            Marks selected member as optional (equivalent of TsOptionalAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.EnumSpecBuilder">
+            <summary>
+            Builds the enum configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.GenerationSpec">
+            <summary>
+            Base class for generation specs
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.ForAssembly(System.Reflection.Assembly)">
+            <summary>
+            Adds assembly configuration section
+            </summary>
+            <param name="assembly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass(System.Type,System.String)">
+            <summary>
+            Adds class configuration section
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass``1(System.String)">
+            <summary>
+            Adds class configuration section
+            </summary>
+            <param name="outputDir"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface(System.Type,System.String)">
+            <summary>
+            Adds interface configuration section
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface``1(System.String)">
+            <summary>
+            Adds interface configuration section
+            </summary>
+            <param name="outputDir"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum(System.Type,System.String,System.Boolean)">
+            <summary>
+            Adds enum configuration section
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <param name="isConst"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum``1(System.String,System.Boolean)">
+            <summary>
+            Adds enum configuration section
+            </summary>
+            <param name="outputDir"></param>
+            <param name="isConst"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.ClassSpecBuilder`1">
+            <summary>
+            Builds the class configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.EnumSpecBuilder`1">
+            <summary>
+            Builds the enum configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder`1">
+            <summary>
+            Builds the interface configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.InterfaceSpecBuilder">
+            <summary>
+            Builds the interface configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.TypeSpecBuilder`2">
+            <summary>
+            Base class for all type spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
         </member>
         <member name="T:TypeGen.Core.Storage.FileSystem">
             <summary>
@@ -1248,6 +1544,11 @@
         <member name="T:TypeGen.Core.TypeAnnotations.TsOptionalAttribute">
             <summary>
             Identifies an optional interface property
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsStringInitializersAttribute">
+            <summary>
+            Specifies whether TypeScript string initializers should be used for an enum
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsType">

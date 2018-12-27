@@ -14,6 +14,7 @@ using TypeGen.Cli.Models;
 using TypeGen.Core;
 using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli
@@ -125,9 +126,24 @@ namespace TypeGen.Cli
             var generator = new Generator { Options = generatorOptions };
 
             // generate
+            
+            IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
-            GenerationResult result = generator.Generate(assemblies);
-            IEnumerable<string> generatedFiles = result.GeneratedFiles.ToArray();
+            if (!config.GenerationSpecs.Any() || config.GenerateFromAssemblies == true)
+            {
+                generatedFiles = generator.Generate(assemblies).GeneratedFiles;
+            }
+
+            if (config.GenerationSpecs.Any())
+            {
+                var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies, verbose);
+                
+                generatedFiles = config.GenerationSpecs
+                    .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
+                    .Where(t => t != null)
+                    .Select(t => (GenerationSpec)Activator.CreateInstance(t))
+                    .Aggregate(generatedFiles, (acc, spec) => acc.Concat(generator.Generate(spec).GeneratedFiles));
+            }
             
             _logger.Log("");
             _logger.Log(generatedFiles.Select(x => $"Generated {x}").ToArray());

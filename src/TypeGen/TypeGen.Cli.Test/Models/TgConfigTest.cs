@@ -27,9 +27,9 @@ namespace TypeGen.Cli.Test.Models
             tgConfig.MergeWithDefaultParams();
             
             Assert.Equal(new string[0], tgConfig.Assemblies);
-            Assert.Equal(false, tgConfig.ExplicitPublicAccessor);
-            Assert.Equal(false, tgConfig.SingleQuotes);
-            Assert.Equal(false, tgConfig.AddFilesToProject);
+            Assert.False(tgConfig.ExplicitPublicAccessor);
+            Assert.False(tgConfig.SingleQuotes);
+            Assert.False(tgConfig.AddFilesToProject);
             Assert.Equal("ts", tgConfig.TypeScriptFileExtension);
             Assert.Equal(4, tgConfig.TabLength);
             Assert.Equal(new [] { "PascalCaseToKebabCaseConverter" }, tgConfig.FileNameConverters);
@@ -37,8 +37,8 @@ namespace TypeGen.Cli.Test.Models
             Assert.Equal(new[] { "PascalCaseToCamelCaseConverter" }, tgConfig.PropertyNameConverters);
             Assert.Equal(new string[0], tgConfig.EnumValueNameConverters);
             Assert.Equal(new string[0], tgConfig.ExternalAssemblyPaths);
-            Assert.Equal(false, tgConfig.CreateIndexFile);
-            Assert.Equal(false, tgConfig.StrictNullChecks);
+            Assert.False(tgConfig.CreateIndexFile);
+            Assert.False(tgConfig.StrictNullChecks);
             Assert.Equal("", tgConfig.CsNullableTranslation);
             Assert.Equal("", tgConfig.OutputPath);
         }

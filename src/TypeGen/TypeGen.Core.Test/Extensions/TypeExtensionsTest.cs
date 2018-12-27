@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
@@ -11,6 +12,11 @@ namespace TypeGen.Core.Test.Extensions
 {
     public class TypeExtensionsTest
     {
+        /// <summary>
+        /// this needs to be changed to use mocked MetadataReader
+        /// </summary>
+        private readonly IMetadataReader _metadataReader = new AttributeMetadataReader();
+        
         private class PlainClass {}
         [ExportTsClass] private class TsClass {}
         [ExportTsInterface] private class TsInterface {}
@@ -23,7 +29,7 @@ namespace TypeGen.Core.Test.Extensions
         [InlineData(typeof(TsEnum), true)]
         public void HasExportAttribute_Test(Type type, bool expectedResult)
         {
-            bool actualResult = type.HasExportAttribute();
+            bool actualResult = type.HasExportAttribute(_metadataReader);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -33,7 +39,7 @@ namespace TypeGen.Core.Test.Extensions
             IEnumerable<Type> types = new[] { typeof(PlainClass), typeof(TsClass), typeof(TsInterface), typeof(TsEnum), typeof(string), typeof(Type) };
             IEnumerable<Type> expectedResult = new[] { typeof(TsClass), typeof(TsInterface), typeof(TsEnum) };
 
-            IEnumerable<Type> actualResult = types.GetExportMarkedTypes();
+            IEnumerable<Type> actualResult = types.GetExportMarkedTypes(_metadataReader);
             
             Assert.Equal(expectedResult, actualResult);
         }
@@ -54,7 +60,7 @@ namespace TypeGen.Core.Test.Extensions
                 typeof(WithoutTsIgnore_TestClass).GetProperty("B")
             };
 
-            IEnumerable<MemberInfo> actualResult = memberInfos.WithoutTsIgnore();
+            IEnumerable<MemberInfo> actualResult = memberInfos.WithoutTsIgnore(_metadataReader);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -95,7 +101,7 @@ namespace TypeGen.Core.Test.Extensions
                 typeof(WithMembersFilter_TestClass).GetProperty("C")
             };
             
-            IEnumerable<PropertyInfo> expectedResult = new PropertyInfo[]
+            IEnumerable<PropertyInfo> expectedResult = new[]
             {
                 typeof(WithMembersFilter_TestClass).GetProperty("A"),
                 typeof(WithMembersFilter_TestClass).GetProperty("C")
@@ -137,19 +143,6 @@ namespace TypeGen.Core.Test.Extensions
         public void GetInterface_Test(Type type, string interfaceName, Type expectedResult)
         {
             Type actualResult = type.GetInterface(interfaceName);
-            Assert.Equal(expectedResult, actualResult);
-        }
-        
-        [Theory]
-        [InlineData("string", "string")]
-        [InlineData("number?", "number")]
-        [InlineData("Object[][]", "Object[][]")]
-        [InlineData("boolean | undefined", "boolean")]
-        [InlineData("boolean | null | undefined", "boolean")]
-        [InlineData("boolean | string", "boolean")]
-        public void StripOptionalAndTypeUnion_TsTypeNameGiven_StrippedTsTypeNameReturned(string tsTypeName, string expectedResult)
-        {
-            string actualResult = tsTypeName.StripOptionalAndTypeUnion();
             Assert.Equal(expectedResult, actualResult);
         }
     }
