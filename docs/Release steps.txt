@@ -1,6 +1,5 @@
 TypeGen:
 	- version update
-	- build-publish
 	- nuget-update
 
 - Docs
