@@ -127,6 +127,8 @@ namespace TypeGen.Cli
 
             // generate
             
+            if (config.ClearOutputDirectory == true) _fileSystem.ClearDirectory(generatorOptions.BaseOutputDirectory);
+            
             IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
             if (!config.GenerationSpecs.Any() || config.GenerateFromAssemblies == true)

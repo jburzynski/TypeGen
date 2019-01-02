@@ -62,6 +62,9 @@ namespace TypeGen.Cli.Models
 
         [DataMember(Name = "outputPath")]
         public string OutputPath { get; set; }
+        
+        [DataMember(Name = "clearOutputDirectory")]
+        public bool? ClearOutputDirectory { get; set; }
 
         [DataMember(Name = "createIndexFile")]
         public bool? CreateIndexFile { get; set; }
@@ -118,9 +121,10 @@ namespace TypeGen.Cli.Models
             if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (OutputPath == null) OutputPath = "";
+            if (ClearOutputDirectory == null) ClearOutputDirectory = false;
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            // GenerateFromAssemblies should stay null if no value is provided // if (GenerateFromAssemblies == null)
+            // GenerateFromAssemblies should stay null if no value is provided
             if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             return this;

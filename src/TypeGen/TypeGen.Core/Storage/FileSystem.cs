@@ -35,7 +35,7 @@ namespace TypeGen.Core.Storage
             Requires.NotNullOrEmpty(filePath, nameof(filePath));
             return File.Exists(filePath);
         }
-
+        
         /// <inheritdoc />
         public IEnumerable<string> GetFilesRecursive(string rootDirectory, string fileName)
         {
@@ -61,5 +61,35 @@ namespace TypeGen.Core.Storage
 
         /// <inheritdoc />
         public string GetCurrentDirectory() => Directory.GetCurrentDirectory();
+
+        /// <inheritdoc />
+        public void ClearDirectory(string directory)
+        {
+            Requires.NotNullOrEmpty(directory, nameof(directory));
+            
+            var directoryInfo = new DirectoryInfo(directory);
+
+            foreach (FileInfo file in directoryInfo.GetFiles())
+            {
+                file.Delete();
+            }
+            
+            foreach (DirectoryInfo dir in directoryInfo.EnumerateDirectories())
+            {
+                DeleteDirectoryRecursive(dir);
+            }
+        }
+        
+        private static void DeleteDirectoryRecursive(DirectoryInfo directoryInfo)
+        {
+            if (!directoryInfo.Exists) return;
+
+            foreach (DirectoryInfo dir in directoryInfo.EnumerateDirectories())
+            {
+                DeleteDirectoryRecursive(dir);
+            }
+            
+            directoryInfo.Delete(true);
+        }
     }
 }
