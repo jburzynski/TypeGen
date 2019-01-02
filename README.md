@@ -40,7 +40,7 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-After building your project, type `TypeGen generate` into the Package Manager Console, or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool.
+After building your project, type `TypeGen generate` into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool.
 
 This will generate a single TypeScript file (named *product-dto.ts*) in your project directory. The file will look like this:
 
