@@ -52,5 +52,11 @@ namespace TypeGen.Core.Storage
         /// </summary>
         /// <returns></returns>
         string GetCurrentDirectory();
+
+        /// <summary>
+        /// Clears the directory (removes all files and recursively removes all subdirectories)
+        /// </summary>
+        /// <param name="directory"></param>
+        void ClearDirectory(string directory);
     }
 }

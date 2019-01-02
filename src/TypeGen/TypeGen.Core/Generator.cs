@@ -43,13 +43,11 @@ namespace TypeGen.Core
 
             set
             {
-                _options = value ?? throw new ArgumentNullException(nameof(Options));
+                Requires.NotNull(value, nameof(value));
 
-                if (_templateService != null)
-                {
-                    _typeService.GeneratorOptions = value;
-                    _templateService.GeneratorOptions = value;
-                }
+                Options = value;
+                if (_typeService != null) _typeService.GeneratorOptions = value;
+                if (_templateService != null) _templateService.GeneratorOptions = value;
             }
         }
         
@@ -149,25 +147,24 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Assembly assembly)
         {
+            Requires.NotNull(assembly, nameof(assembly));
             return Generate(assembly, true);
         }
         
         private GenerationResult Generate(Assembly assembly, bool initializeGeneration)
         {
-            Requires.NotNull(assembly, nameof(assembly));
             return Generate(new[] { assembly }, initializeGeneration);
         }
         
         /// <inheritdoc />
         public GenerationResult Generate(IEnumerable<Assembly> assemblies)
         {
+            Requires.NotNull(assemblies, nameof(assemblies));
             return Generate(assemblies, true);
         }
 
         private GenerationResult Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
         {
-            Requires.NotNull(assemblies, nameof(assemblies));
-
             if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
             IEnumerable<string> files = Enumerable.Empty<string>();
 
@@ -209,13 +206,12 @@ namespace TypeGen.Core
         /// <inheritdoc />
         public GenerationResult Generate(Type type)
         {
+            Requires.NotNull(type, nameof(type));
             return Generate(type, true);
         }
 
         private GenerationResult Generate(Type type, bool initializeGeneration)
         {
-            Requires.NotNull(type, nameof(type));
-
             if (initializeGeneration)
             {
                 InitializeGeneration(GenerationType.Attribute);
