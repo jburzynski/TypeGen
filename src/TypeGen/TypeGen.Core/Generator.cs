@@ -43,13 +43,11 @@ namespace TypeGen.Core
 
             set
             {
-                _options = value ?? throw new ArgumentNullException(nameof(Options));
+                Requires.NotNull(value, nameof(value));
 
-                if (_templateService != null)
-                {
-                    _typeService.GeneratorOptions = value;
-                    _templateService.GeneratorOptions = value;
-                }
+                Options = value;
+                if (_typeService != null) _typeService.GeneratorOptions = value;
+                if (_templateService != null) _templateService.GeneratorOptions = value;
             }
         }
         
