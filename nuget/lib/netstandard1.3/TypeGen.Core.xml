@@ -1334,6 +1334,9 @@
         <member name="M:TypeGen.Core.Storage.FileSystem.GetCurrentDirectory">
             <inheritdoc />
         </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.ClearDirectory(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:TypeGen.Core.Storage.IFileSystem.SaveFile(System.String,System.String)">
             <summary>
             Writes a text file to the specified location
@@ -1382,6 +1385,12 @@
             Gets the current directory
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.ClearDirectory(System.String)">
+            <summary>
+            Clears the directory (removes all files and recursively removes all subdirectories)
+            </summary>
+            <param name="directory"></param>
         </member>
         <member name="M:TypeGen.Core.Storage.IInternalStorage.GetEmbeddedResource(System.String)">
             <summary>
