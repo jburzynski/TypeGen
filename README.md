@@ -40,7 +40,7 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-After building your project, type `TypeGen generate` into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool.
+After building your project, type `TypeGen generate` into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool. **Note**: if you're using generation specs, you should also add your spec(s) in `tgconfig.json` under the `generationSpecs` parameter (more details [in the docs](https://typegen.readthedocs.io/en/latest/cli.html#configuration-file)).
 
 This will generate a single TypeScript file (named *product-dto.ts*) in your project directory. The file will look like this:
 
