@@ -43,11 +43,11 @@ namespace TypeGen.Core
 
             set
             {
-                Requires.NotNull(value, nameof(value));
+                Requires.NotNull(value, nameof(Options));
 
-                Options = value;
-                if (_typeService != null) _typeService.GeneratorOptions = value;
-                if (_templateService != null) _templateService.GeneratorOptions = value;
+                _options = value;
+                if (_typeService != null) _typeService.GeneratorOptions = _options;
+                if (_templateService != null) _templateService.GeneratorOptions = _options;
             }
         }
         
