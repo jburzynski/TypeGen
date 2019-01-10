@@ -56,7 +56,7 @@ export class ProductDto {
 Some of TypeGen's features include:
 
 * generating TypeScript classes, interfaces and enums - single class per file
-* support for collection (or nested collection) property types
+* support for collection (or nested collection) types
 * generic classes/types generation
 * support for inheritance
 * customizable convertion between C#/TypeScript names (naming conventions)
