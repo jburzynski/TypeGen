@@ -68,6 +68,7 @@ namespace TypeGen.Core.Storage
             Requires.NotNullOrEmpty(directory, nameof(directory));
             
             var directoryInfo = new DirectoryInfo(directory);
+            if (!directoryInfo.Exists) return;
 
             foreach (FileInfo file in directoryInfo.GetFiles())
             {
