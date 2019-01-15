@@ -3,12 +3,12 @@
     internal interface ITemplateService
     {
         GeneratorOptions GeneratorOptions { get; set; }
-        string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody);
+        string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null);
         string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string type, string defaultValue);
         string FillClassPropertyTemplate(string accessor, string name, string type);
-        string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody);
+        string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null);
         string FillInterfacePropertyTemplate(string name, string type, bool isOptional);
-        string FillEnumTemplate(string imports, string name, string values, bool isConst);
+        string FillEnumTemplate(string imports, string name, string values, bool isConst, string fileHeading = null);
         string FillEnumValueTemplate(string name, int? intValue = null, string stringValue = null);
         string FillImportTemplate(string name, string typeAlias, string path);
         string FillIndexTemplate(string exports);

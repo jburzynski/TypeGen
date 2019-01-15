@@ -28,6 +28,7 @@ namespace TypeGen.Core
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
         public static bool DefaultUseAttributesWithGenerationSpec => false;
         public static bool DefaultEnumStringInitializers => false;
+        public static string DefaultFileHeading => null;
 
         public GeneratorOptions()
         {
@@ -133,5 +134,10 @@ namespace TypeGen.Core
         /// Indicates whether to use enum string initializers
         /// </summary>
         public bool EnumStringInitializers { get; set; }
+
+        /// <summary>
+        /// Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
+        /// </summary>
+        public string FileHeading { get; set; }
     }
 }

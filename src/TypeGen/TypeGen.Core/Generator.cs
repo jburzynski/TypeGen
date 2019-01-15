@@ -372,8 +372,8 @@ namespace TypeGen.Core
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
             string content = classAttribute != null ?
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody) :
-                _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody);
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading) :
+                _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
 
@@ -401,7 +401,7 @@ namespace TypeGen.Core
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
-            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst);
+            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading);
 
             // write TypeScript file
 

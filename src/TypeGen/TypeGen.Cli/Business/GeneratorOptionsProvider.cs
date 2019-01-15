@@ -61,7 +61,8 @@ namespace TypeGen.Cli.Business
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,
                 UseAttributesWithGenerationSpec = config.UseAttributesWithGenerationSpec ?? GeneratorOptions.DefaultUseAttributesWithGenerationSpec,
-                EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers
+                EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers,
+                FileHeading = config.FileHeading ?? GeneratorOptions.DefaultFileHeading
             };
         }
 

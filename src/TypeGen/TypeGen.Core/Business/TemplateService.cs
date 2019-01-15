@@ -22,6 +22,7 @@ namespace TypeGen.Core.Business
         private string _importTemplate;
         private string _indexTemplate;
         private string _indexExportTemplate;
+        private string _headingTemplate;
 
         public GeneratorOptions GeneratorOptions { get; set; }
 
@@ -43,17 +44,21 @@ namespace TypeGen.Core.Business
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
             _indexTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl");
             _indexExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl");
+            _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
+        public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null)
         {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
             return ReplaceSpecialChars(_classTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("properties"), properties)
                 .Replace(GetTag("customHead"), customHead)
-                .Replace(GetTag("customBody"), customBody);
+                .Replace(GetTag("customBody"), customBody)
+                .Replace(GetTag("fileHeading"), fileHeading);
         }
 
         public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string type, string defaultValue)
@@ -73,15 +78,18 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("type"), type);
         }
 
-        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody)
+        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null)
         {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
             return ReplaceSpecialChars(_interfaceTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("properties"), properties)
                 .Replace(GetTag("customHead"), customHead)
-                .Replace(GetTag("customBody"), customBody);
+                .Replace(GetTag("customBody"), customBody)
+                .Replace(GetTag("fileHeading"), fileHeading);
         }
 
         public string FillInterfacePropertyTemplate(string name, string type, bool isOptional)
@@ -92,13 +100,16 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("type"), type);
         }
 
-        public string FillEnumTemplate(string imports, string name, string values, bool isConst)
+        public string FillEnumTemplate(string imports, string name, string values, bool isConst, string fileHeading = null)
         {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
             return ReplaceSpecialChars(_enumTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
-                .Replace(GetTag("modifiers"), isConst ? " const" : "");
+                .Replace(GetTag("modifiers"), isConst ? " const" : "")
+                .Replace(GetTag("fileHeading"), fileHeading);
         }
 
         public string FillEnumValueTemplate(string name, int? intValue = null, string stringValue = null)
