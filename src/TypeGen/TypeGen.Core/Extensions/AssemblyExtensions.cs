@@ -23,7 +23,8 @@ namespace TypeGen.Core.Extensions
             try
             {
                 return assembly.DefinedTypes
-                     .Select(ti => ti.AsType());
+                    .Where(ti => ti?.Namespace != null) // skip anonymous types
+                    .Select(ti => ti.AsType());
             }
             catch (ReflectionTypeLoadException e)
             {

@@ -1013,6 +1013,11 @@
             Indicates whether to use enum string initializers
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.FileHeading">
+            <summary>
+            Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.IGenerator">
             <summary>
             Interface for a TypeScript generator class

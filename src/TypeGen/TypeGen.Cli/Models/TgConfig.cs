@@ -89,6 +89,9 @@ namespace TypeGen.Cli.Models
         
         [DataMember(Name = "enumStringInitializers")]
         public bool? EnumStringInitializers { get; set; }
+        
+        [DataMember(Name = "fileHeading")]
+        public string FileHeading { get; set; }
 
         public TgConfig Normalize()
         {
@@ -127,6 +130,7 @@ namespace TypeGen.Cli.Models
             // GenerateFromAssemblies should stay null if no value is provided
             if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
+            if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
             return this;
         }
 

@@ -22,6 +22,7 @@
     <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
     <EmbeddedResource Include="Templates\EnumValue.tpl" />
+    <EmbeddedResource Include="Templates\Heading.tpl" />
     <EmbeddedResource Include="Templates\Import.tpl" />
     <EmbeddedResource Include="Templates\Interface.tpl" />
     <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
