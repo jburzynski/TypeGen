@@ -27,6 +27,8 @@ namespace TypeGen.Cli.Business
         private readonly string _globalFallbackPath;
         private readonly string _sharedFolder;
         private List<string> _nugetPackagesFolders;
+        
+        public bool LogVerbose { get; set; }
 
         public AssemblyResolver(IFileSystem fileSystem, ILogger logger, string projectFolder)
         {
@@ -65,6 +67,8 @@ namespace TypeGen.Cli.Business
 
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
+            if (LogVerbose) _logger.Log($"Attempting to resolve assembly '{args.Name}'...");
+            
             // step 1 - search by assembly name (nuget global + nuget fallback + user-defined)
 
             // nuget
@@ -95,7 +99,8 @@ namespace TypeGen.Cli.Business
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             
             // log if assembly not found
-            if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", Directories)}");
+            IEnumerable<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder});
+            if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", searchedDirectories)}");
             
             // return assembly or null
             return assembly;
@@ -149,7 +154,11 @@ namespace TypeGen.Cli.Business
                 try
                 {
                     Assembly assembly = Assembly.LoadFile(path);
-                    if (assembly.GetName().Version.ToString() == assemblyVersion) return assembly;
+                    if (assembly.GetName().Version.ToString() == assemblyVersion)
+                    {
+                        if (LogVerbose) _logger.Log($"Assembly '{assembly.FullName}' found in: {path}");
+                        return assembly;
+                    }
                 }
                 catch (BadImageFormatException)
                 {
