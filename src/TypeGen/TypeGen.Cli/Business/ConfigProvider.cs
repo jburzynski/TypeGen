@@ -116,7 +116,7 @@ namespace TypeGen.Cli.Business
 
             if (foundFiles.Any()) return foundFiles.First();
 
-            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's bin\\ folder; searched recursively). Please make sure you have your project built.");
+            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's bin\\ folder; searched recursively). Please make sure your project is built.");
         }
     }
 }
