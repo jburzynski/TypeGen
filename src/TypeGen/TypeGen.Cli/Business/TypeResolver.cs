@@ -51,7 +51,7 @@ namespace TypeGen.Cli.Business
                 return ResolveFromAssembly(nameParts[0], nameParts[1], _projectFolder);
             }
 
-            throw new CliException($"Failed to load converter '{typeIdentifier}'. Incorrect name format.");
+            throw new CliException($"Failed to load type '{typeIdentifier}'. Incorrect name format.");
         }
         
         private Type ResolveNoAssembly(string typeName, string typeNameSuffix)
@@ -65,11 +65,11 @@ namespace TypeGen.Cli.Business
                 result = ResolveFromAssembly(assembly, typeName, typeNameSuffix);
                 if (result == null) continue;
 
-                if (_logVerbose) _logger.Log($"Converter '{typeName}' found in assembly '{assembly.FullName}'");
+                if (_logVerbose) _logger.Log($"Type '{typeName}' found in assembly '{assembly.FullName}'");
                 return result;
             }
 
-            if (_logVerbose) _logger.Log($"Converter '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.");
+            if (_logVerbose) _logger.Log($"Type '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.");
 
             // fallback to TypeGen.Core
 
@@ -77,11 +77,11 @@ namespace TypeGen.Cli.Business
             result = ResolveFromAssembly(coreAssembly, typeName, typeNameSuffix);
             if (result != null)
             {
-                if (_logVerbose) _logger.Log($"Converter '{typeName}' found in TypeGen.Core");
+                if (_logVerbose) _logger.Log($"Type '{typeName}' found in TypeGen.Core");
                 return result;
             }
 
-            throw new CliException($"Converter '{typeName}' not found in TypeGen.Core or any of the assemblies: '{string.Join("; ", _assemblies)}'");
+            throw new CliException($"Type '{typeName}' not found in TypeGen.Core or any of the assemblies: '{string.Join("; ", _assemblies)}'");
         }
 
         private Type ResolveFromAssembly(string assemblyPath, string typeName, string typeNameSuffix)
@@ -89,7 +89,7 @@ namespace TypeGen.Cli.Business
             string assemblyFullPath = Path.Combine(_projectFolder, assemblyPath);
             if (!_fileSystem.FileExists(assemblyFullPath))
             {
-                throw new CliException($"Assembly path '{assemblyFullPath}' not found for converter '{typeName}'");
+                throw new CliException($"Assembly path '{assemblyFullPath}' not found for type '{typeName}'");
             }
 
             Assembly converterAssembly = Assembly.LoadFrom(assemblyFullPath);
