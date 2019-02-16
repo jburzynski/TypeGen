@@ -17,7 +17,7 @@ namespace TypeGen.Core
     /// <summary>
     /// Class used for generating TypeScript files from C# types
     /// </summary>
-    public class Generator : IGenerator
+    public class Generator
     {
         // dependencies
 
