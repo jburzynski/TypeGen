@@ -5,21 +5,21 @@ using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Models
 {
-	internal class DefaultParamsMerger
+	internal class DefaultParamsBuilder
 	{
 		private readonly TgConfig _config;
 
-		private DefaultParamsMerger(TgConfig config)
+		private DefaultParamsBuilder(TgConfig config)
 		{
 			_config = config;
 		}
 
-		public static DefaultParamsMerger InstanceFor(TgConfig config)
+		public static DefaultParamsBuilder InstanceFor(TgConfig config)
 		{
-			return new DefaultParamsMerger(config);
+			return new DefaultParamsBuilder(config);
 		}
 
-		public DefaultParamsMerger WithAssembliesOrDefault()
+		public DefaultParamsBuilder WithAssembliesOrDefault()
 		{
 			if (_config.Assemblies == null)
 			{
@@ -29,7 +29,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithGenerationSpecsOrDefault()
+		public DefaultParamsBuilder WithGenerationSpecsOrDefault()
 		{
 			if (_config.GenerationSpecs == null)
 			{
@@ -39,7 +39,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithExplicitPublicAccessorOrDefault()
+		public DefaultParamsBuilder WithExplicitPublicAccessorOrDefault()
 		{
 			if (_config.ExplicitPublicAccessor == null)
 			{
@@ -49,7 +49,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithSingleQuotesOrDefault()
+		public DefaultParamsBuilder WithSingleQuotesOrDefault()
 		{
 			if (_config.SingleQuotes == null)
 			{
@@ -59,7 +59,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithDefaultAddFilesToProjectOrDefault()
+		public DefaultParamsBuilder WithDefaultAddFilesToProjectOrDefault()
 		{
 			if (_config.AddFilesToProject == null)
 			{
@@ -69,7 +69,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithTypeScriptFileExtensionOrDefault()
+		public DefaultParamsBuilder WithTypeScriptFileExtensionOrDefault()
 		{
 			if (_config.TypeScriptFileExtension == null)
 			{
@@ -79,7 +79,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithTabLengthOrDefault()
+		public DefaultParamsBuilder WithTabLengthOrDefault()
 		{
 			if (_config.TabLength == null)
 			{
@@ -89,7 +89,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithFileNameConvertersOrDefault()
+		public DefaultParamsBuilder WithFileNameConvertersOrDefault()
 		{
 			if (_config.FileNameConverters == null)
 			{
@@ -99,7 +99,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithTypeNameConvertersOrDefault()
+		public DefaultParamsBuilder WithTypeNameConvertersOrDefault()
 		{
 			if (_config.TypeNameConverters == null)
 			{
@@ -109,7 +109,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithPropertyNameConvertersOrDefault()
+		public DefaultParamsBuilder WithPropertyNameConvertersOrDefault()
 		{
 			if (_config.PropertyNameConverters == null)
 			{
@@ -119,7 +119,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithEnumValueNameConvertersOrDefault()
+		public DefaultParamsBuilder WithEnumValueNameConvertersOrDefault()
 		{ 
 			if (_config.EnumValueNameConverters == null)
 			{
@@ -129,7 +129,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithEnumStringInitializersConvertersOrDefault()
+		public DefaultParamsBuilder WithEnumStringInitializersConvertersOrDefault()
 		{
 			if (_config.EnumStringInitializersConverters == null)
 			{
@@ -139,7 +139,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithExternalAssemblyPathsOrDefault()
+		public DefaultParamsBuilder WithExternalAssemblyPathsOrDefault()
 		{
 			if (_config.ExternalAssemblyPaths == null)
 			{
@@ -149,7 +149,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithCreateIndexFileOrDefault()
+		public DefaultParamsBuilder WithCreateIndexFileOrDefault()
 		{
 			if (_config.CreateIndexFile == null)
 			{
@@ -159,7 +159,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithStrictNullChecksOrDefault()
+		public DefaultParamsBuilder WithStrictNullChecksOrDefault()
 		{
 			if (_config.StrictNullChecks == null)
 			{
@@ -169,7 +169,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithCsNullableTranslationOrDefault()
+		public DefaultParamsBuilder WithCsNullableTranslationOrDefault()
 		{ 
 			if (_config.CsNullableTranslation == null)
 			{
@@ -179,7 +179,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithOutputPathOrDefault()
+		public DefaultParamsBuilder WithOutputPathOrDefault()
 		{
 			if (_config.OutputPath == null)
 			{
@@ -189,7 +189,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithClearOutputDirectoryOrDefault()
+		public DefaultParamsBuilder WithClearOutputDirectoryOrDefault()
 		{
 			if (_config.ClearOutputDirectory == null)
 			{
@@ -199,7 +199,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithDefaultValuesForTypesOrDefault()
+		public DefaultParamsBuilder WithDefaultValuesForTypesOrDefault()
 		{
 			if (_config.DefaultValuesForTypes == null)
 			{
@@ -211,7 +211,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithCustomTypeMappingsOrDefault()
+		public DefaultParamsBuilder WithCustomTypeMappingsOrDefault()
 		{
 			if (_config.CustomTypeMappings == null)
 			{
@@ -223,7 +223,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithUseAttributesWithGenerationSpecOrDefault()
+		public DefaultParamsBuilder WithUseAttributesWithGenerationSpecOrDefault()
 		{
 			if (_config.UseAttributesWithGenerationSpec == null)
 			{
@@ -233,7 +233,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithEnumStringInitializersOrDefault()
+		public DefaultParamsBuilder WithEnumStringInitializersOrDefault()
 		{
 			if (_config.EnumStringInitializers == null)
 			{
@@ -243,7 +243,7 @@ namespace TypeGen.Cli.Models
 			return this;
 		}
 
-		public DefaultParamsMerger WithFileHeadingOrDefault()
+		public DefaultParamsBuilder WithFileHeadingOrDefault()
 		{
 			if (_config.FileHeading == null)
 			{
@@ -252,7 +252,7 @@ namespace TypeGen.Cli.Models
 
 			return this;
 		}
-		public DefaultParamsMerger WithGenerateFromAssembliesOrDefault()
+		public DefaultParamsBuilder WithGenerateFromAssembliesOrDefault()
 		{
 			// GenerateFromAssemblies should stay null if no value is provided
 			if (_config.GenerateFromAssemblies == null)

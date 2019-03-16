@@ -104,7 +104,7 @@ namespace TypeGen.Cli.Models
 
 		public TgConfig MergeWithDefaultParams()
 		{
-			return DefaultParamsMerger
+			return DefaultParamsBuilder
 				.InstanceFor(this)
 				.WithAssembliesOrDefault()
 				.WithGenerationSpecsOrDefault()
