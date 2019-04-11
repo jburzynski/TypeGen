@@ -10,26 +10,11 @@ namespace TypeGen.Core.SpecGeneration
     /// </summary>
     public abstract class GenerationSpec
     {
-        internal IDictionary<Assembly, AssemblySpec> AssemblySpecs { get; }
         internal IDictionary<Type, TypeSpec> TypeSpecs { get; }
 
         protected GenerationSpec()
         {
-            AssemblySpecs = new Dictionary<Assembly, AssemblySpec>();
             TypeSpecs = new Dictionary<Type, TypeSpec>();
-        }
-
-        /// <summary>
-        /// Adds assembly configuration section
-        /// </summary>
-        /// <param name="assembly"></param>
-        /// <returns></returns>
-        protected AssemblySpecBuilder ForAssembly(Assembly assembly)
-        {
-            var assemblySpec = new AssemblySpec();
-            AssemblySpecs[assembly] = assemblySpec;
-            
-            return new AssemblySpecBuilder(assemblySpec);
         }
 
         /// <summary>

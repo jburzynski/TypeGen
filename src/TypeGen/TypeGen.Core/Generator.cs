@@ -80,16 +80,15 @@ namespace TypeGen.Core
         {
             switch (generationType)
             {
-                case GenerationType.GenerationSpecType:
-                case GenerationType.GenerationSpecAssembly:
-                    _metadataReader = new ComboMetadataReader(new GenerationSpecTypeMetadataReader(generationSpec), new GenerationSpecAssemblyMetadataReader(generationSpec));
+                case GenerationType.GenerationSpec:
+                    _metadataReader = new GenerationSpecMetadataReader(generationSpec);
                     break;
                 case GenerationType.Attribute:
                     _metadataReader = new AttributeMetadataReader();
                     break;
             }
 
-            if (generationType.IsGenerationSpecGenerationType() && Options.UseAttributesWithGenerationSpec)
+            if (generationType == GenerationType.GenerationSpec && Options.UseAttributesWithGenerationSpec)
             {
                 _metadataReader = new ComboMetadataReader(_metadataReader, new AttributeMetadataReader());
             }
@@ -113,16 +112,7 @@ namespace TypeGen.Core
             
             IEnumerable<string> files = Enumerable.Empty<string>();
             
-            // generate for assemblies
-            
-            InitializeGeneration(GenerationType.GenerationSpecAssembly, generationSpec);
-
-            files = generationSpec.AssemblySpecs
-                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
-
-            // generate individual types
-            
-            InitializeGeneration(GenerationType.GenerationSpecType, generationSpec);
+            InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
             _generationContext.InitializeGroupGeneratedTypes();
 
             files = generationSpec.TypeSpecs
@@ -177,11 +167,6 @@ namespace TypeGen.Core
                     IEnumerable<Type> types = assembly.GetLoadableTypes()
                         .GetExportMarkedTypes(_metadataReader)
                         .Where(type => !_generationContext.HasBeenGeneratedForGroup(type));
-
-                    if (_generationContext.LastGenerationType == GenerationType.GenerationSpecAssembly)
-                    {
-                        types = types.Where(t => !_generationContext.GenerationSpec.TypeSpecs.ContainsKey(t));
-                    }
                     
                     files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false).GeneratedFiles));
                 });
