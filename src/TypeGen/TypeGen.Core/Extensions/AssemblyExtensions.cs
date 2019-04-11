@@ -8,7 +8,7 @@ using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
 {
-    internal static class AssemblyExtensions
+    public static class AssemblyExtensions
     {
         /// <summary>
         /// Gets all types that can be loaded from an assembly.
