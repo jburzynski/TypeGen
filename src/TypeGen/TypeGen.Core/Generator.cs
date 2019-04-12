@@ -438,6 +438,12 @@ namespace TypeGen.Core
                 }
             }
 
+            if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
+            {
+                var valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
+                return _templateService.FillClassConstantTemplate(accessorText, name, valueFormatted);
+            }
+
             return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
         }
 

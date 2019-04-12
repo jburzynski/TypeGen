@@ -8,7 +8,7 @@ namespace TypeGen.Core
     /// <summary>
     /// Represents a result from file generation
     /// </summary>
-    public class GenerationResult
+    public struct GenerationResult
     {
         /// <summary>
         /// Base output directory of the generator at the time of generation
