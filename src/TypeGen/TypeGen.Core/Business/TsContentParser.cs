@@ -10,7 +10,7 @@ using TypeGen.Core.Validation;
 namespace TypeGen.Core.Business
 {
     /// <summary>
-    /// Contains logic for parsing TypeScript file contents
+    /// Parses TypeScript file contents
     /// </summary>
     internal class TsContentParser : ITsContentParser
     {

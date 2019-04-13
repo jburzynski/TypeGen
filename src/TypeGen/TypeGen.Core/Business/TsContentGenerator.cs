@@ -14,7 +14,7 @@ using TypeGen.Core.Validation;
 namespace TypeGen.Core.Business
 {
     /// <summary>
-    /// Contains logic for generating TypeScript file contents
+    /// Generates TypeScript file contents
     /// </summary>
     internal class TsContentGenerator : ITsContentGenerator, IMetadataReaderSetter
     {

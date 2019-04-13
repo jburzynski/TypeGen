@@ -13,7 +13,7 @@ using TypeGen.Core.Validation;
 namespace TypeGen.Core.Business
 {
     /// <summary>
-    /// Contains logic for retrieving information about types, relevant to generating TypeScript files.
+    /// Retrieves information about types
     /// </summary>
     internal class TypeService : ITypeService, IMetadataReaderSetter
     {

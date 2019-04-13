@@ -10,7 +10,7 @@ using TypeGen.Core.Validation;
 namespace TypeGen.Core.Business
 {
     /// <summary>
-    /// Contains logic for handling type dependencies (i.e. types that a type depends on)
+    /// Retrieves information about type dependencies (i.e. types that a type depends on)
     /// </summary>
     internal class TypeDependencyService : ITypeDependencyService, IMetadataReaderSetter
     {

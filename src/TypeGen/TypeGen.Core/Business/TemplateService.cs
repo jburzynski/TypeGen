@@ -4,7 +4,7 @@ using TypeGen.Core.Utils;
 namespace TypeGen.Core.Business
 {
     /// <summary>
-    /// Contains logic for filling templates with data
+    /// Fills templates with data
     /// </summary>
     internal class TemplateService : ITemplateService
     {
