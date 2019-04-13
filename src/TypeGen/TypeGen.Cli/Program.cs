@@ -133,7 +133,7 @@ namespace TypeGen.Cli
 
             if (!config.GenerationSpecs.Any() || config.GenerateFromAssemblies == true)
             {
-                generatedFiles = generator.Generate(assemblies).GeneratedFiles;
+                generatedFiles = generator.Generate(assemblies);
             }
 
             if (config.GenerationSpecs.Any())
@@ -144,7 +144,7 @@ namespace TypeGen.Cli
                     .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
                     .Where(t => t != null)
                     .Select(t => (GenerationSpec)Activator.CreateInstance(t))
-                    .Aggregate(generatedFiles, (acc, spec) => acc.Concat(generator.Generate(spec).GeneratedFiles));
+                    .Aggregate(generatedFiles, (acc, spec) => acc.Concat(generator.Generate(spec)));
             }
             
             _logger.Log("");

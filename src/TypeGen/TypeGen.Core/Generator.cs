@@ -105,8 +105,8 @@ namespace TypeGen.Core
         /// Generates TypeScript files from a GenerationSpec
         /// </summary>
         /// <param name="generationSpec"></param>
-        /// <returns></returns>
-        public GenerationResult Generate(GenerationSpec generationSpec)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(GenerationSpec generationSpec)
         {
             Requires.NotNull(generationSpec, nameof(generationSpec));
             
@@ -116,7 +116,7 @@ namespace TypeGen.Core
             _generationContext.InitializeGroupGeneratedTypes();
 
             files = generationSpec.TypeSpecs
-                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false).GeneratedFiles));
+                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false)));
 
             _generationContext.ClearGroupGeneratedTypes();
 
@@ -124,36 +124,40 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile)
             {
-                files = files.Concat(GenerateIndexFile(files).GeneratedFiles);
+                files = files.Concat(GenerateIndexFile(files));
             }
 
-            return new GenerationResult
-            {
-                BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files
-            };
+            return files;
         }
         
-        /// <inheritdoc />
-        public GenerationResult Generate(Assembly assembly)
+        /// <summary>
+        /// Generates TypeScript files from an assembly
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(Assembly assembly)
         {
             Requires.NotNull(assembly, nameof(assembly));
             return Generate(assembly, true);
         }
         
-        private GenerationResult Generate(Assembly assembly, bool initializeGeneration)
+        private IEnumerable<string> Generate(Assembly assembly, bool initializeGeneration)
         {
             return Generate(new[] { assembly }, initializeGeneration);
         }
         
-        /// <inheritdoc />
-        public GenerationResult Generate(IEnumerable<Assembly> assemblies)
+        /// <summary>
+        /// Generates TypeScript files from multiple assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
         {
             Requires.NotNull(assemblies, nameof(assemblies));
             return Generate(assemblies, true);
         }
 
-        private GenerationResult Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
+        private IEnumerable<string> Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
         {
             if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
             IEnumerable<string> files = Enumerable.Empty<string>();
@@ -168,7 +172,7 @@ namespace TypeGen.Core
                         .GetExportMarkedTypes(_metadataReader)
                         .Where(type => !_generationContext.HasBeenGeneratedForGroup(type));
                     
-                    files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false).GeneratedFiles));
+                    files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false)));
                 });
 
                 _generationContext.ClearGroupGeneratedTypes();
@@ -178,24 +182,24 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile && initializeGeneration)
             {
-                files = files.Concat(GenerateIndexFile(files).GeneratedFiles);
+                files = files.Concat(GenerateIndexFile(files));
             }
 
-            return new GenerationResult
-            {
-                BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files
-            };
+            return files;
         }
 
-        /// <inheritdoc />
-        public GenerationResult Generate(Type type)
+        /// <summary>
+        /// Generates TypeScript files from a type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(Type type)
         {
             Requires.NotNull(type, nameof(type));
             return Generate(type, true);
         }
 
-        private GenerationResult Generate(Type type, bool initializeGeneration)
+        private IEnumerable<string> Generate(Type type, bool initializeGeneration)
         {
             if (initializeGeneration)
             {
@@ -210,28 +214,25 @@ namespace TypeGen.Core
 
             if (_generationContext.IsGroupContext())
             {
-                files = GenerateType(type).GeneratedFiles;
+                files = GenerateType(type);
             }
             else
             {
-                ExecuteWithTypeContextLogging(() => { files = GenerateType(type).GeneratedFiles; });
+                ExecuteWithTypeContextLogging(() => { files = GenerateType(type); });
             }
 
             _generationContext.ClearTypeGeneratedTypes();
             if (initializeGeneration) _generationContext.ClearGroupGeneratedTypes();
 
-            return new GenerationResult
-            {
-                BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = files.Distinct()
-            };
+            return files.Distinct();
         }
 
         /// <summary>
         /// Generates an `index.ts` file which exports all types within the generated files
         /// </summary>
         /// <param name="generatedFiles"></param>
-        private GenerationResult GenerateIndexFile(IEnumerable<string> generatedFiles)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateIndexFile(IEnumerable<string> generatedFiles)
         {
             var typeScriptFileExtension = "";
             if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
@@ -249,19 +250,15 @@ namespace TypeGen.Core
             string filename = "index" + typeScriptFileExtension;
             _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
 
-            return new GenerationResult
-            {
-                BaseOutputDirectory = Options.BaseOutputDirectory,
-                GeneratedFiles = new[] { filename }
-            };
+            return new[] { filename };
         }
 
         /// <summary>
         /// Contains the actual logic of generating TypeScript files for a given type
         /// </summary>
         /// <param name="type"></param>
-        /// <returns></returns>
-        private GenerationResult GenerateType(Type type)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateType(Type type)
         {
             var classAttribute = _metadataReader.GetAttribute<ExportTsClassAttribute>(type);
             var interfaceAttribute = _metadataReader.GetAttribute<ExportTsInterfaceAttribute>(type);
@@ -290,8 +287,8 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDirectory"></param>
-        /// <returns></returns>
-        private GenerationResult GenerateNotMarked(Type type, string outputDirectory)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateNotMarked(Type type, string outputDirectory)
         {
             if (type.GetTypeInfo().IsClass)
             {
@@ -311,7 +308,8 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="classAttribute"></param>
-        private GenerationResult GenerateClass(Type type, ExportTsClassAttribute classAttribute)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateClass(Type type, ExportTsClassAttribute classAttribute)
         {
             return GenerateClassOrInterface(type, classAttribute, null);
         }
@@ -321,15 +319,16 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="interfaceAttribute"></param>
-        private GenerationResult GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateInterface(Type type, ExportTsInterfaceAttribute interfaceAttribute)
         {
             return GenerateClassOrInterface(type, null, interfaceAttribute);
         }
 
-        private GenerationResult GenerateClassOrInterface(Type type, ExportTsClassAttribute classAttribute, ExportTsInterfaceAttribute interfaceAttribute)
+        private IEnumerable<string> GenerateClassOrInterface(Type type, ExportTsClassAttribute classAttribute, ExportTsInterfaceAttribute interfaceAttribute)
         {
             string outputDir = classAttribute != null ? classAttribute.OutputDir : interfaceAttribute.OutputDir;
-            GenerationResult dependenciesGenerationResult = GenerateTypeDependencies(type, outputDir);
+            IEnumerable<string> dependenciesGenerationResult = GenerateTypeDependencies(type, outputDir);
 
             // get text for sections
 
@@ -364,11 +363,7 @@ namespace TypeGen.Core
 
             _fileSystem.SaveFile(filePath, content);
 
-            return new GenerationResult
-            {
-                GeneratedFiles = new[] { filePathRelative }
-                    .Concat(dependenciesGenerationResult.GeneratedFiles)
-            };
+            return new[] { filePathRelative }.Concat(dependenciesGenerationResult);
         }
 
         /// <summary>
@@ -376,7 +371,8 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="enumAttribute"></param>
-        private GenerationResult GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
             string valuesText = GetEnumValuesText(type);
 
@@ -391,7 +387,7 @@ namespace TypeGen.Core
             // write TypeScript file
 
             _fileSystem.SaveFile(filePath, enumText);
-            return new GenerationResult { GeneratedFiles = new[] { filePathRelative } };
+            return new[] { filePathRelative };
         }
 
         /// <summary>
@@ -521,7 +517,8 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
-        private GenerationResult GenerateTypeDependencies(Type type, string outputDir)
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateTypeDependencies(Type type, string outputDir)
         {
             IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
@@ -536,7 +533,7 @@ namespace TypeGen.Core
                 if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(Generate(typeDependency, false).GeneratedFiles);
+                    generatedFiles = generatedFiles.Concat(Generate(typeDependency, false));
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
@@ -549,11 +546,11 @@ namespace TypeGen.Core
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(GenerateNotMarked(typeDependency, defaultOutputDir).GeneratedFiles);
+                    generatedFiles = generatedFiles.Concat(GenerateNotMarked(typeDependency, defaultOutputDir));
                 }
             }
 
-            return new GenerationResult { GeneratedFiles = generatedFiles };
+            return generatedFiles;
         }
 
         /// <summary>
