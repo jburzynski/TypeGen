@@ -51,11 +51,11 @@ namespace TypeGen.Core.Test.Business
         public void FillClassPropertyWithDefaultValueTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl")
-                .Returns("$tg{accessor} | $tg{name} | $tg{type} | $tg{defaultValue}");
+                .Returns("$tg{modifiers} | $tg{name} | $tg{type} | $tg{defaultValue}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
             string actual = templateService.FillClassPropertyWithDefaultValueTemplate("a", "B", "c", "D");
-            Assert.Equal("a | B | c | D", actual);
+            Assert.Equal("a | B | : c | D", actual);
         }
 
         [Fact]
@@ -78,11 +78,11 @@ namespace TypeGen.Core.Test.Business
         public void FillClassPropertyTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl")
-                .Returns("$tg{accessor} | $tg{name} | $tg{type}");
+                .Returns("$tg{modifiers} | $tg{name} | $tg{type}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
             string actual = templateService.FillClassPropertyTemplate("a", "B", "c");
-            Assert.Equal("a | B | c", actual);
+            Assert.Equal("a | B | : c", actual);
         }
 
         [Fact]
@@ -143,14 +143,14 @@ namespace TypeGen.Core.Test.Business
         public void FillInterfacePropertyTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl")
-                .Returns("$tg{name} | $tg{modifier} | $tg{type}");
+                .Returns("$tg{name} | $tg{type}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
             string actualOptional = templateService.FillInterfacePropertyTemplate("a", "B", true);
             string actualNonOptional = templateService.FillInterfacePropertyTemplate("a", "B", false);
 
-            Assert.Equal("a | ? | B", actualOptional);
-            Assert.Equal("a |  | B", actualNonOptional);
+            Assert.Equal("a? | : B", actualOptional);
+            Assert.Equal("a | : B", actualNonOptional);
         }
 
         [Fact]

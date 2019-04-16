@@ -1,1 +1,1 @@
-$tg{tab}$tg{accessor}$tg{name}: $tg{type} = $tg{defaultValue};
+$tg{tab}$tg{modifiers}$tg{name}$tg{type} = $tg{defaultValue};

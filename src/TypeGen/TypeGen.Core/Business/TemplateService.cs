@@ -59,10 +59,12 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillClassPropertyWithDefaultValueTemplate(string accessor, string name, string type, string defaultValue)
+        public string FillClassPropertyWithDefaultValueTemplate(string modifiers, string name, string type, string defaultValue)
         {
+            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            
             return ReplaceSpecialChars(_classPropertyWithDefaultValueTemplate)
-                .Replace(GetTag("accessor"), accessor)
+                .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("type"), type)
                 .Replace(GetTag("defaultValue"), defaultValue);
@@ -76,10 +78,12 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("value"), value);
         }
 
-        public string FillClassPropertyTemplate(string accessor, string name, string type)
+        public string FillClassPropertyTemplate(string modifiers, string name, string type)
         {
+            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            
             return ReplaceSpecialChars(_classPropertyTemplate)
-                .Replace(GetTag("accessor"), accessor)
+                .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("type"), type);
         }
@@ -100,9 +104,10 @@ namespace TypeGen.Core.Business
 
         public string FillInterfacePropertyTemplate(string name, string type, bool isOptional)
         {
+            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            
             return ReplaceSpecialChars(_interfacePropertyTemplate)
-                .Replace(GetTag("name"), name)
-                .Replace(GetTag("modifier"), isOptional ? "?" : "")
+                .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
                 .Replace(GetTag("type"), type);
         }
 
