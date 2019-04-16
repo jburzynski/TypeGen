@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -52,6 +52,8 @@
       <EmbeddedResource Include="Generator\Expected\with-generic-base-class-custom-type.ts" />
       <EmbeddedResource Include="Generator\Expected\with-ignored-base-and-custom-base.ts" />
       <EmbeddedResource Include="Generator\Expected\with-ignored-base.ts" />
+      <None Remove="Generator\Expected\static-readonly.ts" />
+      <EmbeddedResource Include="Generator\Expected\static-readonly.ts" />
     </ItemGroup>
 
     <ItemGroup>

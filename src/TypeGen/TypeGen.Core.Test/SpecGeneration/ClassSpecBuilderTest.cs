@@ -138,6 +138,19 @@ namespace TypeGen.Core.Test.SpecGeneration
         }
         
         [Fact]
+        public void NotStatic_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).NotStatic();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsNotStaticAttribute>(attribute);
+        }
+        
+        [Fact]
         public void NotUndefined_Invoked_SpecUpdated()
         {
             const string member = "member";
@@ -161,6 +174,19 @@ namespace TypeGen.Core.Test.SpecGeneration
 
             Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
             Assert.IsType<TsNullAttribute>(attribute);
+        }
+        
+        [Fact]
+        public void Static_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).Static();
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsStaticAttribute>(attribute);
         }
         
         [Fact]

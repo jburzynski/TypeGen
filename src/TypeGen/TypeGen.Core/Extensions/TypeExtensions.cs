@@ -65,7 +65,7 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
-            return memberInfos.Where(i => i.IsPublic && (!(i.IsStatic && !i.IsInitOnly) || i.IsLiteral));
+            return memberInfos.Where(i => i.IsPublic);
         }
 
         /// <summary>
@@ -77,7 +77,22 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
-            return memberInfos.Where(i => i.GetMethod.IsPublic && !i.GetMethod.IsStatic);
+            return memberInfos.Where(i => i.GetMethod.IsPublic);
+        }
+
+        /// <summary>
+        /// Checks if a property or field is static
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        public static bool IsStatic(this MemberInfo memberInfo)
+        {
+            Requires.NotNull(memberInfo, nameof(memberInfo));
+
+            if (memberInfo is FieldInfo fieldInfo) return fieldInfo.IsStatic;
+            if (memberInfo is PropertyInfo propertyInfo) return propertyInfo.GetMethod.IsStatic;
+
+            return false;
         }
 
         /// <summary>

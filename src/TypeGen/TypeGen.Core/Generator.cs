@@ -398,6 +398,15 @@ namespace TypeGen.Core
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
             string modifiersText = Options.ExplicitPublicAccessor ? "public " : "";
+            
+            // add static modifier
+            if (_metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) == null)
+            {
+                if (_metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic())
+                {
+                    modifiersText += "static ";
+                }
+            }
 
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
@@ -421,7 +430,7 @@ namespace TypeGen.Core
 
             if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
             {
-                modifiersText += "static readonly ";
+                modifiersText += "readonly ";
                 string valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
                 return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, null, valueFormatted);
             }

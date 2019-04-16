@@ -42,6 +42,7 @@ namespace TypeGen.AcceptanceTest.Generator
 //                { "index.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.index.ts") },
             { "lite-db-entity.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.lite-db-entity.ts") },
             { "standalone-enum.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.standalone-enum.ts") },
+            { "static-readonly.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.static-readonly.ts") },
             { "strict-nulls-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.strict-nulls-class.ts") },
             { "with-generic-base-class-custom-type.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-generic-base-class-custom-type.ts") },
             { "with-ignored-base-and-custom-base.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-ignored-base-and-custom-base.ts") },
@@ -109,6 +110,7 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "index.ts", Arg.Any<string>()); // any content, because file order in index.ts is different each time
             _fileSystem.Received().SaveFile(outputPath + "lite-db-entity.ts", Content["lite-db-entity.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "standalone-enum.ts", Content["standalone-enum.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "static-readonly.ts", Content["static-readonly.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "strict-nulls-class.ts", Content["strict-nulls-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-generic-base-class-custom-type.ts", Content["with-generic-base-class-custom-type.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base-and-custom-base.ts", Content["with-ignored-base-and-custom-base.ts"]);
@@ -170,12 +172,12 @@ namespace TypeGen.AcceptanceTest.Generator
                 AddInterface<CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
                 AddInterface<CustomEmptyBaseClass>().CustomBase();
                 AddClass<ExtendedPrimitivesClass>();
-                AddClass<ExternalDepsClass>().Member(x => nameof(x.User)).Ignore();
+                AddClass<ExternalDepsClass>().Member(nameof(ExternalDepsClass.User)).Ignore();
                 AddClass(typeof(GenericBaseClass<>));
                 AddClass(typeof(GenericClass<>));
                 AddClass(typeof(GenericWithRestrictions<>));
                 AddClass<LiteDbEntity>().Member(nameof(LiteDbEntity.MyBsonArray)).Ignore();
-                AddInterface<NestedEntity>("./very/nested/directory/").Member(x => nameof(x.OptionalProperty)).Optional();
+                AddInterface<NestedEntity>("./very/nested/directory/").Member(nameof(NestedEntity.OptionalProperty)).Optional();
             }
         }
         
