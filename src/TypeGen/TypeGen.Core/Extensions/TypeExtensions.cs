@@ -65,7 +65,7 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<FieldInfo> WithMembersFilter(this IEnumerable<FieldInfo> memberInfos)
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
-            return memberInfos.Where(i => i.IsPublic && !i.IsStatic);
+            return memberInfos.Where(i => i.IsPublic && (!(i.IsStatic && !i.IsInitOnly) || i.IsLiteral));
         }
 
         /// <summary>

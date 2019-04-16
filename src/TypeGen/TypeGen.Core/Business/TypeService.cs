@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.TypeAnnotations;
@@ -245,6 +246,16 @@ namespace TypeGen.Core.Business
 
             Type type = GetMemberType(memberInfo);
             return GetTsTypeName(type, typeNameConverters);
+        }
+
+        public string GetTsConstantValue(FieldInfo fieldInfo)
+        {
+            if(!fieldInfo.IsStatic || !(fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
+                throw new ArgumentException("This function works only with readonly or constant values!", nameof(fieldInfo));
+
+            var valueObj = fieldInfo.GetValue(null);
+            
+            return JsonConvert.SerializeObject(valueObj);
         }
 
         private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo, StrictNullFlags csNullableTranslation)

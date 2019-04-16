@@ -86,6 +86,17 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
+        public void FillClassConstantTemplate_ValuesGiven_TemplateFilledWithValues()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Constant.tpl")
+                .Returns("$tg{accessor} | $tg{name} | $tg{value}");
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
+
+            string actual = templateService.FillClassConstantTemplate("a", "B", "c");
+            Assert.Equal("a | B | c", actual);
+        }
+
+        [Fact]
         public void FillClassPropertyTemplate_SpecialCharsPresent_SpecialCharsReplaced()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl")

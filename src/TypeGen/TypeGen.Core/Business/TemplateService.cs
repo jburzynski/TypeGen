@@ -12,31 +12,29 @@ namespace TypeGen.Core.Business
 
         private readonly IInternalStorage _internalStorage;
 
-        private string _enumTemplate;
-        private string _enumValueTemplate;
-        private string _classTemplate;
-        private string _classPropertyTemplate;
-        private string _classPropertyWithDefaultValueTemplate;
-        private string _interfaceTemplate;
-        private string _interfacePropertyTemplate;
-        private string _importTemplate;
-        private string _indexTemplate;
-        private string _indexExportTemplate;
-        private string _headingTemplate;
+        private readonly string _enumTemplate;
+        private readonly string _enumValueTemplate;
+        private readonly string _classTemplate;
+        private readonly string _classPropertyTemplate;
+        private readonly string _classPropertyWithDefaultValueTemplate;
+        private readonly string _interfaceTemplate;
+        private readonly string _interfacePropertyTemplate;
+        private readonly string _importTemplate;
+        private readonly string _indexTemplate;
+        private readonly string _indexExportTemplate;
+        private readonly string _headingTemplate;
+        private readonly string _constantTemplate;
 
         public GeneratorOptions GeneratorOptions { get; set; }
 
         public TemplateService(IInternalStorage internalStorage)
         {
             _internalStorage = internalStorage;
-            LoadTemplates();
-        }
 
-        private void LoadTemplates()
-        {
             _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
             _enumValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
             _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
+            _constantTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Constant.tpl");
             _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
             _classPropertyWithDefaultValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
             _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
@@ -68,6 +66,14 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("type"), type)
                 .Replace(GetTag("defaultValue"), defaultValue);
+        }
+
+        public string FillClassConstantTemplate(string accessor, string name, string value)
+        {
+            return ReplaceSpecialChars(_constantTemplate)
+                .Replace(GetTag("accessor"), accessor)
+                .Replace(GetTag("name"), name)
+                .Replace(GetTag("value"), value);
         }
 
         public string FillClassPropertyTemplate(string accessor, string name, string type)
