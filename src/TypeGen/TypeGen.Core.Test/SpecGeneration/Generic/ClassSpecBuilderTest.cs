@@ -42,18 +42,6 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         }
         
         [Fact]
-        public void Member_FuncGiven_MemberAddedToSpec()
-        {
-            const string member = "member";
-            var spec = new TypeSpec(new ExportTsClassAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.ClassSpecBuilder<ExportedClass>(spec);
-
-            builder.Member(x => nameof(x.member));
-
-            Assert.True(spec.MemberAttributes.ContainsKey(member));
-        }
-        
-        [Fact]
         public void CustomBase_Invoked_SpecUpdated()
         {
             const string @base = "base";
