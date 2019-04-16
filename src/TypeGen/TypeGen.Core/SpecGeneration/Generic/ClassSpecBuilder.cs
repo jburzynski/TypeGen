@@ -11,10 +11,5 @@ namespace TypeGen.Core.SpecGeneration.Generic
         internal ClassSpecBuilder(TypeSpec spec) : base(spec)
         {
         }
-        
-        public ClassSpecBuilder<T> Member(Func<T, string> memberNameFunc)
-        {
-            return Member(memberNameFunc(_instance));
-        }
     }
 }
