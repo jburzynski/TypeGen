@@ -19,7 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
-    <EmbeddedResource Include="Templates\Constant.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
     <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />

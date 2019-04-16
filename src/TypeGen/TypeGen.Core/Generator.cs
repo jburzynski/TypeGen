@@ -397,7 +397,7 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
-            string accessorText = Options.ExplicitPublicAccessor ? "public " : "";
+            string modifiersText = Options.ExplicitPublicAccessor ? "public " : "";
 
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
@@ -406,7 +406,7 @@ namespace TypeGen.Core
             var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
-                return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
             if (Options.DefaultValuesForTypes.Any())
@@ -415,17 +415,18 @@ namespace TypeGen.Core
                 
                 if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
-                    return _templateService.FillClassPropertyWithDefaultValueTemplate(accessorText, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
+                    return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
                 }
             }
 
             if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
             {
-                var valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
-                return _templateService.FillClassConstantTemplate(accessorText, name, valueFormatted);
+                modifiersText += "static readonly ";
+                string valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
+                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, null, valueFormatted);
             }
 
-            return _templateService.FillClassPropertyTemplate(accessorText, name, typeName);
+            return _templateService.FillClassPropertyTemplate(modifiersText, name, typeName);
         }
 
         /// <summary>
