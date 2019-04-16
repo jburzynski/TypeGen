@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyModel;
 using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
 using TypeGen.Core.TypeAnnotations;
@@ -110,6 +109,21 @@ namespace TypeGen.Core.Test.Business
             Assert.Equal(expectedResult, actualResult);
         }
 
+        [Theory]
+        [InlineData(nameof(GetTsConstantValue_TestData.TestConst), "\"TestConst\"")]
+        [InlineData(nameof(GetTsConstantValue_TestData.TestReadonly), "\"TestReadonly\"")]
+        [InlineData(nameof(GetTsConstantValue_TestData.TestInt), "1")]
+        [InlineData(nameof(GetTsConstantValue_TestData.TestDouble), "1.2")]
+        [InlineData(nameof(GetTsConstantValue_TestData.ComplexObject), "{\"Prop1\":\"prop1\",\"Prop2\":2}")]
+        [InlineData(nameof(GetTsConstantValue_TestData.TestDt), "\"2020-01-01T00:00:00\"")]
+        public void GetTsConstValue_FieldGiven_FormattedConstantValueReturned(string fieldName, string expectedResult)
+        {
+            var fieldInfo = (FieldInfo) typeof(GetTsConstantValue_TestData).GetField(fieldName);
+
+            var actualResult = _typeService.GetTsConstantValue(fieldInfo);
+            Assert.Equal(expectedResult, actualResult);
+        }
+
         [Fact]
         public void GetTsExportableMembers_TypeGiven_TsExportableMembersReturned()
         {
@@ -117,13 +131,31 @@ namespace TypeGen.Core.Test.Business
             {
                 typeof(GetTsExportableMembers_TestData).GetField("c"),
                 typeof(GetTsExportableMembers_TestData).GetField("c1"),
+                typeof(GetTsExportableMembers_TestData).GetField("L"),
+                typeof(GetTsExportableMembers_TestData).GetField("N"),
                 typeof(GetTsExportableMembers_TestData).GetProperty("C")
             };
             
             IEnumerable<MemberInfo> actualResult = _typeService.GetTsExportableMembers(typeof(GetTsExportableMembers_TestData)).ToArray();
             Assert.Equal(expectedResult, actualResult);
         }
-        
+
+        public class GetTsConstantValue_TestData
+        {
+            public const string TestConst = "TestConst";
+            public static readonly string TestReadonly = "TestReadonly";
+
+            public const int TestInt = 1;
+            public const double TestDouble = 1.2;
+            public static readonly DateTime TestDt = DateTime.MinValue.AddYears(2019);
+
+            public static readonly object ComplexObject = new
+            {
+                Prop1 = "prop1",
+                Prop2 = 2
+            };
+        }
+
         public class GetTsExportableMembers_TestData
         {
             public GetTsExportableMembers_TestData() {}
@@ -161,6 +193,7 @@ namespace TypeGen.Core.Test.Business
 
             [TsIgnore] public string m;
             [TsIgnore] public int M { get; set; }
+            public static readonly byte N = 2;
         }
 
         [Theory]

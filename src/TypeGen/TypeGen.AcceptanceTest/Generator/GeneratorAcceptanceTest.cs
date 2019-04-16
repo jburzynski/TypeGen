@@ -21,6 +21,7 @@ namespace TypeGen.AcceptanceTest.Generator
         
         private IDictionary<string, string> Content => new Dictionary<string, string>
         {
+            { "foo-constants.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.foo-constants.ts") },
             { "bar.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.bar.ts") },
             { "base-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.base-class.ts") },
             { "base-class2.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.base-class2.ts") },
@@ -84,9 +85,10 @@ namespace TypeGen.AcceptanceTest.Generator
             assemblyResolver.Register();
             generator.Generate(assembly);
             assemblyResolver.Unregister();
-            
+
             //assert
 
+            _fileSystem.Received().SaveFile(outputPath + "foo-constants.ts", Content["foo-constants.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "bar.ts", Content["bar.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "base-class.ts", Content["base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "base-class2.ts", Content["base-class2.ts"]);

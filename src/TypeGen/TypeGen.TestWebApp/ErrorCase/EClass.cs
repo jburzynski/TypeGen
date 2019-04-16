@@ -6,7 +6,7 @@ namespace TypeGen.TestWebApp.ErrorCase
 {
     public class EClass : GenericClass<int>
     {
-        public const string A = "someUrl";
+        private const string A = "someUrl";
 
         [StringLength(250), Required]
         public TestInterface B { get; set; }

@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Generator\Expected\foo-constants.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
         <PackageReference Include="NSubstitute" Version="3.1.0" />
         <PackageReference Include="xunit" Version="2.4.0" />
@@ -26,6 +30,7 @@
       <EmbeddedResource Include="Generator\Expected\extended-primitives-class.ts" />
       <EmbeddedResource Include="Generator\Expected\external-deps-class.ts" />
       <EmbeddedResource Include="Generator\Expected\f-class.ts" />
+      <EmbeddedResource Include="Generator\Expected\foo-constants.ts" />
       <EmbeddedResource Include="Generator\Expected\foo-type.ts" />
       <EmbeddedResource Include="Generator\Expected\foo.ts" />
       <EmbeddedResource Include="Generator\Expected\generic-base-class.ts" />

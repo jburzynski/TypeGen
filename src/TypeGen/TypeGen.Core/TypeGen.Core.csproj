@@ -8,6 +8,7 @@
     <None Remove="Templates\Class.tpl" />
     <None Remove="Templates\ClassProperty.tpl" />
     <None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
+    <None Remove="Templates\Constant.tpl" />
     <None Remove="Templates\Enum.tpl" />
     <None Remove="Templates\EnumValue.tpl" />
     <None Remove="Templates\Import.tpl" />
@@ -18,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
+    <EmbeddedResource Include="Templates\Constant.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
     <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
@@ -30,6 +32,7 @@
     <EmbeddedResource Include="Templates\IndexExport.tpl" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
   </ItemGroup>
