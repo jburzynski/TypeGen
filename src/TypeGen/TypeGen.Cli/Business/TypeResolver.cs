@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using TypeGen.Core;
+using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 
@@ -16,7 +17,6 @@ namespace TypeGen.Cli.Business
         
         private readonly string _projectFolder;
         private readonly IEnumerable<Assembly> _assemblies;
-        private readonly bool _logVerbose;
 
         private IEnumerable<Type> _interfaceConstraints;
         private IEnumerable<Type> _baseTypeConstraints;
@@ -24,14 +24,12 @@ namespace TypeGen.Cli.Business
         public TypeResolver(ILogger logger,
             IFileSystem fileSystem,
             string projectFolder,
-            IEnumerable<Assembly> assemblies,
-            bool logVerbose)
+            IEnumerable<Assembly> assemblies)
         {
             _logger = logger;
             _fileSystem = fileSystem;
             _projectFolder = projectFolder;
             _assemblies = assemblies;
-            _logVerbose = logVerbose;
         }
 
         public Type Resolve(string typeIdentifier, string typeNameSuffix = null, IEnumerable<Type> interfaceConstraints = null, IEnumerable<Type> baseTypeConstraints = null)
@@ -65,11 +63,11 @@ namespace TypeGen.Cli.Business
                 result = ResolveFromAssembly(assembly, typeName, typeNameSuffix);
                 if (result == null) continue;
 
-                if (_logVerbose) _logger.Log($"Type '{typeName}' found in assembly '{assembly.FullName}'");
+                if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' found in assembly '{assembly.FullName}'");
                 return result;
             }
 
-            if (_logVerbose) _logger.Log($"Type '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.");
+            if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.");
 
             // fallback to TypeGen.Core
 
@@ -77,7 +75,7 @@ namespace TypeGen.Cli.Business
             result = ResolveFromAssembly(coreAssembly, typeName, typeNameSuffix);
             if (result != null)
             {
-                if (_logVerbose) _logger.Log($"Type '{typeName}' found in TypeGen.Core");
+                if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' found in TypeGen.Core");
                 return result;
             }
 

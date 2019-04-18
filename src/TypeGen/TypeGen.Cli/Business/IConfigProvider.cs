@@ -9,8 +9,7 @@ namespace TypeGen.Cli.Business
         /// </summary>
         /// <param name="configPath"></param>
         /// <param name="projectFolder"></param>
-        /// <param name="logVerbose"></param>
         /// <returns></returns>
-        TgConfig GetConfig(string configPath, string projectFolder, bool logVerbose);
+        TgConfig GetConfig(string configPath, string projectFolder);
     }
 }

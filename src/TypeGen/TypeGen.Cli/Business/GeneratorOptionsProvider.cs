@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
+using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
@@ -34,15 +35,14 @@ namespace TypeGen.Cli.Business
         /// <param name="config"></param>
         /// <param name="assemblies"></param>
         /// <param name="projectFolder"></param>
-        /// <param name="logVerbose"></param>
         /// <returns></returns>
-        public GeneratorOptions GetGeneratorOptions(TgConfig config, IEnumerable<Assembly> assemblies, string projectFolder, bool logVerbose)
+        public GeneratorOptions GetGeneratorOptions(TgConfig config, IEnumerable<Assembly> assemblies, string projectFolder)
         {
             Requires.NotNull(config, nameof(config));
             Requires.NotNull(assemblies, nameof(assemblies));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
             
-            _typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies, logVerbose);
+            _typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
             
             return new GeneratorOptions
             {

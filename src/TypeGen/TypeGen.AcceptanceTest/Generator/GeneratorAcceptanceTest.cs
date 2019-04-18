@@ -5,6 +5,7 @@ using System.Text;
 using NSubstitute;
 using TypeGen.Cli.Business;
 using TypeGen.Core;
+using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
@@ -79,7 +80,7 @@ namespace TypeGen.AcceptanceTest.Generator
             var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, StrictNullChecks = true } };
             
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new Logger(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
             
             //act
             
@@ -145,7 +146,7 @@ namespace TypeGen.AcceptanceTest.Generator
             //arrange
             
             var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, StrictNullChecks = true } };
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new Logger(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
             var generationSpec = new AcceptanceTestGenerationSpec();
             
             //act

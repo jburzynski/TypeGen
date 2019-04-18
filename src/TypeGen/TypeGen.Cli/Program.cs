@@ -32,7 +32,7 @@ namespace TypeGen.Cli
         static Program()
         {
             _consoleArgsReader = new ConsoleArgsReader();
-            _logger = new Logger();
+            _logger = new ConsoleLogger();
             _fileSystem = new FileSystem();
             _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer(_fileSystem));
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
@@ -56,7 +56,7 @@ namespace TypeGen.Cli
                     return;
                 }
 
-                bool verbose = _consoleArgsReader.ContainsVerboseOption(args);
+                _logger.LogVerbose = _consoleArgsReader.ContainsVerboseOption(args);
                 string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
 
                 string[] projectFolders = _consoleArgsReader.ContainsProjectFolderOption(args) ?
@@ -68,10 +68,10 @@ namespace TypeGen.Cli
                     string projectFolder = projectFolders[i];
                     string configPath = configPaths.HasIndex(i) ? configPaths[i] : null;
 
-                    _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder) {LogVerbose = verbose};
+                    _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
                     _logger.Log($"Generating files for project \"{projectFolder}\"...");
-                    Generate(projectFolder, configPath, verbose);
+                    Generate(projectFolder, configPath);
                     _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
                 }
             }
@@ -102,7 +102,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath, bool verbose)
+        private static void Generate(string projectFolder, string configPath)
         {
             // get config
 
@@ -110,7 +110,7 @@ namespace TypeGen.Cli
                 ? Path.Combine(projectFolder, configPath)
                 : Path.Combine(projectFolder, "tgconfig.json");
 
-            TgConfig config = _configProvider.GetConfig(configPath, projectFolder, verbose);
+            TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
 
             // register assembly resolver
 
@@ -121,9 +121,9 @@ namespace TypeGen.Cli
 
             // create generator
 
-            GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder, verbose);
+            GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder);
             generatorOptions.BaseOutputDirectory = Path.Combine(projectFolder, config.OutputPath);
-            var generator = new Generator { Options = generatorOptions };
+            var generator = new Generator { Options = generatorOptions, Logger = _logger };
 
             // generate
             
@@ -138,7 +138,7 @@ namespace TypeGen.Cli
 
             if (config.GenerationSpecs.Any())
             {
-                var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies, verbose);
+                var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
                 
                 generatedFiles = config.GenerationSpecs
                     .Select(name => typeResolver.Resolve(name, "GenerationSpec"))

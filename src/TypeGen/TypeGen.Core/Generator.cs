@@ -21,6 +21,8 @@ namespace TypeGen.Core
     {
         // dependencies
 
+        public ILogger Logger { get; set; }
+        
         private IMetadataReader _metadataReader;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
