@@ -399,6 +399,8 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
+            LogClassPropertyWarnings(memberInfo);
+            
             string modifiersText = Options.ExplicitPublicAccessor ? "public " : "";
             
             // add static modifier
@@ -439,6 +441,12 @@ namespace TypeGen.Core
 
             return _templateService.FillClassPropertyTemplate(modifiersText, name, typeName);
         }
+        
+        private void LogClassPropertyWarnings(MemberInfo memberInfo)
+        {
+            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null)
+                Logger.Log($"TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+        }
 
         /// <summary>
         /// Gets TypeScript class properties definition source code
@@ -465,6 +473,8 @@ namespace TypeGen.Core
         /// <returns></returns>
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
+            LogInterfacePropertyWarnings(memberInfo);
+            
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
@@ -472,6 +482,18 @@ namespace TypeGen.Core
             bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
+        }
+
+        private void LogInterfacePropertyWarnings(MemberInfo memberInfo)
+        {
+            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null)
+                Logger.Log($"TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+            
+            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) != null)
+                Logger.Log($"TsNotStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+            
+            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo) != null)
+                Logger.Log($"TsDefaultValueAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
 
         /// <summary>
