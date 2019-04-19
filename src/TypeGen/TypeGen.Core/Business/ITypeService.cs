@@ -94,10 +94,9 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <param name="typeNameConverters"></param>
-        /// <param name="strictNullChecks"></param>
         /// <param name="csNullableTranslation"></param>
         /// <returns></returns>
-        string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation);
+        string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, StrictNullFlags csNullableTranslation);
 
         /// <summary>
         /// Gets the type of the deepest element from a jagged collection of the given type.

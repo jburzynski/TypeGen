@@ -22,7 +22,6 @@ namespace TypeGen.Core
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
-        public static bool DefaultStrictNullChecks => false;
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
@@ -105,12 +104,7 @@ namespace TypeGen.Core
         public bool CreateIndexFile { get; set; }
 
         /// <summary>
-        /// Whether to enable --strictNullChecks functionality in generated TypeScript code
-        /// </summary>
-        public bool StrictNullChecks { get; set; }
-
-        /// <summary>
-        /// Indicates how C# nullable types are translated to TypeScript properties if StrictNullChecks is set to true
+        /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
         /// </summary>
         public StrictNullFlags CsNullableTranslation { get; set; }
 

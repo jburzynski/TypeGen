@@ -69,9 +69,6 @@ namespace TypeGen.Cli.Models
         [DataMember(Name = "createIndexFile")]
         public bool? CreateIndexFile { get; set; }
 
-        [DataMember(Name = "strictNullChecks")]
-        public bool? StrictNullChecks { get; set; }
-
         [DataMember(Name = "csNullableTranslation")]
         public string CsNullableTranslation { get; set; }
         
@@ -121,7 +118,6 @@ namespace TypeGen.Cli.Models
             if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
-            if (StrictNullChecks == null) StrictNullChecks = GeneratorOptions.DefaultStrictNullChecks;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (OutputPath == null) OutputPath = "";
             if (ClearOutputDirectory == null) ClearOutputDirectory = false;

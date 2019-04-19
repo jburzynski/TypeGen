@@ -38,7 +38,6 @@ namespace TypeGen.Cli.Test.Models
             Assert.Equal(new string[0], tgConfig.EnumValueNameConverters);
             Assert.Equal(new string[0], tgConfig.ExternalAssemblyPaths);
             Assert.False(tgConfig.CreateIndexFile);
-            Assert.False(tgConfig.StrictNullChecks);
             Assert.Equal("", tgConfig.CsNullableTranslation);
             Assert.Equal("", tgConfig.OutputPath);
         }

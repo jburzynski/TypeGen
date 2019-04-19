@@ -55,7 +55,6 @@ namespace TypeGen.Cli.Business
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters),
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters),
                 EnumStringInitializersConverters = GetNameConvertersFromConfig(config.EnumStringInitializersConverters),
-                StrictNullChecks = config.StrictNullChecks ?? GeneratorOptions.DefaultStrictNullChecks,
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,

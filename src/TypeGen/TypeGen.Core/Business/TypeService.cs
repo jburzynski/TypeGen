@@ -206,12 +206,12 @@ namespace TypeGen.Core.Business
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, bool strictNullChecks, StrictNullFlags csNullableTranslation)
+        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, StrictNullFlags csNullableTranslation)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
             Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
             
-            string typeUnionSuffix = strictNullChecks ? GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation) : "";
+            string typeUnionSuffix = GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation);
 
             var typeAttribute = _metadataReader.GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)

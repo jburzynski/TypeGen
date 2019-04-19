@@ -414,7 +414,7 @@ namespace TypeGen.Core
 
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
 
             var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
@@ -424,7 +424,7 @@ namespace TypeGen.Core
 
             if (Options.DefaultValuesForTypes.Any())
             {
-                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
                 
                 if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
@@ -444,6 +444,8 @@ namespace TypeGen.Core
         
         private void LogClassPropertyWarnings(MemberInfo memberInfo)
         {
+            if (Logger == null) return;
+            
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null)
                 Logger.Log($"TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
@@ -478,7 +480,7 @@ namespace TypeGen.Core
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.StrictNullChecks, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
             bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
@@ -486,6 +488,8 @@ namespace TypeGen.Core
 
         private void LogInterfacePropertyWarnings(MemberInfo memberInfo)
         {
+            if (Logger == null) return;
+            
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null)
                 Logger.Log($"TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
             
