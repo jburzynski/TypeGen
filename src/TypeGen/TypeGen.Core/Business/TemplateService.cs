@@ -92,11 +92,12 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillInterfacePropertyTemplate(string name, string type, bool isOptional)
+        public string FillInterfacePropertyTemplate(string modifiers, string name, string type, bool isOptional)
         {
             type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
             
             return ReplaceSpecialChars(_interfacePropertyTemplate)
+                .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
                 .Replace(GetTag("type"), type);
         }

@@ -392,6 +392,18 @@ namespace TypeGen.Core
             return new[] { filePathRelative };
         }
 
+        private bool IsStaticTsProperty(MemberInfo memberInfo)
+        {
+            if (_metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) != null) return false;
+            return _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic();
+        }
+        
+        private bool IsReadonlyTsProperty(MemberInfo memberInfo)
+        {
+            if (_metadataReader.GetAttribute<TsNotReadonlyAttribute>(memberInfo) != null) return false;
+            return _metadataReader.GetAttribute<TsReadonlyAttribute>(memberInfo) != null || (memberInfo is FieldInfo fi && (fi.IsInitOnly || fi.IsLiteral));
+        }
+
         /// <summary>
         /// Gets TypeScript class property definition source code
         /// </summary>
@@ -401,16 +413,10 @@ namespace TypeGen.Core
         {
             LogClassPropertyWarnings(memberInfo);
             
-            string modifiersText = Options.ExplicitPublicAccessor ? "public " : "";
-            
-            // add static modifier
-            if (_metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) == null)
-            {
-                if (_metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic())
-                {
-                    modifiersText += "static ";
-                }
-            }
+            string modifiers = Options.ExplicitPublicAccessor ? "public " : "";
+
+            if (IsStaticTsProperty(memberInfo)) modifiers += "static ";
+            if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
 
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
@@ -419,7 +425,7 @@ namespace TypeGen.Core
             var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
-                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, typeName, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
             if (Options.DefaultValuesForTypes.Any())
@@ -428,18 +434,18 @@ namespace TypeGen.Core
                 
                 if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
-                    return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
+                    return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
                 }
             }
 
-            if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
-            {
-                modifiersText += "readonly ";
-                string valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
-                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiersText, name, null, valueFormatted);
-            }
+//            if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
+//            {
+//                modifiers += "readonly ";
+//                string valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
+//                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, null, valueFormatted);
+//            }
 
-            return _templateService.FillClassPropertyTemplate(modifiersText, name, typeName);
+            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName);
         }
         
         private void LogClassPropertyWarnings(MemberInfo memberInfo)
@@ -477,13 +483,16 @@ namespace TypeGen.Core
         {
             LogInterfacePropertyWarnings(memberInfo);
             
+            string modifiers = "";
+            if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
+            
             var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
             bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
-            return _templateService.FillInterfacePropertyTemplate(name, typeName, isOptional);
+            return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, isOptional);
         }
 
         private void LogInterfacePropertyWarnings(MemberInfo memberInfo)

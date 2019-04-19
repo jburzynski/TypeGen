@@ -132,14 +132,14 @@ namespace TypeGen.Core.Test.Business
         public void FillInterfacePropertyTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl")
-                .Returns("$tg{name} | $tg{type}");
+                .Returns("$tg{modifiers} | $tg{name} | $tg{type}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
-            string actualOptional = templateService.FillInterfacePropertyTemplate("a", "B", true);
-            string actualNonOptional = templateService.FillInterfacePropertyTemplate("a", "B", false);
+            string actualOptional = templateService.FillInterfacePropertyTemplate("a", "B", "c", true);
+            string actualNonOptional = templateService.FillInterfacePropertyTemplate("a", "B", "c", false);
 
-            Assert.Equal("a? | : B", actualOptional);
-            Assert.Equal("a | : B", actualNonOptional);
+            Assert.Equal("a | B? | : c", actualOptional);
+            Assert.Equal("a | B | : c", actualNonOptional);
         }
 
         [Fact]
@@ -150,9 +150,9 @@ namespace TypeGen.Core.Test.Business
             var generatorOptions = new GeneratorOptions { TabLength = 3 };
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
 
-            string actualDoubleQuote = templateService.FillInterfacePropertyTemplate("", "", false);
+            string actualDoubleQuote = templateService.FillInterfacePropertyTemplate("", "", "", false);
             generatorOptions.SingleQuotes = true;
-            string actualSingleQuote = templateService.FillInterfacePropertyTemplate("", "", false);
+            string actualSingleQuote = templateService.FillInterfacePropertyTemplate("", "", "", false);
 
             Assert.Equal("    | \"", actualDoubleQuote);
             Assert.Equal("    | '", actualSingleQuote);

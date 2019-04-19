@@ -1,1 +1,1 @@
-$tg{tab}$tg{name}$tg{type};
+$tg{tab}$tg{modifiers}$tg{name}$tg{type};

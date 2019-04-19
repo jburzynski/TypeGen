@@ -90,6 +90,16 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
+        /// Marks selected member as not readonly (equivalent of TsNotReadonlyAttribute)
+        /// </summary>
+        /// <returns></returns>
+        public TDerived NotReadonly()
+        {
+            AddActiveMemberAttribute(new TsNotReadonlyAttribute());
+            return this as TDerived;
+        }
+        
+        /// <summary>
         /// Marks selected member as not undefined (equivalent of TsNotUndefinedAttribute)
         /// </summary>
         /// <returns></returns>
@@ -106,6 +116,16 @@ namespace TypeGen.Core.SpecGeneration
         public TDerived Null()
         {
             AddActiveMemberAttribute(new TsNullAttribute());
+            return this as TDerived;
+        }
+        
+        /// <summary>
+        /// Marks selected member as readonly (equivalent of TsReadonlyAttribute)
+        /// </summary>
+        /// <returns></returns>
+        public TDerived Readonly()
+        {
+            AddActiveMemberAttribute(new TsReadonlyAttribute());
             return this as TDerived;
         }
         

@@ -4,6 +4,7 @@
  */
 
 export class StaticReadonly {
+    static readonly staticReadonlyField: number;
     static staticProperty: string;
     notStaticProperty: string;
 }
