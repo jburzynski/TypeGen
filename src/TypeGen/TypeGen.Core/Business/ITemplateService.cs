@@ -4,8 +4,7 @@
     {
         GeneratorOptions GeneratorOptions { get; set; }
         string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null);
-        string FillClassPropertyWithDefaultValueTemplate(string modifiers, string name, string type, string defaultValue);
-        string FillClassPropertyTemplate(string modifiers, string name, string type);
+        string FillClassPropertyTemplate(string modifiers, string name, string type, string defaultValue = null);
         string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null);
         string FillInterfacePropertyTemplate(string modifiers, string name, string type, bool isOptional);
         string FillEnumTemplate(string imports, string name, string values, bool isConst, string fileHeading = null);

@@ -124,7 +124,5 @@ namespace TypeGen.Core.Business
         /// <exception cref="ArgumentNullException">Thrown if type is null</exception>
         /// <exception cref="CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
         Type GetBaseType(Type type);
-
-        string GetTsConstantValue(FieldInfo fieldInfo);
     }
 }

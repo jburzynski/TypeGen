@@ -48,41 +48,14 @@ namespace TypeGen.Core.Test.Business
         }
 
         [Fact]
-        public void FillClassPropertyWithDefaultValueTemplate_ValuesGiven_TemplateFilledWithValues()
-        {
-            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl")
-                .Returns("$tg{modifiers} | $tg{name} | $tg{type} | $tg{defaultValue}");
-            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
-
-            string actual = templateService.FillClassPropertyWithDefaultValueTemplate("a", "B", "c", "D");
-            Assert.Equal("a | B | : c | D", actual);
-        }
-
-        [Fact]
-        public void FillClassPropertyWithDefaultValueTemplate_SpecialCharsPresent_SpecialCharsReplaced()
-        {
-            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl")
-                .Returns("$tg{tab} | $tg{quot}");
-            var generatorOptions = new GeneratorOptions { TabLength = 3 };
-            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
-
-            string actualDoubleQuote = templateService.FillClassPropertyWithDefaultValueTemplate("", "", "", "");
-            generatorOptions.SingleQuotes = true;
-            string actualSingleQuote = templateService.FillClassPropertyWithDefaultValueTemplate("", "", "", "");
-
-            Assert.Equal("    | \"", actualDoubleQuote);
-            Assert.Equal("    | '", actualSingleQuote);
-        }
-
-        [Fact]
         public void FillClassPropertyTemplate_ValuesGiven_TemplateFilledWithValues()
         {
             _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl")
-                .Returns("$tg{modifiers} | $tg{name} | $tg{type}");
+                .Returns("$tg{modifiers} | $tg{name} | $tg{type} | $tg{defaultValue}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
-            string actual = templateService.FillClassPropertyTemplate("a", "B", "c");
-            Assert.Equal("a | B | : c", actual);
+            string actual = templateService.FillClassPropertyTemplate("a", "B", "c", "D");
+            Assert.Equal("a | B | : c |  = D", actual);
         }
 
         [Fact]
@@ -93,9 +66,9 @@ namespace TypeGen.Core.Test.Business
             var generatorOptions = new GeneratorOptions { TabLength = 3 };
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
 
-            string actualDoubleQuote = templateService.FillClassPropertyTemplate("", "", "");
+            string actualDoubleQuote = templateService.FillClassPropertyTemplate("", "", "", "");
             generatorOptions.SingleQuotes = true;
-            string actualSingleQuote = templateService.FillClassPropertyTemplate("", "", "");
+            string actualSingleQuote = templateService.FillClassPropertyTemplate("", "", "", "");
 
             Assert.Equal("    | \"", actualDoubleQuote);
             Assert.Equal("    | '", actualSingleQuote);

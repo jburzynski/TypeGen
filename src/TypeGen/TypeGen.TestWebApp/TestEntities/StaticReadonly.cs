@@ -11,5 +11,8 @@ namespace TypeGen.TestWebApp.TestEntities
         public static string NotStaticProperty { get; set; }
 
         public static readonly int StaticReadonlyField;
+        
+        [TsDefaultValue(null)]
+        public static readonly int StaticReadonlyFieldNoValue;
     }
 }

@@ -109,21 +109,6 @@ namespace TypeGen.Core.Test.Business
             Assert.Equal(expectedResult, actualResult);
         }
 
-        [Theory]
-        [InlineData(nameof(GetTsConstantValue_TestData.TestConst), "\"TestConst\"")]
-        [InlineData(nameof(GetTsConstantValue_TestData.TestReadonly), "\"TestReadonly\"")]
-        [InlineData(nameof(GetTsConstantValue_TestData.TestInt), "1")]
-        [InlineData(nameof(GetTsConstantValue_TestData.TestDouble), "1.2")]
-        [InlineData(nameof(GetTsConstantValue_TestData.ComplexObject), "{\"Prop1\":\"prop1\",\"Prop2\":2}")]
-        [InlineData(nameof(GetTsConstantValue_TestData.TestDt), "\"2020-01-01T00:00:00\"")]
-        public void GetTsConstValue_FieldGiven_FormattedConstantValueReturned(string fieldName, string expectedResult)
-        {
-            var fieldInfo = (FieldInfo) typeof(GetTsConstantValue_TestData).GetField(fieldName);
-
-            var actualResult = _typeService.GetTsConstantValue(fieldInfo);
-            Assert.Equal(expectedResult, actualResult);
-        }
-
         [Fact]
         public void GetTsExportableMembers_TypeGiven_TsExportableMembersReturned()
         {

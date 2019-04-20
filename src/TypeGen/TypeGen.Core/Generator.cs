@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json;
 using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.SpecGeneration;
@@ -404,6 +405,23 @@ namespace TypeGen.Core
             return _metadataReader.GetAttribute<TsReadonlyAttribute>(memberInfo) != null || (memberInfo is FieldInfo fi && (fi.IsInitOnly || fi.IsLiteral));
         }
 
+        private string GetFieldValueText(FieldInfo fieldInfo)
+        {
+            try
+            {
+                object instance = fieldInfo.IsStatic() || fieldInfo.DeclaringType == null ? null : Activator.CreateInstance(fieldInfo.DeclaringType);
+                object valueObj = fieldInfo.GetValue(instance);
+                return valueObj == null ? null : JsonConvert.SerializeObject(valueObj);
+            }
+            catch (MissingMethodException e)
+            {
+                if (Logger != null && Logger.LogVerbose)
+                    Logger.Log($"WARNING: No parameterless constructor available for type '{fieldInfo.DeclaringType?.FullName}'. If field '{fieldInfo.DeclaringType?.FullName}.{fieldInfo.Name}' has a default value, this default value will not be generated.");
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Gets TypeScript class property definition source code
         /// </summary>
@@ -422,28 +440,31 @@ namespace TypeGen.Core
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
 
+            // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
-                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
+            // try to get default value from the field's default value
+            if (memberInfo is FieldInfo fieldInfo)
+            {
+                string valueText = GetFieldValueText(fieldInfo);
+                if (!string.IsNullOrWhiteSpace(valueText))
+                    return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, valueText);
+            }
+
+            // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any())
             {
                 string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
                 
                 if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
-                    return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
+                    return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
                 }
             }
-
-//            if (memberInfo is FieldInfo fieldInfo && fieldInfo.IsStatic && (fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
-//            {
-//                modifiers += "readonly ";
-//                string valueFormatted = _typeService.GetTsConstantValue(fieldInfo);
-//                return _templateService.FillClassPropertyWithDefaultValueTemplate(modifiers, name, null, valueFormatted);
-//            }
 
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName);
         }
@@ -453,7 +474,7 @@ namespace TypeGen.Core
             if (Logger == null) return;
             
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null)
-                Logger.Log($"TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+                Logger.Log($"WARNING: TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
 
         /// <summary>
@@ -500,13 +521,13 @@ namespace TypeGen.Core
             if (Logger == null) return;
             
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null)
-                Logger.Log($"TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+                Logger.Log($"WARNING: TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
             
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) != null)
-                Logger.Log($"TsNotStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+                Logger.Log($"WARNING: TsNotStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
             
             if (Logger.LogVerbose && _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo) != null)
-                Logger.Log($"TsDefaultValueAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
+                Logger.Log($"WARNING: TsDefaultValueAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
 
         /// <summary>

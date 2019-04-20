@@ -20,7 +20,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
-    <EmbeddedResource Include="Templates\ClassPropertyWithDefaultValue.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
     <EmbeddedResource Include="Templates\EnumValue.tpl" />
     <EmbeddedResource Include="Templates\Heading.tpl" />

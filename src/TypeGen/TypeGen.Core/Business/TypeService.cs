@@ -248,16 +248,6 @@ namespace TypeGen.Core.Business
             return GetTsTypeName(type, typeNameConverters);
         }
 
-        public string GetTsConstantValue(FieldInfo fieldInfo)
-        {
-            if(!fieldInfo.IsStatic || !(fieldInfo.IsLiteral || fieldInfo.IsInitOnly))
-                throw new ArgumentException("This function works only with readonly or constant values!", nameof(fieldInfo));
-
-            var valueObj = fieldInfo.GetValue(null);
-            
-            return JsonConvert.SerializeObject(valueObj);
-        }
-
         private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo, StrictNullFlags csNullableTranslation)
         {
             Type memberType = memberInfo is PropertyInfo info

@@ -91,7 +91,7 @@ namespace TypeGen.AcceptanceTest.Generator
 
             //assert
 
-//            _fileSystem.Received().SaveFile(outputPath + "foo-constants.ts", Content["foo-constants.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "foo-constants.ts", Content["foo-constants.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "bar.ts", Content["bar.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "base-class.ts", Content["base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "base-class2.ts", Content["base-class2.ts"]);

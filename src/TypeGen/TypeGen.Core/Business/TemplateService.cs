@@ -16,7 +16,6 @@ namespace TypeGen.Core.Business
         private readonly string _enumValueTemplate;
         private readonly string _classTemplate;
         private readonly string _classPropertyTemplate;
-        private readonly string _classPropertyWithDefaultValueTemplate;
         private readonly string _interfaceTemplate;
         private readonly string _interfacePropertyTemplate;
         private readonly string _importTemplate;
@@ -34,7 +33,6 @@ namespace TypeGen.Core.Business
             _enumValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
             _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
             _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
-            _classPropertyWithDefaultValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassPropertyWithDefaultValue.tpl");
             _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
             _interfacePropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
@@ -57,25 +55,16 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillClassPropertyWithDefaultValueTemplate(string modifiers, string name, string type, string defaultValue)
+        public string FillClassPropertyTemplate(string modifiers, string name, string type, string defaultValue = null)
         {
             type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
-            
-            return ReplaceSpecialChars(_classPropertyWithDefaultValueTemplate)
-                .Replace(GetTag("modifiers"), modifiers)
-                .Replace(GetTag("name"), name)
-                .Replace(GetTag("type"), type)
-                .Replace(GetTag("defaultValue"), defaultValue);
-        }
-
-        public string FillClassPropertyTemplate(string modifiers, string name, string type)
-        {
-            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            defaultValue = string.IsNullOrWhiteSpace(defaultValue) ? "" : $" = {defaultValue}";
             
             return ReplaceSpecialChars(_classPropertyTemplate)
                 .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name)
-                .Replace(GetTag("type"), type);
+                .Replace(GetTag("type"), type)
+                .Replace(GetTag("defaultValue"), defaultValue);
         }
 
         public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null)
