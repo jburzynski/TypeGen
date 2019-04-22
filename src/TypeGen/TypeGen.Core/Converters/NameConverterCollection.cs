@@ -40,16 +40,10 @@ namespace TypeGen.Core.Converters
 
         /// <summary>
         /// Removes a converter from the collection.
-        /// Throws an exception if attempted to remove the first, default NoChangeConverter converter.
         /// </summary>
         /// <param name="converter"></param>
         public void Remove(INameConverter converter)
         {
-            if (_converters.IndexOf(converter) == 0)
-            {
-                throw new CoreException("Cannot remove the first, default NoChangeConverter");
-            }
-
             _converters.Remove(converter);
         }
 
