@@ -34,7 +34,7 @@ namespace TypeGen.Cli
             _consoleArgsReader = new ConsoleArgsReader();
             _logger = new ConsoleLogger();
             _fileSystem = new FileSystem();
-            _configProvider = new ConfigProvider(_fileSystem, _logger, new JsonSerializer(_fileSystem));
+            _configProvider = new ConfigProvider(_fileSystem, _logger);
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
         }

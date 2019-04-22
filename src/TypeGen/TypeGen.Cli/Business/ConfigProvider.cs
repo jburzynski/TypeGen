@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TypeGen.Cli.Models;
 using TypeGen.Core.Business;
 using TypeGen.Core.Utils;
@@ -16,15 +17,12 @@ namespace TypeGen.Cli.Business
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
-        private readonly IJsonSerializer _jsonSerializer;
 
         public ConfigProvider(IFileSystem fileSystem,
-            ILogger logger,
-            IJsonSerializer jsonSerializer)
+            ILogger logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
-            _jsonSerializer = jsonSerializer;
         }
 
         /// <summary>
@@ -52,7 +50,8 @@ namespace TypeGen.Cli.Business
 
             if (_logger.LogVerbose) _logger.Log($"Reading the config file from \"{configPath}\"");
 
-            TgConfig config = _jsonSerializer.DeserializeFromFile<TgConfig>(configPath)
+            string tgConfigJson = _fileSystem.ReadFile(configPath);
+            TgConfig config = JsonConvert.DeserializeObject<TgConfig>(tgConfigJson)
                 .MergeWithDefaultParams()
                 .Normalize();
 
