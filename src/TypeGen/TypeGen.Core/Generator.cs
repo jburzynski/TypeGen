@@ -20,8 +20,18 @@ namespace TypeGen.Core
     /// </summary>
     public class Generator
     {
+        // events
+
+        /// <summary>
+        /// An event that fires when a file's content is generated
+        /// </summary>
+        public event EventHandler<FileContentGeneratedArgs> FileContentGenerated;
+        
         // dependencies
 
+        /// <summary>
+        /// A logger instance used to log messages raised by a Generator instance
+        /// </summary>
         public ILogger Logger { get; set; }
         
         private IMetadataReader _metadataReader;
@@ -56,6 +66,8 @@ namespace TypeGen.Core
         
         public Generator()
         {
+            FileContentGenerated += OnFileContentGenerated;
+            
             Options = new GeneratorOptions();
             _generationContext = new GenerationContext();
             
@@ -78,6 +90,33 @@ namespace TypeGen.Core
         /// </summary>
         /// <param name="fileSystem"></param>
         internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
+        
+        /// <summary>
+        /// The default event handler for the FileContentGenerated event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        protected virtual void OnFileContentGenerated(object sender, FileContentGeneratedArgs args)
+        {
+            _fileSystem.SaveFile(args.FilePath, args.FileContent);
+        }
+
+        /// <summary>
+        /// Subscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+        /// </summary>
+        public void SubscribeDefaultFileContentGeneratedHandler()
+        {
+            FileContentGenerated -= OnFileContentGenerated;
+            FileContentGenerated += OnFileContentGenerated;
+        }
+        
+        /// <summary>
+        /// Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+        /// </summary>
+        public void UnsubscribeDefaultFileContentGeneratedHandler()
+        {
+            FileContentGenerated -= OnFileContentGenerated;
+        }
 
         private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
         {
@@ -251,7 +290,7 @@ namespace TypeGen.Core
             string content = _templateService.FillIndexTemplate(exports);
 
             string filename = "index" + typeScriptFileExtension;
-            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(Options.BaseOutputDirectory, filename), content));
 
             return new[] { filename };
         }
@@ -364,8 +403,7 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            _fileSystem.SaveFile(filePath, content);
-
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
             return new[] { filePathRelative }.Concat(dependenciesGenerationResult);
         }
 
@@ -389,7 +427,7 @@ namespace TypeGen.Core
 
             // write TypeScript file
 
-            _fileSystem.SaveFile(filePath, enumText);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, enumText));
             return new[] { filePathRelative };
         }
 
