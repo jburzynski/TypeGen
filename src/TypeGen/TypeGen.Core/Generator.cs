@@ -449,7 +449,27 @@ namespace TypeGen.Core
             {
                 object instance = fieldInfo.IsStatic() || fieldInfo.DeclaringType == null ? null : Activator.CreateInstance(fieldInfo.DeclaringType);
                 object valueObj = fieldInfo.GetValue(instance);
-                return valueObj == null ? null : JsonConvert.SerializeObject(valueObj);
+
+                if (valueObj == null) return null;
+                
+                string fieldType = _typeService.GetTsTypeName(fieldInfo, Options.TypeNameConverters, Options.CsNullableTranslation).GetTsTypeUnion(0);
+                string quote = Options.SingleQuotes ? "'" : "\"";
+
+                switch (valueObj)
+                {
+                    case Guid valueGuid when fieldType == "string":
+                        return quote + valueGuid + quote;
+                    case DateTime valueDateTime when fieldType == "Date":
+                        return $@"new Date({quote}{valueDateTime}{quote})";
+                    case DateTime valueDateTime when fieldType == "string":
+                        return quote + valueDateTime + quote;
+                    case DateTimeOffset valueDateTimeOffset when fieldType == "Date":
+                        return $@"new Date({quote}{valueDateTimeOffset}{quote})";
+                    case DateTimeOffset valueDateTimeOffset when fieldType == "string":
+                        return quote + valueDateTimeOffset + quote;
+                    default:
+                        return JsonConvert.SerializeObject(valueObj).Replace("\"", quote);
+                }
             }
             catch (MissingMethodException e)
             {

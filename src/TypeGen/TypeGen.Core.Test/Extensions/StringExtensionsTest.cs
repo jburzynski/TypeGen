@@ -43,5 +43,18 @@ namespace TypeGen.Core.Test.Extensions
             string actualResult = input.RemoveTypeArity();
             Assert.Equal(expectedResult, actualResult);
         }
+
+        [Theory]
+        [InlineData("string", 0, "string")]
+        [InlineData("string | null", 0, "string")]
+        [InlineData("string | null", 1, "null")]
+        [InlineData("Date | null | undefined", 0, "Date")]
+        [InlineData("Date | null | undefined", 1, "null")]
+        [InlineData("Date | null | undefined", 2, "undefined")]
+        public void GetTsTypeUnion_Test(string input, int index, string expectedResult)
+        {
+            string actualResult = input.GetTsTypeUnion(index);
+            Assert.Equal(expectedResult, actualResult);
+        }
     }
 }

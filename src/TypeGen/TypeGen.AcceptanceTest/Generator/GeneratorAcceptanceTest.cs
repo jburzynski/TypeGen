@@ -174,7 +174,11 @@ namespace TypeGen.AcceptanceTest.Generator
                 AddClass<CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
                 AddInterface<CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
                 AddInterface<CustomEmptyBaseClass>().CustomBase();
-                AddClass<ExtendedPrimitivesClass>();
+                AddClass<ExtendedPrimitivesClass>()
+                    .Member(nameof(ExtendedPrimitivesClass.DateTimeStringField))
+                    .Type("string")
+                    .Member(nameof(ExtendedPrimitivesClass.DateTimeOffsetStringField))
+                    .Type("string");
                 AddClass<ExternalDepsClass>().Member(nameof(ExternalDepsClass.User)).Ignore();
                 AddClass(typeof(GenericBaseClass<>));
                 AddClass(typeof(GenericClass<>));

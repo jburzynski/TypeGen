@@ -57,5 +57,18 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(value, nameof(value));
             return value.Split('`')[0];
         }
+
+        /// <summary>
+        /// Gets the type from a TypeScript type union indicated by the given index.
+        /// E.g. the following string: "Date | null | undefined" is a TS type union with 3 types and each of these types can be accessed with an index from 0 to 2.
+        /// </summary>
+        /// <param name="value">The TypeScript type union string</param>
+        /// <param name="index">The index of the type in the type union to retrieve</param>
+        /// <returns>The type from the given TS type union indicated by the index</returns>
+        public static string GetTsTypeUnion(this string value, int index)
+        {
+            Requires.NotNull(value, nameof(value));
+            return value.Split('|')[index].Trim();
+        }
     }
 }

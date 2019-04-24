@@ -75,7 +75,6 @@ namespace TypeGen.Core.Business
                     return "number";
                 case "System.DateTime":
                 case "System.DateTimeOffset":
-                case "System.TimeSpan":
                     return "Date";
                 default:
                     return null;
