@@ -644,6 +644,15 @@
             <param name="value"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.GetTsTypeUnion(System.String,System.Int32)">
+            <summary>
+            Gets the type from a TypeScript type union indicated by the given index.
+            E.g. the following string: "Date | null | undefined" is a TS type union with 3 types and each of these types can be accessed with an index from 0 to 2.
+            </summary>
+            <param name="value">The TypeScript type union string</param>
+            <param name="index">The index of the type in the type union to retrieve</param>
+            <returns>The type from the given TS type union indicated by the index</returns>
+        </member>
         <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type,TypeGen.Core.Business.IMetadataReader)">
             <summary>
             Checks if a type is marked with an ExportTs... attribute
