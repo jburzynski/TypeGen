@@ -114,29 +114,15 @@ namespace TypeGen.Core.Test.Business
             {
                 typeof(GetTsExportableMembers_TestData).GetField("c"),
                 typeof(GetTsExportableMembers_TestData).GetField("c1"),
+                typeof(GetTsExportableMembers_TestData).GetField("d"),
                 typeof(GetTsExportableMembers_TestData).GetField("L"),
                 typeof(GetTsExportableMembers_TestData).GetField("N"),
-                typeof(GetTsExportableMembers_TestData).GetProperty("C")
+                typeof(GetTsExportableMembers_TestData).GetProperty("C"),
+                typeof(GetTsExportableMembers_TestData).GetProperty("D")
             };
             
             IEnumerable<MemberInfo> actualResult = _typeService.GetTsExportableMembers(typeof(GetTsExportableMembers_TestData)).ToArray();
             Assert.Equal(expectedResult, actualResult);
-        }
-
-        public class GetTsConstantValue_TestData
-        {
-            public const string TestConst = "TestConst";
-            public static readonly string TestReadonly = "TestReadonly";
-
-            public const int TestInt = 1;
-            public const double TestDouble = 1.2;
-            public static readonly DateTime TestDt = DateTime.MinValue.AddYears(2019);
-
-            public static readonly object ComplexObject = new
-            {
-                Prop1 = "prop1",
-                Prop2 = 2
-            };
         }
 
         public class GetTsExportableMembers_TestData

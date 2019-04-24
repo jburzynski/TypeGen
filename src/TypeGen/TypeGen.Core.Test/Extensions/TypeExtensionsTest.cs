@@ -78,12 +78,14 @@ namespace TypeGen.Core.Test.Extensions
             {
                 typeof(WithMembersFilter_TestClass).GetField("a"),
                 typeof(WithMembersFilter_TestClass).GetField("b"),
-                typeof(WithMembersFilter_TestClass).GetField("c")
+                typeof(WithMembersFilter_TestClass).GetField("c"),
+                typeof(WithMembersFilter_TestClass).GetField("d", BindingFlags.NonPublic | BindingFlags.Instance)
             };
             
-            IEnumerable<MemberInfo> expectedResult = new FieldInfo[]
+            IEnumerable<MemberInfo> expectedResult = new[]
             {
                 typeof(WithMembersFilter_TestClass).GetField("a"),
+                typeof(WithMembersFilter_TestClass).GetField("b"),
                 typeof(WithMembersFilter_TestClass).GetField("c")
             };
 
@@ -98,12 +100,14 @@ namespace TypeGen.Core.Test.Extensions
             {
                 typeof(WithMembersFilter_TestClass).GetProperty("A"),
                 typeof(WithMembersFilter_TestClass).GetProperty("B"),
-                typeof(WithMembersFilter_TestClass).GetProperty("C")
+                typeof(WithMembersFilter_TestClass).GetProperty("C"),
+                typeof(WithMembersFilter_TestClass).GetProperty("D", BindingFlags.NonPublic | BindingFlags.Instance)
             };
             
             IEnumerable<PropertyInfo> expectedResult = new[]
             {
                 typeof(WithMembersFilter_TestClass).GetProperty("A"),
+                typeof(WithMembersFilter_TestClass).GetProperty("B"),
                 typeof(WithMembersFilter_TestClass).GetProperty("C")
             };
 
@@ -116,10 +120,12 @@ namespace TypeGen.Core.Test.Extensions
             public string a;
             public static DateTime b;
             [TsIgnore] public int c;
+            private string d;
             
             public string A { get; set; }
             public static DateTime B { get; set; }
             [TsIgnore] public int C { get; set; }
+            private string D { get; set; }
         }
 
         [Fact]
