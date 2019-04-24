@@ -11,10 +11,13 @@ namespace TypeGen.Core.SpecGeneration
     {
         private readonly TypeSpec _spec;
         private string _activeMemberName;
+        
+        protected internal readonly T _instance;
 
         internal TypeSpecBuilder(TypeSpec spec)
         {
             _spec = spec;
+            _instance = default;
         }
 
         protected internal void AddActiveMemberAttribute(Attribute attribute) => _spec.MemberAttributes[_activeMemberName].Add(attribute);
