@@ -379,8 +379,6 @@ namespace TypeGen.Core.Test.Business
             new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "any" },
             new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullFlags.Regular, "any" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | null" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Null | StrictNullFlags.Undefined, "number | null | undefined" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "number | null" },
