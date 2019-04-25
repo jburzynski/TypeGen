@@ -28,8 +28,6 @@ namespace TypeGen.Cli.Business
         private readonly string _sharedFolder;
         private List<string> _nugetPackagesFolders;
         
-        public bool LogVerbose { get; set; }
-
         public AssemblyResolver(IFileSystem fileSystem, ILogger logger, string projectFolder)
         {
             _fileSystem = fileSystem;
@@ -67,7 +65,7 @@ namespace TypeGen.Cli.Business
 
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            if (LogVerbose) _logger.Log($"Attempting to resolve assembly '{args.Name}'...");
+            if (_logger.LogVerbose) _logger.Log($"Attempting to resolve assembly '{args.Name}'...");
             
             // step 1 - search by assembly name (nuget global + nuget fallback + user-defined)
 
@@ -156,7 +154,7 @@ namespace TypeGen.Cli.Business
                     Assembly assembly = Assembly.LoadFile(path);
                     if (assembly.GetName().Version.ToString() == assemblyVersion)
                     {
-                        if (LogVerbose) _logger.Log($"Assembly '{assembly.FullName}' found in: {path}");
+                        if (_logger.LogVerbose) _logger.Log($"Assembly '{assembly.FullName}' found in: {path}");
                         return assembly;
                     }
                 }
