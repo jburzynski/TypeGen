@@ -621,11 +621,11 @@ namespace TypeGen.Core
                 (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
             {
                 string enumValueString = Options.EnumStringInitializersConverters.Convert(enumValue.ToString());
-                return _templateService.FillEnumValueTemplate(name, stringValue: enumValueString);
+                return _templateService.FillEnumValueTemplate(name, enumValueString);
             }
             
-            var enumValueInt = (int)enumValue;
-            return _templateService.FillEnumValueTemplate(name, enumValueInt);
+            object enumValueAsUnderlyingType = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(type));
+            return _templateService.FillEnumValueTemplate(name, enumValueAsUnderlyingType);
         }
 
         /// <summary>

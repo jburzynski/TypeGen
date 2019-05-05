@@ -44,6 +44,7 @@ namespace TypeGen.AcceptanceTest.Generator
             { "lite-db-entity.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.lite-db-entity.ts") },
             { "readonly-interface.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.readonly-interface.ts") },
             { "standalone-enum.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.standalone-enum.ts") },
+            { "enum-short-values.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.enum-short-values.ts") },
             { "static-readonly.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.static-readonly.ts") },
             { "strict-nulls-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.strict-nulls-class.ts") },
             { "with-generic-base-class-custom-type.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-generic-base-class-custom-type.ts") },
@@ -113,6 +114,7 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "lite-db-entity.ts", Content["lite-db-entity.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "readonly-interface.ts", Content["readonly-interface.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "standalone-enum.ts", Content["standalone-enum.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "enum-short-values.ts", Content["enum-short-values.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "static-readonly.ts", Content["static-readonly.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "strict-nulls-class.ts", Content["strict-nulls-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-generic-base-class-custom-type.ts", Content["with-generic-base-class-custom-type.ts"]);

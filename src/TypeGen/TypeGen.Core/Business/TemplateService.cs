@@ -103,13 +103,13 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillEnumValueTemplate(string name, int? intValue = null, string stringValue = null)
+        public string FillEnumValueTemplate(string name, object value)
         {
-            string value = intValue != null ? intValue.ToString() : $@"""{stringValue}""";
+            string valueString = value is string str ? $@"""{str}""" : value.ToString();
             
             return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace(GetTag("name"), name)
-                .Replace(GetTag("value"), value);
+                .Replace(GetTag("value"), valueString);
         }
 
         public string FillImportTemplate(string name, string typeAlias, string path)

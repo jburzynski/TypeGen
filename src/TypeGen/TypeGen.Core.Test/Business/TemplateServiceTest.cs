@@ -179,7 +179,7 @@ namespace TypeGen.Core.Test.Business
                 .Returns("$tg{name} | $tg{value}");
             var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
 
-            string actual = templateService.FillEnumValueTemplate("a", stringValue: "stringValue");
+            string actual = templateService.FillEnumValueTemplate("a", "stringValue");
             Assert.Equal(@"a | ""stringValue""", actual);
         }
 
