@@ -26,6 +26,10 @@
       <EmbeddedResource Include="Generator\Expected\custom-base-custom-import.ts" />
       <EmbeddedResource Include="Generator\Expected\custom-empty-base-class.ts" />
       <EmbeddedResource Include="Generator\Expected\d.ts" />
+      <EmbeddedResource Include="Generator\Expected\default-export\class-with-default-export.ts" />
+      <EmbeddedResource Include="Generator\Expected\default-export\class-with-imports.ts" />
+      <EmbeddedResource Include="Generator\Expected\default-export\class-without-default-export.ts" />
+      <EmbeddedResource Include="Generator\Expected\default-export\interface-with-default-export.ts" />
       <EmbeddedResource Include="Generator\Expected\e-class.ts" />
       <EmbeddedResource Include="Generator\Expected\extended-primitives-class.ts" />
       <EmbeddedResource Include="Generator\Expected\external-deps-class.ts" />

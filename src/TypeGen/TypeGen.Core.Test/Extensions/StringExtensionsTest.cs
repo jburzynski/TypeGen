@@ -43,6 +43,17 @@ namespace TypeGen.Core.Test.Extensions
             string actualResult = input.RemoveTypeArity();
             Assert.Equal(expectedResult, actualResult);
         }
+        
+        [Theory]
+        [InlineData("IDictionary<string, int>", "IDictionary")]
+        [InlineData("IList<int?>", "IList")]
+        [InlineData("customtype<customparam>", "customtype")]
+        [InlineData("NonGenericType", "NonGenericType")]
+        public void RemoveTypeGenericComponent_Test(string input, string expectedResult)
+        {
+            string actualResult = input.RemoveTypeGenericComponent();
+            Assert.Equal(expectedResult, actualResult);
+        }
 
         [Theory]
         [InlineData("string", 0, "string")]

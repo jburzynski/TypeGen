@@ -392,14 +392,26 @@ namespace TypeGen.Core
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
+            string tsTypeNameFirstPart = tsTypeName.RemoveTypeArity().RemoveTypeGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
-            string content = classAttribute != null ?
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading) :
-                _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading);
+            string content;
+            
+            if (classAttribute != null)
+            {
+                content = _typeService.UseDefaultExport(type) ?
+                    _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, customHead, customBody, Options.FileHeading) :
+                    _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading);
+            }
+            else
+            {
+                content = _typeService.UseDefaultExport(type) ?
+                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, customHead, customBody, Options.FileHeading) :
+                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading);
+            }
 
             // write TypeScript file
 
@@ -423,7 +435,9 @@ namespace TypeGen.Core
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
-            string enumText = _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading);
+            string enumText = _typeService.UseDefaultExport(type) ? 
+                _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading) :
+                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading);
 
             // write TypeScript file
 

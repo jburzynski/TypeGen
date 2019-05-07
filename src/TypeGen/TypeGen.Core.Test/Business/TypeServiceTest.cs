@@ -265,6 +265,37 @@ namespace TypeGen.Core.Test.Business
             bool actualResult = _typeService.IsCustomGenericType(type);
             Assert.Equal(expectedResult, actualResult);
         }
+        
+        [Theory]
+        [InlineData(typeof(UseDefaultExport_TestClass_NoAttribute), true, true)]
+        [InlineData(typeof(UseDefaultExport_TestClass_NoAttribute), false, false)]
+        [InlineData(typeof(UseDefaultExport_TestClass_AttributeEnabledTrue), true, true)]
+        [InlineData(typeof(UseDefaultExport_TestClass_AttributeEnabledTrue), false, true)]
+        [InlineData(typeof(UseDefaultExport_TestClass_AttributeEnabledFalse), true, false)]
+        [InlineData(typeof(UseDefaultExport_TestClass_AttributeEnabledFalse), false, false)]
+        public void UseDefaultExport_TypeGiven_DeterminedIfDefaultExport(Type type, bool optionsDefaultExport, bool expectedResult)
+        {
+            // arrange
+            _typeService.GeneratorOptions.UseDefaultExport = optionsDefaultExport;
+            // act
+            bool actualResult = _typeService.UseDefaultExport(type);
+            // assert
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        public class UseDefaultExport_TestClass_NoAttribute
+        {
+        }
+        
+        [TsDefaultExport]
+        public class UseDefaultExport_TestClass_AttributeEnabledTrue
+        {
+        }
+        
+        [TsDefaultExport(false)]
+        public class UseDefaultExport_TestClass_AttributeEnabledFalse
+        {
+        }
 
         [Theory]
         [MemberData(nameof(GetTsTypeName_TestData))]

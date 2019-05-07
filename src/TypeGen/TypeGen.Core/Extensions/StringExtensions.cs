@@ -57,6 +57,17 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(value, nameof(value));
             return value.Split('`')[0];
         }
+        
+        /// <summary>
+        /// Removes generic component from the type, e.g. "MyType<T>" becomes "MyType"
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string RemoveTypeGenericComponent(this string value)
+        {
+            Requires.NotNull(value, nameof(value));
+            return value.Split('<')[0];
+        }
 
         /// <summary>
         /// Gets the type from a TypeScript type union indicated by the given index.

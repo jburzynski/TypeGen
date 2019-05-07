@@ -13,12 +13,16 @@ namespace TypeGen.Core.Business
         private readonly IInternalStorage _internalStorage;
 
         private readonly string _enumTemplate;
+        private readonly string _enumDefaultExportTemplate;
         private readonly string _enumValueTemplate;
         private readonly string _classTemplate;
+        private readonly string _classDefaultExportTemplate;
         private readonly string _classPropertyTemplate;
         private readonly string _interfaceTemplate;
+        private readonly string _interfaceDefaultExportTemplate;
         private readonly string _interfacePropertyTemplate;
         private readonly string _importTemplate;
+        private readonly string _importDefaultExportTemplate;
         private readonly string _indexTemplate;
         private readonly string _indexExportTemplate;
         private readonly string _headingTemplate;
@@ -30,12 +34,16 @@ namespace TypeGen.Core.Business
             _internalStorage = internalStorage;
 
             _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
+            _enumDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumDefaultExport.tpl");
             _enumValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
             _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
+            _classDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassDefaultExport.tpl");
             _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
             _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
+            _interfaceDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceDefaultExport.tpl");
             _interfacePropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceProperty.tpl");
             _importTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Import.tpl");
+            _importDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ImportDefaultExport.tpl");
             _indexTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl");
             _indexExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl");
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
@@ -48,6 +56,21 @@ namespace TypeGen.Core.Business
             return ReplaceSpecialChars(_classTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
+                .Replace(GetTag("extends"), extends)
+                .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("customHead"), customHead)
+                .Replace(GetTag("customBody"), customBody)
+                .Replace(GetTag("fileHeading"), fileHeading);
+        }
+        
+        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
+            return ReplaceSpecialChars(_classDefaultExportTemplate)
+                .Replace(GetTag("imports"), imports)
+                .Replace(GetTag("name"), name)
+                .Replace(GetTag("exportName"), exportName)
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("properties"), properties)
                 .Replace(GetTag("customHead"), customHead)
@@ -80,6 +103,21 @@ namespace TypeGen.Core.Business
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
+        
+        public string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
+            return ReplaceSpecialChars(_interfaceDefaultExportTemplate)
+                .Replace(GetTag("imports"), imports)
+                .Replace(GetTag("name"), name)
+                .Replace(GetTag("exportName"), exportName)
+                .Replace(GetTag("extends"), extends)
+                .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("customHead"), customHead)
+                .Replace(GetTag("customBody"), customBody)
+                .Replace(GetTag("fileHeading"), fileHeading);
+        }
 
         public string FillInterfacePropertyTemplate(string modifiers, string name, string type, bool isOptional)
         {
@@ -96,6 +134,18 @@ namespace TypeGen.Core.Business
             if (fileHeading == null) fileHeading = _headingTemplate;
             
             return ReplaceSpecialChars(_enumTemplate)
+                .Replace(GetTag("imports"), imports)
+                .Replace(GetTag("name"), name)
+                .Replace(GetTag("values"), values)
+                .Replace(GetTag("modifiers"), isConst ? " const" : "")
+                .Replace(GetTag("fileHeading"), fileHeading);
+        }
+        
+        public string FillEnumDefaultExportTemplate(string imports, string name, string values, bool isConst, string fileHeading = null)
+        {
+            if (fileHeading == null) fileHeading = _headingTemplate;
+            
+            return ReplaceSpecialChars(_enumDefaultExportTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
@@ -119,6 +169,13 @@ namespace TypeGen.Core.Business
             return ReplaceSpecialChars(_importTemplate)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("aliasText"), aliasText)
+                .Replace(GetTag("path"), path);
+        }
+        
+        public string FillImportDefaultExportTemplate(string name, string path)
+        {
+            return ReplaceSpecialChars(_importDefaultExportTemplate)
+                .Replace(GetTag("name"), name)
                 .Replace(GetTag("path"), path);
         }
 

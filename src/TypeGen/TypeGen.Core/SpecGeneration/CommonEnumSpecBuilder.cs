@@ -23,5 +23,16 @@ namespace TypeGen.Core.SpecGeneration
             AddTypeAttribute(new TsStringInitializersAttribute(enabled));
             return this as TDerived;
         }
+        
+        /// <summary>
+        /// Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+        /// </summary>
+        /// <param name="enabled"></param>
+        /// <returns></returns>
+        public TDerived DefaultExport(bool enabled = true)
+        {
+            AddTypeAttribute(new TsDefaultExportAttribute(enabled));
+            return this as TDerived;
+        }
     }
 }

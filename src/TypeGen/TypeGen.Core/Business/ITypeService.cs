@@ -124,5 +124,12 @@ namespace TypeGen.Core.Business
         /// <exception cref="ArgumentNullException">Thrown if type is null</exception>
         /// <exception cref="CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
         Type GetBaseType(Type type);
+
+        /// <summary>
+        /// Determines whether to use default export in TypeScript for a given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        bool UseDefaultExport(Type type);
     }
 }

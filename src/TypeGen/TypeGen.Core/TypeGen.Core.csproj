@@ -19,12 +19,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
+    <EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
+    <EmbeddedResource Include="Templates\EnumDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\EnumValue.tpl" />
     <EmbeddedResource Include="Templates\Heading.tpl" />
     <EmbeddedResource Include="Templates\Import.tpl" />
+    <EmbeddedResource Include="Templates\ImportDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\Interface.tpl" />
+    <EmbeddedResource Include="Templates\InterfaceDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
     <EmbeddedResource Include="Templates\Index.tpl" />
     <EmbeddedResource Include="Templates\IndexExport.tpl" />

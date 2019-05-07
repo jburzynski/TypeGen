@@ -41,6 +41,7 @@ namespace TypeGen.Cli.Models
         public bool? UseAttributesWithGenerationSpec { get; set; }
         public bool? EnumStringInitializers { get; set; }
         public string FileHeading { get; set; }
+        public bool? UseDefaultExport { get; set; }
 
         public TgConfig Normalize()
         {
@@ -79,6 +80,7 @@ namespace TypeGen.Cli.Models
             if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
+            if (UseDefaultExport == null) UseDefaultExport = GeneratorOptions.DefaultUseDefaultExport;
             return this;
         }
 

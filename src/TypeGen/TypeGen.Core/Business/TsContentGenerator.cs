@@ -129,7 +129,10 @@ namespace TypeGen.Core.Business
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = typeNameConverters.Convert(typeDependencyName, typeDependency);
-                result += _templateService.FillImportTemplate(typeName, "", dependencyPath);
+                
+                result += _typeService.UseDefaultExport(typeDependency) ?
+                    _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath) :
+                    _templateService.FillImportTemplate(typeName, "", dependencyPath);
             }
 
             return result;
@@ -161,7 +164,7 @@ namespace TypeGen.Core.Business
 
             foreach (TsTypeAttribute attribute in typeAttributes)
             {
-                yield return FillCustomImportTemplate(attribute.FlatTypeName, attribute.ImportPath, attribute.OriginalTypeName);
+                yield return FillCustomImportTemplate(attribute.FlatTypeName, attribute.ImportPath, attribute.OriginalTypeName, attribute.IsDefaultExport);
             }
         }
 
@@ -170,16 +173,18 @@ namespace TypeGen.Core.Business
             var tsCustomBaseAttribute = _metadataReader.GetAttribute<TsCustomBaseAttribute>(type);
             if (tsCustomBaseAttribute == null || string.IsNullOrEmpty(tsCustomBaseAttribute.ImportPath)) yield break;
 
-            yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName);
+            yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName, tsCustomBaseAttribute.IsDefaultExport);
         }
 
-        private string FillCustomImportTemplate(string typeName, string importPath, string originalTypeName)
+        private string FillCustomImportTemplate(string typeName, string importPath, string originalTypeName, bool isDefaultExport)
         {
             bool withOriginalTypeName = !string.IsNullOrEmpty(originalTypeName);
 
             string name = withOriginalTypeName ? originalTypeName : typeName;
             string typeAlias = withOriginalTypeName ? typeName : null;
-            return _templateService.FillImportTemplate(name, typeAlias, importPath);
+            
+            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath) : 
+                _templateService.FillImportTemplate(name, typeAlias, importPath);
         }
 
         /// <summary>

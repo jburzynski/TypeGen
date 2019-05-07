@@ -12,17 +12,29 @@ namespace TypeGen.Core.SpecGeneration
         internal ClassOrInterfaceSpecBuilder(TypeSpec spec) : base(spec)
         {
         }
-        
+
         /// <summary>
         /// Specifies custom base for the type (equivalent of TsCustomBaseAttribute)
         /// </summary>
         /// <param name="base"></param>
         /// <param name="importPath"></param>
         /// <param name="originalTypeName"></param>
+        /// <param name="isDefaultExport"></param>
         /// <returns></returns>
-        public TDerived CustomBase(string @base = null, string importPath = null, string originalTypeName = null)
+        public TDerived CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false)
         {
-            AddTypeAttribute(new TsCustomBaseAttribute(@base, importPath, originalTypeName));
+            AddTypeAttribute(new TsCustomBaseAttribute(@base, importPath, originalTypeName, isDefaultExport));
+            return this as TDerived;
+        }
+        
+        /// <summary>
+        /// Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+        /// </summary>
+        /// <param name="enabled"></param>
+        /// <returns></returns>
+        public TDerived DefaultExport(bool enabled = true)
+        {
+            AddTypeAttribute(new TsDefaultExportAttribute(enabled));
             return this as TDerived;
         }
         
@@ -128,17 +140,18 @@ namespace TypeGen.Core.SpecGeneration
             AddActiveMemberAttribute(new TsReadonlyAttribute());
             return this as TDerived;
         }
-        
+
         /// <summary>
         /// Specifies custom type for the selected member (equivalent of TsTypeAttribute)
         /// </summary>
         /// <param name="typeName"></param>
         /// <param name="importPath"></param>
         /// <param name="originalTypeName"></param>
+        /// <param name="isDefaultExport"></param>
         /// <returns></returns>
-        public TDerived Type(string typeName, string importPath = null, string originalTypeName = null)
+        public TDerived Type(string typeName, string importPath = null, string originalTypeName = null, bool isDefaultExport = false)
         {
-            AddActiveMemberAttribute(new TsTypeAttribute(typeName, importPath, originalTypeName));
+            AddActiveMemberAttribute(new TsTypeAttribute(typeName, importPath, originalTypeName, isDefaultExport));
             return this as TDerived;
         }
         

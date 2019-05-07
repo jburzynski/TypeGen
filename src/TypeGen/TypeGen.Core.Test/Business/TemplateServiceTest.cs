@@ -46,6 +46,33 @@ namespace TypeGen.Core.Test.Business
             Assert.Equal("    | \"", actualDoubleQuote);
             Assert.Equal("    | '", actualSingleQuote);
         }
+        
+        [Fact]
+        public void FillClassDefaultExportTemplate_ValuesGiven_TemplateFilledWithValues()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassDefaultExport.tpl")
+                .Returns("$tg{imports} | $tg{name} | $tg{exportName} | $tg{extends} | $tg{properties} | $tg{customHead} | $tg{customBody}");
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
+
+            string actual = templateService.FillClassDefaultExportTemplate("a", "B", "c", "D", "e", "F", "g");
+            Assert.Equal("a | B | c | D | e | F | g", actual);
+        }
+
+        [Fact]
+        public void FillClassDefaultExportTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassDefaultExport.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillClassDefaultExportTemplate("", "", "", "", "", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillClassDefaultExportTemplate("", "", "", "", "", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
 
         [Fact]
         public void FillClassPropertyTemplate_ValuesGiven_TemplateFilledWithValues()
@@ -96,6 +123,33 @@ namespace TypeGen.Core.Test.Business
             string actualDoubleQuote = templateService.FillInterfaceTemplate("", "", "", "", "", "");
             generatorOptions.SingleQuotes = true;
             string actualSingleQuote = templateService.FillInterfaceTemplate("", "", "", "", "", "");
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+        
+        [Fact]
+        public void FillInterfaceDefaultExportTemplate_ValuesGiven_TemplateFilledWithValues()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceDefaultExport.tpl")
+                .Returns("$tg{imports} | $tg{name} | $tg{exportName} | $tg{extends} | $tg{properties} | $tg{customHead} | $tg{customBody}");
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
+
+            string actual = templateService.FillInterfaceDefaultExportTemplate("a", "B", "c", "D", "e", "F", "g");
+            Assert.Equal("a | B | c | D | e | F | g", actual);
+        }
+
+        [Fact]
+        public void FillInterfaceDefaultExportTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceDefaultExport.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillInterfaceDefaultExportTemplate("", "", "", "", "", "", "");
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillInterfaceDefaultExportTemplate("", "", "", "", "", "", "");
 
             Assert.Equal("    | \"", actualDoubleQuote);
             Assert.Equal("    | '", actualSingleQuote);
@@ -156,6 +210,36 @@ namespace TypeGen.Core.Test.Business
             string actualDoubleQuote = templateService.FillEnumTemplate("", "", "", false);
             generatorOptions.SingleQuotes = true;
             string actualSingleQuote = templateService.FillEnumTemplate("", "", "", false);
+
+            Assert.Equal("    | \"", actualDoubleQuote);
+            Assert.Equal("    | '", actualSingleQuote);
+        }
+        
+        [Fact]
+        public void FillEnumDefaultExportTemplate_ValuesGiven_TemplateFilledWithValues()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumDefaultExport.tpl")
+                .Returns("$tg{imports} | $tg{name} | $tg{values} | $tg{modifiers}");
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = new GeneratorOptions() };
+
+            string actualConst = templateService.FillEnumDefaultExportTemplate("a", "B", "c", true);
+            string actualNotConst = templateService.FillEnumDefaultExportTemplate("a", "B", "c", false);
+
+            Assert.Equal("a | B | c |  const", actualConst);
+            Assert.Equal("a | B | c | ", actualNotConst);
+        }
+
+        [Fact]
+        public void FillEnumDefaultExportTemplate_SpecialCharsPresent_SpecialCharsReplaced()
+        {
+            _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumDefaultExport.tpl")
+                .Returns("$tg{tab} | $tg{quot}");
+            var generatorOptions = new GeneratorOptions { TabLength = 3 };
+            var templateService = new TemplateService(_internalStorage) { GeneratorOptions = generatorOptions };
+
+            string actualDoubleQuote = templateService.FillEnumDefaultExportTemplate("", "", "", false);
+            generatorOptions.SingleQuotes = true;
+            string actualSingleQuote = templateService.FillEnumDefaultExportTemplate("", "", "", false);
 
             Assert.Equal("    | \"", actualDoubleQuote);
             Assert.Equal("    | '", actualSingleQuote);

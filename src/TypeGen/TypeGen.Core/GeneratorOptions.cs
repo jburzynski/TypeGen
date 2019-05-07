@@ -28,23 +28,27 @@ namespace TypeGen.Core
         public static bool DefaultUseAttributesWithGenerationSpec => false;
         public static bool DefaultEnumStringInitializers => false;
         public static string DefaultFileHeading => null;
+        public static bool DefaultUseDefaultExport => false;
 
         public GeneratorOptions()
         {
+            TabLength = DefaultTabLength;
+            ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             FileNameConverters = DefaultFileNameConverters;
             TypeNameConverters = DefaultTypeNameConverters;
             PropertyNameConverters = DefaultPropertyNameConverters;
             EnumValueNameConverters = DefaultEnumValueNameConverters;
             EnumStringInitializersConverters = DefaultEnumStringInitializersConverters;
             TypeScriptFileExtension = DefaultTypeScriptFileExtension;
-            TabLength = DefaultTabLength;
-            ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
-            CreateIndexFile = DefaultCreateIndexFile;
             SingleQuotes = DefaultSingleQuotes;
+            CreateIndexFile = DefaultCreateIndexFile;
+            CsNullableTranslation = DefaultCsNullableTranslation;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
             UseAttributesWithGenerationSpec = DefaultUseAttributesWithGenerationSpec;
             EnumStringInitializers = DefaultEnumStringInitializers;
+            FileHeading = DefaultFileHeading;
+            UseDefaultExport = DefaultUseDefaultExport;
         }
 
         /// <summary>
@@ -133,5 +137,10 @@ namespace TypeGen.Core
         /// Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
         /// </summary>
         public string FileHeading { get; set; }
+        
+        /// <summary>
+        /// Whether to use default exports for the generated TypeScript types
+        /// </summary>
+        public bool UseDefaultExport { get; set; }
     }
 }

@@ -42,16 +42,33 @@ namespace TypeGen.Core.Test.SpecGeneration
             const string @base = "base";
             const string importPath = "importPath";
             const string originalTypeName = "originalTypeName";
+            const bool isDefaultExport = true;
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
             var builder = new InterfaceSpecBuilder(spec);
 
-            builder.CustomBase(@base, importPath, originalTypeName);
+            builder.CustomBase(@base, importPath, originalTypeName, isDefaultExport);
 
             Attribute attribute = spec.AdditionalAttributes.FirstOrDefault();
             Assert.IsType<TsCustomBaseAttribute>(attribute);
             Assert.Equal(@base, ((TsCustomBaseAttribute)attribute).Base);
             Assert.Equal(importPath, ((TsCustomBaseAttribute)attribute).ImportPath);
             Assert.Equal(originalTypeName, ((TsCustomBaseAttribute)attribute).OriginalTypeName);
+            Assert.Equal(isDefaultExport, ((TsCustomBaseAttribute)attribute).IsDefaultExport);
+        }
+        
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void DefaultExport_Invoked_SpecUpdated(bool enabled)
+        {
+            var spec = new TypeSpec(new ExportTsInterfaceAttribute());
+            var builder = new InterfaceSpecBuilder(spec);
+
+            builder.DefaultExport(enabled);
+
+            Attribute attribute = spec.AdditionalAttributes.FirstOrDefault();
+            Assert.IsType<TsDefaultExportAttribute>(attribute);
+            Assert.Equal(enabled, ((TsDefaultExportAttribute)attribute).Enabled);
         }
         
         [Fact]
@@ -183,16 +200,18 @@ namespace TypeGen.Core.Test.SpecGeneration
             const string typeName = "typeName";
             const string importPath = "importPath";
             const string originalTypeName = "originalTypeName";
+            const bool isDefaultExport = true;
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
             var builder = new InterfaceSpecBuilder(spec);
 
-            builder.Member(member).Type(typeName, importPath, originalTypeName);
+            builder.Member(member).Type(typeName, importPath, originalTypeName, isDefaultExport);
 
             Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
             Assert.IsType<TsTypeAttribute>(attribute);
             Assert.Equal(typeName, ((TsTypeAttribute)attribute).TypeName);
             Assert.Equal(importPath, ((TsTypeAttribute)attribute).ImportPath);
             Assert.Equal(originalTypeName, ((TsTypeAttribute)attribute).OriginalTypeName);
+            Assert.Equal(isDefaultExport, ((TsTypeAttribute)attribute).IsDefaultExport);
         }
         
         [Fact]

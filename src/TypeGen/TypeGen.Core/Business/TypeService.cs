@@ -168,6 +168,13 @@ namespace TypeGen.Core.Business
         }
 
         /// <inheritdoc />
+        public bool UseDefaultExport(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            return _metadataReader.GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? GeneratorOptions.UseDefaultExport;
+        }
+
+        /// <inheritdoc />
         public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
         {
             Requires.NotNull(type, nameof(type));

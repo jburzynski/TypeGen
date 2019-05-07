@@ -27,6 +27,11 @@ namespace TypeGen.Core.TypeAnnotations
         /// This property should only be used in conjunction with ImportPath.
         /// </summary>
         public string OriginalTypeName { get; set; }
+        
+        /// <summary>
+        /// Whether default export is used for the referenced TypeScript type - used only in combination with ImportPath
+        /// </summary>
+        public bool IsDefaultExport { get; set; }
 
         public TsCustomBaseAttribute()
         {
@@ -47,11 +52,13 @@ namespace TypeGen.Core.TypeAnnotations
         /// <param name="base">The base type name (or alias)</param>
         /// <param name="importPath">The path of base type file to import (optional)</param>
         /// <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
-        public TsCustomBaseAttribute(string @base, string importPath = null, string originalTypeName = null)
+        /// <param name="isDefaultExport">Whether default export is used for the referenced TypeScript type - used only in combination with importPath</param>
+        public TsCustomBaseAttribute(string @base, string importPath = null, string originalTypeName = null, bool isDefaultExport = false)
         {
             Base = @base;
             ImportPath = importPath;
             OriginalTypeName = originalTypeName;
+            IsDefaultExport = isDefaultExport;
         }
     }
 }

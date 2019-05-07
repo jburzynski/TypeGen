@@ -64,6 +64,11 @@ namespace TypeGen.AcceptanceTest.Generator
             { @"test-interfaces\test-interface.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.test_interfaces.test-interface.ts") },
             
             { @"very\nested\directory\nested-entity.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.very.nested.directory.nested-entity.ts") },
+            
+            { @"default-export\class-with-default-export.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.default_export.class-with-default-export.ts") },
+            { @"default-export\class-with-imports.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.default_export.class-with-imports.ts") },
+            { @"default-export\class-without-default-export.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.default_export.class-without-default-export.ts") },
+            { @"default-export\interface-with-default-export.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.default_export.interface-with-default-export.ts") },
         };
 
         #region Assembly
@@ -134,6 +139,11 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + @"test-interfaces\test-interface.ts", Content[@"test-interfaces\test-interface.ts"]);
             
             _fileSystem.Received().SaveFile(outputPath + @"./very/nested/directory/nested-entity.ts", Content[@"very\nested\directory\nested-entity.ts"]);
+            
+            _fileSystem.Received().SaveFile(outputPath + @"default-export/class-with-default-export.ts", Content[@"default-export\class-with-default-export.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"default-export/class-with-imports.ts", Content[@"default-export\class-with-imports.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"default-export/class-without-default-export.ts", Content[@"default-export\class-without-default-export.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"default-export/interface-with-default-export.ts", Content[@"default-export\interface-with-default-export.ts"]);
         }
         
         #endregion
