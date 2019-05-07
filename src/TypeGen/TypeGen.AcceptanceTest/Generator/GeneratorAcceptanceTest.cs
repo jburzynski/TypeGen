@@ -126,17 +126,17 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base-and-custom-base.ts", Content["with-ignored-base-and-custom-base.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base.ts", Content["with-ignored-base.ts"]);
             
-            _fileSystem.Received().SaveFile(outputPath + @"no/slash/output/dir\no-slash-output-dir.ts", Content[@"no\slash\output\dir\no-slash-output-dir.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"no/slash/output/dir/no-slash-output-dir.ts", Content[@"no\slash\output\dir\no-slash-output-dir.ts"]);
             
-            _fileSystem.Received().SaveFile(outputPath + @"test-classes\base-class.ts", Content[@"test-classes\base-class.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"test-classes\base-class2.ts", Content[@"test-classes\base-class2.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"test-classes\circular-ref-class1.ts", Content[@"test-classes\circular-ref-class1.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"test-classes\circular-ref-class2.ts", Content[@"test-classes\circular-ref-class2.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + @"test-classes\test-class.ts", Content[@"test-classes\test-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-classes/base-class.ts", Content[@"test-classes\base-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-classes/base-class2.ts", Content[@"test-classes\base-class2.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-classes/circular-ref-class1.ts", Content[@"test-classes\circular-ref-class1.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-classes/circular-ref-class2.ts", Content[@"test-classes\circular-ref-class2.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-classes/test-class.ts", Content[@"test-classes\test-class.ts"]);
             
-            _fileSystem.Received().SaveFile(outputPath + @"test-enums\test-enum.ts", Content[@"test-enums\test-enum.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-enums/test-enum.ts", Content[@"test-enums\test-enum.ts"]);
             
-            _fileSystem.Received().SaveFile(outputPath + @"test-interfaces\test-interface.ts", Content[@"test-interfaces\test-interface.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + @"test-interfaces/test-interface.ts", Content[@"test-interfaces\test-interface.ts"]);
             
             _fileSystem.Received().SaveFile(outputPath + @"./very/nested/directory/nested-entity.ts", Content[@"very\nested\directory\nested-entity.ts"]);
             
