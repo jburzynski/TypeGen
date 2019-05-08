@@ -12,6 +12,7 @@ import { TestClass } from "./some-path/test-class";
 import { string? } from "./some-path/string";
 
 export class TestClass<T, U extends BaseClass2<string>> extends BaseClass<number> {
+    genericField: BaseClass<string>;
     helloWorld: string;
     regex: RegExp;
     regex2: RegExp;

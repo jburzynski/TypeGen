@@ -38,5 +38,7 @@ namespace TypeGen.TestWebApp.TestEntities
 
         [TsType("string?", "./some-path/string")]
         public string UndefinedableTsType { get; set; }
+
+        public BaseClass<string> GenericField;
     }
 }

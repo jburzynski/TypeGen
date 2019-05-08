@@ -459,13 +459,23 @@ namespace TypeGen.Core
 
         private string GetFieldValueText(FieldInfo fieldInfo)
         {
+            if (fieldInfo.DeclaringType == null) return null;
+
+            if (fieldInfo.DeclaringType.GetTypeInfo().ContainsGenericParameters)
+            {
+                if (Logger != null && Logger.LogVerbose)
+                    Logger.Log($"WARNING: Cannot determine the default value for field '{fieldInfo.DeclaringType?.FullName}.{fieldInfo.Name}', because type '{fieldInfo.DeclaringType?.FullName}' has generic parameters.");
+                
+                return null;
+            }
+
             try
             {
-                object instance = fieldInfo.IsStatic() || fieldInfo.DeclaringType == null ? null : Activator.CreateInstance(fieldInfo.DeclaringType);
+                object instance = fieldInfo.IsStatic() ? null : Activator.CreateInstance(fieldInfo.DeclaringType);
                 object valueObj = fieldInfo.GetValue(instance);
 
                 if (valueObj == null) return null;
-                
+
                 string fieldType = _typeService.GetTsTypeName(fieldInfo, Options.TypeNameConverters, Options.CsNullableTranslation).GetTsTypeUnion(0);
                 string quote = Options.SingleQuotes ? "'" : "\"";
 
@@ -489,6 +499,11 @@ namespace TypeGen.Core
             {
                 if (Logger != null && Logger.LogVerbose)
                     Logger.Log($"WARNING: No parameterless constructor available for type '{fieldInfo.DeclaringType?.FullName}'. If field '{fieldInfo.DeclaringType?.FullName}.{fieldInfo.Name}' has a default value, this default value will not be generated.");
+            }
+            catch (Exception e)
+            {
+                if (Logger != null && Logger.LogVerbose)
+                    Logger.Log($"WARNING: Cannot determine the default value for field '{fieldInfo.DeclaringType?.FullName}.{fieldInfo.Name}', because an unknown exception occurred: '{e.Message}'");
             }
 
             return null;
