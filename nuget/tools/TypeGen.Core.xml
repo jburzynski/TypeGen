@@ -199,6 +199,13 @@
             <exception cref="T:System.ArgumentNullException">Thrown if type is null</exception>
             <exception cref="T:TypeGen.Core.CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
         </member>
+        <member name="M:TypeGen.Core.Business.ITypeService.UseDefaultExport(System.Type)">
+            <summary>
+            Determines whether to use default export in TypeScript for a given type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="T:TypeGen.Core.Business.TemplateService">
             <summary>
             Fills templates with data
@@ -386,6 +393,9 @@
             <inheritdoc />
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.IsCustomGenericType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Business.TypeService.UseDefaultExport(System.Type)">
             <inheritdoc />
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection,System.Boolean)">
@@ -644,6 +654,7 @@
             <param name="value"></param>
             <returns></returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:TypeGen.Core.Extensions.StringExtensions.RemoveTypeGenericComponent(System.String)" -->
         <member name="M:TypeGen.Core.Extensions.StringExtensions.GetTsTypeUnion(System.String,System.Int32)">
             <summary>
             Gets the type from a TypeScript type union indicated by the given index.
@@ -1091,6 +1102,11 @@
             Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.UseDefaultExport">
+            <summary>
+            Whether to use default exports for the generated TypeScript types
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2">
             <summary>
             Base class for class and interface spec builders
@@ -1098,13 +1114,21 @@
             <typeparam name="T"></typeparam>
             <typeparam name="TDerived"></typeparam>
         </member>
-        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.CustomBase(System.String,System.String,System.String)">
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.CustomBase(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Specifies custom base for the type (equivalent of TsCustomBaseAttribute)
             </summary>
             <param name="base"></param>
             <param name="importPath"></param>
             <param name="originalTypeName"></param>
+            <param name="isDefaultExport"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultExport(System.Boolean)">
+            <summary>
+            Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+            </summary>
+            <param name="enabled"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultTypeOutput(System.String)">
@@ -1170,13 +1194,14 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(System.String,System.String,System.String)">
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Specifies custom type for the selected member (equivalent of TsTypeAttribute)
             </summary>
             <param name="typeName"></param>
             <param name="importPath"></param>
             <param name="originalTypeName"></param>
+            <param name="isDefaultExport"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(TypeGen.Core.TypeAnnotations.TsType)">
@@ -1226,6 +1251,13 @@
             <summary>
             Specifies whether to use TypeScript string initializers for an enum
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2.DefaultExport(System.Boolean)">
+            <summary>
+            Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+            </summary>
+            <param name="enabled"></param>
             <returns></returns>
         </member>
         <member name="T:TypeGen.Core.SpecGeneration.CommonInterfaceSpecBuilder`2">
@@ -1503,19 +1535,31 @@
             This property should only be used in conjunction with ImportPath.
             </summary>
         </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.IsDefaultExport">
+            <summary>
+            Whether default export is used for the referenced TypeScript type - used only in combination with ImportPath
+            </summary>
+        </member>
         <member name="M:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.#ctor(System.String)">
             <summary>
             TsCustomBaseAttribute constructor
             </summary>
             <param name="base">The base type name (or alias)</param>
         </member>
-        <member name="M:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.#ctor(System.String,System.String,System.String)">
+        <member name="M:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.#ctor(System.String,System.String,System.String,System.Boolean)">
             <summary>
             TsCustomBaseAttribute constructor
             </summary>
             <param name="base">The base type name (or alias)</param>
             <param name="importPath">The path of base type file to import (optional)</param>
             <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
+            <param name="isDefaultExport">Whether default export is used for the referenced TypeScript type - used only in combination with importPath</param>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultExportAttribute">
+            <summary>
+            Specifies custom base class declaration for a TypeScript class or interface.
+            Base class declaration is empty if no content is specified.
+            </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute">
             <summary>
@@ -1635,13 +1679,19 @@
             This property should only be used in conjunction with ImportPath.
             </summary>
         </member>
-        <member name="M:TypeGen.Core.TypeAnnotations.TsTypeAttribute.#ctor(System.String,System.String,System.String)">
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.IsDefaultExport">
+            <summary>
+            Whether default export is used for the referenced TypeScript type - used only in combination with ImportPath
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.TypeAnnotations.TsTypeAttribute.#ctor(System.String,System.String,System.String,System.Boolean)">
             <summary>
             TsTypeAttribute constructor
             </summary>
             <param name="typeName">The TypeScript property type name (or alias)</param>
             <param name="importPath">The path of the file to import (optional)</param>
             <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
+            <param name="isDefaultExport">Whether default export is used for the referenced TypeScript type - used only in combination with importPath</param>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsTypeAttributeComparer">
             <summary>
