@@ -7,6 +7,7 @@ namespace TypeGen.TestWebApp.DefaultExport
     public class ClassWithImports
     {
         public ClassWithDefaultExport ClassWithDefaultExport { get; set; }
+        public GenericClassWithDefaultExport<int, string> GenericClassWithDefaultExport { get; set; }
         public ClassWithoutDefaultExport ClassWithoutDefaultExport { get; set; }
         public InterfaceWithDefaultExport InterfaceWithDefaultExport { get; set; }
         

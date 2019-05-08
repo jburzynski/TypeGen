@@ -392,7 +392,7 @@ namespace TypeGen.Core
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
-            string tsTypeNameFirstPart = tsTypeName.RemoveTypeArity().RemoveTypeGenericComponent();
+            string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
