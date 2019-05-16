@@ -4,5 +4,6 @@ namespace TypeGen.Core
     {
         Attribute,
         GenerationSpec,
+        GenerationSpecWithAttributes
     }
 }

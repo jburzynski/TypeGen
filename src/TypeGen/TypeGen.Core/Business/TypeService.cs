@@ -16,20 +16,15 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Retrieves information about types
     /// </summary>
-    internal class TypeService : ITypeService, IMetadataReaderSetter
+    internal class TypeService : ITypeService
     {
         public GeneratorOptions GeneratorOptions { get; set; }
 
-        private IMetadataReader _metadataReader;
+        private readonly IMetadataReaderFactory _metadataReaderFactory;
 
-        public TypeService(IMetadataReader metadataReader)
+        public TypeService(IMetadataReaderFactory metadataReaderFactory)
         {
-            _metadataReader = metadataReader;
-        }
-
-        public void SetMetadataReader(IMetadataReader metadataReader)
-        {
-            _metadataReader = metadataReader;
+            _metadataReaderFactory = metadataReaderFactory;
         }
 
         /// <inheritdoc />
@@ -89,7 +84,7 @@ namespace TypeGen.Core.Business
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = _metadataReader.GetAttribute<ExportAttribute>(type);
+            var exportAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportAttribute>(type);
             return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
         }
 
@@ -101,7 +96,7 @@ namespace TypeGen.Core.Business
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = _metadataReader.GetAttribute<ExportAttribute>(type);
+            var exportAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportAttribute>(type);
             return exportAttribute is ExportTsInterfaceAttribute;
         }
 
@@ -115,11 +110,11 @@ namespace TypeGen.Core.Business
 
             var fieldInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredFields
                 .WithMembersFilter()
-                .WithoutTsIgnore(_metadataReader);
+                .WithoutTsIgnore(_metadataReaderFactory.GetInstance());
 
             var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
                 .WithMembersFilter()
-                .WithoutTsIgnore(_metadataReader);
+                .WithoutTsIgnore(_metadataReaderFactory.GetInstance());
 
             return fieldInfos.Union(propertyInfos);
         }
@@ -171,7 +166,7 @@ namespace TypeGen.Core.Business
         public bool UseDefaultExport(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return _metadataReader.GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? GeneratorOptions.UseDefaultExport;
+            return _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? GeneratorOptions.UseDefaultExport;
         }
 
         /// <inheritdoc />
@@ -219,7 +214,7 @@ namespace TypeGen.Core.Business
             
             string typeUnionSuffix = GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation);
 
-            var typeAttribute = _metadataReader.GetAttribute<TsTypeAttribute>(memberInfo);
+            var typeAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)
             {
                 if (string.IsNullOrWhiteSpace(typeAttribute.TypeName))
@@ -262,11 +257,11 @@ namespace TypeGen.Core.Business
 
             StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? csNullableTranslation : StrictNullFlags.Regular;
 
-            if (_metadataReader.GetAttribute<TsNullAttribute>(memberInfo) != null) flags |= StrictNullFlags.Null;
-            if (_metadataReader.GetAttribute<TsUndefinedAttribute>(memberInfo) != null) flags |= StrictNullFlags.Undefined;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNullAttribute>(memberInfo) != null) flags |= StrictNullFlags.Null;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsUndefinedAttribute>(memberInfo) != null) flags |= StrictNullFlags.Undefined;
 
-            if (_metadataReader.GetAttribute<TsNotNullAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Null;
-            if (_metadataReader.GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Undefined;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotNullAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Null;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Undefined;
 
             var result = "";
             if (flags.HasFlag(StrictNullFlags.Null)) result += " | null";

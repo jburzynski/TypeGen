@@ -12,11 +12,6 @@ namespace TypeGen.Core
     internal class GenerationContext
     {
         /// <summary>
-        /// Type of the last file generation
-        /// </summary>
-        public GenerationType LastGenerationType { get; set; }
-        
-        /// <summary>
         /// Types that have already been generated for a group of types in the current call to Generator.Generate()
         /// </summary>
         public IList<Type> GroupGeneratedTypes { get; private set; }
@@ -25,16 +20,6 @@ namespace TypeGen.Core
         /// Types that have already been generated for a type in the current call to Generator.Generate()
         /// </summary>
         public IList<Type> TypeGeneratedTypes { get; private set; }
-
-        /// <summary>
-        /// Generation spec used in current file generation
-        /// </summary>
-        public GenerationSpec GenerationSpec { get; set; }
-
-        public GenerationContext()
-        {
-            LastGenerationType = GenerationType.Attribute;
-        }
 
         /// <summary>
         /// Adds the type to the generation context

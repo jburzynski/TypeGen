@@ -34,7 +34,7 @@ namespace TypeGen.Core
         /// </summary>
         public ILogger Logger { get; set; }
         
-        private IMetadataReader _metadataReader;
+        private readonly IMetadataReaderFactory _metadataReaderFactory;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITemplateService _templateService;
@@ -73,16 +73,16 @@ namespace TypeGen.Core
             
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
-            _metadataReader = new AttributeMetadataReader();
-            _typeService = new TypeService(_metadataReader) { GeneratorOptions = Options };
-            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReader);
+            _metadataReaderFactory = new MetadataReaderFactory();
+            _typeService = new TypeService(_metadataReaderFactory) { GeneratorOptions = Options };
+            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory);
             _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
                 new TsContentParser(_fileSystem),
-                _metadataReader);
+                _metadataReaderFactory);
         }
         
         /// <summary>
@@ -120,27 +120,8 @@ namespace TypeGen.Core
 
         private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
         {
-            switch (generationType)
-            {
-                case GenerationType.GenerationSpec:
-                    _metadataReader = new GenerationSpecMetadataReader(generationSpec);
-                    break;
-                case GenerationType.Attribute:
-                    _metadataReader = new AttributeMetadataReader();
-                    break;
-            }
-
-            if (generationType == GenerationType.GenerationSpec && Options.UseAttributesWithGenerationSpec)
-            {
-                _metadataReader = new ComboMetadataReader(_metadataReader, new AttributeMetadataReader());
-            }
-
-            if (_typeService is IMetadataReaderSetter typeService) typeService.SetMetadataReader(_metadataReader);
-            if (_typeDependencyService is IMetadataReaderSetter typeDependencyService) typeDependencyService.SetMetadataReader(_metadataReader);
-            if (_tsContentGenerator is IMetadataReaderSetter tsContentGenerator) tsContentGenerator.SetMetadataReader(_metadataReader);
-
-            _generationContext.LastGenerationType = generationType;
-            _generationContext.GenerationSpec = generationSpec;
+            _metadataReaderFactory.GenerationType = generationType;
+            _metadataReaderFactory.GenerationSpec = generationSpec;
         }
 
         /// <summary>
@@ -153,8 +134,10 @@ namespace TypeGen.Core
             Requires.NotNull(generationSpec, nameof(generationSpec));
             
             IEnumerable<string> files = Enumerable.Empty<string>();
+
+            var generationType = Options.UseAttributesWithGenerationSpec ? GenerationType.GenerationSpecWithAttributes : GenerationType.GenerationSpec;
             
-            InitializeGeneration(GenerationType.GenerationSpec, generationSpec);
+            InitializeGeneration(generationType, generationSpec);
             _generationContext.InitializeGroupGeneratedTypes();
 
             files = generationSpec.TypeSpecs
@@ -211,7 +194,7 @@ namespace TypeGen.Core
                 ExecuteWithTypeContextLogging(() =>
                 {
                     IEnumerable<Type> types = assembly.GetLoadableTypes()
-                        .GetExportMarkedTypes(_metadataReader)
+                        .GetExportMarkedTypes(_metadataReaderFactory.GetInstance())
                         .Where(type => !_generationContext.HasBeenGeneratedForGroup(type));
                     
                     files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false)));
@@ -302,9 +285,9 @@ namespace TypeGen.Core
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         private IEnumerable<string> GenerateType(Type type)
         {
-            var classAttribute = _metadataReader.GetAttribute<ExportTsClassAttribute>(type);
-            var interfaceAttribute = _metadataReader.GetAttribute<ExportTsInterfaceAttribute>(type);
-            var enumAttribute = _metadataReader.GetAttribute<ExportTsEnumAttribute>(type);
+            var classAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsClassAttribute>(type);
+            var interfaceAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsInterfaceAttribute>(type);
+            var enumAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsEnumAttribute>(type);
 
             if (classAttribute != null)
             {
@@ -374,14 +357,14 @@ namespace TypeGen.Core
 
             // get text for sections
 
-            var tsCustomBaseAttribute = _metadataReader.GetAttribute<TsCustomBaseAttribute>(type);
+            var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
-            else if (_metadataReader.GetAttribute<TsIgnoreBaseAttribute>(type) == null)
+            else if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
             }
@@ -447,14 +430,14 @@ namespace TypeGen.Core
 
         private bool IsStaticTsProperty(MemberInfo memberInfo)
         {
-            if (_metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) != null) return false;
-            return _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic();
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotStaticAttribute>(memberInfo) != null) return false;
+            return _metadataReaderFactory.GetInstance().GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic();
         }
         
         private bool IsReadonlyTsProperty(MemberInfo memberInfo)
         {
-            if (_metadataReader.GetAttribute<TsNotReadonlyAttribute>(memberInfo) != null) return false;
-            return _metadataReader.GetAttribute<TsReadonlyAttribute>(memberInfo) != null || (memberInfo is FieldInfo fi && (fi.IsInitOnly || fi.IsLiteral));
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotReadonlyAttribute>(memberInfo) != null) return false;
+            return _metadataReaderFactory.GetInstance().GetAttribute<TsReadonlyAttribute>(memberInfo) != null || (memberInfo is FieldInfo fi && (fi.IsInitOnly || fi.IsLiteral));
         }
 
         private string GetFieldValueText(FieldInfo fieldInfo)
@@ -520,12 +503,12 @@ namespace TypeGen.Core
             if (IsStaticTsProperty(memberInfo)) modifiers += "static ";
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
 
-            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
+            var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
 
             // try to get default value from TsDefaultValueAttribute
-            var defaultValueAttribute = _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo);
+            var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
             {
                 return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
@@ -557,7 +540,7 @@ namespace TypeGen.Core
         {
             if (Logger == null) return;
             
-            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null)
+            if (Logger.LogVerbose && _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null)
                 Logger.Log($"WARNING: TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
 
@@ -591,11 +574,11 @@ namespace TypeGen.Core
             string modifiers = "";
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
             
-            var nameAttribute = _metadataReader.GetAttribute<TsMemberNameAttribute>(memberInfo);
+            var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
             string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
-            bool isOptional = _metadataReader.GetAttribute<TsOptionalAttribute>(memberInfo) != null;
+            bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, isOptional);
         }
@@ -604,13 +587,13 @@ namespace TypeGen.Core
         {
             if (Logger == null) return;
             
-            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsStaticAttribute>(memberInfo) != null)
+            if (Logger.LogVerbose && _metadataReaderFactory.GetInstance().GetAttribute<TsStaticAttribute>(memberInfo) != null)
                 Logger.Log($"WARNING: TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
             
-            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsNotStaticAttribute>(memberInfo) != null)
+            if (Logger.LogVerbose && _metadataReaderFactory.GetInstance().GetAttribute<TsNotStaticAttribute>(memberInfo) != null)
                 Logger.Log($"WARNING: TsNotStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
             
-            if (Logger.LogVerbose && _metadataReader.GetAttribute<TsDefaultValueAttribute>(memberInfo) != null)
+            if (Logger.LogVerbose && _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo) != null)
                 Logger.Log($"WARNING: TsDefaultValueAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.");
         }
 
@@ -641,7 +624,7 @@ namespace TypeGen.Core
         private string GetEnumValueText(object enumValue, Type type)
         {
             string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
-            var stringInitializersAttribute = _metadataReader.GetAttribute<TsStringInitializersAttribute>(type);
+            var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(type);
             
             if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
                 (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
@@ -688,14 +671,14 @@ namespace TypeGen.Core
                 // dependency type TypeScript file generation
 
                 // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
+                if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
                     generatedFiles = generatedFiles.Concat(Generate(typeDependency, false));
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
-                if (!typeDependency.HasExportAttribute(_metadataReader) && !_generationContext.HasBeenGeneratedForType(typeDependency))
+                if (!typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.HasBeenGeneratedForType(typeDependency))
                 {
                     var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)

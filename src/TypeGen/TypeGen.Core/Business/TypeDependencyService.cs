@@ -12,20 +12,15 @@ namespace TypeGen.Core.Business
     /// <summary>
     /// Retrieves information about type dependencies (i.e. types that a type depends on)
     /// </summary>
-    internal class TypeDependencyService : ITypeDependencyService, IMetadataReaderSetter
+    internal class TypeDependencyService : ITypeDependencyService
     {
         private readonly ITypeService _typeService;
-        private IMetadataReader _metadataReader;
+        private readonly IMetadataReaderFactory _metadataReaderFactory;
 
-        public TypeDependencyService(ITypeService typeService, IMetadataReader metadataReader)
+        public TypeDependencyService(ITypeService typeService, IMetadataReaderFactory metadataReaderFactory)
         {
             _typeService = typeService;
-            _metadataReader = metadataReader;
-        }
-        
-        public void SetMetadataReader(IMetadataReader metadataReader)
-        {
-            _metadataReader = metadataReader;
+            _metadataReaderFactory = metadataReaderFactory;
         }
         
         /// <summary>
@@ -83,7 +78,7 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (_metadataReader.GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
 
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return Enumerable.Empty<TypeDependencyInfo>();
@@ -103,14 +98,14 @@ namespace TypeGen.Core.Business
             IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
             foreach (MemberInfo memberInfo in memberInfos)
             {
-                if (_metadataReader.GetAttribute<TsTypeAttribute>(memberInfo) != null) continue;
+                if (_metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo) != null) continue;
 
                 Type memberType = _typeService.GetMemberType(memberInfo);
                 Type memberFlatType = _typeService.GetFlatType(memberType);
 
                 if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
 
-                IEnumerable<Attribute> memberAttributes = _metadataReader.GetAttributes<Attribute>(memberInfo);
+                IEnumerable<Attribute> memberAttributes = _metadataReaderFactory.GetInstance().GetAttributes<Attribute>(memberInfo);
                 result = result.Concat(GetFlatTypeDependencies(memberFlatType, memberAttributes));
             }
 

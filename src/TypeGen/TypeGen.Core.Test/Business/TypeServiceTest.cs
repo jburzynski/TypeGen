@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
+using NSubstitute;
 using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
 using TypeGen.Core.TypeAnnotations;
@@ -14,10 +15,20 @@ namespace TypeGen.Core.Test.Business
     public class TypeServiceTest
     {
         /// <summary>
-        /// this needs to be changed to use mocked MetadataReader
+        /// this needs to be changed to use mocked MetadataReaderFactory
         /// </summary>
-        private readonly ITypeService _typeService = new TypeService(new AttributeMetadataReader()) { GeneratorOptions = new GeneratorOptions() };
+        private readonly ITypeService _typeService;
 
+        public TypeServiceTest()
+        {
+            // this needs to be changed to use mocked MetadataReaderFactory
+            
+            var metadataReaderFactory = Substitute.For<IMetadataReaderFactory>();
+            metadataReaderFactory.GetInstance().Returns(new AttributeMetadataReader());
+
+            _typeService = new TypeService(metadataReaderFactory) { GeneratorOptions = new GeneratorOptions() };
+        }
+        
         public class MyClass {}
         public class GenericClass1<T> {}
         public class GenericClass2<T, U> {}
