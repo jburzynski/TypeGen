@@ -85,7 +85,7 @@ namespace TypeGen.AcceptanceTest.Generator
             
             const string assemblyPath = ProjectPath + "bin/Debug/netcoreapp2.0/TypeGen.TestWebApp.dll";
             
-            var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true, } };
+            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
@@ -161,7 +161,7 @@ namespace TypeGen.AcceptanceTest.Generator
         {
             //arrange
             
-            var generator = new Core.Generator(_fileSystem) { Options = { BaseOutputDirectory = outputPath, CreateIndexFile = true } };
+            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
             var generationSpec = new AcceptanceTestGenerationSpec();
             

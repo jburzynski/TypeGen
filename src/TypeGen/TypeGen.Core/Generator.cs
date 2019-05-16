@@ -20,19 +20,20 @@ namespace TypeGen.Core
     /// </summary>
     public class Generator
     {
-        // events
-
         /// <summary>
         /// An event that fires when a file's content is generated
         /// </summary>
         public event EventHandler<FileContentGeneratedArgs> FileContentGenerated;
         
-        // dependencies
-
         /// <summary>
         /// A logger instance used to log messages raised by a Generator instance
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; }
+        
+        /// <summary>
+        /// Generator options. Cannot be null.
+        /// </summary>
+        public GeneratorOptions Options { get; }
         
         private readonly IMetadataReaderFactory _metadataReaderFactory;
         private readonly ITypeService _typeService;
@@ -40,35 +41,19 @@ namespace TypeGen.Core
         private readonly ITemplateService _templateService;
         private readonly ITsContentGenerator _tsContentGenerator;
         private readonly IFileSystem _fileSystem;
-        private GeneratorOptions _options;
 
-        // per-generation shared variables
-
-        // type collections, to keep track of what types have been generated in the current session
+        // keeps track of what types have been generated in the current session
         private readonly GenerationContext _generationContext;
 
-        /// <summary>
-        /// Generator options. Cannot be null.
-        /// </summary>
-        public GeneratorOptions Options
+        public Generator(GeneratorOptions options, ILogger logger = null)
         {
-            get => _options;
-
-            set
-            {
-                Requires.NotNull(value, nameof(Options));
-
-                _options = value;
-                if (_typeService != null) _typeService.GeneratorOptions = _options;
-                if (_templateService != null) _templateService.GeneratorOptions = _options;
-            }
-        }
-        
-        public Generator()
-        {
+            Requires.NotNull(options, nameof(options));
+            
             FileContentGenerated += OnFileContentGenerated;
             
-            Options = new GeneratorOptions();
+            Options = options;
+            Logger = logger;
+            
             _generationContext = new GenerationContext();
             
             var internalStorage = new InternalStorage();
@@ -85,11 +70,23 @@ namespace TypeGen.Core
                 _metadataReaderFactory);
         }
         
+        public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
+        {
+        }
+
+        public Generator() : this(new GeneratorOptions())
+        {
+        }
+
         /// <summary>
         /// For unit testing (mocking FileSystem)
         /// </summary>
+        /// <param name="options"></param>
         /// <param name="fileSystem"></param>
-        internal Generator(IFileSystem fileSystem) : this() => _fileSystem = fileSystem;
+        internal Generator(GeneratorOptions options, IFileSystem fileSystem) : this(options)
+        {
+            _fileSystem = fileSystem;
+        }
         
         /// <summary>
         /// The default event handler for the FileContentGenerated event
