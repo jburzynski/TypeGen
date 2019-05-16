@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using TypeGen.Core.Converters;
 
 namespace TypeGen.Core.Business
@@ -40,5 +41,14 @@ namespace TypeGen.Core.Business
         /// <param name="filePath"></param>
         /// <returns></returns>
         string GetCustomHead(string filePath);
+
+        GeneratorOptions GeneratorOptions { get; set; }
+
+        /// <summary>
+        /// Gets text to be used as a member value
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
+        string GetMemberValueText(MemberInfo memberInfo);
     }
 }

@@ -59,15 +59,16 @@ namespace TypeGen.Core
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
             _metadataReaderFactory = new MetadataReaderFactory();
-            _typeService = new TypeService(_metadataReaderFactory) { GeneratorOptions = Options };
+            _typeService = new TypeService(_metadataReaderFactory) { GeneratorOptions = options };
             _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory);
-            _templateService = new TemplateService(internalStorage) { GeneratorOptions = Options };
+            _templateService = new TemplateService(internalStorage) { GeneratorOptions = options };
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
                 new TsContentParser(_fileSystem),
-                _metadataReaderFactory);
+                _metadataReaderFactory,
+                logger) { GeneratorOptions = options };
         }
         
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
@@ -437,55 +438,6 @@ namespace TypeGen.Core
             return _metadataReaderFactory.GetInstance().GetAttribute<TsReadonlyAttribute>(memberInfo) != null || (memberInfo is FieldInfo fi && (fi.IsInitOnly || fi.IsLiteral));
         }
 
-        private string GetFieldValueText(FieldInfo fieldInfo)
-        {
-            if (fieldInfo.DeclaringType == null) return null;
-
-            try
-            {
-                object instance = fieldInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(fieldInfo.DeclaringType);
-                object valueObj = fieldInfo.GetValue(instance);
-
-                if (valueObj == null) return null;
-
-                string fieldType = _typeService.GetTsTypeName(fieldInfo, Options.TypeNameConverters, Options.CsNullableTranslation).GetTsTypeUnion(0);
-                string quote = Options.SingleQuotes ? "'" : "\"";
-
-                switch (valueObj)
-                {
-                    case Guid valueGuid when fieldType == "string":
-                        return quote + valueGuid + quote;
-                    case DateTime valueDateTime when fieldType == "Date":
-                        return $@"new Date({quote}{valueDateTime}{quote})";
-                    case DateTime valueDateTime when fieldType == "string":
-                        return quote + valueDateTime + quote;
-                    case DateTimeOffset valueDateTimeOffset when fieldType == "Date":
-                        return $@"new Date({quote}{valueDateTimeOffset}{quote})";
-                    case DateTimeOffset valueDateTimeOffset when fieldType == "string":
-                        return quote + valueDateTimeOffset + quote;
-                    default:
-                        return JsonConvert.SerializeObject(valueObj).Replace("\"", quote);
-                }
-            }
-            catch (MissingMethodException e)
-            {
-                if (Logger != null && Logger.LogVerbose)
-                    Logger.Log($"WARNING: Cannot determine the default value for field '{fieldInfo.DeclaringType.FullName}.{fieldInfo.Name}', because type '{fieldInfo.DeclaringType.FullName}' has no default constructor.");
-            }
-            catch (ArgumentException e) when(e.InnerException is TypeLoadException)
-            {
-                if (Logger != null && Logger.LogVerbose)
-                    Logger.Log($"WARNING: Cannot determine the default value for field '{fieldInfo.DeclaringType.FullName}.{fieldInfo.Name}', because type '{fieldInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.");
-            }
-            catch (Exception e)
-            {
-                if (Logger != null && Logger.LogVerbose)
-                    Logger.Log($"WARNING: Cannot determine the default value for field '{fieldInfo.DeclaringType.FullName}.{fieldInfo.Name}', because an unknown exception occurred: '{e.Message}'");
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Gets TypeScript class property definition source code
         /// </summary>
@@ -511,13 +463,10 @@ namespace TypeGen.Core
                 return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
             }
 
-            // try to get default value from the field's default value
-            if (memberInfo is FieldInfo fieldInfo)
-            {
-                string valueText = GetFieldValueText(fieldInfo);
-                if (!string.IsNullOrWhiteSpace(valueText))
-                    return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, valueText);
-            }
+            // try to get default value from the member's default value
+            string valueText = _tsContentGenerator.GetMemberValueText(memberInfo);
+            if (!string.IsNullOrWhiteSpace(valueText))
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, valueText);
 
             // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any())

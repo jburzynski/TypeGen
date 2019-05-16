@@ -30,9 +30,10 @@ namespace TypeGen.AcceptanceTest.Generator
             { "custom-base-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.custom-base-class.ts") },
             { "custom-base-custom-import.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.custom-base-custom-import.ts") },
             { "custom-empty-base-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.custom-empty-base-class.ts") },
-            { "extended-primitives-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.extended-primitives-class.ts") },
             { "d.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.d.ts") },
+            { "default-member-values.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.default-member-values.ts") },
             { "e-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.e-class.ts") },
+            { "extended-primitives-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.extended-primitives-class.ts") },
             { "external-deps-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.external-deps-class.ts") },
             { "f-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.f-class.ts") },
             { "foo-type.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.foo-type.ts") },
@@ -106,9 +107,10 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "custom-base-class.ts", Content["custom-base-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-base-custom-import.ts", Content["custom-base-custom-import.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "custom-empty-base-class.ts", Content["custom-empty-base-class.ts"]);
-            _fileSystem.Received().SaveFile(outputPath + "extended-primitives-class.ts", Content["extended-primitives-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "d.ts", Content["d.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "default-member-values.ts", Content["default-member-values.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "e-class.ts", Content["e-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "extended-primitives-class.ts", Content["extended-primitives-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "external-deps-class.ts", Content["external-deps-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "f-class.ts", Content["f-class.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "foo-type.ts", Content["foo-type.ts"]);

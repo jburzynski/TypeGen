@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
@@ -18,11 +19,14 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TsContentGenerator : ITsContentGenerator
     {
+        public GeneratorOptions GeneratorOptions { get; set; }
+        
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITypeService _typeService;
         private readonly ITemplateService _templateService;
         private readonly ITsContentParser _tsContentParser;
         private readonly IMetadataReaderFactory _metadataReaderFactory;
+        private readonly ILogger _logger;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
@@ -32,13 +36,15 @@ namespace TypeGen.Core.Business
             ITypeService typeService,
             ITemplateService templateService,
             ITsContentParser tsContentParser,
-            IMetadataReaderFactory metadataReaderFactory)
+            IMetadataReaderFactory metadataReaderFactory,
+            ILogger logger)
         {
             _typeDependencyService = typeDependencyService;
             _typeService = typeService;
             _templateService = templateService;
             _tsContentParser = tsContentParser;
             _metadataReaderFactory = metadataReaderFactory;
+            _logger = logger;
         }
 
         /// <summary>
@@ -241,6 +247,70 @@ namespace TypeGen.Core.Business
             return string.IsNullOrEmpty(content)
                 ? ""
                 : $"//<{CustomHeadTagName}>\r\n{content}//</{CustomHeadTagName}>\r\n\r\n";
+        }
+
+        /// <summary>
+        /// Gets text to be used as a member value
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
+        public string GetMemberValueText(MemberInfo memberInfo)
+        {
+            if (memberInfo.DeclaringType == null) return null;
+
+            try
+            {
+                object instance = memberInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(memberInfo.DeclaringType);
+                object valueObj = null;
+                
+                switch (memberInfo)
+                {
+                    case FieldInfo fieldInfo:
+                        valueObj = fieldInfo.GetValue(instance);
+                        break;
+                    case PropertyInfo propertyInfo:
+                        valueObj = propertyInfo.GetValue(instance);
+                        break;
+                }
+
+                if (valueObj == null) return null;
+
+                string memberType = _typeService.GetTsTypeName(memberInfo, GeneratorOptions.TypeNameConverters, GeneratorOptions.CsNullableTranslation).GetTsTypeUnion(0);
+                string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
+
+                switch (valueObj)
+                {
+                    case Guid valueGuid when memberType == "string":
+                        return quote + valueGuid + quote;
+                    case DateTime valueDateTime when memberType == "Date":
+                        return $@"new Date({quote}{valueDateTime}{quote})";
+                    case DateTime valueDateTime when memberType == "string":
+                        return quote + valueDateTime + quote;
+                    case DateTimeOffset valueDateTimeOffset when memberType == "Date":
+                        return $@"new Date({quote}{valueDateTimeOffset}{quote})";
+                    case DateTimeOffset valueDateTimeOffset when memberType == "string":
+                        return quote + valueDateTimeOffset + quote;
+                    default:
+                        return JsonConvert.SerializeObject(valueObj).Replace("\"", quote);
+                }
+            }
+            catch (MissingMethodException e)
+            {
+                if (_logger != null && _logger.LogVerbose)
+                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has no default constructor.");
+            }
+            catch (ArgumentException e) when(e.InnerException is TypeLoadException)
+            {
+                if (_logger != null && _logger.LogVerbose)
+                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.");
+            }
+            catch (Exception e)
+            {
+                if (_logger != null && _logger.LogVerbose)
+                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because an unknown exception occurred: '{e.Message}'");
+            }
+
+            return null;
         }
     }
 }
