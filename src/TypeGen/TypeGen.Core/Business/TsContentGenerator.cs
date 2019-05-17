@@ -261,7 +261,8 @@ namespace TypeGen.Core.Business
             try
             {
                 object instance = memberInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(memberInfo.DeclaringType);
-                object valueObj = null;
+                var valueObj = new object();
+                object valueObjGuard = valueObj;
                 
                 switch (memberInfo)
                 {
@@ -273,7 +274,11 @@ namespace TypeGen.Core.Business
                         break;
                 }
 
-                if (valueObj == null) return null;
+                // if valueObj hasn't been assigned in the switch
+                if (valueObj == valueObjGuard) return null;
+                
+                // if valueObj's value is the default value for its type
+                if (valueObj == null || valueObj.Equals(TypeUtils.GetDefaultValue(valueObj.GetType()))) return null;
 
                 string memberType = _typeService.GetTsTypeName(memberInfo, GeneratorOptions.TypeNameConverters, GeneratorOptions.CsNullableTranslation).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";

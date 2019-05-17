@@ -4,7 +4,7 @@
  */
 
 export class StaticReadonly {
-    static readonly staticReadonlyField: number = 0;
+    static readonly staticReadonlyField: number = 2;
     static readonly staticReadonlyFieldNoValue: number;
     static staticProperty: string;
     notStaticProperty: string;

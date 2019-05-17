@@ -15,6 +15,6 @@ export class Bar {
     aId: number;
     a: TestInterface;
     b: number;
-    myCs: C[];
-    myDs: D[];
+    myCs: C[] = [];
+    myDs: D[] = [];
 }

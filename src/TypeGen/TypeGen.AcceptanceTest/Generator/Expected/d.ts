@@ -17,10 +17,10 @@ export class D extends GenericClass<number> {
     c: TestInterface;
     barId: number;
     bar: Bar;
-    e: string;
+    e: string = "asdf";
     j: Date;
     k: Date;
-    fs: FClass[];
+    fs: FClass[] = [];
     l: Date;
     m: Date;
     n: TestEnum;

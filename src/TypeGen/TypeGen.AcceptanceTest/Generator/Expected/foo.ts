@@ -11,5 +11,5 @@ export class Foo {
     a: string;
     b: string;
     c: number;
-    myBars: Bar[];
+    myBars: Bar[] = [];
 }

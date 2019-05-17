@@ -14,7 +14,7 @@ export class C {
     e: boolean;
     f: EClass;
     g: EClass;
-    fs: FClass[];
+    fs: FClass[] = [];
     bar: Bar;
     barId: number;
 }
