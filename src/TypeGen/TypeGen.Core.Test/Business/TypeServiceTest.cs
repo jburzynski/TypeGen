@@ -15,18 +15,21 @@ namespace TypeGen.Core.Test.Business
     public class TypeServiceTest
     {
         /// <summary>
-        /// this needs to be changed to use mocked MetadataReaderFactory
+        /// this needs to be changed to use mocked MetadataReader
         /// </summary>
-        private readonly ITypeService _typeService;
+        private IMetadataReaderFactory _metadataReaderFactory;
+        private ITypeService _typeService;
 
         public TypeServiceTest()
         {
-            // this needs to be changed to use mocked MetadataReaderFactory
+            // this needs to be changed to use mocked MetadataReader
             
-            var metadataReaderFactory = Substitute.For<IMetadataReaderFactory>();
-            metadataReaderFactory.GetInstance().Returns(new AttributeMetadataReader());
+            _metadataReaderFactory = Substitute.For<IMetadataReaderFactory>();
+            _metadataReaderFactory.GetInstance().Returns(new AttributeMetadataReader());
 
-            _typeService = new TypeService(metadataReaderFactory) { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
         }
         
         public class MyClass {}
@@ -287,9 +290,12 @@ namespace TypeGen.Core.Test.Business
         public void UseDefaultExport_TypeGiven_DeterminedIfDefaultExport(Type type, bool optionsDefaultExport, bool expectedResult)
         {
             // arrange
-            _typeService.GeneratorOptions.UseDefaultExport = optionsDefaultExport;
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { UseDefaultExport = optionsDefaultExport } };
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
+            
             // act
             bool actualResult = _typeService.UseDefaultExport(type);
+            
             // assert
             Assert.Equal(expectedResult, actualResult);
         }
@@ -312,7 +318,14 @@ namespace TypeGen.Core.Test.Business
         [MemberData(nameof(GetTsTypeName_TestData))]
         public void GetTsTypeName_TypeGiven_TsTypeNameReturned(Type type, TypeNameConverterCollection converters, bool forTypeDeclaration, string expectedResult)
         {
-            string actualResult = _typeService.GetTsTypeName(type, converters, forTypeDeclaration);
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = converters } };
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
+            
+            //act
+            string actualResult = _typeService.GetTsTypeName(type, forTypeDeclaration);
+            
+            //assert
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -351,7 +364,18 @@ namespace TypeGen.Core.Test.Business
         public void GetTsTypeName_MemberGiven_TsTypeNameReturned(MemberInfo memberInfo, TypeNameConverterCollection converters,
             StrictNullFlags csNullableTranslation, string expectedResult)
         {
-            string actualResult = _typeService.GetTsTypeName(memberInfo, converters, csNullableTranslation);
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions
+            {
+                TypeNameConverters = converters,
+                CsNullableTranslation = csNullableTranslation
+            } };
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
+            
+            //act
+            string actualResult = _typeService.GetTsTypeName(memberInfo);
+            
+            //assert
             Assert.Equal(expectedResult, actualResult);
         }
 

@@ -7,8 +7,6 @@ namespace TypeGen.Core.Business
 {
     internal interface ITypeService
     {
-        GeneratorOptions GeneratorOptions { get; set; }
-        
         /// <summary>
         /// Determines if a type has a TypeScript simple type representation
         /// </summary>
@@ -82,21 +80,18 @@ namespace TypeGen.Core.Business
         /// Gets TypeScript type name for a type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <param name="forTypeDeclaration"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
         /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
-        string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false);
+        string GetTsTypeName(Type type, bool forTypeDeclaration = false);
 
         /// <summary>
         /// Gets the TypeScript type name to generate for a member
         /// </summary>
         /// <param name="memberInfo"></param>
-        /// <param name="typeNameConverters"></param>
-        /// <param name="csNullableTranslation"></param>
         /// <returns></returns>
-        string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, StrictNullFlags csNullableTranslation);
+        string GetTsTypeName(MemberInfo memberInfo);
 
         /// <summary>
         /// Gets the type of the deepest element from a jagged collection of the given type.

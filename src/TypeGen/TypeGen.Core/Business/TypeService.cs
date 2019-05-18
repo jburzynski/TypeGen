@@ -18,13 +18,15 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TypeService : ITypeService
     {
-        public GeneratorOptions GeneratorOptions { get; set; }
-
         private readonly IMetadataReaderFactory _metadataReaderFactory;
+        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
-        public TypeService(IMetadataReaderFactory metadataReaderFactory)
+        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+
+        public TypeService(IMetadataReaderFactory metadataReaderFactory, IGeneratorOptionsProvider generatorOptionsProvider)
         {
             _metadataReaderFactory = metadataReaderFactory;
+            _generatorOptionsProvider = generatorOptionsProvider;
         }
 
         /// <inheritdoc />
@@ -39,7 +41,7 @@ namespace TypeGen.Core.Business
         public string GetTsSimpleTypeName(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            if (string.IsNullOrEmpty(type.FullName)) return null;
+            if (string.IsNullOrWhiteSpace(type.FullName)) return null;
 
             if (GeneratorOptions.CustomTypeMappings != null && GeneratorOptions.CustomTypeMappings.Any() && GeneratorOptions.CustomTypeMappings.ContainsKey(type.FullName))
             {
@@ -166,14 +168,14 @@ namespace TypeGen.Core.Business
         public bool UseDefaultExport(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? GeneratorOptions.UseDefaultExport;
+            return _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? _generatorOptionsProvider.GeneratorOptions.UseDefaultExport;
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
+        public string GetTsTypeName(Type type, bool forTypeDeclaration = false)
         {
             Requires.NotNull(type, nameof(type));
-            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
             type = StripNullable(type);
 
@@ -186,33 +188,33 @@ namespace TypeGen.Core.Business
             // handle collection types
             if (IsCollectionType(type))
             {
-                return GetTsCollectionTypeName(type, typeNameConverters);
+                return GetTsCollectionTypeName(type);
             }
 
             // handle dictionaries
             if (IsDictionaryType(type))
             {
-                return GetTsDictionaryTypeName(type, typeNameConverters);
+                return GetTsDictionaryTypeName(type);
             }
 
             // handle custom generic types
             if (IsCustomGenericType(type))
             {
-                return GetGenericTsTypeName(type, typeNameConverters, forTypeDeclaration);
+                return GetGenericTsTypeName(type, forTypeDeclaration);
             }
 
             // handle custom types & generic parameters
             string typeNameNoArity = type.Name.RemoveTypeArity();
-            return type.IsGenericParameter ? typeNameNoArity : typeNameConverters.Convert(typeNameNoArity, type);
+            return type.IsGenericParameter ? typeNameNoArity : GeneratorOptions.TypeNameConverters.Convert(typeNameNoArity, type);
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters, StrictNullFlags csNullableTranslation)
+        public string GetTsTypeName(MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
-            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
             
-            string typeUnionSuffix = GetStrictNullChecksTypeSuffix(memberInfo, csNullableTranslation);
+            string typeUnionSuffix = GetStrictNullChecksTypeSuffix(memberInfo);
 
             var typeAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)
@@ -224,17 +226,16 @@ namespace TypeGen.Core.Business
                 return typeAttribute.TypeName + typeUnionSuffix;
             }
 
-            return GetTsTypeNameForMember(memberInfo, typeNameConverters) + typeUnionSuffix;
+            return GetTsTypeNameForMember(memberInfo) + typeUnionSuffix;
         }
-        
+
         /// <summary>
         /// Gets TypeScript type name for a member
         /// </summary>
         /// <param name="memberInfo"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        private string GetTsTypeNameForMember(MemberInfo memberInfo, TypeNameConverterCollection typeNameConverters)
+        private string GetTsTypeNameForMember(MemberInfo memberInfo)
         {
             // special case - dynamic property/field
             
@@ -246,16 +247,16 @@ namespace TypeGen.Core.Business
             // otherwise, resolve by type
 
             Type type = GetMemberType(memberInfo);
-            return GetTsTypeName(type, typeNameConverters);
+            return GetTsTypeName(type);
         }
 
-        private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo, StrictNullFlags csNullableTranslation)
+        private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo)
         {
             Type memberType = memberInfo is PropertyInfo info
                 ? info.PropertyType
                 : ((FieldInfo)memberInfo).FieldType;
 
-            StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? csNullableTranslation : StrictNullFlags.Regular;
+            StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? GeneratorOptions.CsNullableTranslation : StrictNullFlags.Regular;
 
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNullAttribute>(memberInfo) != null) flags |= StrictNullFlags.Null;
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsUndefinedAttribute>(memberInfo) != null) flags |= StrictNullFlags.Undefined;
@@ -274,9 +275,8 @@ namespace TypeGen.Core.Business
         /// Gets TypeScript type name for a dictionary type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetTsDictionaryTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetTsDictionaryTypeName(Type type)
         {
             // handle IDictionary<,>
             
@@ -287,8 +287,8 @@ namespace TypeGen.Core.Business
                 Type keyType = dictionaryType.GetGenericArguments()[0];
                 Type valueType = dictionaryType.GetGenericArguments()[1];
 
-                string keyTypeName = GetTsTypeName(keyType, typeNameConverters);
-                string valueTypeName = GetTsTypeName(valueType, typeNameConverters);
+                string keyTypeName = GetTsTypeName(keyType);
+                string valueTypeName = GetTsTypeName(valueType);
 
                 if (!keyTypeName.In("number", "string"))
                 {
@@ -316,41 +316,38 @@ namespace TypeGen.Core.Business
         /// Gets TypeScript type name for a collection type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetTsCollectionTypeName(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetTsCollectionTypeName(Type type)
         {
             Type elementType = GetTsCollectionElementType(type);
-            return GetTsTypeName(elementType, typeNameConverters) + "[]";
+            return GetTsTypeName(elementType) + "[]";
         }
 
         /// <summary>
         /// Gets TypeScript type name for a generic type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <param name="forTypeDeclaration"></param>
         /// <returns></returns>
-        private string GetGenericTsTypeName(Type type, TypeNameConverterCollection typeNameConverters, bool forTypeDeclaration = false)
+        private string GetGenericTsTypeName(Type type, bool forTypeDeclaration = false)
         {
-            if (!forTypeDeclaration) return GetGenericTsTypeNameForNonDeclaration(type, typeNameConverters);
+            if (!forTypeDeclaration) return GetGenericTsTypeNameForNonDeclaration(type);
 
             return type.GetTypeInfo().IsGenericTypeDefinition
-                ? GetGenericTsTypeNameForDeclaration(type, typeNameConverters)
-                : GetGenericTsTypeNameForNonDeclaration(type, typeNameConverters);
+                ? GetGenericTsTypeNameForDeclaration(type)
+                : GetGenericTsTypeNameForNonDeclaration(type);
         }
 
         /// <summary>
         /// Gets TypeScript type name for a generic type - used in type declarations
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetGenericTsTypeNameForDeclaration(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetGenericTsTypeNameForDeclaration(Type type)
         {
-            return GetGenericTsTypeNameDeclarationAgnostic(type, typeNameConverters,
+            return GetGenericTsTypeNameDeclarationAgnostic(type,
                 t => t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
-                    ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, typeNameConverters, true)}"
+                    ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, true)}"
                     : t.Name);
         }
 
@@ -358,15 +355,14 @@ namespace TypeGen.Core.Business
         /// Gets TypeScript type name for a generic type - used NOT in type declarations
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetGenericTsTypeNameForNonDeclaration(Type type, TypeNameConverterCollection typeNameConverters)
+        private string GetGenericTsTypeNameForNonDeclaration(Type type)
         {
-            return GetGenericTsTypeNameDeclarationAgnostic(type, typeNameConverters,
-                t => t.IsGenericParameter ? t.Name : GetTsTypeName(t, typeNameConverters));
+            return GetGenericTsTypeNameDeclarationAgnostic(type,
+                t => t.IsGenericParameter ? t.Name : GetTsTypeName(t));
         }
 
-        private string GetGenericTsTypeNameDeclarationAgnostic(Type type, TypeNameConverterCollection typeNameConverters, Func<Type, string> genericArgumentsSelector)
+        private string GetGenericTsTypeNameDeclarationAgnostic(Type type, Func<Type, string> genericArgumentsSelector)
         {
             string[] genericArgumentNames = type.GetGenericArguments()
                 .Select(genericArgumentsSelector)
@@ -374,7 +370,7 @@ namespace TypeGen.Core.Business
 
             string typeName = type.Name.RemoveTypeArity();
             string genericArgumentDef = string.Join(", ", genericArgumentNames);
-            return $"{typeNameConverters.Convert(typeName, type)}<{genericArgumentDef}>";
+            return $"{GeneratorOptions.TypeNameConverters.Convert(typeName, type)}<{genericArgumentDef}>";
         }
 
         /// <summary>

@@ -16,6 +16,8 @@ using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
+using IGeneratorOptionsProvider = TypeGen.Cli.Business.IGeneratorOptionsProvider;
+using GeneratorOptionsProvider = TypeGen.Cli.Business.GeneratorOptionsProvider;
 
 namespace TypeGen.Cli
 {

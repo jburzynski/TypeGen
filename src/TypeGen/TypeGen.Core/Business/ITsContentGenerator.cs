@@ -11,19 +11,16 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
-        /// <param name="fileNameConverters"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
-        string GetImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters);
+        string GetImportsText(Type type, string outputDir);
 
         /// <summary>
         /// Gets the text for the "extends" section
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters);
+        string GetExtendsText(Type type);
 
         /// <summary>
         /// Gets custom code for a TypeScript file given by filePath.
@@ -41,8 +38,6 @@ namespace TypeGen.Core.Business
         /// <param name="filePath"></param>
         /// <returns></returns>
         string GetCustomHead(string filePath);
-
-        GeneratorOptions GeneratorOptions { get; set; }
 
         /// <summary>
         /// Gets text to be used as a member value

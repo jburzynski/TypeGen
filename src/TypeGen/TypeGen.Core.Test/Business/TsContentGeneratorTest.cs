@@ -19,13 +19,13 @@ namespace TypeGen.Core.Test.Business
         private readonly ITsContentParser _tsContentParser = Substitute.For<ITsContentParser>();
 
         /// <summary>
-        /// this needs to be changed to use mocked MetadataReaderFactory
+        /// this needs to be changed to use mocked MetadataReader
         /// </summary>
         private readonly IMetadataReaderFactory _metadataReaderFactory;
 
         public TsContentGeneratorTest()
         {
-            // this needs to be changed to use mocked MetadataReaderFactory
+            // this needs to be changed to use mocked MetadataReader
             
             _metadataReaderFactory = Substitute.For<IMetadataReaderFactory>();
             _metadataReaderFactory.GetInstance().Returns(new AttributeMetadataReader());
@@ -36,22 +36,35 @@ namespace TypeGen.Core.Test.Business
         [Fact]
         public void GetImportsText_TypeNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(null, "asdf", new TypeNameConverterCollection(), new TypeNameConverterCollection()));
+        
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(null, "asdf"));
         }
         
         [Fact]
         public void GetImportsText_FileNameConvertersNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf", null, new TypeNameConverterCollection()));
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { FileNameConverters = null } };
+            
+            //act,assert
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
         }
         
         [Fact]
         public void GetImportsText_TypeNameConvertersNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf", new TypeNameConverterCollection(), null));
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
         }
         
         [Theory]
@@ -64,13 +77,21 @@ namespace TypeGen.Core.Test.Business
             IEnumerable<MemberInfo> tsExportableMembers,
                 string expectedOutput)
         {
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions
+            {
+                FileNameConverters = fileNameConverters,
+                TypeNameConverters = typeNameConverters
+            } };
             _typeDependencyService.GetTypeDependencies(Arg.Any<Type>()).Returns(typeDependencies);
             _typeService.GetTsExportableMembers(Arg.Any<Type>()).Returns(tsExportableMembers);
             _templateService.FillImportTemplate(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(i => $"{i.ArgAt<string>(0)} | {i.ArgAt<string>(1)} | {i.ArgAt<string>(2)};");
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
 
-            string actualOutput = tsContentGenerator.GetImportsText(type, outputDir, fileNameConverters, typeNameConverters);
+            //act
+            string actualOutput = tsContentGenerator.GetImportsText(type, outputDir);
 
+            //assert
             Assert.Equal(expectedOutput, actualOutput);
         }
 
@@ -204,28 +225,44 @@ namespace TypeGen.Core.Test.Business
         [Fact]
         public void GetExtendsText_TypeNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(null, new TypeNameConverterCollection()));
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(null));
         }
         
         [Fact]
         public void GetExtendsText_TypeNameConvertersNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(typeof(string), null));
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(typeof(string)));
         }
         
         [Fact]
         public void GetCustomBody_FilePathNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
             Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetCustomBody(null, 0));
         }
         
         [Fact]
         public void GetCustomHead_FilePathNull_ExceptionThrown()
         {
-            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, null);
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act,assert
             Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetCustomHead(null));
         }
     }

@@ -19,24 +19,26 @@ namespace TypeGen.Core.Business
     /// </summary>
     internal class TsContentGenerator : ITsContentGenerator
     {
-        public GeneratorOptions GeneratorOptions { get; set; }
-        
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITypeService _typeService;
         private readonly ITemplateService _templateService;
         private readonly ITsContentParser _tsContentParser;
         private readonly IMetadataReaderFactory _metadataReaderFactory;
+        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
         private readonly ILogger _logger;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
         private const string CustomBodyTagName = "custom-body";
 
+        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+
         public TsContentGenerator(ITypeDependencyService typeDependencyService,
             ITypeService typeService,
             ITemplateService templateService,
             ITsContentParser tsContentParser,
             IMetadataReaderFactory metadataReaderFactory,
+            IGeneratorOptionsProvider generatorOptionsProvider,
             ILogger logger)
         {
             _typeDependencyService = typeDependencyService;
@@ -44,6 +46,7 @@ namespace TypeGen.Core.Business
             _templateService = templateService;
             _tsContentParser = tsContentParser;
             _metadataReaderFactory = metadataReaderFactory;
+            _generatorOptionsProvider = generatorOptionsProvider;
             _logger = logger;
         }
 
@@ -52,17 +55,15 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir">ExportTs... attribute's output dir</param>
-        /// <param name="fileNameConverters"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
-        public string GetImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters)
+        public string GetImportsText(Type type, string outputDir)
         {
             Requires.NotNull(type, nameof(type));
-            Requires.NotNull(fileNameConverters, nameof(fileNameConverters));
-            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            Requires.NotNull(GeneratorOptions.FileNameConverters, nameof(GeneratorOptions.FileNameConverters));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
-            string result = GetTypeDependencyImportsText(type, outputDir, fileNameConverters, typeNameConverters);
+            string result = GetTypeDependencyImportsText(type, outputDir);
             result += GetCustomImportsText(type);
 
             if (!string.IsNullOrEmpty(result))
@@ -77,17 +78,16 @@ namespace TypeGen.Core.Business
         /// Gets the text for the "extends" section
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        public string GetExtendsText(Type type, TypeNameConverterCollection typeNameConverters)
+        public string GetExtendsText(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            Requires.NotNull(typeNameConverters, nameof(typeNameConverters));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
             
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
-            string baseTypeName = _typeService.GetTsTypeName(baseType, typeNameConverters, true);
+            string baseTypeName = _typeService.GetTsTypeName(baseType, true);
             return _templateService.GetExtendsText(baseTypeName);
         }
 
@@ -96,10 +96,8 @@ namespace TypeGen.Core.Business
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
-        /// <param name="fileNameConverters"></param>
-        /// <param name="typeNameConverters"></param>
         /// <returns></returns>
-        private string GetTypeDependencyImportsText(Type type, string outputDir, TypeNameConverterCollection fileNameConverters, TypeNameConverterCollection typeNameConverters)
+        private string GetTypeDependencyImportsText(Type type, string outputDir)
         {
             if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "\\";
             var result = "";
@@ -123,13 +121,13 @@ namespace TypeGen.Core.Business
 
                 // get type & file name
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
-                string fileName = fileNameConverters.Convert(typeDependencyName, typeDependency);
+                string fileName = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
 
                 // get file path
                 string dependencyPath = Path.Combine(pathDiff, fileName);
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
-                string typeName = typeNameConverters.Convert(typeDependencyName, typeDependency);
+                string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
                 
                 result += _typeService.UseDefaultExport(typeDependency) ?
                     _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath) :
@@ -280,7 +278,7 @@ namespace TypeGen.Core.Business
                 // if valueObj's value is the default value for its type
                 if (valueObj == null || valueObj.Equals(TypeUtils.GetDefaultValue(valueObj.GetType()))) return null;
 
-                string memberType = _typeService.GetTsTypeName(memberInfo, GeneratorOptions.TypeNameConverters, GeneratorOptions.CsNullableTranslation).GetTsTypeUnion(0);
+                string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
 
                 switch (valueObj)

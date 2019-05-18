@@ -11,6 +11,7 @@ namespace TypeGen.Core.Business
         // dependencies
 
         private readonly IInternalStorage _internalStorage;
+        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
         private readonly string _enumTemplate;
         private readonly string _enumDefaultExportTemplate;
@@ -27,11 +28,12 @@ namespace TypeGen.Core.Business
         private readonly string _indexExportTemplate;
         private readonly string _headingTemplate;
 
-        public GeneratorOptions GeneratorOptions { get; set; }
+        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
 
-        public TemplateService(IInternalStorage internalStorage)
+        public TemplateService(IInternalStorage internalStorage, IGeneratorOptionsProvider generatorOptionsProvider)
         {
             _internalStorage = internalStorage;
+            _generatorOptionsProvider = generatorOptionsProvider;
 
             _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
             _enumDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumDefaultExport.tpl");

@@ -49,26 +49,28 @@ namespace TypeGen.Core
         {
             Requires.NotNull(options, nameof(options));
             
+            _generationContext = new GenerationContext();
             FileContentGenerated += OnFileContentGenerated;
             
             Options = options;
             Logger = logger;
             
-            _generationContext = new GenerationContext();
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
             
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
             _metadataReaderFactory = new MetadataReaderFactory();
-            _typeService = new TypeService(_metadataReaderFactory) { GeneratorOptions = options };
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory);
-            _templateService = new TemplateService(internalStorage) { GeneratorOptions = options };
+            _templateService = new TemplateService(internalStorage, generatorOptionsProvider);
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
                 _templateService,
                 new TsContentParser(_fileSystem),
                 _metadataReaderFactory,
-                logger) { GeneratorOptions = options };
+                generatorOptionsProvider,
+                logger);
         }
         
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
@@ -364,15 +366,15 @@ namespace TypeGen.Core
             }
             else if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
-                extendsText = _tsContentGenerator.GetExtendsText(type, Options.TypeNameConverters);
+                extendsText = _tsContentGenerator.GetExtendsText(type);
             }
 
-            string importsText = _tsContentGenerator.GetImportsText(type, outputDir, Options.FileNameConverters, Options.TypeNameConverters);
+            string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
 
             // generate the file content
 
-            string tsTypeName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
+            string tsTypeName = _typeService.GetTsTypeName(type, true);
             string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
@@ -412,7 +414,7 @@ namespace TypeGen.Core
 
             // create TypeScript source code for the enum
 
-            string tsEnumName = _typeService.GetTsTypeName(type, Options.TypeNameConverters, true);
+            string tsEnumName = _typeService.GetTsTypeName(type, true);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
@@ -454,7 +456,7 @@ namespace TypeGen.Core
 
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
-            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo);
 
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
@@ -471,7 +473,7 @@ namespace TypeGen.Core
             // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any())
             {
-                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
+                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo);
                 
                 if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
                 {
@@ -523,7 +525,7 @@ namespace TypeGen.Core
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
 
-            string typeName = _typeService.GetTsTypeName(memberInfo, Options.TypeNameConverters, Options.CsNullableTranslation);
+            string typeName = _typeService.GetTsTypeName(memberInfo);
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
             return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, isOptional);
