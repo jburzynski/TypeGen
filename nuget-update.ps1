@@ -16,11 +16,11 @@ copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.dll nuget\
 copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.xml nuget\lib\netstandard2.0
 
 nuget pack nuget\TypeGen.nuspec
-move TypeGen.2.3.0.nupkg nuget -force
+move TypeGen.2.3.1.nupkg nuget -force
 
 if (Test-Path "local-nuget-path.txt") {
   $localNuGetPath = Get-Content "local-nuget-path.txt"
-  copy nuget\TypeGen.2.3.0.nupkg $localNuGetPath
+  copy nuget\TypeGen.2.3.1.nupkg $localNuGetPath
 }
 
 
@@ -31,9 +31,9 @@ rm -Recurse -Force nuget-dotnetcli\tools\netcoreapp2.1\any\runtimes
 copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.1\publish\* nuget-dotnetcli\tools\netcoreapp2.1\any
 
 nuget pack nuget-dotnetcli\TypeGen.DotNetCli.nuspec
-move TypeGen.DotNetCli.2.3.0.nupkg nuget-dotnetcli -force
+move TypeGen.DotNetCli.2.3.1.nupkg nuget-dotnetcli -force
 
 if (Test-Path "local-nuget-path.txt") {
   $localNuGetPath = Get-Content "local-nuget-path.txt"
-  copy nuget-dotnetcli\TypeGen.DotNetCli.2.3.0.nupkg $localNuGetPath
+  copy nuget-dotnetcli\TypeGen.DotNetCli.2.3.1.nupkg $localNuGetPath
 }

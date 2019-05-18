@@ -61,6 +61,13 @@
             <param name="filePath"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetMemberValueText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets text to be used as a member value
+            </summary>
+            <param name="memberInfo"></param>
+            <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
+        </member>
         <member name="M:TypeGen.Core.Business.ITsContentParser.GetTagContent(System.String,System.Int32,System.String[])">
             <summary>
             Gets text within specified tag(s).
@@ -276,6 +283,13 @@
             </summary>
             <param name="filePath"></param>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetMemberValueText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets text to be used as a member value
+            </summary>
+            <param name="memberInfo"></param>
+            <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
         </member>
         <member name="T:TypeGen.Core.Business.TsContentParser">
             <summary>
@@ -751,11 +765,6 @@
             File generation context (used per Generator.Generate() invocation)
             </summary>
         </member>
-        <member name="P:TypeGen.Core.GenerationContext.LastGenerationType">
-            <summary>
-            Type of the last file generation
-            </summary>
-        </member>
         <member name="P:TypeGen.Core.GenerationContext.GroupGeneratedTypes">
             <summary>
             Types that have already been generated for a group of types in the current call to Generator.Generate()
@@ -764,11 +773,6 @@
         <member name="P:TypeGen.Core.GenerationContext.TypeGeneratedTypes">
             <summary>
             Types that have already been generated for a type in the current call to Generator.Generate()
-            </summary>
-        </member>
-        <member name="P:TypeGen.Core.GenerationContext.GenerationSpec">
-            <summary>
-            Generation spec used in current file generation
             </summary>
         </member>
         <member name="M:TypeGen.Core.GenerationContext.Add(System.Type)">
@@ -838,10 +842,11 @@
             Generator options. Cannot be null.
             </summary>
         </member>
-        <member name="M:TypeGen.Core.Generator.#ctor(TypeGen.Core.Storage.IFileSystem)">
+        <member name="M:TypeGen.Core.Generator.#ctor(TypeGen.Core.GeneratorOptions,TypeGen.Core.Storage.IFileSystem)">
             <summary>
             For unit testing (mocking FileSystem)
             </summary>
+            <param name="options"></param>
             <param name="fileSystem"></param>
         </member>
         <member name="M:TypeGen.Core.Generator.OnFileContentGenerated(System.Object,TypeGen.Core.FileContentGeneratedArgs)">
