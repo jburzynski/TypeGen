@@ -265,5 +265,134 @@ namespace TypeGen.Core.Test.Business
             //act,assert
             Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetCustomHead(null));
         }
+
+        [Theory]
+        [MemberData(nameof(GetMemberValueText_Data))]
+        public void GetMemberValueText_MemberGiven_CorrectValueReturned(MemberInfo memberInfo, bool convertTypesToString, string expected)
+        {
+            //arrange
+            ITypeService typeService = GetTypeService(convertTypesToString);
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+            
+            //act
+            string actual = tsContentGenerator.GetMemberValueText(memberInfo);
+
+            //assert
+            Assert.Equal(expected, actual);
+        }
+        
+        public static IEnumerable<object[]> GetMemberValueText_Data = new[]
+        {
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.IntFieldNoValue)), false, null },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.IntPropertyNoValue)), false, null },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.IntFieldValue)), false, 2 },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.IntPropertyValue)), false, 2 },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.StringFieldValue)), false, @"""value""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.StringPropertyValue)), false, @"""value""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.TestClassFieldValue)), false, @"{""TestField"":2,""TestProperty"":""value""}" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.TestClassPropertyValue)), false, @"{""TestField"":2,""TestProperty"":""value""}" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.GuidFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestGuid}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.GuidPropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestGuid}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset}""" },
+        };
+
+        private class GetMemberValueText_TestClass
+        {
+            public static readonly Guid TestGuid = Guid.Parse("0ac1c484-d88b-4f5d-a789-440893b3a982");
+            public static readonly DateTime TestDateTime = new DateTime(2000, 5, 10);
+            public static readonly DateTimeOffset TestDateTimeOffset = new DateTimeOffset(TestDateTime);
+
+            public class TestClass
+            {
+                public int TestField;
+                public string TestProperty { get; set; }
+            }
+            
+            public int IntFieldNoValue;
+            public int IntPropertyNoValue { get; set; }
+            
+            public int IntFieldValue = 2;
+            public int IntPropertyValue { get; set; } = 2;
+            
+            public string StringFieldValue = "value";
+            public string StringPropertyValue { get; set; } = "value";
+            
+            public Guid GuidFieldValue = TestGuid;
+            public Guid GuidPropertyValue { get; set; } = TestGuid;
+            
+            public DateTime DateTimeFieldValue = TestDateTime;
+            public DateTime DateTimePropertyValue { get; set; } = TestDateTime;
+            
+            public DateTimeOffset DateTimeOffsetFieldValue = TestDateTimeOffset;
+            public DateTimeOffset DateTimeOffsetPropertyValue { get; set; } = TestDateTimeOffset;
+
+            public TestClass TestClassFieldValue = new TestClass { TestField = 2, TestProperty = "value" };
+            public TestClass TestClassPropertyValue { get; set; } = new TestClass { TestField = 2, TestProperty = "value" };
+        }
+
+        private ITypeService GetTypeService(bool convertTypesToString)
+        {
+            var typeService = Substitute.For<ITypeService>();
+            typeService.GetTsTypeName(Arg.Any<MemberInfo>()).Returns(args =>
+            {
+                var memberInfo = args.Arg<MemberInfo>();
+                Type memberType;
+
+                switch (memberInfo)
+                {
+                    case PropertyInfo propertyInfo:
+                        memberType = propertyInfo.PropertyType;
+                        break;
+                    case FieldInfo fieldInfo:
+                        memberType = fieldInfo.FieldType;
+                        break;
+                    default:
+                        throw new Exception("memberInfo must be either PropertyInfo or FieldInfo");
+                }
+
+                if (convertTypesToString)
+                {
+                    switch (memberType.FullName)
+                    {
+                        case "System.Guid":
+                        case "System.DateTime":
+                        case "System.DateTimeOffset":
+                        case "System.String":
+                            return "string";
+                        case "System.Int32":
+                            return "number";
+                        default:
+                            return memberType.Name;
+                    }
+                }
+                else
+                {
+                    switch (memberType.FullName)
+                    {
+                        case "System.String":
+                            return "string";
+                        case "System.Guid":
+                            return "Guid";
+                        case "System.DateTime":
+                        case "System.DateTimeOffset":
+                            return "Date";
+                        case "System.Int32":
+                            return "number";
+                        default:
+                            return memberType.Name;
+                    }
+                }
+            });
+
+            return typeService;
+        }
     }
 }
