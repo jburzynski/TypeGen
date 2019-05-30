@@ -25,23 +25,20 @@
             </summary>
             <param name="messageLines"></param>
         </member>
-        <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetImportsText(System.Type,System.String,TypeGen.Core.Converters.TypeNameConverterCollection,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetImportsText(System.Type,System.String)">
             <summary>
             Gets code for the 'imports' section for a given type
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
-            <param name="fileNameConverters"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetExtendsText(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetExtendsText(System.Type)">
             <summary>
             Gets the text for the "extends" section
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetCustomBody(System.String,System.Int32)">
@@ -159,24 +156,21 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.ITypeService.GetTsTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection,System.Boolean)">
+        <member name="M:TypeGen.Core.Business.ITypeService.GetTsTypeName(System.Type,System.Boolean)">
             <summary>
             Gets TypeScript type name for a type
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <param name="forTypeDeclaration"></param>
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
             <exception cref="T:TypeGen.Core.CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.ITypeService.GetTsTypeName(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection,TypeGen.Core.StrictNullFlags)">
+        <member name="M:TypeGen.Core.Business.ITypeService.GetTsTypeName(System.Reflection.MemberInfo)">
             <summary>
             Gets the TypeScript type name to generate for a member
             </summary>
             <param name="memberInfo"></param>
-            <param name="typeNameConverters"></param>
-            <param name="csNullableTranslation"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Business.ITypeService.GetFlatType(System.Type)">
@@ -223,33 +217,28 @@
             Generates TypeScript file contents
             </summary>
         </member>
-        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetImportsText(System.Type,System.String,TypeGen.Core.Converters.TypeNameConverterCollection,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetImportsText(System.Type,System.String)">
             <summary>
             Gets code for the 'imports' section for a given type
             </summary>
             <param name="type"></param>
             <param name="outputDir">ExportTs... attribute's output dir</param>
-            <param name="fileNameConverters"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetExtendsText(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetExtendsText(System.Type)">
             <summary>
             Gets the text for the "extends" section
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetTypeDependencyImportsText(System.Type,System.String,TypeGen.Core.Converters.TypeNameConverterCollection,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TsContentGenerator.GetTypeDependencyImportsText(System.Type,System.String)">
             <summary>
             Returns TypeScript imports source code related to type dependencies
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
-            <param name="fileNameConverters"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Business.TsContentGenerator.GetCustomImportsText(System.Type)">
@@ -412,60 +401,54 @@
         <member name="M:TypeGen.Core.Business.TypeService.UseDefaultExport(System.Type)">
             <inheritdoc />
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection,System.Boolean)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeName(System.Type,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeName(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection,TypeGen.Core.StrictNullFlags)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeName(System.Reflection.MemberInfo)">
             <inheritdoc />
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo)">
             <summary>
             Gets TypeScript type name for a member
             </summary>
             <param name="memberInfo"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsDictionaryTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsDictionaryTypeName(System.Type)">
             <summary>
             Gets TypeScript type name for a dictionary type
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetTsCollectionTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetTsCollectionTypeName(System.Type)">
             <summary>
             Gets TypeScript type name for a collection type
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeName(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection,System.Boolean)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeName(System.Type,System.Boolean)">
             <summary>
             Gets TypeScript type name for a generic type
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <param name="forTypeDeclaration"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeNameForDeclaration(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeNameForDeclaration(System.Type)">
             <summary>
             Gets TypeScript type name for a generic type - used in type declarations
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeNameForNonDeclaration(System.Type,TypeGen.Core.Converters.TypeNameConverterCollection)">
+        <member name="M:TypeGen.Core.Business.TypeService.GetGenericTsTypeNameForNonDeclaration(System.Type)">
             <summary>
             Gets TypeScript type name for a generic type - used NOT in type declarations
             </summary>
             <param name="type"></param>
-            <param name="typeNameConverters"></param>
             <returns></returns>
         </member>
         <member name="M:TypeGen.Core.Business.TypeService.GetTsCollectionElementType(System.Type)">
