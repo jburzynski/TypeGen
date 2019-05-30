@@ -157,7 +157,8 @@ namespace TypeGen.Core.Business
 
         public string FillEnumValueTemplate(string name, object value)
         {
-            string valueString = value is string str ? $@"""{str}""" : value.ToString();
+            char quote = GeneratorOptions.SingleQuotes ? '\'' : '"';
+            string valueString = value is string str ? $@"{quote}{str}{quote}" : value.ToString();
             
             return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace(GetTag("name"), name)
