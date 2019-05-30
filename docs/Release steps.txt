@@ -3,15 +3,16 @@ TypeGen:
 	- build-publish
 	- nuget-update
 
+- git merge dev to master
+
+Upload:
+- nuget
+- nuget-dotnetcli
+
+
 - Docs
  + content (TypeGenDocs repo)
  + API reference (docfx metadata; docfx build)
 
 - website
  + changelog
-
-- git merge dev to master
-
-Upload:
-- nuget
-- nuget-dotnetcli
