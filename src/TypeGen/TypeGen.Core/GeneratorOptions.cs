@@ -20,6 +20,7 @@ namespace TypeGen.Core
         public static NameConverterCollection DefaultPropertyNameConverters => new NameConverterCollection(new PascalCaseToCamelCaseConverter());
         public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
         public static NameConverterCollection DefaultEnumStringInitializersConverters => new NameConverterCollection();
+        public static IndexFileGeneratorCollection DefaultIndexFileGenerators => new IndexFileGeneratorCollection(new IndexFileGenerator());
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
@@ -41,6 +42,7 @@ namespace TypeGen.Core
             PropertyNameConverters = DefaultPropertyNameConverters;
             EnumValueNameConverters = DefaultEnumValueNameConverters;
             EnumStringInitializersConverters = DefaultEnumStringInitializersConverters;
+            IndexFileGenerators = DefaultIndexFileGenerators;
             TypeScriptFileExtension = DefaultTypeScriptFileExtension;
             SingleQuotes = DefaultSingleQuotes;
             CreateIndexFile = DefaultCreateIndexFile;
@@ -113,7 +115,7 @@ namespace TypeGen.Core
         /// <summary>
         /// Handles how the index file(s) are created for generated types.
         /// </summary>
-        public IIndexFileGenerator IndexFileGenerator { get; set; }
+        public IndexFileGeneratorCollection IndexFileGenerators { get; set; }
 
         /// <summary>
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default

@@ -41,7 +41,6 @@ namespace TypeGen.Core
         private readonly ITemplateService _templateService;
         private readonly ITsContentGenerator _tsContentGenerator;
         private readonly IFileSystem _fileSystem;
-        private readonly IIndexFileGenerator _indexFileGenerator;
 
         // keeps track of what types have been generated in the current session
         private readonly GenerationContext _generationContext;
@@ -65,7 +64,6 @@ namespace TypeGen.Core
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory);
             _templateService = new TemplateService(internalStorage, generatorOptionsProvider);
-            _indexFileGenerator = Options.IndexFileGenerator ?? new IndexFileGenerator(_templateService, generatorOptionsProvider, fileContentGeneratedProvider);
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
                 _typeService,
@@ -150,9 +148,9 @@ namespace TypeGen.Core
 
             files = files.Distinct();
             
-            if (Options.CreateIndexFile && _indexFileGenerator != null)
+            if (Options.CreateIndexFile)
             {
-                files = files.Concat(_indexFileGenerator.Generate(files));
+                files = files.Concat(Options.IndexFileGenerators.Generate(files));
             }
 
             return files;
@@ -210,7 +208,7 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile && initializeGeneration)
             {
-                files = files.Concat(GenerateIndexFile(files));
+                files = files.Concat(Options.IndexFileGenerators.Generate(files));
             }
 
             return files;

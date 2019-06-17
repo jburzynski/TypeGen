@@ -26,6 +26,7 @@ namespace TypeGen.Cli.Models
         public string[] EnumValueNameConverters { get; set; }
         public string[] EnumStringInitializersConverters { get; set; }
         public string[] ExternalAssemblyPaths { get; set; }
+        public string[] IndexFileGenerators { get; set; }
         public string TypeScriptFileExtension { get; set; }
         public int? TabLength { get; set; }
         public bool? ExplicitPublicAccessor { get; set; }
@@ -69,6 +70,7 @@ namespace TypeGen.Cli.Models
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
             if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
+            if (IndexFileGenerators == null) IndexFileGenerators = GeneratorOptions.DefaultIndexFileGenerators.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
