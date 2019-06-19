@@ -54,7 +54,12 @@ namespace TypeGen.Core.Business
         /// <returns></returns>
         public IEnumerable<string> Generate(IEnumerable<string> files)
         {
-            return _generators.Aggregate(files, (current, converter) => converter.Generate(current));
+            var results = new List<string>();
+            foreach (var generator in _generators)
+            {
+                results.AddRange(generator.Generate(files));
+            }
+            return results;
         }
 
         public IEnumerator<IIndexFileGenerator> GetEnumerator()

@@ -7,19 +7,17 @@ using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
-    internal class IndexFileGenerator : IIndexFileGenerator
+    internal class IndexFileGenerator : IIndexFileGenerator, IIndexFileGeneratorInjectable
     {
-        public GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        public GeneratorOptions GeneratorOptions => GeneratorOptionsProvider.GeneratorOptions;
 
-        private readonly ITemplateService _templateService;
-        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
-        private readonly IFileContentGeneratedEventHandlerProvider _fileContentHandlerProvider;
+        public ITemplateService TemplateService { get; set; }
+        public IGeneratorOptionsProvider GeneratorOptionsProvider { get; set; }
+        public IFileContentGeneratedEventHandlerProvider FileContentHandlerProvider { get; set; }
 
-        public IndexFileGenerator(ITemplateService templateService, IGeneratorOptionsProvider generatorOptionsProvider, IFileContentGeneratedEventHandlerProvider fileContentHandlerProvider)
+        public IndexFileGenerator()
         {
-            _templateService = templateService;
-            _generatorOptionsProvider = generatorOptionsProvider;
-            _fileContentHandlerProvider = fileContentHandlerProvider;
+
         }
 
         /// <summary>
@@ -36,7 +34,7 @@ namespace TypeGen.Core.Business
             var fileContent = CreateIndexFileContent(generatedFiles, indexFileExtension);
 
             string filename = "index" + indexFileExtension;
-            _fileContentHandlerProvider.FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(GeneratorOptions.BaseOutputDirectory, filename), fileContent));
+            FileContentHandlerProvider.FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(GeneratorOptions.BaseOutputDirectory, filename), fileContent));
 
             return new[] { filename };
         }
@@ -46,9 +44,9 @@ namespace TypeGen.Core.Business
             string exports = generatedFiles.Aggregate("", (prevExports, file) =>
             {
                 string fileNameWithoutExt = file.Remove(file.Length - extension.Length).Replace("\\", "/");
-                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
+                return prevExports + TemplateService.FillIndexExportTemplate(fileNameWithoutExt);
             });
-            return _templateService.FillIndexTemplate(exports);
+            return TemplateService.FillIndexTemplate(exports);
         }
     }
 }
