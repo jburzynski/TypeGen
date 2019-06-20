@@ -25,6 +25,37 @@
             </summary>
             <param name="messageLines"></param>
         </member>
+        <member name="M:TypeGen.Core.Business.IndexFileGenerator.Generate(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Generates an `index.ts` file(s) which exports types within the generated files
+            </summary>
+            <param name="generatedFiles"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="T:TypeGen.Core.Business.IndexFileGeneratorCollection">
+            <summary>
+            Represents a collection of index file generators
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Business.IndexFileGeneratorCollection.Add(TypeGen.Core.Business.IIndexFileGenerator)">
+            <summary>
+            Adds a index file generator to the collection. Null index file generators will not be added.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Business.IndexFileGeneratorCollection.Remove(TypeGen.Core.Business.IIndexFileGenerator)">
+            <summary>
+            Removes a index file generator from the collection.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Business.IndexFileGeneratorCollection.Generate(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates index files using the chain of index file generators
+            </summary>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.Business.ITsContentGenerator.GetImportsText(System.Type,System.String)">
             <summary>
             Gets code for the 'imports' section for a given type
@@ -1059,6 +1090,11 @@
             Whether to create an index file which exports all generated types
             </summary>
         </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.IndexFileGenerators">
+            <summary>
+            Handles how the index file(s) are created for generated types.
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.GeneratorOptions.CsNullableTranslation">
             <summary>
             Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
@@ -1093,6 +1129,11 @@
         <member name="P:TypeGen.Core.GeneratorOptions.UseDefaultExport">
             <summary>
             Whether to use default exports for the generated TypeScript types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.GeneratorOptions.IndexFileExtension">
+            <summary>
+            The file extension to use for the index file(s). Defaults to whatever is set for TypeScriptFileExtension.
             </summary>
         </member>
         <member name="T:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2">
