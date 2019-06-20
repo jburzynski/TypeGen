@@ -7,46 +7,32 @@ using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Business
 {
-    internal class IndexFileGenerator : IIndexFileGenerator, IIndexFileGeneratorInjectable
+    internal class IndexFileGenerator : IIndexFileGenerator
     {
-        public GeneratorOptions GeneratorOptions => GeneratorOptionsProvider.GeneratorOptions;
-
-        public ITemplateService TemplateService { get; set; }
-        public IGeneratorOptionsProvider GeneratorOptionsProvider { get; set; }
-        public IFileContentGeneratedEventHandlerProvider FileContentHandlerProvider { get; set; }
-
-        public IndexFileGenerator()
-        {
-
-        }
+        public IndexFileGenerator() { }
 
         /// <summary>
         /// Generates an `index.ts` file(s) which exports types within the generated files
         /// </summary>
-        /// <param name="generatedFiles"></param>
+        /// <param name="parameters"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        public IEnumerable<string> Generate(IEnumerable<string> generatedFiles)
+        public IEnumerable<string> Generate(IIndexFileGeneratorParams parameters)
         {
-            var indexFileExtension = string.IsNullOrEmpty(GeneratorOptions.IndexFileExtension) ? 
+            var indexFileExtension = string.IsNullOrEmpty(parameters.GeneratorOptions.IndexFileExtension) ? 
                 "" : 
-                "." + GeneratorOptions.IndexFileExtension;
+                "." + parameters.GeneratorOptions.IndexFileExtension;
 
-            var fileContent = CreateIndexFileContent(generatedFiles, indexFileExtension);
+            string exports = parameters.GeneratedFiles.Aggregate("", (prevExports, file) =>
+            {
+                string fileNameWithoutExt = file.Remove(file.Length - indexFileExtension.Length).Replace("\\", "/");
+                return prevExports + parameters.FillIndexExportTemplate(fileNameWithoutExt);
+            });
+            var fileContent = parameters.FillIndexTemplate(exports);
 
             string filename = "index" + indexFileExtension;
-            FileContentHandlerProvider.FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(GeneratorOptions.BaseOutputDirectory, filename), fileContent));
+            parameters?.FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(parameters.GeneratorOptions.BaseOutputDirectory, filename), fileContent));
 
             return new[] { filename };
-        }
-
-        private string CreateIndexFileContent(IEnumerable<string> generatedFiles, string extension)
-        {
-            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
-            {
-                string fileNameWithoutExt = file.Remove(file.Length - extension.Length).Replace("\\", "/");
-                return prevExports + TemplateService.FillIndexExportTemplate(fileNameWithoutExt);
-            });
-            return TemplateService.FillIndexTemplate(exports);
         }
     }
 }

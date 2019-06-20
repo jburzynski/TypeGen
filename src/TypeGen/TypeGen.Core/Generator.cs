@@ -72,8 +72,6 @@ namespace TypeGen.Core
                 _metadataReaderFactory,
                 generatorOptionsProvider,
                 logger);
-
-            SetInjectables(Options.IndexFileGenerators, _templateService, generatorOptionsProvider, fileContentGeneratedProvider);
         }
         
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
@@ -152,7 +150,17 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile)
             {
-                files = files.Concat(Options.IndexFileGenerators.Generate(files));
+                var indexFileGeneratorParams = new IndexFileGeneratorParams(
+                    files,
+                    new GeneratorOptionsProvider { GeneratorOptions = Options },
+                    _templateService,
+                    new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated }
+                );
+
+                foreach (var generator in Options.IndexFileGenerators)
+                {
+                    files = files.Concat(generator.Generate(indexFileGeneratorParams));
+                }
             }
 
             return files;
@@ -210,7 +218,17 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile && initializeGeneration)
             {
-                files = files.Concat(Options.IndexFileGenerators.Generate(files));
+                var indexFileGeneratorParams = new IndexFileGeneratorParams(
+                    files,
+                    new GeneratorOptionsProvider { GeneratorOptions = Options },
+                    _templateService,
+                    new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated }
+                );
+
+                foreach (var generator in Options.IndexFileGenerators)
+                {
+                    files = files.Concat(generator.Generate(indexFileGeneratorParams));
+                }
             }
 
             return files;
@@ -699,27 +717,6 @@ namespace TypeGen.Core
                 }
 
                 throw;
-            }
-        }
-
-        
-
-        private void SetInjectables(
-            IndexFileGeneratorCollection generators, 
-            ITemplateService templateService, 
-            IGeneratorOptionsProvider generatorOptionsProvider, 
-            IFileContentGeneratedEventHandlerProvider fileContentHandlerProvider
-            )
-        {
-            var injectables = generators
-                .Select(g => g as IIndexFileGeneratorInjectable)
-                .Where(g => g != null);
-
-            foreach (var generator in injectables)
-            {
-                generator.TemplateService = templateService;
-                generator.GeneratorOptionsProvider = generatorOptionsProvider;
-                generator.FileContentHandlerProvider = fileContentHandlerProvider;
             }
         }
 

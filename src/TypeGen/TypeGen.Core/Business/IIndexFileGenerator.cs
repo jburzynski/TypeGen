@@ -6,6 +6,6 @@ namespace TypeGen.Core.Business
 {
     public interface IIndexFileGenerator
     {
-        IEnumerable<string> Generate(IEnumerable<string> generatedFiles);
+        IEnumerable<string> Generate(IIndexFileGeneratorParams parameters);
     }
 }
