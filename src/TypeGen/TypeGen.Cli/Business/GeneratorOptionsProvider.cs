@@ -55,6 +55,7 @@ namespace TypeGen.Cli.Business
                 PropertyNameConverters = GetNameConvertersFromConfig(config.PropertyNameConverters),
                 EnumValueNameConverters = GetNameConvertersFromConfig(config.EnumValueNameConverters),
                 EnumStringInitializersConverters = GetNameConvertersFromConfig(config.EnumStringInitializersConverters),
+                IndexFileGenerators = GetIndexFileGeneratorsFromConfig(config.IndexFileGenerators),
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
@@ -78,10 +79,24 @@ namespace TypeGen.Cli.Business
             return new NameConverterCollection(converters);
         }
 
+        private IndexFileGeneratorCollection GetIndexFileGeneratorsFromConfig(IEnumerable<string> indexFileGenerators)
+        {
+            IEnumerable<IIndexFileGenerator> generators = GetGenerators<IIndexFileGenerator>(indexFileGenerators);
+            return new IndexFileGeneratorCollection(generators);
+        }
+
         private IEnumerable<T> GetConverters<T>(IEnumerable<string> converters)
         {
             return converters
                 .Select(name => _typeResolver.Resolve(name, "Converter", new[] { typeof(T) }))
+                .Where(t => t != null)
+                .Select(t => (T)Activator.CreateInstance(t));
+        }
+
+        private IEnumerable<T> GetGenerators<T>(IEnumerable<string> generators)
+        {
+            return generators
+                .Select(name => _typeResolver.Resolve(name, "Generator", new[] { typeof(T) }))
                 .Where(t => t != null)
                 .Select(t => (T)Activator.CreateInstance(t));
         }

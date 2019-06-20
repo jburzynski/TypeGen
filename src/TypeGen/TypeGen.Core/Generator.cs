@@ -56,7 +56,8 @@ namespace TypeGen.Core
             Logger = logger;
             
             var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
-            
+            var fileContentGeneratedProvider = new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated };
+
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
             _metadataReaderFactory = new MetadataReaderFactory();
@@ -71,6 +72,8 @@ namespace TypeGen.Core
                 _metadataReaderFactory,
                 generatorOptionsProvider,
                 logger);
+
+            SetInjectables(Options.IndexFileGenerators, _templateService, generatorOptionsProvider, fileContentGeneratedProvider);
         }
         
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
@@ -149,7 +152,7 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile)
             {
-                files = files.Concat(GenerateIndexFile(files));
+                files = files.Concat(Options.IndexFileGenerators.Generate(files));
             }
 
             return files;
@@ -207,7 +210,7 @@ namespace TypeGen.Core
             
             if (Options.CreateIndexFile && initializeGeneration)
             {
-                files = files.Concat(GenerateIndexFile(files));
+                files = files.Concat(Options.IndexFileGenerators.Generate(files));
             }
 
             return files;
@@ -696,6 +699,27 @@ namespace TypeGen.Core
                 }
 
                 throw;
+            }
+        }
+
+        
+
+        private void SetInjectables(
+            IndexFileGeneratorCollection generators, 
+            ITemplateService templateService, 
+            IGeneratorOptionsProvider generatorOptionsProvider, 
+            IFileContentGeneratedEventHandlerProvider fileContentHandlerProvider
+            )
+        {
+            var injectables = generators
+                .Select(g => g as IIndexFileGeneratorInjectable)
+                .Where(g => g != null);
+
+            foreach (var generator in injectables)
+            {
+                generator.TemplateService = templateService;
+                generator.GeneratorOptionsProvider = generatorOptionsProvider;
+                generator.FileContentHandlerProvider = fileContentHandlerProvider;
             }
         }
 

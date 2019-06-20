@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 
@@ -19,6 +20,7 @@ namespace TypeGen.Core
         public static NameConverterCollection DefaultPropertyNameConverters => new NameConverterCollection(new PascalCaseToCamelCaseConverter());
         public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
         public static NameConverterCollection DefaultEnumStringInitializersConverters => new NameConverterCollection();
+        public static IndexFileGeneratorCollection DefaultIndexFileGenerators => new IndexFileGeneratorCollection(new IndexFileGenerator());
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
@@ -29,6 +31,7 @@ namespace TypeGen.Core
         public static bool DefaultEnumStringInitializers => false;
         public static string DefaultFileHeading => null;
         public static bool DefaultUseDefaultExport => false;
+        public static string DefaultIndexFileExtension => DefaultTypeScriptFileExtension;
 
         public GeneratorOptions()
         {
@@ -39,6 +42,7 @@ namespace TypeGen.Core
             PropertyNameConverters = DefaultPropertyNameConverters;
             EnumValueNameConverters = DefaultEnumValueNameConverters;
             EnumStringInitializersConverters = DefaultEnumStringInitializersConverters;
+            IndexFileGenerators = DefaultIndexFileGenerators;
             TypeScriptFileExtension = DefaultTypeScriptFileExtension;
             SingleQuotes = DefaultSingleQuotes;
             CreateIndexFile = DefaultCreateIndexFile;
@@ -49,6 +53,7 @@ namespace TypeGen.Core
             EnumStringInitializers = DefaultEnumStringInitializers;
             FileHeading = DefaultFileHeading;
             UseDefaultExport = DefaultUseDefaultExport;
+            IndexFileExtension = DefaultIndexFileExtension;
         }
 
         /// <summary>
@@ -108,6 +113,11 @@ namespace TypeGen.Core
         public bool CreateIndexFile { get; set; }
 
         /// <summary>
+        /// Handles how the index file(s) are created for generated types.
+        /// </summary>
+        public IndexFileGeneratorCollection IndexFileGenerators { get; set; }
+
+        /// <summary>
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
         /// </summary>
         public StrictNullFlags CsNullableTranslation { get; set; }
@@ -142,5 +152,10 @@ namespace TypeGen.Core
         /// Whether to use default exports for the generated TypeScript types
         /// </summary>
         public bool UseDefaultExport { get; set; }
+
+        /// <summary>
+        /// The file extension to use for the index file(s). Defaults to whatever is set for TypeScriptFileExtension.
+        /// </summary>
+        public string IndexFileExtension { get; set; }
     }
 }
