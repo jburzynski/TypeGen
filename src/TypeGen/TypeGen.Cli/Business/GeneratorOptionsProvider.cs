@@ -79,10 +79,9 @@ namespace TypeGen.Cli.Business
             return new NameConverterCollection(converters);
         }
 
-        private IndexFileGeneratorCollection GetIndexFileGeneratorsFromConfig(IEnumerable<string> indexFileGenerators)
+        private IList<IIndexFileGenerator> GetIndexFileGeneratorsFromConfig(IEnumerable<string> indexFileGenerators)
         {
-            IEnumerable<IIndexFileGenerator> generators = GetGenerators<IIndexFileGenerator>(indexFileGenerators);
-            return new IndexFileGeneratorCollection(generators);
+            return GetGenerators<IIndexFileGenerator>(indexFileGenerators).ToList();
         }
 
         private IEnumerable<T> GetConverters<T>(IEnumerable<string> converters)
