@@ -4,8 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NSubstitute;
-using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Generator.Services;
+using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 

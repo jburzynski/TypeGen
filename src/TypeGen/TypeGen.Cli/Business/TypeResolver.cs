@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using TypeGen.Core;
-using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business

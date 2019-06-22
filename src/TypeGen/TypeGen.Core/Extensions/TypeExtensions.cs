@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using TypeGen.Core.Business;
+using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Validation;
 

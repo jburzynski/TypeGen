@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TypeGen.Cli.Models;
-using TypeGen.Core.Business;
+using TypeGen.Core.Logging;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;

@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NuGet.Configuration;
 using TypeGen.Cli.Extensions;
+using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
-using TypeGen.Core.Business;
 
 namespace TypeGen.Cli.Business
 {

@@ -5,8 +5,9 @@ using System.Text;
 using NSubstitute;
 using TypeGen.Cli.Business;
 using TypeGen.Core;
-using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Logging;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
 using TypeGen.TestWebApp.TestEntities;
@@ -86,7 +87,7 @@ namespace TypeGen.AcceptanceTest.Generator
             
             const string assemblyPath = ProjectPath + "bin/Debug/netcoreapp2.0/TypeGen.TestWebApp.dll";
             
-            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
+            var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
@@ -163,7 +164,7 @@ namespace TypeGen.AcceptanceTest.Generator
         {
             //arrange
             
-            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
+            var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
             var generationSpec = new AcceptanceTestGenerationSpec();
             

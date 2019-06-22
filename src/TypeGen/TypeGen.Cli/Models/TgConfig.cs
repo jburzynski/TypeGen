@@ -6,6 +6,7 @@ using TypeGen.Cli.Extensions;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
 
 namespace TypeGen.Cli.Models
 {

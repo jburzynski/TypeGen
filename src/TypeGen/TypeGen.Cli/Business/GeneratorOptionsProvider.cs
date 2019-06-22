@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using TypeGen.Cli.Extensions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
-using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Generator.Services;
+using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 

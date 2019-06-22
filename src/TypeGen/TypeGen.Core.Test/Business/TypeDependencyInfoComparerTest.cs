@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using TypeGen.Core.Business;
+using TypeGen.Core.Generator.Services;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 
