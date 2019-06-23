@@ -27,10 +27,25 @@ namespace TypeGen.Core.Metadata
         {
             return _metadataReaders.Select(r => r.GetAttribute<TAttribute>(memberInfo)).FirstOrDefault(a => a != null);
         }
+        
+        public IEnumerable<TAttribute> GetAttributes<TAttribute>(Type type) where TAttribute : Attribute
+        {
+            return _metadataReaders.SelectMany(r => r.GetAttributes<TAttribute>(type)).Where(a => a != null);
+        }
 
         public IEnumerable<TAttribute> GetAttributes<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
             return _metadataReaders.SelectMany(r => r.GetAttributes<TAttribute>(memberInfo)).Where(a => a != null);
+        }
+        
+        public IEnumerable<object> GetAttributes(Type type)
+        {
+            return _metadataReaders.SelectMany(r => r.GetAttributes(type)).Where(a => a != null);
+        }
+
+        public IEnumerable<object> GetAttributes(MemberInfo memberInfo)
+        {
+            return _metadataReaders.SelectMany(r => r.GetAttributes(memberInfo)).Where(a => a != null);
         }
     }
 }

@@ -100,25 +100,6 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public IEnumerable<MemberInfo> GetTsExportableMembers(Type type)
-        {
-            Requires.NotNull(type, nameof(type));
-            TypeInfo typeInfo = type.GetTypeInfo();
-
-            if (!typeInfo.IsClass) return Enumerable.Empty<MemberInfo>();
-
-            var fieldInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredFields
-                .WithMembersFilter()
-                .WithoutTsIgnore(_metadataReaderFactory.GetInstance());
-
-            var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
-                .WithMembersFilter()
-                .WithoutTsIgnore(_metadataReaderFactory.GetInstance());
-
-            return fieldInfos.Union(propertyInfos);
-        }
-
-        /// <inheritdoc />
         public Type GetMemberType(MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));

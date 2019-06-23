@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TypeGen.Core.Extensions;
 using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Validation;
@@ -94,7 +95,7 @@ namespace TypeGen.Core.Generator.Services
         {
             IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
 
-            IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
+            IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
             foreach (MemberInfo memberInfo in memberInfos)
             {
                 if (_metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo) != null) continue;

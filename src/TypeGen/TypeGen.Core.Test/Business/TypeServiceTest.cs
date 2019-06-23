@@ -123,64 +123,6 @@ namespace TypeGen.Core.Test.Business
             Assert.Equal(expectedResult, actualResult);
         }
 
-        [Fact]
-        public void GetTsExportableMembers_TypeGiven_TsExportableMembersReturned()
-        {
-            IEnumerable<MemberInfo> expectedResult = new MemberInfo[]
-            {
-                typeof(GetTsExportableMembers_TestData).GetField("c"),
-                typeof(GetTsExportableMembers_TestData).GetField("c1"),
-                typeof(GetTsExportableMembers_TestData).GetField("d"),
-                typeof(GetTsExportableMembers_TestData).GetField("L"),
-                typeof(GetTsExportableMembers_TestData).GetField("N"),
-                typeof(GetTsExportableMembers_TestData).GetProperty("C"),
-                typeof(GetTsExportableMembers_TestData).GetProperty("D")
-            };
-            
-            IEnumerable<MemberInfo> actualResult = _typeService.GetTsExportableMembers(typeof(GetTsExportableMembers_TestData)).ToArray();
-            Assert.Equal(expectedResult, actualResult);
-        }
-
-        public class GetTsExportableMembers_TestData
-        {
-            public GetTsExportableMembers_TestData() {}
-            private GetTsExportableMembers_TestData(int a) {}
-            static GetTsExportableMembers_TestData() {}
-            
-            private string a;
-            private string A { get; set; }
-            private static int b;
-            private static int B { get; set; }
-            public string c;
-            public string C { get; set; }
-            public readonly int c1;
-            private readonly string c2;
-            public static int d;
-            public static int D { get; set; }
-            
-            private void e() {}
-            private static void E() {}
-            private bool f() => true;
-            private static bool F() => true;
-            public bool g() => true;
-            public static bool G() => true;
-
-            private event EventHandler h;
-            private static event EventHandler H;
-            public event EventHandler i;
-            public static event EventHandler I;
-
-            private delegate string j();
-            public delegate string k();
-
-            private const int l = 1;
-            public const byte L = 2;
-
-            [TsIgnore] public string m;
-            [TsIgnore] public int M { get; set; }
-            public static readonly byte N = 2;
-        }
-
         [Theory]
         [MemberData(nameof(GetMemberType_TestData))]
         public void GetMemberType_MemberGiven_MemberTypeReturned(MemberInfo memberInfo, Type expectedResult)

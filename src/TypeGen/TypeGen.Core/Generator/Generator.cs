@@ -173,12 +173,7 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(Assembly assembly)
         {
             Requires.NotNull(assembly, nameof(assembly));
-            return Generate(assembly, true);
-        }
-        
-        private IEnumerable<string> Generate(Assembly assembly, bool initializeGeneration)
-        {
-            return Generate(new[] { assembly }, initializeGeneration);
+            return Generate(new[] { assembly });
         }
         
         /// <summary>
@@ -189,48 +184,11 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
         {
             Requires.NotNull(assemblies, nameof(assemblies));
-            return Generate(assemblies, true);
-        }
-
-        private IEnumerable<string> Generate(IEnumerable<Assembly> assemblies, bool initializeGeneration)
-        {
-            if (initializeGeneration) InitializeGeneration(GenerationType.Attribute);
-            IEnumerable<string> files = Enumerable.Empty<string>();
-
-            foreach (Assembly assembly in assemblies)
-            {
-                _generationContext.InitializeGroupGeneratedTypes();
-
-                ExecuteWithTypeContextLogging(() =>
-                {
-                    IEnumerable<Type> types = assembly.GetLoadableTypes()
-                        .GetExportMarkedTypes(_metadataReaderFactory.GetInstance())
-                        .Where(type => !_generationContext.HasBeenGeneratedForGroup(type));
-                    
-                    files = types.Aggregate(files, (current, type) => current.Concat(Generate(type, false)));
-                });
-
-                _generationContext.ClearGroupGeneratedTypes();
-            }
-
-            files = files.Distinct();
             
-            if (Options.CreateIndexFile && initializeGeneration)
-            {
-                var indexFileGeneratorParams = new IndexFileGeneratorParams(
-                    files,
-                    new GeneratorOptionsProvider { GeneratorOptions = Options },
-                    _templateService,
-                    new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated }
-                );
+            var generationSpecProvider = new GenerationSpecProvider();
+            GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(assemblies);
 
-                foreach (var generator in Options.IndexFileGenerators)
-                {
-                    files = files.Concat(generator.Generate(indexFileGeneratorParams));
-                }
-            }
-
-            return files;
+            return Generate(generationSpec);
         }
 
         /// <summary>
@@ -520,7 +478,7 @@ namespace TypeGen.Core.Generator
         private string GetClassPropertiesText(Type type)
         {
             var propertiesText = "";
-            IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
+            IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
 
             // create TypeScript source code for properties' definition
 
@@ -573,7 +531,7 @@ namespace TypeGen.Core.Generator
         private string GetInterfacePropertiesText(Type type)
         {
             var propertiesText = "";
-            IEnumerable<MemberInfo> memberInfos = _typeService.GetTsExportableMembers(type);
+            IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
 
             // create TypeScript source code for properties' definition
 

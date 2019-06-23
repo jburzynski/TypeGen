@@ -122,5 +122,36 @@ namespace TypeGen.Core.Extensions
             return type.GetInterfaces()
                 .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
+
+        /// <summary>
+        /// Gets MemberInfos of all members in a type that can be exported to TypeScript.
+        /// Members marked with TsIgnore attribute are not included in the result.
+        /// If the passed type is not a class type, empty enumeration is returned.
+        /// </summary>
+        /// <param name="type">Class type</param>
+        /// <param name="metadataReader"></param>
+        /// <param name="withoutTsIgnore"></param>
+        /// <returns></returns>
+        public static IEnumerable<MemberInfo> GetTsExportableMembers(this Type type, IMetadataReader metadataReader, bool withoutTsIgnore = true)
+        {
+            Requires.NotNull(type, nameof(type));
+            TypeInfo typeInfo = type.GetTypeInfo();
+
+            if (!typeInfo.IsClass) return Enumerable.Empty<MemberInfo>();
+
+            var fieldInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredFields
+                .WithMembersFilter();
+            
+            var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
+                .WithMembersFilter();
+
+            if (withoutTsIgnore)
+            {
+                fieldInfos = fieldInfos.WithoutTsIgnore(metadataReader);
+                propertyInfos = propertyInfos.WithoutTsIgnore(metadataReader);
+            }  
+
+            return fieldInfos.Union(propertyInfos);
+        }
     }
 }

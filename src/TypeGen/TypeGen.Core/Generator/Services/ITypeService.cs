@@ -38,15 +38,6 @@ namespace TypeGen.Core.Generator.Services
         bool IsTsInterface(Type type);
 
         /// <summary>
-        /// Gets MemberInfos of all members in a type that can be exported to TypeScript.
-        /// Members marked with TsIgnore attribute are not included in the result.
-        /// If the passed type is not a class type, empty enumeration is returned.
-        /// </summary>
-        /// <param name="type">Class type</param>
-        /// <returns></returns>
-        IEnumerable<MemberInfo> GetTsExportableMembers(Type type);
-
-        /// <summary>
         /// Gets member's type.
         /// MemberInfo must be a PropertyInfo or a FieldInfo.
         /// </summary>

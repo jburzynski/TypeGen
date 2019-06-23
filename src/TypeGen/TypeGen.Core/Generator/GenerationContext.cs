@@ -6,6 +6,8 @@ namespace TypeGen.Core.Generator
 {
     /// <summary>
     /// File generation context (used per Generator.Generate() invocation)
+    /// Helps with logging by storing the generation history ("stack")
+    /// Also serves for preventing infinite loops when generating types with looped references
     /// </summary>
     internal class GenerationContext
     {
