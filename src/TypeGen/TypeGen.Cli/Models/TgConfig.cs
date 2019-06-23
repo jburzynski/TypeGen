@@ -40,7 +40,6 @@ namespace TypeGen.Cli.Models
         public Dictionary<string, string> DefaultValuesForTypes { get; set; }
         public Dictionary<string, string> CustomTypeMappings { get; set; }
         public bool? GenerateFromAssemblies { get; set; }
-        public bool? UseAttributesWithGenerationSpec { get; set; }
         public bool? EnumStringInitializers { get; set; }
         public string FileHeading { get; set; }
         public bool? UseDefaultExport { get; set; }
@@ -80,7 +79,6 @@ namespace TypeGen.Cli.Models
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             // GenerateFromAssemblies should stay null if no value is provided
-            if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
             if (UseDefaultExport == null) UseDefaultExport = GeneratorOptions.DefaultUseDefaultExport;

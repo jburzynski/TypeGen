@@ -34,7 +34,7 @@ namespace TypeGen.Core.Generator
         /// </summary>
         public GeneratorOptions Options { get; }
         
-        private readonly IMetadataReaderFactory _metadataReaderFactory;
+        private readonly MetadataReaderFactory _metadataReaderFactory;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
         private readonly ITemplateService _templateService;
@@ -118,9 +118,8 @@ namespace TypeGen.Core.Generator
             FileContentGenerated -= OnFileContentGenerated;
         }
 
-        private void InitializeGeneration(GenerationType generationType, GenerationSpec generationSpec = null)
+        private void InitializeGeneration(GenerationSpec generationSpec)
         {
-            _metadataReaderFactory.GenerationType = generationType;
             _metadataReaderFactory.GenerationSpec = generationSpec;
         }
 
@@ -135,13 +134,11 @@ namespace TypeGen.Core.Generator
             
             IEnumerable<string> files = Enumerable.Empty<string>();
 
-            var generationType = Options.UseAttributesWithGenerationSpec ? GenerationType.GenerationSpecWithAttributes : GenerationType.GenerationSpec;
-            
-            InitializeGeneration(generationType, generationSpec);
+            InitializeGeneration(generationSpec);
             _generationContext.InitializeGroupGeneratedTypes();
 
             files = generationSpec.TypeSpecs
-                .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key, false)));
+                .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
 
             _generationContext.ClearGroupGeneratedTypes();
 
@@ -163,6 +160,56 @@ namespace TypeGen.Core.Generator
             }
 
             return files;
+        }
+        
+        private IEnumerable<string> GenerateTypeInit(Type type)
+        {
+            IEnumerable<string> files = Enumerable.Empty<string>();
+            
+            _generationContext.InitializeTypeGeneratedTypes();
+            _generationContext.Add(type);
+
+            if (_generationContext.IsGroupContext())
+            {
+                files = GenerateType(type);
+            }
+            else
+            {
+                ExecuteWithTypeContextLogging(() => { files = GenerateType(type); });
+            }
+
+            _generationContext.ClearTypeGeneratedTypes();
+
+            return files.Distinct();
+        }
+        
+        /// <summary>
+        /// Contains the actual logic of generating TypeScript files for a given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateType(Type type)
+        {
+            var classAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsClassAttribute>(type);
+            var interfaceAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsInterfaceAttribute>(type);
+            var enumAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsEnumAttribute>(type);
+
+            if (classAttribute != null)
+            {
+                return GenerateClass(type, classAttribute);
+            }
+
+            if (interfaceAttribute != null)
+            {
+                return GenerateInterface(type, interfaceAttribute);
+            }
+
+            if (enumAttribute != null)
+            {
+                return GenerateEnum(type, enumAttribute);
+            }
+
+            return GenerateNotMarked(type, Options.BaseOutputDirectory);
         }
         
         /// <summary>
@@ -199,35 +246,11 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return Generate(type, true);
-        }
-
-        private IEnumerable<string> Generate(Type type, bool initializeGeneration)
-        {
-            if (initializeGeneration)
-            {
-                InitializeGeneration(GenerationType.Attribute);
-                _generationContext.InitializeGroupGeneratedTypes();
-            }
             
-            IEnumerable<string> files = Enumerable.Empty<string>();
-            
-            _generationContext.InitializeTypeGeneratedTypes();
-            _generationContext.Add(type);
+            var generationSpecProvider = new GenerationSpecProvider();
+            GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(type);
 
-            if (_generationContext.IsGroupContext())
-            {
-                files = GenerateType(type);
-            }
-            else
-            {
-                ExecuteWithTypeContextLogging(() => { files = GenerateType(type); });
-            }
-
-            _generationContext.ClearTypeGeneratedTypes();
-            if (initializeGeneration) _generationContext.ClearGroupGeneratedTypes();
-
-            return files.Distinct();
+            return Generate(generationSpec);
         }
 
         /// <summary>
@@ -254,35 +277,6 @@ namespace TypeGen.Core.Generator
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(Options.BaseOutputDirectory, filename), content));
 
             return new[] { filename };
-        }
-
-        /// <summary>
-        /// Contains the actual logic of generating TypeScript files for a given type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        private IEnumerable<string> GenerateType(Type type)
-        {
-            var classAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsClassAttribute>(type);
-            var interfaceAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsInterfaceAttribute>(type);
-            var enumAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsEnumAttribute>(type);
-
-            if (classAttribute != null)
-            {
-                return GenerateClass(type, classAttribute);
-            }
-
-            if (interfaceAttribute != null)
-            {
-                return GenerateInterface(type, interfaceAttribute);
-            }
-
-            if (enumAttribute != null)
-            {
-                return GenerateEnum(type, enumAttribute);
-            }
-
-            return GenerateNotMarked(type, Options.BaseOutputDirectory);
         }
 
         /// <summary>
@@ -600,7 +594,7 @@ namespace TypeGen.Core.Generator
                 if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(Generate(typeDependency, false));
+                    generatedFiles = generatedFiles.Concat(GenerateTypeInit(typeDependency));
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)

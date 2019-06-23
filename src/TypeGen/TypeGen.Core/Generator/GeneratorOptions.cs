@@ -23,7 +23,6 @@ namespace TypeGen.Core.Generator
         public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
-        public static bool DefaultUseAttributesWithGenerationSpec => false;
         public static bool DefaultEnumStringInitializers => false;
         public static string DefaultFileHeading => null;
         public static bool DefaultUseDefaultExport => false;
@@ -45,7 +44,6 @@ namespace TypeGen.Core.Generator
             CsNullableTranslation = DefaultCsNullableTranslation;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
-            UseAttributesWithGenerationSpec = DefaultUseAttributesWithGenerationSpec;
             EnumStringInitializers = DefaultEnumStringInitializers;
             FileHeading = DefaultFileHeading;
             UseDefaultExport = DefaultUseDefaultExport;
@@ -128,11 +126,6 @@ namespace TypeGen.Core.Generator
         /// Specified C# types will be always translated to the corresponding TypeScript types.
         /// </summary>
         public IDictionary<string, string> CustomTypeMappings { get; set; }
-        
-        /// <summary>
-        /// Indicates whether to use attribute annotations in conjunction with generation spec metadata
-        /// </summary>
-        public bool UseAttributesWithGenerationSpec { get; set; }
 
         /// <summary>
         /// Indicates whether to use enum string initializers

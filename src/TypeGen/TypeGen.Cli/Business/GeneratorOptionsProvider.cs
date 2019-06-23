@@ -62,7 +62,6 @@ namespace TypeGen.Cli.Business
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,
-                UseAttributesWithGenerationSpec = config.UseAttributesWithGenerationSpec ?? GeneratorOptions.DefaultUseAttributesWithGenerationSpec,
                 EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers,
                 FileHeading = config.FileHeading ?? GeneratorOptions.DefaultFileHeading,
                 UseDefaultExport = config.UseDefaultExport ?? GeneratorOptions.DefaultUseDefaultExport

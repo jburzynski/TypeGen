@@ -35,6 +35,19 @@ namespace TypeGen.Core.Generator.Services
             return generationSpec;
         }
 
+        public GenerationSpec GetGenerationSpec(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            
+            var metadataReader = new AttributeMetadataReader();
+            var generationSpec = new GenerationSpecProviderGenerationSpec();
+
+            TypeSpec typeSpec = GetTypeSpec(type, metadataReader);
+            generationSpec.TypeSpecs.Add(type, typeSpec);
+
+            return generationSpec;
+        }
+
         private TypeSpec GetTypeSpec(Type type, IMetadataReader metadataReader)
         {
             if (!type.HasExportAttribute(metadataReader))
