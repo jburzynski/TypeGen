@@ -254,32 +254,6 @@ namespace TypeGen.Core.Generator
         }
 
         /// <summary>
-        /// Generates an `index.ts` file which exports all types within the generated files
-        /// </summary>
-        /// <param name="generatedFiles"></param>
-        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        private IEnumerable<string> GenerateIndexFile(IEnumerable<string> generatedFiles)
-        {
-            var typeScriptFileExtension = "";
-            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
-            {
-                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
-            }
-
-            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
-            {
-                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
-                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
-            });
-            string content = _templateService.FillIndexTemplate(exports);
-
-            string filename = "index" + typeScriptFileExtension;
-            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(Options.BaseOutputDirectory, filename), content));
-
-            return new[] { filename };
-        }
-
-        /// <summary>
         /// Generates TypeScript files for types that are not marked with an ExportTs... attribute
         /// </summary>
         /// <param name="type"></param>
