@@ -126,20 +126,24 @@ namespace TypeGen.Core.Generator
         /// <summary>
         /// Generates TypeScript files from a GenerationSpec
         /// </summary>
-        /// <param name="generationSpec"></param>
+        /// <param name="generationSpecs"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        public IEnumerable<string> Generate(GenerationSpec generationSpec)
+        public IEnumerable<string> Generate(IEnumerable<GenerationSpec> generationSpecs)
         {
-            Requires.NotNull(generationSpec, nameof(generationSpec));
+            Requires.NotNullOrEmpty(generationSpecs, nameof(generationSpecs));
             
             IEnumerable<string> files = Enumerable.Empty<string>();
-
-            InitializeGeneration(generationSpec);
+            
             _generationContext.InitializeGroupGeneratedTypes();
 
-            files = generationSpec.TypeSpecs
-                .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
-
+            foreach (GenerationSpec generationSpec in generationSpecs)
+            {
+                InitializeGeneration(generationSpec);
+                
+                files = generationSpec.TypeSpecs
+                    .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
+            }
+            
             _generationContext.ClearGroupGeneratedTypes();
 
             files = files.Distinct();
@@ -185,6 +189,7 @@ namespace TypeGen.Core.Generator
         
         /// <summary>
         /// Contains the actual logic of generating TypeScript files for a given type
+        /// Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
@@ -230,12 +235,12 @@ namespace TypeGen.Core.Generator
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
         {
-            Requires.NotNull(assemblies, nameof(assemblies));
+            Requires.NotNullOrEmpty(assemblies, nameof(assemblies));
             
             var generationSpecProvider = new GenerationSpecProvider();
             GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(assemblies);
 
-            return Generate(generationSpec);
+            return Generate(new[] { generationSpec });
         }
 
         /// <summary>
@@ -250,7 +255,7 @@ namespace TypeGen.Core.Generator
             var generationSpecProvider = new GenerationSpecProvider();
             GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(type);
 
-            return Generate(generationSpec);
+            return Generate(new[] { generationSpec });
         }
 
         /// <summary>

@@ -171,7 +171,7 @@ namespace TypeGen.AcceptanceTest.Generator
             //act
             
             assemblyResolver.Register();
-            generator.Generate(generationSpec);
+            generator.Generate(new[] { generationSpec });
             assemblyResolver.Unregister();
             
             //assert

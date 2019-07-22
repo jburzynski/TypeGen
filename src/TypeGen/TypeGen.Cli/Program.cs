@@ -143,11 +143,12 @@ namespace TypeGen.Cli
             {
                 var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
                 
-                generatedFiles = config.GenerationSpecs
+                IEnumerable<GenerationSpec> generationSpecs = config.GenerationSpecs
                     .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
                     .Where(t => t != null)
-                    .Select(t => (GenerationSpec)Activator.CreateInstance(t))
-                    .Aggregate(generatedFiles, (acc, spec) => acc.Concat(generator.Generate(spec)));
+                    .Select(t => (GenerationSpec)Activator.CreateInstance(t));
+                    
+                generatedFiles = generatedFiles.Concat(generator.Generate(generationSpecs));
             }
             
             _logger.Log("");

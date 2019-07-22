@@ -58,5 +58,11 @@ namespace TypeGen.Core.Storage
         /// </summary>
         /// <param name="directory"></param>
         void ClearDirectory(string directory);
+
+        /// <summary>
+        /// Sets the current working directory
+        /// </summary>
+        /// <param name="directory"></param>
+        void SetCurrentDirectory(string directory);
     }
 }

@@ -38,7 +38,4 @@
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SpecGeneration\Barrel" />
-  </ItemGroup>
 </Project>

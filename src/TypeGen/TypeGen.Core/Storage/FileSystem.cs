@@ -60,6 +60,9 @@ namespace TypeGen.Core.Storage
         }
 
         /// <inheritdoc />
+        public void SetCurrentDirectory(string directory) => Directory.SetCurrentDirectory(directory); 
+
+        /// <inheritdoc />
         public string GetCurrentDirectory() => Directory.GetCurrentDirectory();
 
         /// <inheritdoc />
