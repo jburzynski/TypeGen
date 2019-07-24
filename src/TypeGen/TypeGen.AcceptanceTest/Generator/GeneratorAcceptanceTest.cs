@@ -78,7 +78,7 @@ namespace TypeGen.AcceptanceTest.Generator
         
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
 //        [Theory]
-		[InlineData("")]
+		[InlineData("./")]
 		[InlineData("generated-typescript/")]
 		[InlineData("nested/directory/generated-typescript/")]
         public void Generate_AssemblyGiven_TypeScriptContentGenerated(string outputPath)
@@ -157,7 +157,7 @@ namespace TypeGen.AcceptanceTest.Generator
         
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
 //        [Theory]
-        [InlineData("")]
+        [InlineData("./")]
         [InlineData("generated-typescript/")]
         [InlineData("nested/directory/generated-typescript/")]
         public void Generate_GenerationSpecGiven_TypeScriptContentGenerated(string outputPath)

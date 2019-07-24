@@ -17,6 +17,14 @@ namespace TypeGen.Core.SpecGeneration
             TypeSpecs = new Dictionary<Type, TypeSpec>();
         }
 
+        public virtual void OnBeforeGeneration(OnBeforeGenerationArgs args)
+        {
+        }
+
+        public virtual void OnBeforeBarrelGeneration(OnBeforeBarrelGenerationArgs args)
+        {
+        }
+
         /// <summary>
         /// Adds class configuration section
         /// </summary>

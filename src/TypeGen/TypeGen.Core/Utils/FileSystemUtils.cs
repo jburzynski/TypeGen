@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
@@ -55,6 +56,14 @@ namespace TypeGen.Core.Utils
             var pathToUri = new Uri("file:///" + pathTo?.Replace('\\', '/'));
 
             return pathFromUri.MakeRelativeUri(pathToUri).ToString();
+        }
+
+        public static string AsDirectory(string path)
+        {
+            if (path == null) return null;
+            if (path == "") return "./";
+            
+            return path.Last().In('\\', '/') ? path : path + '/';
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Generator.Services;
+using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Generator
 {
@@ -95,11 +96,17 @@ namespace TypeGen.Core.Generator
         /// </summary>
         public int TabLength { get; set; }
 
+        private string _baseOutputDirectory;
+
         /// <summary>
         /// The base directory for generating TypeScript files.
         /// Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
         /// </summary>
-        public string BaseOutputDirectory { get; set; }
+        public string BaseOutputDirectory
+        {
+            get => _baseOutputDirectory;
+            set => _baseOutputDirectory = FileSystemUtils.AsDirectory(value);
+        }
 
         /// <summary>
         /// Whether to create an index file which exports all generated types

@@ -134,20 +134,30 @@ namespace TypeGen.Core.Generator
             
             IEnumerable<string> files = Enumerable.Empty<string>();
             
+            // generate types
+            
             _generationContext.InitializeGroupGeneratedTypes();
 
             foreach (GenerationSpec generationSpec in generationSpecs)
             {
                 InitializeGeneration(generationSpec);
+                generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
                 
                 files = generationSpec.TypeSpecs
                     .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
             }
             
-            _generationContext.ClearGroupGeneratedTypes();
-
             files = files.Distinct();
             
+            _generationContext.ClearGroupGeneratedTypes();
+            
+            // generate barrels
+            
+            foreach (GenerationSpec generationSpec in generationSpecs)
+            {
+                generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options));
+            }
+
             if (Options.CreateIndexFile)
             {
                 var indexFileGeneratorParams = new IndexFileGeneratorParams(
