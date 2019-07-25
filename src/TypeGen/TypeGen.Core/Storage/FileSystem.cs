@@ -58,6 +58,13 @@ namespace TypeGen.Core.Storage
             Requires.NotNullOrEmpty(directory, nameof(directory));
             return Directory.GetFiles(directory);
         }
+        
+        /// <inheritdoc />
+        public IEnumerable<string> GetDirectoryDirectories(string directory)
+        {
+            Requires.NotNullOrEmpty(directory, nameof(directory));
+            return Directory.GetDirectories(directory);
+        }
 
         /// <inheritdoc />
         public void SetCurrentDirectory(string directory) => Directory.SetCurrentDirectory(directory); 

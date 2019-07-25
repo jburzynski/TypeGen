@@ -46,6 +46,13 @@ namespace TypeGen.Core.Storage
         /// <param name="directory"></param>
         /// <returns></returns>
         IEnumerable<string> GetDirectoryFiles(string directory);
+        
+        /// <summary>
+        /// Gets all directories in a directory (only directories, not files)
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetDirectoryDirectories(string directory);
 
         /// <summary>
         /// Gets the current directory

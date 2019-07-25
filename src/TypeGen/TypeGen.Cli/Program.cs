@@ -146,7 +146,8 @@ namespace TypeGen.Cli
                 IEnumerable<GenerationSpec> generationSpecs = config.GenerationSpecs
                     .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
                     .Where(t => t != null)
-                    .Select(t => (GenerationSpec)Activator.CreateInstance(t));
+                    .Select(t => (GenerationSpec)Activator.CreateInstance(t))
+                    .ToArray();
                     
                 generatedFiles = generatedFiles.Concat(generator.Generate(generationSpecs));
             }

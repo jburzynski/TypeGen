@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -142,7 +143,7 @@ namespace TypeGen.Core.Generator
             {
                 InitializeGeneration(generationSpec);
                 generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
-                
+
                 files = generationSpec.TypeSpecs
                     .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
             }
@@ -155,7 +156,15 @@ namespace TypeGen.Core.Generator
             
             foreach (GenerationSpec generationSpec in generationSpecs)
             {
-                generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options));
+                generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options, files));
+            }
+            
+            foreach (GenerationSpec generationSpec in generationSpecs)
+            {
+                foreach (BarrelSpec barrelSpec in generationSpec.BarrelSpecs)
+                {
+                    files = files.Concat(GenerateBarrel(barrelSpec));
+                }
             }
 
             if (Options.CreateIndexFile)
@@ -174,6 +183,35 @@ namespace TypeGen.Core.Generator
             }
 
             return files;
+        }
+
+        private IEnumerable<string> GenerateBarrel(BarrelSpec barrelSpec)
+        {
+            string directory = Path.Combine(Options.BaseOutputDirectory ?? "", barrelSpec.Directory);
+            
+            string fileName = "index";
+            if (!string.IsNullOrWhiteSpace(Options.TypeScriptFileExtension)) fileName += $".{Options.TypeScriptFileExtension}";
+            string filePath = Path.Combine(directory, fileName);
+
+            IEnumerable<string> entries = Enumerable.Empty<string>();
+            
+            if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Files))
+            {
+                entries = entries.Concat(_fileSystem.GetDirectoryFiles(directory).Where(x => Path.GetFileName(x) != fileName));
+            }
+            
+            if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
+            {
+                entries = entries.Concat(_fileSystem.GetDirectoryDirectories(directory));
+            }
+
+            entries = entries.Select(Path.GetFileNameWithoutExtension);
+
+            string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
+            string content = _templateService.FillIndexTemplate(indexExportsContent);
+            
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
+            return new[] { Path.Combine(barrelSpec.Directory, fileName) };
         }
         
         private IEnumerable<string> GenerateTypeInit(Type type)
