@@ -56,7 +56,6 @@ namespace TypeGen.Core.Generator
             Logger = logger;
             
             var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
-            var fileContentGeneratedProvider = new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated };
 
             var internalStorage = new InternalStorage();
             _fileSystem = new FileSystem();
@@ -169,17 +168,7 @@ namespace TypeGen.Core.Generator
 
             if (Options.CreateIndexFile)
             {
-                var indexFileGeneratorParams = new IndexFileGeneratorParams(
-                    files,
-                    new GeneratorOptionsProvider { GeneratorOptions = Options },
-                    _templateService,
-                    new FileContentGeneratedEventHandlerProvider { FileContentGenerated = FileContentGenerated }
-                );
-
-                foreach (var generator in Options.IndexFileGenerators)
-                {
-                    files = files.Concat(generator.Generate(indexFileGeneratorParams));
-                }
+                files = files.Concat(GenerateIndexFile(files));
             }
 
             return files;
@@ -212,6 +201,33 @@ namespace TypeGen.Core.Generator
             
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
             return new[] { Path.Combine(barrelSpec.Directory, fileName) };
+        }
+        
+        /// <summary>
+        /// DEPRECATED, will be removed in the future.
+        /// Generates an `index.ts` file which exports all types within the generated files
+        /// </summary>
+        /// <param name="generatedFiles"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateIndexFile(IEnumerable<string> generatedFiles)
+        {
+            var typeScriptFileExtension = "";
+            if (!string.IsNullOrEmpty(Options.TypeScriptFileExtension))
+            {
+                typeScriptFileExtension = "." + Options.TypeScriptFileExtension;
+            }
+
+            string exports = generatedFiles.Aggregate("", (prevExports, file) =>
+            {
+                string fileNameWithoutExt = file.Remove(file.Length - typeScriptFileExtension.Length).Replace("\\", "/");
+                return prevExports + _templateService.FillIndexExportTemplate(fileNameWithoutExt);
+            });
+            string content = _templateService.FillIndexTemplate(exports);
+
+            string filename = "index" + typeScriptFileExtension;
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(Options.BaseOutputDirectory, filename), content));
+
+            return new[] { filename };
         }
         
         private IEnumerable<string> GenerateTypeInit(Type type)
