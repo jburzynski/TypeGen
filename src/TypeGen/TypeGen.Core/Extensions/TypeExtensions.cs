@@ -137,7 +137,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
-            if (!typeInfo.IsClass) return Enumerable.Empty<MemberInfo>();
+            if (!typeInfo.IsClass && !typeInfo.IsInterface) return Enumerable.Empty<MemberInfo>();
 
             var fieldInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredFields
                 .WithMembersFilter();

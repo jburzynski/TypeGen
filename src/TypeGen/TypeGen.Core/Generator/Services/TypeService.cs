@@ -412,7 +412,6 @@ namespace TypeGen.Core.Generator.Services
         public Type GetBaseType(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            if (!type.GetTypeInfo().IsClass) throw new ArgumentException($"Type '{type.FullName}' should be a class type");
 
             Type baseType = type.GetTypeInfo().BaseType;
             if (baseType == null || baseType == typeof(object)) return null;

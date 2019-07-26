@@ -6,7 +6,7 @@ namespace TypeGen.Core.TypeAnnotations
     /// Specifies custom base class declaration for a TypeScript class or interface.
     /// Base class declaration is empty if no content is specified.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum, Inherited = false)]
     public class TsDefaultExportAttribute : Attribute
     {
         public bool Enabled { get; set; }
