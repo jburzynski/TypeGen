@@ -29,6 +29,7 @@ namespace TypeGen.Cli.Models
         public string[] ExternalAssemblyPaths { get; set; }
         public string TypeScriptFileExtension { get; set; }
         public int? TabLength { get; set; }
+        public bool? UseTabCharacter { get; set; }
         public bool? ExplicitPublicAccessor { get; set; }
         public bool? SingleQuotes { get; set; }
         public bool? AddFilesToProject { get; set; }
@@ -64,6 +65,7 @@ namespace TypeGen.Cli.Models
             if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
             if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
             if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;
+            if (UseTabCharacter == null) UseTabCharacter = GeneratorOptions.DefaultUseTabCharacter;
             if (FileNameConverters == null) FileNameConverters = GeneratorOptions.DefaultFileNameConverters.GetTypeNames().ToArray();
             if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();

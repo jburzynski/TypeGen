@@ -50,6 +50,7 @@ namespace TypeGen.Cli.Business
             {
                 TypeScriptFileExtension = config.TypeScriptFileExtension,
                 TabLength = config.TabLength ?? GeneratorOptions.DefaultTabLength,
+                UseTabCharacter = config.UseTabCharacter ?? GeneratorOptions.DefaultUseTabCharacter,
                 ExplicitPublicAccessor = config.ExplicitPublicAccessor ?? GeneratorOptions.DefaultExplicitPublicAccessor,
                 SingleQuotes = config.SingleQuotes ?? GeneratorOptions.DefaultSingleQuotes,
                 FileNameConverters = GetTypeNameConvertersFromConfig(config.FileNameConverters),

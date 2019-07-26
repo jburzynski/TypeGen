@@ -11,6 +11,7 @@ namespace TypeGen.Core.Generator
     public class GeneratorOptions
     {
         public static int DefaultTabLength => 4;
+        public static bool DefaultUseTabCharacter => false;
         public static bool DefaultExplicitPublicAccessor => false;
         public static TypeNameConverterCollection DefaultFileNameConverters => new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter());
         public static TypeNameConverterCollection DefaultTypeNameConverters => new TypeNameConverterCollection();
@@ -31,6 +32,7 @@ namespace TypeGen.Core.Generator
         public GeneratorOptions()
         {
             TabLength = DefaultTabLength;
+            UseTabCharacter = DefaultUseTabCharacter;
             ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
             FileNameConverters = DefaultFileNameConverters;
             TypeNameConverters = DefaultTypeNameConverters;
@@ -93,6 +95,11 @@ namespace TypeGen.Core.Generator
         /// Number of space characters per tab
         /// </summary>
         public int TabLength { get; set; }
+        
+        /// <summary>
+        /// Whether to use the tab character instead of multiple spaces
+        /// </summary>
+        public bool UseTabCharacter { get; set; }
 
         private string _baseOutputDirectory;
 

@@ -200,8 +200,10 @@ namespace TypeGen.Core.Generator.Services
 
         private string ReplaceSpecialChars(string template)
         {
+            string tab = GeneratorOptions.UseTabCharacter ? "\t" : StringUtils.GetTabText(GeneratorOptions.TabLength);
+            
             return template
-                .Replace(GetTag("tab"), StringUtils.GetTabText(GeneratorOptions.TabLength))
+                .Replace(GetTag("tab"), tab)
                 .Replace(GetTag("quot"), GeneratorOptions.SingleQuotes ? "'" : "\"");
         }
     }
