@@ -21,32 +21,6 @@ namespace TypeGen.Core.Test.Utils
         }
 
         [Theory]
-        [InlineData("some/test/file.ext")]
-        [InlineData(@"some\test\file.ext")]
-        [InlineData(@"some\test/file.ext")]
-        public void GetFileNameFromPath_PathGiven_FileNameReturned(string path)
-        {
-            string fileName = FileSystemUtils.GetFileNameFromPath(path);
-            Assert.Equal("file.ext", fileName);
-        }
-
-        [Theory]
-        [InlineData(@"my\project\folder", @"my/project/folder/jkl.csproj")]
-        [InlineData("my/project/folder", @"my/project/folder/jkl.csproj")]
-        public void GetProjectFilePath_PathGiven_GetsProjectFile(string projectFolder, string expectedResult)
-        {
-            //arrange
-            var files = new[] { "abc", "def.txt", ".ghi", "jkl.csproj" };
-
-            var fileSystem = Substitute.For<IFileSystem>();
-            fileSystem.GetDirectoryFiles(Arg.Any<string>()).Returns(files);
-
-            //act, assert
-            string filePath = FileSystemUtils.GetProjectFilePath(projectFolder, fileSystem);
-            Assert.Equal(expectedResult, filePath);
-        }
-
-        [Theory]
         [InlineData(@"path\to\file.txt", @"path\file.txt", @"../file.txt")]
         [InlineData("path/to/file.txt", "path/file.txt", @"../file.txt")]
         [InlineData("path/to/some/nested/file.txt", "path/file.txt", @"../../../file.txt")]

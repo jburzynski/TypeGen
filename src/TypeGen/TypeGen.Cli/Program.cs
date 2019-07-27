@@ -1,14 +1,9 @@
 ﻿using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml;
-using TypeGen.Cli;
 using TypeGen.Cli.Business;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
@@ -30,6 +25,7 @@ namespace TypeGen.Cli
         private static readonly IConfigProvider _configProvider;
         private static readonly IGeneratorOptionsProvider _generatorOptionsProvider;
         private static readonly IProjectFileManager _projectFileManager;
+        private static readonly ProjectBuilder _projectBuilder;
         private static IAssemblyResolver _assemblyResolver;
 
         static Program()
@@ -40,6 +36,7 @@ namespace TypeGen.Cli
             _configProvider = new ConfigProvider(_fileSystem, _logger);
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
+            _projectBuilder = new ProjectBuilder(_logger);
         }
 
         private static void Main(string[] args)
@@ -73,9 +70,7 @@ namespace TypeGen.Cli
 
                     _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
-                    _logger.Log($"Generating files for project \"{projectFolder}\"...");
                     Generate(projectFolder, configPath);
-                    _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
                 }
             }
             catch (Exception e) when (e is CliException || e is CoreException)
@@ -114,6 +109,7 @@ namespace TypeGen.Cli
                 : Path.Combine(projectFolder, "tgconfig.json");
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
+            LogConfigWarnings(config);
 
             // register assembly resolver
 
@@ -131,6 +127,9 @@ namespace TypeGen.Cli
             // generate
             
             if (config.ClearOutputDirectory == true) _fileSystem.ClearDirectory(generatorOptions.BaseOutputDirectory);
+            if (config.BuildProject == true) _projectBuilder.Build(projectFolder);
+            
+            _logger.Log($"Generating files for project \"{projectFolder}\"...");
             
             IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
@@ -152,9 +151,7 @@ namespace TypeGen.Cli
                 generatedFiles = generatedFiles.Concat(generator.Generate(generationSpecs));
             }
             
-            _logger.Log("");
             _logger.Log(generatedFiles.Select(x => $"Generated {x}").ToArray());
-            _logger.Log("");
             
             if (config.AddFilesToProject ?? TgConfig.DefaultAddFilesToProject)
             {
@@ -164,6 +161,16 @@ namespace TypeGen.Cli
             // unregister assembly resolver
 
             _assemblyResolver.Unregister();
+            
+            _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
+        }
+
+        private static void LogConfigWarnings(TgConfig config)
+        {
+            if (config.CreateIndexFile == true)
+            {
+                _logger.Log("WARNING: deprecated 'createIndexFile' CLI option used. This option may be removed in future versions.");
+            }
         }
 
         private static void AddFilesToProject(string projectFolder, IEnumerable<string> generatedFiles)

@@ -16,6 +16,7 @@ namespace TypeGen.Cli.Models
     internal class TgConfig
     {
         public static bool DefaultAddFilesToProject => false;
+        public static bool DefaultBuildProject => false;
 
         [Obsolete("Use Assemblies instead")]
         public string AssemblyPath { get; set; }
@@ -32,6 +33,7 @@ namespace TypeGen.Cli.Models
         public bool? UseTabCharacter { get; set; }
         public bool? ExplicitPublicAccessor { get; set; }
         public bool? SingleQuotes { get; set; }
+        public bool? BuildProject { get; set; }
         public bool? AddFilesToProject { get; set; }
         public string OutputPath { get; set; }
         public bool? ClearOutputDirectory { get; set; }
@@ -62,6 +64,7 @@ namespace TypeGen.Cli.Models
             if (GenerationSpecs == null) GenerationSpecs = new string[0];
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
             if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
+            if (BuildProject == null) BuildProject = DefaultBuildProject;
             if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
             if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
             if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;

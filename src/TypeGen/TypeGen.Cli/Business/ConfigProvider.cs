@@ -98,7 +98,7 @@ namespace TypeGen.Cli.Business
         private string GetDefaultAssemblyPath(string projectFolder)
         {
             string projectFileName = _fileSystem.GetDirectoryFiles(projectFolder)
-                .Select(FileSystemUtils.GetFileNameFromPath)
+                .Select(Path.GetFileName)
                 .FirstOrDefault(n => n.EndsWith(".csproj") || n.EndsWith(".xproj"));
 
             if (projectFileName == null)
