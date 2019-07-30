@@ -144,7 +144,7 @@ namespace TypeGen.Cli
                 var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
                 
                 IEnumerable<GenerationSpec> generationSpecs = config.GenerationSpecs
-                    .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
+                    .Select(name => typeResolver.Resolve(name))
                     .Where(t => t != null)
                     .Select(t => (GenerationSpec)Activator.CreateInstance(t))
                     .ToArray();
