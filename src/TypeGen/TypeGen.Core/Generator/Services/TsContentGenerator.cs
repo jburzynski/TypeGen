@@ -298,18 +298,15 @@ namespace TypeGen.Core.Generator.Services
             }
             catch (MissingMethodException e)
             {
-                if (_logger != null && _logger.LogVerbose)
-                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has no default constructor.");
+                _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has no default constructor.", LogLevel.Debug);
             }
             catch (ArgumentException e) when(e.InnerException is TypeLoadException)
             {
-                if (_logger != null && _logger.LogVerbose)
-                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.");
+                _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.", LogLevel.Debug);
             }
             catch (Exception e)
             {
-                if (_logger != null && _logger.LogVerbose)
-                    _logger.Log($"WARNING: Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because an unknown exception occurred: '{e.Message}'");
+                _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because an unknown exception occurred: '{e.Message}'", LogLevel.Debug);
             }
 
             return null;

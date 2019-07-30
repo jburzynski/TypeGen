@@ -2,8 +2,6 @@
 {
     public interface ILogger
     {
-        bool LogVerbose { get; set; }
-        
-        void Log(params string[] messageLines);
+        void Log(string message, LogLevel level);
     }
 }

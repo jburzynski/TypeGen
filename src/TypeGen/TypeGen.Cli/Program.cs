@@ -19,19 +19,22 @@ namespace TypeGen.Cli
 {
     internal class Program
     {
-        private static readonly IConsoleArgsReader _consoleArgsReader;
-        private static readonly ILogger _logger;
-        private static readonly IFileSystem _fileSystem;
-        private static readonly IConfigProvider _configProvider;
-        private static readonly IGeneratorOptionsProvider _generatorOptionsProvider;
-        private static readonly IProjectFileManager _projectFileManager;
-        private static readonly ProjectBuilder _projectBuilder;
+        private static IConsoleArgsReader _consoleArgsReader;
+        private static ILogger _logger;
+        private static IFileSystem _fileSystem;
+        private static IConfigProvider _configProvider;
+        private static IGeneratorOptionsProvider _generatorOptionsProvider;
+        private static IProjectFileManager _projectFileManager;
+        private static ProjectBuilder _projectBuilder;
         private static IAssemblyResolver _assemblyResolver;
 
-        static Program()
+        private static void InitializeServices(string[] args)
         {
             _consoleArgsReader = new ConsoleArgsReader();
-            _logger = new ConsoleLogger();
+
+            bool verbose = _consoleArgsReader.ContainsVerboseOption(args);
+            _logger = new ConsoleLogger(verbose);
+            
             _fileSystem = new FileSystem();
             _configProvider = new ConfigProvider(_fileSystem, _logger);
             _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
@@ -43,6 +46,8 @@ namespace TypeGen.Cli
         {
             try
             {
+                InitializeServices(args);
+                
                 if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpOption(args) || _consoleArgsReader.ContainsAnyCommand(args) == false)
                 {
                     ShowHelp();
@@ -52,11 +57,10 @@ namespace TypeGen.Cli
                 if (_consoleArgsReader.ContainsGetCwdCommand(args))
                 {
                     string cwd = _fileSystem.GetCurrentDirectory();
-                    _logger.Log($"Current working directory is: {cwd}");
+                    Console.WriteLine($"Current working directory is: {cwd}");
                     return;
                 }
-
-                _logger.LogVerbose = _consoleArgsReader.ContainsVerboseOption(args);
+                
                 string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
 
                 string[] projectFolders = _consoleArgsReader.ContainsProjectFolderOption(args) ?
@@ -75,28 +79,25 @@ namespace TypeGen.Cli
             }
             catch (Exception e) when (e is CliException || e is CoreException)
             {
-                _logger.Log($"APPLICATION ERROR: {e.Message}",
-                    e.StackTrace);
+                _logger.Log($"APPLICATION ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
             }
             catch (AssemblyResolutionException e)
             {
                 string message = e.Message +
                                  "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
                                  "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (you can use global NuGet packages directory alias: \"<global-packages>\")";
-                _logger.Log(message, e.StackTrace);
+                _logger.Log($"{message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
             }
             catch (ReflectionTypeLoadException e)
             {
                 foreach (Exception loaderException in e.LoaderExceptions)
                 {
-                    _logger.Log($"TYPE LOAD ERROR: {loaderException.Message}",
-                        e.StackTrace);
+                    _logger.Log($"TYPE LOAD ERROR: {loaderException.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
                 }
             }
             catch (Exception e)
             {
-                _logger.Log($"GENERIC ERROR: {e.Message}",
-                    e.StackTrace);
+                _logger.Log($"GENERIC ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
             }
         }
 
@@ -129,7 +130,7 @@ namespace TypeGen.Cli
             if (config.ClearOutputDirectory == true) _fileSystem.ClearDirectory(generatorOptions.BaseOutputDirectory);
             if (config.BuildProject == true) _projectBuilder.Build(projectFolder);
             
-            _logger.Log($"Generating files for project \"{projectFolder}\"...");
+            _logger.Log($"Generating files for project \"{projectFolder}\"...", LogLevel.Info);
             
             IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
 
@@ -150,8 +151,13 @@ namespace TypeGen.Cli
                     
                 generatedFiles = generatedFiles.Concat(generator.Generate(generationSpecs));
             }
+
+            generatedFiles = generatedFiles.ToArray();
             
-            _logger.Log(generatedFiles.Select(x => $"Generated {x}").ToArray());
+            foreach (string file in generatedFiles)
+            {
+                _logger.Log($"Generated {file}", LogLevel.Info);
+            }
             
             if (config.AddFilesToProject ?? TgConfig.DefaultAddFilesToProject)
             {
@@ -162,14 +168,14 @@ namespace TypeGen.Cli
 
             _assemblyResolver.Unregister();
             
-            _logger.Log($"Files for project \"{projectFolder}\" generated successfully.", "");
+            _logger.Log($"Files for project \"{projectFolder}\" generated successfully.{Environment.NewLine}", LogLevel.Info);
         }
 
         private static void LogConfigWarnings(TgConfig config)
         {
             if (config.CreateIndexFile == true)
             {
-                _logger.Log("WARNING: deprecated 'createIndexFile' CLI option used. This option may be removed in future versions.");
+                _logger.Log("Deprecated 'createIndexFile' CLI option used. This option may be removed in future versions.", LogLevel.Warning);
             }
         }
 
@@ -192,7 +198,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            _logger.Log($"TypeGen v{AppConfig.Version}",
+            Console.WriteLine($"TypeGen v{AppConfig.Version}",
                 "",
                 "Usage: [dotnet] typegen [options] [command]",
                 "",

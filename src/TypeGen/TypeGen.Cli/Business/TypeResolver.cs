@@ -64,11 +64,11 @@ namespace TypeGen.Cli.Business
                 result = ResolveFromAssembly(assembly, typeName, typeNameSuffix);
                 if (result == null) continue;
 
-                if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' found in assembly '{assembly.FullName}'");
+                _logger.Log($"Type '{typeName}' found in assembly '{assembly.FullName}'", LogLevel.Debug);
                 return result;
             }
 
-            if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.");
+            _logger.Log($"Type '{typeName}' not found in assemblies: '{string.Join(", ", _assemblies)}'. Falling back to TypeGen.Core.", LogLevel.Debug);
 
             // fallback to TypeGen.Core
 
@@ -76,7 +76,7 @@ namespace TypeGen.Cli.Business
             result = ResolveFromAssembly(coreAssembly, typeName, typeNameSuffix);
             if (result != null)
             {
-                if (_logger.LogVerbose) _logger.Log($"Type '{typeName}' found in TypeGen.Core");
+                _logger.Log($"Type '{typeName}' found in TypeGen.Core", LogLevel.Debug);
                 return result;
             }
 

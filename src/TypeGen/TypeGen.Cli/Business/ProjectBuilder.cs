@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +19,7 @@ namespace TypeGen.Cli.Business
 
         public void Build(string projectFolder)
         {
-            _logger.Log($"Building project '{projectFolder}'...");
+            _logger.Log($"Building project '{projectFolder}'...", LogLevel.Info);
             
             // Create the process info
             var startInfo = new ProcessStartInfo("dotnet", "build")
@@ -37,14 +38,14 @@ namespace TypeGen.Cli.Business
                 {
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        _logger.Log(e.Data);
+                        Console.WriteLine(e.Data);
                     }
                 };
                 process.BeginOutputReadLine();
                 process.WaitForExit();
             }
             
-            _logger.Log($"Finished building project '{projectFolder}'");
+            _logger.Log($"Finished building project '{projectFolder}'", LogLevel.Info);
         }
     }
 }

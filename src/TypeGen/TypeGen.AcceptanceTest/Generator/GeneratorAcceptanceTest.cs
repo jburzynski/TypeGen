@@ -90,7 +90,7 @@ namespace TypeGen.AcceptanceTest.Generator
             var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(false), ProjectPath);
             
             //act
             
@@ -165,7 +165,7 @@ namespace TypeGen.AcceptanceTest.Generator
             //arrange
             
             var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(false), ProjectPath);
             var generationSpec = new AcceptanceTestGenerationSpec();
             
             //act

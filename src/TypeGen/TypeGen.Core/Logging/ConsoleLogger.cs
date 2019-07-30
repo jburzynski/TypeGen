@@ -8,23 +8,42 @@ namespace TypeGen.Core.Logging
     /// </summary>
     public class ConsoleLogger : ILogger
     {
-        /// <summary>
-        /// Whether to use verbose logging
-        /// </summary>
-        public bool LogVerbose { get; set; }
-        
+        private readonly bool _verbose;
+
+        public ConsoleLogger(bool verbose)
+        {
+            _verbose = verbose;
+        }
+
         /// <summary>
         /// Logs messages
         /// </summary>
-        /// <param name="messageLines"></param>
-        public void Log(params string[] messageLines)
+        /// <param name="message"></param>
+        /// <param name="level"></param>
+        public void Log(string message, LogLevel level)
         {
-            Requires.NotNull(messageLines, nameof(messageLines));
+            Requires.NotNullOrEmpty(message, nameof(message));
+
+            LogLevel minLevel = _verbose ? LogLevel.Debug : LogLevel.Info;
+
+            if (level < minLevel) return;
+
+            ConsoleColor oldColor = Console.ForegroundColor;
             
-            foreach (string line in messageLines)
+            switch (level)
             {
-                Console.WriteLine(line);
+                case LogLevel.Warning:
+                    message = "WARNING: " + message;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case LogLevel.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
             }
+            
+            Console.WriteLine(message);
+
+            Console.ForegroundColor = oldColor;
         }
     }
 }
