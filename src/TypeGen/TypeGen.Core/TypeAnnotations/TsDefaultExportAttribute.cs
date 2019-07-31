@@ -3,8 +3,7 @@ using System;
 namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
-    /// Specifies custom base class declaration for a TypeScript class or interface.
-    /// Base class declaration is empty if no content is specified.
+    /// Specifies that default export will be used for a TypeScript type
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum, Inherited = false)]
     public class TsDefaultExportAttribute : Attribute
