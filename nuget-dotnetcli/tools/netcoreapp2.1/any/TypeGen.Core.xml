@@ -275,26 +275,6 @@
             <param name="withoutTsIgnore"></param>
             <returns></returns>
         </member>
-        <member name="T:TypeGen.Core.Generator.FileContentGeneratedArgs">
-            <summary>
-            Event args for the Generator.FileContentGenerated event
-            </summary>
-        </member>
-        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.Type">
-            <summary>
-            The type for which the file was generated
-            </summary>
-        </member>
-        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FilePath">
-            <summary>
-            The generated file's path
-            </summary>
-        </member>
-        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FileContent">
-            <summary>
-            The generated file content
-            </summary>
-        </member>
         <member name="T:TypeGen.Core.Generator.GenerationContext">
             <summary>
             File generation context (used per Generator.Generate() invocation)
@@ -364,11 +344,6 @@
             Class used for generating TypeScript files from C# types
             </summary>
         </member>
-        <member name="E:TypeGen.Core.Generator.Generator.FileContentGenerated">
-            <summary>
-            An event that fires when a file's content is generated
-            </summary>
-        </member>
         <member name="P:TypeGen.Core.Generator.Generator.Logger">
             <summary>
             A logger instance used to log messages raised by a Generator instance
@@ -386,42 +361,11 @@
             <param name="options"></param>
             <param name="fileSystem"></param>
         </member>
-        <member name="M:TypeGen.Core.Generator.Generator.OnFileContentGenerated(System.Object,TypeGen.Core.Generator.FileContentGeneratedArgs)">
-            <summary>
-            The default event handler for the FileContentGenerated event
-            </summary>
-            <param name="sender"></param>
-            <param name="args"></param>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.SubscribeDefaultFileContentGeneratedHandler">
-            <summary>
-            Subscribes the default FileContentGenerated event handler, which saves generated sources to the file system
-            </summary>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.UnsubscribeDefaultFileContentGeneratedHandler">
-            <summary>
-            Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
-            </summary>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.Generate(TypeGen.Core.SpecGeneration.GenerationSpec)">
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
             <summary>
             Generates TypeScript files from a GenerationSpec
             </summary>
-            <param name="generationSpec"></param>
-            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.GenerateType(System.Type)">
-            <summary>
-            Contains the actual logic of generating TypeScript files for a given type
-            </summary>
-            <param name="type"></param>
-            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Reflection.Assembly)">
-            <summary>
-            Generates TypeScript files from an assembly
-            </summary>
-            <param name="assembly"></param>
+            <param name="generationSpecs"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
@@ -431,9 +375,18 @@
             <param name="assemblies"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
-        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Type)">
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateIndexFile(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            Generates TypeScript files from a type
+            DEPRECATED, will be removed in the future.
+            Generates an `index.ts` file which exports all types within the generated files
+            </summary>
+            <param name="generatedFiles"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateType(System.Type)">
+            <summary>
+            Contains the actual logic of generating TypeScript files for a given type
+            Should only be used inside Generate(Type), otherwise use Generate(Type)
             </summary>
             <param name="type"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
@@ -595,6 +548,11 @@
             Number of space characters per tab
             </summary>
         </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.UseTabCharacter">
+            <summary>
+            Whether to use the tab character instead of multiple spaces
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.Generator.GeneratorOptions.BaseOutputDirectory">
             <summary>
             The base directory for generating TypeScript files.
@@ -604,11 +562,6 @@
         <member name="P:TypeGen.Core.Generator.GeneratorOptions.CreateIndexFile">
             <summary>
             Whether to create an index file which exports all generated types
-            </summary>
-        </member>
-        <member name="P:TypeGen.Core.Generator.GeneratorOptions.IndexFileGenerators">
-            <summary>
-            Handles how the index file(s) are created for generated types.
             </summary>
         </member>
         <member name="P:TypeGen.Core.Generator.GeneratorOptions.CsNullableTranslation">
@@ -646,13 +599,6 @@
             <summary>
             The file extension to use for the index file(s). Defaults to whatever is set for TypeScriptFileExtension.
             </summary>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Services.IndexFileGenerator.Generate(TypeGen.Core.Generator.Services.IIndexFileGeneratorParams)">
-            <summary>
-            Generates an `index.ts` file(s) which exports types within the generated files
-            </summary>
-            <param name="parameters"></param>
-            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetImportsText(System.Type,System.String)">
             <summary>
@@ -1090,16 +1036,12 @@
             Logs messages to the Console
             </summary>
         </member>
-        <member name="P:TypeGen.Core.Logging.ConsoleLogger.LogVerbose">
-            <summary>
-            Whether to use verbose logging
-            </summary>
-        </member>
-        <member name="M:TypeGen.Core.Logging.ConsoleLogger.Log(System.String[])">
+        <member name="M:TypeGen.Core.Logging.ConsoleLogger.Log(System.String,TypeGen.Core.Logging.LogLevel)">
             <summary>
             Logs messages
             </summary>
-            <param name="messageLines"></param>
+            <param name="message"></param>
+            <param name="level"></param>
         </member>
         <member name="T:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2">
             <summary>
@@ -1279,7 +1221,7 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass(System.Type,System.String)">
             <summary>
-            Adds class configuration section
+            Adds a class
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
@@ -1287,7 +1229,7 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass``1(System.String)">
             <summary>
-            Adds class configuration section
+            Adds a class
             </summary>
             <param name="outputDir"></param>
             <typeparam name="T"></typeparam>
@@ -1295,7 +1237,7 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface(System.Type,System.String)">
             <summary>
-            Adds interface configuration section
+            Adds an interface
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
@@ -1303,7 +1245,7 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface``1(System.String)">
             <summary>
-            Adds interface configuration section
+            Adds an interface
             </summary>
             <param name="outputDir"></param>
             <typeparam name="T"></typeparam>
@@ -1311,7 +1253,7 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum(System.Type,System.String,System.Boolean)">
             <summary>
-            Adds enum configuration section
+            Adds an enum
             </summary>
             <param name="type"></param>
             <param name="outputDir"></param>
@@ -1320,12 +1262,19 @@
         </member>
         <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum``1(System.String,System.Boolean)">
             <summary>
-            Adds enum configuration section
+            Adds an enum
             </summary>
             <param name="outputDir"></param>
             <param name="isConst"></param>
             <typeparam name="T"></typeparam>
             <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddBarrel(System.String,TypeGen.Core.SpecGeneration.BarrelScope)">
+            <summary>
+            Adds a barrel file for a specified directory
+            </summary>
+            <param name="directory"></param>
+            <param name="barrelScope"></param>
         </member>
         <member name="T:TypeGen.Core.SpecGeneration.Generic.ClassSpecBuilder`1">
             <summary>
@@ -1380,6 +1329,12 @@
         <member name="M:TypeGen.Core.Storage.FileSystem.GetDirectoryFiles(System.String)">
             <inheritdoc />
         </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetDirectoryDirectories(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.SetCurrentDirectory(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:TypeGen.Core.Storage.FileSystem.GetCurrentDirectory">
             <inheritdoc />
         </member>
@@ -1429,6 +1384,13 @@
             <param name="directory"></param>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.GetDirectoryDirectories(System.String)">
+            <summary>
+            Gets all directories in a directory (only directories, not files)
+            </summary>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.Storage.IFileSystem.GetCurrentDirectory">
             <summary>
             Gets the current directory
@@ -1438,6 +1400,12 @@
         <member name="M:TypeGen.Core.Storage.IFileSystem.ClearDirectory(System.String)">
             <summary>
             Clears the directory (removes all files and recursively removes all subdirectories)
+            </summary>
+            <param name="directory"></param>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.SetCurrentDirectory(System.String)">
+            <summary>
+            Sets the current working directory
             </summary>
             <param name="directory"></param>
         </member>
@@ -1551,8 +1519,7 @@
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultExportAttribute">
             <summary>
-            Specifies custom base class declaration for a TypeScript class or interface.
-            Base class declaration is empty if no content is specified.
+            Specifies that default export will be used for a TypeScript type
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute">
