@@ -6,7 +6,7 @@ namespace TypeGen.Core.Logging
     /// <summary>
     /// Logs messages to the Console
     /// </summary>
-    public class ConsoleLogger : ILogger
+    internal class ConsoleLogger : ILogger
     {
         private readonly bool _verbose;
 

@@ -95,7 +95,7 @@ namespace TypeGen.AcceptanceTest.Generator
             //act
             
             assemblyResolver.Register();
-            generator.Generate(assembly);
+            generator.Generate(new [] { assembly });
             assemblyResolver.Unregister();
 
             //assert

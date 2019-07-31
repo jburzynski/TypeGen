@@ -1,6 +1,6 @@
 namespace TypeGen.Core.Logging
 {
-    public enum LogLevel
+    internal enum LogLevel
     {
         Debug = 1,
         Info = 2,
