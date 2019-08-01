@@ -1,11 +1,11 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v2.1",
+    "name": ".NETCoreApp,Version=v2.2",
     "signature": "b45cf71ce7cec235118a166cad7e51246e6125c7"
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v2.1": {
+    ".NETCoreApp,Version=v2.2": {
       "TypeGen.Cli/1.0.0": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
