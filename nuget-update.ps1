@@ -3,7 +3,7 @@
 #tools
 
 rm -Recurse -Force nuget\tools\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.1\publish\* nuget\tools
+copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.2\publish\* nuget\tools
 
 #lib
 
@@ -27,8 +27,8 @@ if (Test-Path "local-nuget-path.txt") {
 #nuget - dotnetcli
 
 
-rm -Recurse -Force nuget-dotnetcli\tools\netcoreapp2.1\any\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.1\publish\* nuget-dotnetcli\tools\netcoreapp2.1\any
+rm -Recurse -Force nuget-dotnetcli\tools\netcoreapp2.2\any\runtimes
+copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.2\publish\* nuget-dotnetcli\tools\netcoreapp2.2\any
 
 nuget pack nuget-dotnetcli\TypeGen.DotNetCli.nuspec
 move TypeGen.DotNetCli.2.4.0.nupkg nuget-dotnetcli -force
