@@ -15,7 +15,7 @@ Single-class-per-file C# to TypeScript generator
 
 ## Quick start
 
-1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project.
+1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. If you wish to use TypeGen as a .NET Core CLI tool, you'll need to install it from [this package](https://www.nuget.org/packages/TypeGen.DotNetCli)
 
 2. Mark your C# classes/enums as exportable to TypeScript:
 
@@ -40,7 +40,7 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-3. If you're using a generation spec, create a file named `tgconfig.json` directly in your project folder and place the following content in this file:
+3. If you're using a generation spec, create a file named `tgconfig.json` directly in your project folder and place the following content there:
 
 ```json
 {
@@ -48,7 +48,7 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-4. Build your project and type `TypeGen generate` or `TypeGen -p "MyProjectName" generate` (depending on the current working directory of the PM Console) into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool.
+4. Build your project and type `TypeGen generate` or `TypeGen -p "MyProjectName" generate` (depending on the current working directory of the PM Console) into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET Core CLI tool.
 
 This will generate a single TypeScript file (named *product-dto.ts*) in your project directory. The file will look like this:
 
