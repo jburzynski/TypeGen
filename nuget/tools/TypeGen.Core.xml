@@ -275,6 +275,26 @@
             <param name="withoutTsIgnore"></param>
             <returns></returns>
         </member>
+        <member name="T:TypeGen.Core.Generator.FileContentGeneratedArgs">
+            <summary>
+            Event args for the Generator.FileContentGenerated event
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.Type">
+            <summary>
+            The type for which the file was generated
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FilePath">
+            <summary>
+            The generated file's path
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FileContent">
+            <summary>
+            The generated file content
+            </summary>
+        </member>
         <member name="T:TypeGen.Core.Generator.GenerationContext">
             <summary>
             File generation context (used per Generator.Generate() invocation)
@@ -344,6 +364,11 @@
             Class used for generating TypeScript files from C# types
             </summary>
         </member>
+        <member name="E:TypeGen.Core.Generator.Generator.FileContentGenerated">
+            <summary>
+            An event that fires when a file's content is generated
+            </summary>
+        </member>
         <member name="P:TypeGen.Core.Generator.Generator.Logger">
             <summary>
             A logger instance used to log messages raised by a Generator instance
@@ -361,18 +386,28 @@
             <param name="options"></param>
             <param name="fileSystem"></param>
         </member>
+        <member name="M:TypeGen.Core.Generator.Generator.OnFileContentGenerated(System.Object,TypeGen.Core.Generator.FileContentGeneratedArgs)">
+            <summary>
+            The default event handler for the FileContentGenerated event
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.SubscribeDefaultFileContentGeneratedHandler">
+            <summary>
+            Subscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.UnsubscribeDefaultFileContentGeneratedHandler">
+            <summary>
+            Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+            </summary>
+        </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
             <summary>
             Generates TypeScript files from a GenerationSpec
             </summary>
             <param name="generationSpecs"></param>
-            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        </member>
-        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
-            <summary>
-            Generates TypeScript files from multiple assemblies
-            </summary>
-            <param name="assemblies"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generator.GenerateIndexFile(System.Collections.Generic.IEnumerable{System.String})">
@@ -386,7 +421,28 @@
         <member name="M:TypeGen.Core.Generator.Generator.GenerateType(System.Type)">
             <summary>
             Contains the actual logic of generating TypeScript files for a given type
-            Should only be used inside Generate(Type), otherwise use Generate(Type)
+            Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
+            </summary>
+            <param name="type"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Reflection.Assembly)">
+            <summary>
+            Generates TypeScript files from an assembly
+            </summary>
+            <param name="assembly"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Generates TypeScript files from multiple assemblies
+            </summary>
+            <param name="assemblies"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Type)">
+            <summary>
+            Generates TypeScript files from a type
             </summary>
             <param name="type"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
@@ -1456,12 +1512,12 @@
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.ExportTsClassAttribute">
             <summary>
-            Indentifies a class that a TypeScript file should be generated for
+            Identifies a class that a TypeScript file should be generated for
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute">
             <summary>
-            Indentifies an enum that a TypeScript file should be generated for
+            Identifies an enum that a TypeScript file should be generated for
             </summary>
         </member>
         <member name="P:TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute.IsConst">
@@ -1471,7 +1527,7 @@
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.ExportTsInterfaceAttribute">
             <summary>
-            Indentifies a class that a TypeScript interface file should be generated for
+            Identifies a class that a TypeScript interface file should be generated for
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute">
