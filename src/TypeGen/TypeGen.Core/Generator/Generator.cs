@@ -18,8 +18,13 @@ namespace TypeGen.Core.Generator
     /// <summary>
     /// Class used for generating TypeScript files from C# types
     /// </summary>
-    internal class Generator
+    public class Generator
     {
+        /// <summary>
+        /// An event that fires when a file's content is generated
+        /// </summary>
+        public event EventHandler<FileContentGeneratedArgs> FileContentGenerated;
+        
         /// <summary>
         /// A logger instance used to log messages raised by a Generator instance
         /// </summary>
@@ -45,6 +50,7 @@ namespace TypeGen.Core.Generator
             Requires.NotNull(options, nameof(options));
             
             _generationContext = new GenerationContext();
+            FileContentGenerated += OnFileContentGenerated;
             
             Options = options;
             Logger = logger;
@@ -84,6 +90,33 @@ namespace TypeGen.Core.Generator
         {
             _fileSystem = fileSystem;
         }
+        
+        /// <summary>
+        /// The default event handler for the FileContentGenerated event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        protected virtual void OnFileContentGenerated(object sender, FileContentGeneratedArgs args)
+        {
+            _fileSystem.SaveFile(args.FilePath, args.FileContent);
+        }
+
+        /// <summary>
+        /// Subscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+        /// </summary>
+        public void SubscribeDefaultFileContentGeneratedHandler()
+        {
+            FileContentGenerated -= OnFileContentGenerated;
+            FileContentGenerated += OnFileContentGenerated;
+        }
+        
+        /// <summary>
+        /// Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+        /// </summary>
+        public void UnsubscribeDefaultFileContentGeneratedHandler()
+        {
+            FileContentGenerated -= OnFileContentGenerated;
+        }
 
         private void InitializeGeneration(GenerationSpec generationSpec)
         {
@@ -111,7 +144,7 @@ namespace TypeGen.Core.Generator
                 generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
 
                 files = generationSpec.TypeSpecs
-                    .Aggregate(files, (acc, kvp) => acc.Concat(Generate(kvp.Key)));
+                    .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
             }
             
             files = files.Distinct();
@@ -140,21 +173,6 @@ namespace TypeGen.Core.Generator
 
             return files;
         }
-        
-        /// <summary>
-        /// Generates TypeScript files from multiple assemblies
-        /// </summary>
-        /// <param name="assemblies"></param>
-        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
-        {
-            Requires.NotNullOrEmpty(assemblies, nameof(assemblies));
-            
-            var generationSpecProvider = new GenerationSpecProvider();
-            GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(assemblies);
-
-            return Generate(new[] { generationSpec });
-        }
 
         private IEnumerable<string> GenerateBarrel(BarrelSpec barrelSpec)
         {
@@ -181,7 +199,7 @@ namespace TypeGen.Core.Generator
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
             
-            _fileSystem.SaveFile(filePath, content);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
             return new[] { Path.Combine(barrelSpec.Directory, fileName) };
         }
         
@@ -207,12 +225,12 @@ namespace TypeGen.Core.Generator
             string content = _templateService.FillIndexTemplate(exports);
 
             string filename = "index" + typeScriptFileExtension;
-            _fileSystem.SaveFile(Path.Combine(Options.BaseOutputDirectory, filename), content);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, Path.Combine(Options.BaseOutputDirectory, filename), content));
 
             return new[] { filename };
         }
         
-        private IEnumerable<string> Generate(Type type)
+        private IEnumerable<string> GenerateTypeInit(Type type)
         {
             IEnumerable<string> files = Enumerable.Empty<string>();
             
@@ -235,7 +253,7 @@ namespace TypeGen.Core.Generator
         
         /// <summary>
         /// Contains the actual logic of generating TypeScript files for a given type
-        /// Should only be used inside Generate(Type), otherwise use Generate(Type)
+        /// Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
@@ -261,6 +279,47 @@ namespace TypeGen.Core.Generator
             }
 
             return GenerateNotMarked(type, Options.BaseOutputDirectory);
+        }
+        
+        /// <summary>
+        /// Generates TypeScript files from an assembly
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(Assembly assembly)
+        {
+            Requires.NotNull(assembly, nameof(assembly));
+            return Generate(new[] { assembly });
+        }
+        
+        /// <summary>
+        /// Generates TypeScript files from multiple assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
+        {
+            Requires.NotNullOrEmpty(assemblies, nameof(assemblies));
+            
+            var generationSpecProvider = new GenerationSpecProvider();
+            GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(assemblies);
+
+            return Generate(new[] { generationSpec });
+        }
+
+        /// <summary>
+        /// Generates TypeScript files from a type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            
+            var generationSpecProvider = new GenerationSpecProvider();
+            GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(type);
+
+            return Generate(new[] { generationSpec });
         }
 
         /// <summary>
@@ -354,7 +413,7 @@ namespace TypeGen.Core.Generator
 
             // write TypeScript file
 
-            _fileSystem.SaveFile(filePath, content);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
             return new[] { filePathRelative }.Concat(dependenciesGenerationResult);
         }
 
@@ -380,7 +439,7 @@ namespace TypeGen.Core.Generator
 
             // write TypeScript file
 
-            _fileSystem.SaveFile(filePath, enumText);
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, enumText));
             return new[] { filePathRelative };
         }
 
@@ -578,7 +637,7 @@ namespace TypeGen.Core.Generator
                 if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(Generate(typeDependency));
+                    generatedFiles = generatedFiles.Concat(GenerateTypeInit(typeDependency));
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)

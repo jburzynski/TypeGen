@@ -1,6 +1,6 @@
 ﻿namespace TypeGen.Core.Logging
 {
-    internal interface ILogger
+    public interface ILogger
     {
         void Log(string message, LogLevel level);
     }

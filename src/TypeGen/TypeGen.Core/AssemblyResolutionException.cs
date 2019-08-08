@@ -5,7 +5,7 @@ namespace TypeGen.Core
     /// <summary>
     /// An exception that is thrown when assembly reference cannot be resolved
     /// </summary>
-    public class AssemblyResolutionException : CoreException
+    internal class AssemblyResolutionException : CoreException
     {
         public AssemblyResolutionException()
         {
