@@ -83,7 +83,7 @@ namespace TypeGen.Cli.Business
         private IEnumerable<T> GetConverters<T>(IEnumerable<string> converters)
         {
             return converters
-                .Select(name => _typeResolver.Resolve(name, new[] { typeof(T) }))
+                .Select(name => _typeResolver.Resolve(name, "Converter", new[] { typeof(T) }))
                 .Where(t => t != null)
                 .Select(t => (T)Activator.CreateInstance(t));
         }
