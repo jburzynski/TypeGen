@@ -14,16 +14,18 @@
             Groups the converter interfaces
             </summary>
         </member>
-        <member name="T:TypeGen.Core.Converters.INameConverter">
+        <member name="T:TypeGen.Core.Converters.IMemberNameConverter">
             <summary>
-            Interface for name converters
+            Interface for member name converters
             </summary>
         </member>
-        <member name="M:TypeGen.Core.Converters.INameConverter.Convert(System.String)">
+        <member name="M:TypeGen.Core.Converters.IMemberNameConverter.Convert(System.String,System.Reflection.MemberInfo)">
             <summary>
-            Converts a name to a new name
+            Converts a member name to a new name.
+            Conversion can optionally depend on the MemberInfo of the member, which name is being changed.
             </summary>
             <param name="name"></param>
+            <param name="memberInfo">The MemberInfo of the member, which name is being changed</param>
             <returns>Converted name</returns>
         </member>
         <member name="T:TypeGen.Core.Converters.ITypeNameConverter">
@@ -40,28 +42,29 @@
             <param name="type">The type, which name is being changed</param>
             <returns>Converted name</returns>
         </member>
-        <member name="T:TypeGen.Core.Converters.NameConverterCollection">
+        <member name="T:TypeGen.Core.Converters.MemberNameConverterCollection">
             <summary>
-            Represents a collection of name converters
+            Represents a collection of member name converters
             </summary>
         </member>
-        <member name="M:TypeGen.Core.Converters.NameConverterCollection.Add(TypeGen.Core.Converters.INameConverter)">
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Add(TypeGen.Core.Converters.IMemberNameConverter)">
             <summary>
-            Adds a converter to the collection. Null converters will not be added.
+            Adds a converter to the collection.
             </summary>
             <param name="converter"></param>
         </member>
-        <member name="M:TypeGen.Core.Converters.NameConverterCollection.Remove(TypeGen.Core.Converters.INameConverter)">
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Remove(TypeGen.Core.Converters.IMemberNameConverter)">
             <summary>
             Removes a converter from the collection.
             </summary>
             <param name="converter"></param>
         </member>
-        <member name="M:TypeGen.Core.Converters.NameConverterCollection.Convert(System.String)">
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Convert(System.String,System.Reflection.MemberInfo)">
             <summary>
             Converts a name using the chain of converters
             </summary>
             <param name="name"></param>
+            <param name="memberInfo"></param>
             <returns></returns>
         </member>
         <member name="T:TypeGen.Core.Converters.PascalCaseToCamelCaseConverter">
@@ -86,7 +89,7 @@
         </member>
         <member name="M:TypeGen.Core.Converters.TypeNameConverterCollection.Add(TypeGen.Core.Converters.ITypeNameConverter)">
             <summary>
-            Adds a type converter to the collection. Null converters will not be added.
+            Adds a type converter to the collection.
             </summary>
             <param name="converter"></param>
         </member>
@@ -507,17 +510,16 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Generator.Generator.GetEnumValueText(System.Object,System.Type)">
+        <member name="M:TypeGen.Core.Generator.Generator.GetEnumMemberText(System.Reflection.FieldInfo)">
             <summary>
-            Gets TypeScript enum value definition source code
+            Gets TypeScript enum member definition source code
             </summary>
-            <param name="enumValue">an enum value (result of Enum.GetValues())</param>
-            <param name="type"></param>
+            <param name="fieldInfo">MemberInfo for an enum value</param>
             <returns></returns>
         </member>
-        <member name="M:TypeGen.Core.Generator.Generator.GetEnumValuesText(System.Type)">
+        <member name="M:TypeGen.Core.Generator.Generator.GetEnumMembersText(System.Type)">
             <summary>
-            Gets TypeScript enum values definition source code
+            Gets TypeScript enum member definition source code
             </summary>
             <param name="type"></param>
             <returns></returns>
