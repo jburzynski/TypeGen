@@ -1,6 +1,7 @@
 {
   "externalAssemblyPaths": ["<global-packages>", "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"],
   "outputPath": "generated-typescript",
+  "propertyNameConverters": ["JsonMemberName", "PascalCaseToCamelCaseJson"],
   "csNullableTranslation": null,
   "createIndexFile": true
 }
