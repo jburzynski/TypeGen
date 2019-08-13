@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using TypeGen.Core.Converters;
 using Xunit;
@@ -16,16 +17,15 @@ namespace TypeGen.Core.Test.Converters
         public void PascalCaseToCamelCaseConverter_Test(string input, string expectedResult)
         {
             //arrange
-            Type type = GetType();
             var converter = new PascalCaseToCamelCaseConverter();
 
             //act
-            string actualResultWithType = converter.Convert(input);
-            string actualResultWithoutType = converter.Convert(input, type);
+            string actualResultMember = converter.Convert(input, (MemberInfo)null);
+            string actualResultType = converter.Convert(input, (Type)null);
 
             //assert
-            Assert.Equal(expectedResult, actualResultWithType);
-            Assert.Equal(expectedResult, actualResultWithoutType);
+            Assert.Equal(expectedResult, actualResultMember);
+            Assert.Equal(expectedResult, actualResultType);
         }
 
         [Theory]
@@ -36,16 +36,15 @@ namespace TypeGen.Core.Test.Converters
         public void PascalCaseToKebabCaseConverter_Test(string input, string expectedResult)
         {
             //arrange
-            Type type = GetType();
             var converter = new PascalCaseToKebabCaseConverter();
 
             //act
-            string actualResultWithType = converter.Convert(input);
-            string actualResultWithoutType = converter.Convert(input, type);
+            string actualResultMember = converter.Convert(input, (MemberInfo)null);
+            string actualResultType = converter.Convert(input, (Type)null);
 
             //assert
-            Assert.Equal(expectedResult, actualResultWithType);
-            Assert.Equal(expectedResult, actualResultWithoutType);
+            Assert.Equal(expectedResult, actualResultMember);
+            Assert.Equal(expectedResult, actualResultType);
         }
 
         [Theory]
@@ -56,16 +55,15 @@ namespace TypeGen.Core.Test.Converters
         public void UnderscoreCaseToCamelCaseConverter_Test(string input, string expectedResult)
         {
             //arrange
-            Type type = GetType();
             var converter = new UnderscoreCaseToCamelCaseConverter();
 
             //act
-            string actualResultWithType = converter.Convert(input);
-            string actualResultWithoutType = converter.Convert(input, type);
+            string actualResultMember = converter.Convert(input, (MemberInfo)null);
+            string actualResultType = converter.Convert(input, (Type)null);
 
             //assert
-            Assert.Equal(expectedResult, actualResultWithType);
-            Assert.Equal(expectedResult, actualResultWithoutType);
+            Assert.Equal(expectedResult, actualResultMember);
+            Assert.Equal(expectedResult, actualResultType);
         }
 
         [Theory]
@@ -76,16 +74,15 @@ namespace TypeGen.Core.Test.Converters
         public void UnderscoreCaseToPascalCaseConverter_Test(string input, string expectedResult)
         {
             //arrange
-            Type type = GetType();
             var converter = new UnderscoreCaseToPascalCaseConverter();
 
             //act
-            string actualResultWithType = converter.Convert(input);
-            string actualResultWithoutType = converter.Convert(input, type);
+            string actualResultMember = converter.Convert(input, (MemberInfo)null);
+            string actualResultType = converter.Convert(input, (Type)null);
 
             //assert
-            Assert.Equal(expectedResult, actualResultWithType);
-            Assert.Equal(expectedResult, actualResultWithoutType);
+            Assert.Equal(expectedResult, actualResultMember);
+            Assert.Equal(expectedResult, actualResultType);
         }
     }
 }

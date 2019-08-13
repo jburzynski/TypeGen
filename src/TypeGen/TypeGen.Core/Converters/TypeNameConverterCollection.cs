@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Converters
 {
@@ -29,12 +30,12 @@ namespace TypeGen.Core.Converters
         }
 
         /// <summary>
-        /// Adds a type converter to the collection. Null converters will not be added.
+        /// Adds a type converter to the collection.
         /// </summary>
         /// <param name="converter"></param>
         public void Add(ITypeNameConverter converter)
         {
-            if (converter == null) return;
+            Requires.NotNull(converter, nameof(converter));
             _converters.Add(converter);
         }
 
@@ -44,6 +45,7 @@ namespace TypeGen.Core.Converters
         /// <param name="converter"></param>
         public void Remove(ITypeNameConverter converter)
         {
+            Requires.NotNull(converter, nameof(converter));
             _converters.Remove(converter);
         }
 

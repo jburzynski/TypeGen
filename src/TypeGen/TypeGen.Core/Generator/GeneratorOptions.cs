@@ -15,9 +15,9 @@ namespace TypeGen.Core.Generator
         public static bool DefaultExplicitPublicAccessor => false;
         public static TypeNameConverterCollection DefaultFileNameConverters => new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter());
         public static TypeNameConverterCollection DefaultTypeNameConverters => new TypeNameConverterCollection();
-        public static NameConverterCollection DefaultPropertyNameConverters => new NameConverterCollection(new PascalCaseToCamelCaseConverter());
-        public static NameConverterCollection DefaultEnumValueNameConverters => new NameConverterCollection();
-        public static NameConverterCollection DefaultEnumStringInitializersConverters => new NameConverterCollection();
+        public static MemberNameConverterCollection DefaultPropertyNameConverters => new MemberNameConverterCollection(new PascalCaseToCamelCaseConverter());
+        public static MemberNameConverterCollection DefaultEnumValueNameConverters => new MemberNameConverterCollection();
+        public static MemberNameConverterCollection DefaultEnumStringInitializersConverters => new MemberNameConverterCollection();
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
@@ -64,17 +64,17 @@ namespace TypeGen.Core.Generator
         /// <summary>
         /// A collection (chain) of converters used for converting C# class property names to TypeScript class property names
         /// </summary>
-        public NameConverterCollection PropertyNameConverters { get; set; }
+        public MemberNameConverterCollection PropertyNameConverters { get; set; }
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names
         /// </summary>
-        public NameConverterCollection EnumValueNameConverters { get; set; }
+        public MemberNameConverterCollection EnumValueNameConverters { get; set; }
         
         /// <summary>
         /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum string initializers
         /// </summary>
-        public NameConverterCollection EnumStringInitializersConverters { get; set; }
+        public MemberNameConverterCollection EnumStringInitializersConverters { get; set; }
 
         /// <summary>
         /// Whether to generate explicit "public" accessor in TypeScript classes

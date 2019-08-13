@@ -425,7 +425,7 @@ namespace TypeGen.Core.Generator
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         private IEnumerable<string> GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
-            string valuesText = GetEnumValuesText(type);
+            string valuesText = GetEnumMembersText(type);
 
             // create TypeScript source code for the enum
 
@@ -470,7 +470,7 @@ namespace TypeGen.Core.Generator
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
 
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
-            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
+            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
             string typeName = _typeService.GetTsTypeName(memberInfo);
 
             // try to get default value from TsDefaultValueAttribute
@@ -538,7 +538,7 @@ namespace TypeGen.Core.Generator
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
             
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
-            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name);
+            string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
 
             string typeName = _typeService.GetTsTypeName(memberInfo);
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
@@ -579,39 +579,40 @@ namespace TypeGen.Core.Generator
         }
 
         /// <summary>
-        /// Gets TypeScript enum value definition source code
+        /// Gets TypeScript enum member definition source code
         /// </summary>
-        /// <param name="enumValue">an enum value (result of Enum.GetValues())</param>
-        /// <param name="type"></param>
+        /// <param name="fieldInfo">MemberInfo for an enum value</param>
         /// <returns></returns>
-        private string GetEnumValueText(object enumValue, Type type)
+        private string GetEnumMemberText(FieldInfo fieldInfo)
         {
-            string name = Options.EnumValueNameConverters.Convert(enumValue.ToString());
+            Type type = fieldInfo.DeclaringType;
+            
+            string name = Options.EnumValueNameConverters.Convert(fieldInfo.Name, fieldInfo);
             var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(type);
             
             if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
                 (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
             {
-                string enumValueString = Options.EnumStringInitializersConverters.Convert(enumValue.ToString());
+                string enumValueString = Options.EnumStringInitializersConverters.Convert(fieldInfo.Name, fieldInfo);
                 return _templateService.FillEnumValueTemplate(name, enumValueString);
             }
-            
+
+            object enumValue = fieldInfo.GetValue(null);
             object enumValueAsUnderlyingType = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(type));
             return _templateService.FillEnumValueTemplate(name, enumValueAsUnderlyingType);
         }
 
         /// <summary>
-        /// Gets TypeScript enum values definition source code
+        /// Gets TypeScript enum member definition source code
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string GetEnumValuesText(Type type)
+        private string GetEnumMembersText(Type type)
         {
             var valuesText = "";
-            Array enumValues = Enum.GetValues(type);
+            IEnumerable<FieldInfo> fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
-            valuesText += enumValues.Cast<object>()
-                .Aggregate(valuesText, (current, enumValue) => current + GetEnumValueText(enumValue, type));
+            valuesText += fieldInfos.Aggregate(valuesText, (current, fieldInfo) => current + GetEnumMemberText(fieldInfo));
 
             return RemoveLastLineEnding(valuesText);
         }
