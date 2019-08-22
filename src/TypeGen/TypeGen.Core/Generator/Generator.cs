@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Services;
 using TypeGen.Core.Logging;
@@ -121,6 +122,16 @@ namespace TypeGen.Core.Generator
         private void InitializeGeneration(GenerationSpec generationSpec)
         {
             _metadataReaderFactory.GenerationSpec = generationSpec;
+        }
+
+        /// <summary>
+        /// Generates TypeScript files from a GenerationSpec
+        /// </summary>
+        /// <param name="generationSpecs"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public Task<IEnumerable<string>> GenerateAsync(IEnumerable<GenerationSpec> generationSpecs)
+        {
+            return Task.Run(() => Generate(generationSpecs));
         }
 
         /// <summary>
@@ -286,10 +297,30 @@ namespace TypeGen.Core.Generator
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public Task<IEnumerable<string>> GenerateAsync(Assembly assembly)
+        {
+            return Task.Run(() => Generate(assembly));
+        }
+        
+        /// <summary>
+        /// Generates TypeScript files from an assembly
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         public IEnumerable<string> Generate(Assembly assembly)
         {
             Requires.NotNull(assembly, nameof(assembly));
             return Generate(new[] { assembly });
+        }
+        
+        /// <summary>
+        /// Generates TypeScript files from multiple assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public Task<IEnumerable<string>> GenerateAsync(IEnumerable<Assembly> assemblies)
+        {
+            return Task.Run(() => Generate(assemblies));
         }
         
         /// <summary>
@@ -307,6 +338,16 @@ namespace TypeGen.Core.Generator
             return Generate(new[] { generationSpec });
         }
 
+        /// <summary>
+        /// Generates TypeScript files from a type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public Task<IEnumerable<string>> GenerateAsync(Type type)
+        {
+            return Task.Run(() => Generate(type));
+        }
+        
         /// <summary>
         /// Generates TypeScript files from a type
         /// </summary>
