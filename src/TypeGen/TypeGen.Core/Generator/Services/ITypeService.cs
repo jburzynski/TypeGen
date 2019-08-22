@@ -116,5 +116,7 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="type"></param>
         /// <returns></returns>
         bool UseDefaultExport(Type type);
+
+        IEnumerable<string> GetTypeUnions(MemberInfo memberInfo);
     }
 }

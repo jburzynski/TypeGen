@@ -192,8 +192,6 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(memberInfo, nameof(memberInfo));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
             
-            string typeUnionSuffix = GetStrictNullChecksTypeSuffix(memberInfo);
-
             var typeAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)
             {
@@ -201,10 +199,11 @@ namespace TypeGen.Core.Generator.Services
                 {
                     throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
                 }
-                return typeAttribute.TypeName + typeUnionSuffix;
+
+                return typeAttribute.TypeName;
             }
 
-            return GetTsTypeNameForMember(memberInfo) + typeUnionSuffix;
+            return GetTsTypeNameForMember(memberInfo);
         }
 
         /// <summary>
@@ -228,25 +227,36 @@ namespace TypeGen.Core.Generator.Services
             return GetTsTypeName(type);
         }
 
-        private string GetStrictNullChecksTypeSuffix(MemberInfo memberInfo)
+        public IEnumerable<string> GetTypeUnions(MemberInfo memberInfo)
         {
             Type memberType = memberInfo is PropertyInfo info
                 ? info.PropertyType
                 : ((FieldInfo)memberInfo).FieldType;
 
-            StrictNullFlags flags = Nullable.GetUnderlyingType(memberType) != null ? GeneratorOptions.CsNullableTranslation : StrictNullFlags.Regular;
+            StrictNullTypeUnionFlags typeUnionFlags = GetTypeUnionFlags(memberInfo);
 
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNullAttribute>(memberInfo) != null) flags |= StrictNullFlags.Null;
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsUndefinedAttribute>(memberInfo) != null) flags |= StrictNullFlags.Undefined;
-
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotNullAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Null;
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) flags &= ~StrictNullFlags.Undefined;
-
-            var result = "";
-            if (flags.HasFlag(StrictNullFlags.Null)) result += " | null";
-            if (flags.HasFlag(StrictNullFlags.Undefined)) result += " | undefined";
+            var result = new List<string>();
+            if (typeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add("null");
+            if (typeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add("undefined");
 
             return result;
+        }
+
+        private StrictNullTypeUnionFlags GetTypeUnionFlags(MemberInfo memberInfo)
+        {
+            Type memberType = memberInfo is PropertyInfo info
+                ? info.PropertyType
+                : ((FieldInfo)memberInfo).FieldType;
+
+            StrictNullTypeUnionFlags typeUnionFlags = Nullable.GetUnderlyingType(memberType) != null ? GeneratorOptions.CsNullableTranslation : StrictNullTypeUnionFlags.None;
+
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNullAttribute>(memberInfo) != null) typeUnionFlags |= StrictNullTypeUnionFlags.Null;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsUndefinedAttribute>(memberInfo) != null) typeUnionFlags |= StrictNullTypeUnionFlags.Undefined;
+
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotNullAttribute>(memberInfo) != null) typeUnionFlags &= ~StrictNullTypeUnionFlags.Null;
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) typeUnionFlags &= ~StrictNullTypeUnionFlags.Undefined;
+
+            return typeUnionFlags;
         }
 
         /// <summary>

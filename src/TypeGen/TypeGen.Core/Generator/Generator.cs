@@ -472,31 +472,23 @@ namespace TypeGen.Core.Generator
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
             string typeName = _typeService.GetTsTypeName(memberInfo);
+            IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
-            {
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, defaultValueAttribute.DefaultValue);
-            }
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, defaultValueAttribute.DefaultValue);
 
             // try to get default value from the member's default value
             string valueText = _tsContentGenerator.GetMemberValueText(memberInfo);
             if (!string.IsNullOrWhiteSpace(valueText))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, valueText);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, valueText);
 
             // try to get default value from Options.DefaultValuesForTypes
-            if (Options.DefaultValuesForTypes.Any())
-            {
-                string memberTsTypeName = _typeService.GetTsTypeName(memberInfo);
-                
-                if (Options.DefaultValuesForTypes.ContainsKey(memberTsTypeName))
-                {
-                    return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, Options.DefaultValuesForTypes[memberTsTypeName]);
-                }
-            }
+            if (Options.DefaultValuesForTypes.Any() && Options.DefaultValuesForTypes.ContainsKey(typeName))
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, Options.DefaultValuesForTypes[typeName]);
 
-            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName);
+            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions);
         }
         
         private void LogClassPropertyWarnings(MemberInfo memberInfo)
@@ -541,9 +533,10 @@ namespace TypeGen.Core.Generator
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
 
             string typeName = _typeService.GetTsTypeName(memberInfo);
+            IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
 
-            return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, isOptional);
+            return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, typeUnions, isOptional);
         }
 
         private void LogInterfacePropertyWarnings(MemberInfo memberInfo)

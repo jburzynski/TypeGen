@@ -21,7 +21,7 @@ namespace TypeGen.Core.Generator
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
-        public static StrictNullFlags DefaultCsNullableTranslation => StrictNullFlags.Regular;
+        public static StrictNullTypeUnionFlags DefaultCsNullableTranslation => StrictNullTypeUnionFlags.None;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
         public static bool DefaultEnumStringInitializers => false;
@@ -121,7 +121,7 @@ namespace TypeGen.Core.Generator
         /// <summary>
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
         /// </summary>
-        public StrictNullFlags CsNullableTranslation { get; set; }
+        public StrictNullTypeUnionFlags CsNullableTranslation { get; set; }
 
         /// <summary>
         /// Specifies default values to generate for given TypeScript types

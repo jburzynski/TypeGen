@@ -6,12 +6,12 @@ namespace TypeGen.Core
     /// Represents flags used in TypeScript strict null checking mode
     /// </summary>
     [Flags]
-    public enum StrictNullFlags
+    public enum StrictNullTypeUnionFlags
     {
         /// <summary>
         /// Not null and not undefined
         /// </summary>
-        Regular = 0,
+        None = 0,
 
         /// <summary>
         /// Null

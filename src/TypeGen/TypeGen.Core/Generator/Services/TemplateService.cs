@@ -1,4 +1,7 @@
-﻿using TypeGen.Core.Storage;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.Generator.Services
@@ -80,9 +83,11 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillClassPropertyTemplate(string modifiers, string name, string type, string defaultValue = null)
+        public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, string defaultValue = null)
         {
-            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            type = $": {type}";
+            type = ConcatenateWithTypeUnions(type, typeUnions);
+            
             defaultValue = string.IsNullOrWhiteSpace(defaultValue) ? "" : $" = {defaultValue}";
             
             return ReplaceSpecialChars(_classPropertyTemplate)
@@ -121,9 +126,10 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillInterfacePropertyTemplate(string modifiers, string name, string type, bool isOptional)
+        public string FillInterfacePropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional)
         {
-            type = string.IsNullOrWhiteSpace(type) ? "" : $": {type}";
+            type = $": {type}";
+            type = ConcatenateWithTypeUnions(type, typeUnions);
             
             return ReplaceSpecialChars(_interfacePropertyTemplate)
                 .Replace(GetTag("modifiers"), modifiers)
@@ -196,7 +202,7 @@ namespace TypeGen.Core.Generator.Services
 
         public string GetExtendsText(string name) => $" extends {name}";
 
-        private string GetTag(string tagName) => $"$tg{{{tagName}}}";
+        private static string GetTag(string tagName) => $"$tg{{{tagName}}}";
 
         private string ReplaceSpecialChars(string template)
         {
@@ -205,6 +211,14 @@ namespace TypeGen.Core.Generator.Services
             return template
                 .Replace(GetTag("tab"), tab)
                 .Replace(GetTag("quot"), GeneratorOptions.SingleQuotes ? "'" : "\"");
+        }
+
+        private static string ConcatenateWithTypeUnions(string text, IEnumerable<string> typeUnions)
+        {
+            if (typeUnions?.Any() == false) return text;
+            
+            string typeUnionsText = string.Join(" | ", typeUnions);
+            return text + " | " + typeUnionsText;
         }
     }
 }
