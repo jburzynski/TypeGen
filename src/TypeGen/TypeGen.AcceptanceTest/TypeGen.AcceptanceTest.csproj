@@ -55,6 +55,7 @@
       <EmbeddedResource Include="Generator\Expected\test-classes\test-class.ts" />
       <EmbeddedResource Include="Generator\Expected\test-enums\test-enum.ts" />
       <EmbeddedResource Include="Generator\Expected\test-interfaces\test-interface.ts" />
+      <EmbeddedResource Include="Generator\Expected\type-unions.ts" />
       <EmbeddedResource Include="Generator\Expected\very\nested\directory\nested-entity.ts" />
       <EmbeddedResource Include="Generator\Expected\with-generic-base-class-custom-type.ts" />
       <EmbeddedResource Include="Generator\Expected\with-ignored-base-and-custom-base.ts" />

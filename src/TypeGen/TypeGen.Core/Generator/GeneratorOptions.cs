@@ -23,6 +23,7 @@ namespace TypeGen.Core.Generator
         public static bool DefaultCreateIndexFile => false;
         public static StrictNullTypeUnionFlags DefaultCsNullableTranslation => StrictNullTypeUnionFlags.None;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
+        public static IDictionary<string, IEnumerable<string>> DefaultTypeUnionsForTypes => new Dictionary<string, IEnumerable<string>>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
         public static bool DefaultEnumStringInitializers => false;
         public static string DefaultFileHeading => null;
@@ -44,6 +45,7 @@ namespace TypeGen.Core.Generator
             CreateIndexFile = DefaultCreateIndexFile;
             CsNullableTranslation = DefaultCsNullableTranslation;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
+            TypeUnionsForTypes = DefaultTypeUnionsForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
             EnumStringInitializers = DefaultEnumStringInitializers;
             FileHeading = DefaultFileHeading;
@@ -127,6 +129,11 @@ namespace TypeGen.Core.Generator
         /// Specifies default values to generate for given TypeScript types
         /// </summary>
         public IDictionary<string, string> DefaultValuesForTypes { get; set; }
+        
+        /// <summary>
+        /// Specifies TypeScript type unions (excluding the main type) for TypeScript properties of specified types
+        /// </summary>
+        public IDictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; }
 
         /// <summary>
         /// Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").

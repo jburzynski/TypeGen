@@ -19,6 +19,7 @@ namespace TypeGen.Core.Generator.Services
         private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
         private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        private IMetadataReader MetadataReader => _metadataReaderFactory.GetInstance();
 
         public TypeService(IMetadataReaderFactory metadataReaderFactory, IGeneratorOptionsProvider generatorOptionsProvider)
         {
@@ -83,7 +84,7 @@ namespace TypeGen.Core.Generator.Services
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportAttribute>(type);
+            var exportAttribute = MetadataReader.GetAttribute<ExportAttribute>(type);
             return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
         }
 
@@ -95,7 +96,7 @@ namespace TypeGen.Core.Generator.Services
 
             if (!typeInfo.IsClass) return false;
 
-            var exportAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportAttribute>(type);
+            var exportAttribute = MetadataReader.GetAttribute<ExportAttribute>(type);
             return exportAttribute is ExportTsInterfaceAttribute;
         }
 
@@ -146,7 +147,7 @@ namespace TypeGen.Core.Generator.Services
         public bool UseDefaultExport(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? _generatorOptionsProvider.GeneratorOptions.UseDefaultExport;
+            return MetadataReader.GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? _generatorOptionsProvider.GeneratorOptions.UseDefaultExport;
         }
 
         /// <inheritdoc />
@@ -192,7 +193,7 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(memberInfo, nameof(memberInfo));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
             
-            var typeAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo);
+            var typeAttribute = MetadataReader.GetAttribute<TsTypeAttribute>(memberInfo);
             if (typeAttribute != null)
             {
                 if (string.IsNullOrWhiteSpace(typeAttribute.TypeName))
@@ -229,34 +230,51 @@ namespace TypeGen.Core.Generator.Services
 
         public IEnumerable<string> GetTypeUnions(MemberInfo memberInfo)
         {
+            const string nullLiteral = "null";
+            const string undefinedLiteral = "undefined";
+            
             Type memberType = memberInfo is PropertyInfo info
                 ? info.PropertyType
                 : ((FieldInfo)memberInfo).FieldType;
-
-            StrictNullTypeUnionFlags typeUnionFlags = GetTypeUnionFlags(memberInfo);
-
+            
             var result = new List<string>();
-            if (typeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add("null");
-            if (typeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add("undefined");
 
-            return result;
-        }
+            var tsTypeUnionsAttribute = MetadataReader.GetAttribute<TsTypeUnionsAttribute>(memberInfo);
 
-        private StrictNullTypeUnionFlags GetTypeUnionFlags(MemberInfo memberInfo)
-        {
-            Type memberType = memberInfo is PropertyInfo info
-                ? info.PropertyType
-                : ((FieldInfo)memberInfo).FieldType;
+            if (tsTypeUnionsAttribute != null)
+            {
+                // add from TsTypeUnionsAttribute
+            
+                result.AddRange(tsTypeUnionsAttribute.TypeUnions);
+            }
+            else
+            {
+                // add from both typeUnionsForTypes and csNullableTranslation
+                
+                string tsTypeName = GetTsTypeName(memberInfo);
+                if (GeneratorOptions.TypeUnionsForTypes.ContainsKey(tsTypeName))
+                {
+                    result.AddRange(GeneratorOptions.TypeUnionsForTypes[tsTypeName]);
+                }
 
-            StrictNullTypeUnionFlags typeUnionFlags = Nullable.GetUnderlyingType(memberType) != null ? GeneratorOptions.CsNullableTranslation : StrictNullTypeUnionFlags.None;
+                if (Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None)
+                {
+                    if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add(nullLiteral);
+                    if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add(undefinedLiteral);
+                }
 
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNullAttribute>(memberInfo) != null) typeUnionFlags |= StrictNullTypeUnionFlags.Null;
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsUndefinedAttribute>(memberInfo) != null) typeUnionFlags |= StrictNullTypeUnionFlags.Undefined;
+                result = result.Distinct().ToList();
+            }
+            
+            // Ts[Null|NotNull|Undefined|NotUndefined]Attribute has the highest priority
 
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotNullAttribute>(memberInfo) != null) typeUnionFlags &= ~StrictNullTypeUnionFlags.Null;
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) typeUnionFlags &= ~StrictNullTypeUnionFlags.Undefined;
+            if (MetadataReader.GetAttribute<TsNullAttribute>(memberInfo) != null) result.Add(nullLiteral);
+            if (MetadataReader.GetAttribute<TsUndefinedAttribute>(memberInfo) != null) result.Add(undefinedLiteral);
 
-            return typeUnionFlags;
+            if (MetadataReader.GetAttribute<TsNotNullAttribute>(memberInfo) != null) result.RemoveAll(x => x == nullLiteral);
+            if (MetadataReader.GetAttribute<TsNotUndefinedAttribute>(memberInfo) != null) result.RemoveAll(x => x == undefinedLiteral);
+
+            return result.Distinct().OrderBy(x => x).ToList();
         }
 
         /// <summary>

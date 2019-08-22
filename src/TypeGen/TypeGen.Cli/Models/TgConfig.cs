@@ -40,6 +40,7 @@ namespace TypeGen.Cli.Models
         public bool? CreateIndexFile { get; set; }
         public string CsNullableTranslation { get; set; }
         public Dictionary<string, string> DefaultValuesForTypes { get; set; }
+        public Dictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; }
         public Dictionary<string, string> CustomTypeMappings { get; set; }
         public bool? GenerateFromAssemblies { get; set; }
         public bool? EnumStringInitializers { get; set; }
@@ -80,6 +81,7 @@ namespace TypeGen.Cli.Models
             if (OutputPath == null) OutputPath = "";
             if (ClearOutputDirectory == null) ClearOutputDirectory = false;
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            if (TypeUnionsForTypes == null) TypeUnionsForTypes = GeneratorOptions.DefaultTypeUnionsForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             // GenerateFromAssemblies should stay null if no value is provided
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;

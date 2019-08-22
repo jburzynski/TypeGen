@@ -228,6 +228,21 @@ namespace TypeGen.Core.Test.SpecGeneration
         }
         
         [Fact]
+        public void TypeUnions_Invoked_SpecUpdated()
+        {
+            const string member = "member";
+            string[] typeUnions = { "null", "undefined" };
+            var spec = new TypeSpec(new ExportTsClassAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.Member(member).TypeUnions(typeUnions);
+
+            Attribute attribute = spec.MemberAttributes[member].FirstOrDefault();
+            Assert.IsType<TsTypeUnionsAttribute>(attribute);
+            Assert.Same(typeUnions, ((TsTypeUnionsAttribute)attribute).TypeUnions);
+        }
+        
+        [Fact]
         public void Undefined_Invoked_SpecUpdated()
         {
             const string member = "member";

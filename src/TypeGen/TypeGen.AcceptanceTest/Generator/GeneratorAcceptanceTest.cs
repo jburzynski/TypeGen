@@ -49,6 +49,7 @@ namespace TypeGen.AcceptanceTest.Generator
             { "enum-short-values.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.enum-short-values.ts") },
             { "static-readonly.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.static-readonly.ts") },
             { "strict-nulls-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.strict-nulls-class.ts") },
+            { "type-unions.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.type-unions.ts") },
             { "with-generic-base-class-custom-type.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-generic-base-class-custom-type.ts") },
             { "with-ignored-base-and-custom-base.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-ignored-base-and-custom-base.ts") },
             { "with-ignored-base.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-ignored-base.ts") },
@@ -126,6 +127,7 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "enum-short-values.ts", Content["enum-short-values.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "static-readonly.ts", Content["static-readonly.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "strict-nulls-class.ts", Content["strict-nulls-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "type-unions.ts", Content["type-unions.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-generic-base-class-custom-type.ts", Content["with-generic-base-class-custom-type.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base-and-custom-base.ts", Content["with-ignored-base-and-custom-base.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base.ts", Content["with-ignored-base.ts"]);

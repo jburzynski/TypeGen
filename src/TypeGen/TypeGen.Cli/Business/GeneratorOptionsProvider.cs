@@ -61,6 +61,7 @@ namespace TypeGen.Cli.Business
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
+                TypeUnionsForTypes = config.TypeUnionsForTypes ?? GeneratorOptions.DefaultTypeUnionsForTypes,
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,
                 EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers,
                 FileHeading = config.FileHeading ?? GeneratorOptions.DefaultFileHeading,
