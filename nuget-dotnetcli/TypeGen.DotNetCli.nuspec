@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen DotNet CLI tool (TypeGen is a single-class-per-file C# to TypeScript generator)</description>
 	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
-    <tags>code-generator generator typescript ts dotnet-cli</tags>
+    <tags>code-generator generator code typescript ts csharp cs dotnet cli</tags>
 	<packageTypes>
       <packageType name="DotnetTool" />
     </packageTypes>
