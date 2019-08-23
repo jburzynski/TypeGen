@@ -406,6 +406,13 @@
             Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
             </summary>
         </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
+            <summary>
+            Generates TypeScript files from a GenerationSpec
+            </summary>
+            <param name="generationSpecs"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
             <summary>
             Generates TypeScript files from a GenerationSpec
@@ -429,6 +436,13 @@
             <param name="type"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Reflection.Assembly)">
+            <summary>
+            Generates TypeScript files from an assembly
+            </summary>
+            <param name="assembly"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Reflection.Assembly)">
             <summary>
             Generates TypeScript files from an assembly
@@ -436,11 +450,25 @@
             <param name="assembly"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Generates TypeScript files from multiple assemblies
+            </summary>
+            <param name="assemblies"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
             <summary>
             Generates TypeScript files from multiple assemblies
             </summary>
             <param name="assemblies"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Type)">
+            <summary>
+            Generates TypeScript files from a type
+            </summary>
+            <param name="type"></param>
             <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         </member>
         <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Type)">
@@ -630,6 +658,11 @@
         <member name="P:TypeGen.Core.Generator.GeneratorOptions.DefaultValuesForTypes">
             <summary>
             Specifies default values to generate for given TypeScript types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.TypeUnionsForTypes">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for TypeScript properties of specified types
             </summary>
         </member>
         <member name="P:TypeGen.Core.Generator.GeneratorOptions.CustomTypeMappings">
@@ -1204,6 +1237,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.TypeUnions(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+            </summary>
+            <param name="typeUnions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.TypeUnions(System.String[])">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+            </summary>
+            <param name="typeUnions"></param>
+            <returns></returns>
+        </member>
         <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Undefined">
             <summary>
             Marks selected member as undefined (equivalent of TsUndefinedAttribute)
@@ -1482,22 +1529,22 @@
         <member name="M:TypeGen.Core.Storage.InternalStorage.GetEmbeddedResource(System.String)">
             <inheritdoc />
         </member>
-        <member name="T:TypeGen.Core.StrictNullFlags">
+        <member name="T:TypeGen.Core.StrictNullTypeUnionFlags">
             <summary>
             Represents flags used in TypeScript strict null checking mode
             </summary>
         </member>
-        <member name="F:TypeGen.Core.StrictNullFlags.Regular">
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.None">
             <summary>
             Not null and not undefined
             </summary>
         </member>
-        <member name="F:TypeGen.Core.StrictNullFlags.Null">
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.Null">
             <summary>
             Null
             </summary>
         </member>
-        <member name="F:TypeGen.Core.StrictNullFlags.Undefined">
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.Undefined">
             <summary>
             Undefined
             </summary>
@@ -1715,6 +1762,11 @@
         <member name="T:TypeGen.Core.TypeAnnotations.TsTypeAttributeComparer">
             <summary>
             A comparer class that compares TsTypeAttribute properties
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsTypeUnionsAttribute">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field
             </summary>
         </member>
         <member name="T:TypeGen.Core.TypeAnnotations.TsUndefinedAttribute">
