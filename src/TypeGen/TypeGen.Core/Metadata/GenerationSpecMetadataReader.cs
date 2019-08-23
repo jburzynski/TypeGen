@@ -66,7 +66,8 @@ namespace TypeGen.Core.Metadata
             if (!_spec.TypeSpecs.ContainsKey(type)) return Enumerable.Empty<object>();
 
             return new[] { _spec.TypeSpecs[type].ExportAttribute }
-                .Concat(_spec.TypeSpecs[type].AdditionalAttributes);
+                .Concat(_spec.TypeSpecs[type].AdditionalAttributes)
+                .ToList();
         }
         
         public IEnumerable<object> GetAttributes(MemberInfo memberInfo)

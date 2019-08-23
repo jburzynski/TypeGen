@@ -132,11 +132,11 @@ namespace TypeGen.Cli
             
             _logger.Log($"Generating files for project \"{projectFolder}\"...", LogLevel.Info);
             
-            IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
+            var generatedFiles = new List<string>();
 
             if (!config.GenerationSpecs.Any() || config.GenerateFromAssemblies == true)
             {
-                generatedFiles = generator.Generate(assemblies);
+                generatedFiles.AddRange(generator.Generate(assemblies));
             }
 
             if (config.GenerationSpecs.Any())
@@ -149,11 +149,9 @@ namespace TypeGen.Cli
                     .Select(t => (GenerationSpec)Activator.CreateInstance(t))
                     .ToArray();
                     
-                generatedFiles = generatedFiles.Concat(generator.Generate(generationSpecs));
+                generatedFiles.AddRange(generator.Generate(generationSpecs));
             }
 
-            generatedFiles = generatedFiles.ToArray();
-            
             foreach (string file in generatedFiles)
             {
                 _logger.Log($"Generated {file}", LogLevel.Info);

@@ -43,7 +43,8 @@ namespace TypeGen.Core.Generator.Services
             return GetGenericTypeDefinitionDependencies(type)
                 .Concat(GetBaseTypeDependency(type)
                 .Concat(GetMemberTypeDependencies(type)))
-                .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>());
+                .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
+                .ToList();
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetGenericTypeDefinitionDependencies(Type type)
         {
-            IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
+            var result = new List<TypeDependencyInfo>();
 
             if (!type.GetTypeInfo().IsGenericTypeDefinition) return result;
 
@@ -65,7 +66,7 @@ namespace TypeGen.Core.Generator.Services
                 baseType = _typeService.StripNullable(baseType);
                 Type baseFlatType = _typeService.GetFlatType(baseType);
 
-                result = result.Concat(GetFlatTypeDependencies(baseFlatType));
+                result.AddRange(GetFlatTypeDependencies(baseFlatType));
             }
 
             return result;
@@ -93,7 +94,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetMemberTypeDependencies(Type type)
         {
-            IEnumerable<TypeDependencyInfo> result = Enumerable.Empty<TypeDependencyInfo>();
+            var result = new List<TypeDependencyInfo>();
 
             IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
             foreach (MemberInfo memberInfo in memberInfos)
@@ -106,7 +107,7 @@ namespace TypeGen.Core.Generator.Services
                 if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
 
                 IEnumerable<Attribute> memberAttributes = _metadataReaderFactory.GetInstance().GetAttributes<Attribute>(memberInfo);
-                result = result.Concat(GetFlatTypeDependencies(memberFlatType, memberAttributes));
+                result.AddRange(GetFlatTypeDependencies(memberFlatType, memberAttributes));
             }
 
             return result;
@@ -134,9 +135,9 @@ namespace TypeGen.Core.Generator.Services
         {
             if (!type.GetTypeInfo().IsGenericType) throw new CoreException($"Type {type.FullName} must be a generic type");
             
-            IEnumerable<Type> result = _typeService.IsDictionaryType(type)
-                ? new Type[0]
-                : new[] { type.GetGenericTypeDefinition() };
+            List<Type> result = _typeService.IsDictionaryType(type)
+                ? new List<Type>()
+                : new List<Type> { type.GetGenericTypeDefinition() };
 
             foreach (Type genericArgument in type.GetGenericArguments())
             {
@@ -144,7 +145,7 @@ namespace TypeGen.Core.Generator.Services
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
                 if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
-                result = result.Concat(flatArgumentType.GetTypeInfo().IsGenericType
+                result.AddRange(flatArgumentType.GetTypeInfo().IsGenericType
                     ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)
                     : new[] { flatArgumentType });
             }

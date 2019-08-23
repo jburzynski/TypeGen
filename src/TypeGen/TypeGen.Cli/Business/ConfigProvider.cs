@@ -110,8 +110,8 @@ namespace TypeGen.Cli.Business
             string exeFileName = Path.ChangeExtension(projectFileName, "exe");
             string binPath = Path.Combine(projectFolder, "bin");
 
-            IEnumerable<string> foundFiles = _fileSystem.GetFilesRecursive(binPath, dllFileName)
-                .Concat(_fileSystem.GetFilesRecursive(binPath, exeFileName));
+            List<string> foundFiles = _fileSystem.GetFilesRecursive(binPath, dllFileName)
+                .Concat(_fileSystem.GetFilesRecursive(binPath, exeFileName)).ToList();
 
             if (foundFiles.Any())
             {

@@ -97,7 +97,7 @@ namespace TypeGen.Cli.Business
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             
             // log if assembly not found
-            IEnumerable<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder});
+            List<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder}).ToList();
             if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", searchedDirectories)}", LogLevel.Error);
             
             // return assembly or null

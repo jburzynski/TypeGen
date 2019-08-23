@@ -143,7 +143,7 @@ namespace TypeGen.Core.Generator
         {
             Requires.NotNullOrEmpty(generationSpecs, nameof(generationSpecs));
             
-            IEnumerable<string> files = Enumerable.Empty<string>();
+            var files = new List<string>();
             
             // generate types
             
@@ -154,15 +154,22 @@ namespace TypeGen.Core.Generator
                 InitializeGeneration(generationSpec);
                 generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
 
-                files = generationSpec.TypeSpecs
-                    .Aggregate(files, (acc, kvp) => acc.Concat(GenerateTypeInit(kvp.Key)));
+                foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
+                {
+                    files.AddRange(GenerateTypeInit(kvp.Key));
+                }
             }
             
-            files = files.Distinct();
+            files = files.Distinct().ToList();
             
             _generationContext.ClearGroupGeneratedTypes();
             
             // generate barrels
+            
+            if (Options.CreateIndexFile)
+            {
+                files.AddRange(GenerateIndexFile(files));
+            }
             
             foreach (GenerationSpec generationSpec in generationSpecs)
             {
@@ -173,13 +180,8 @@ namespace TypeGen.Core.Generator
             {
                 foreach (BarrelSpec barrelSpec in generationSpec.BarrelSpecs)
                 {
-                    files = files.Concat(GenerateBarrel(barrelSpec));
+                    files.AddRange(GenerateBarrel(barrelSpec));
                 }
-            }
-
-            if (Options.CreateIndexFile)
-            {
-                files = files.Concat(GenerateIndexFile(files));
             }
 
             return files;
@@ -189,23 +191,24 @@ namespace TypeGen.Core.Generator
         {
             string directory = Path.Combine(Options.BaseOutputDirectory ?? "", barrelSpec.Directory);
             
-            string fileName = "index";
+            var fileName = "index";
             if (!string.IsNullOrWhiteSpace(Options.TypeScriptFileExtension)) fileName += $".{Options.TypeScriptFileExtension}";
             string filePath = Path.Combine(directory, fileName);
 
-            IEnumerable<string> entries = Enumerable.Empty<string>();
+            var entries = new List<string>();
             
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Files))
             {
-                entries = entries.Concat(_fileSystem.GetDirectoryFiles(directory).Where(x => Path.GetFileName(x) != fileName));
+                entries.AddRange(_fileSystem.GetDirectoryFiles(directory)
+                    .Where(x => Path.GetFileName(x) != fileName && x.EndsWith($".{Options.TypeScriptFileExtension}")));
             }
             
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
             {
-                entries = entries.Concat(_fileSystem.GetDirectoryDirectories(directory));
+                entries.AddRange(_fileSystem.GetDirectoryDirectories(directory));
             }
 
-            entries = entries.Select(Path.GetFileNameWithoutExtension);
+            entries = entries.Select(Path.GetFileNameWithoutExtension).ToList();
 
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
@@ -455,7 +458,7 @@ namespace TypeGen.Core.Generator
             // write TypeScript file
 
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
-            return new[] { filePathRelative }.Concat(dependenciesGenerationResult);
+            return new[] { filePathRelative }.Concat(dependenciesGenerationResult).ToList();
         }
 
         /// <summary>
@@ -659,7 +662,7 @@ namespace TypeGen.Core.Generator
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         private IEnumerable<string> GenerateTypeDependencies(Type type, string outputDir)
         {
-            IEnumerable<string> generatedFiles = Enumerable.Empty<string>();
+            var generatedFiles = new List<string>();
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
@@ -672,7 +675,7 @@ namespace TypeGen.Core.Generator
                 if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.HasBeenGeneratedForGroup(typeDependency))
                 {
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(GenerateTypeInit(typeDependency));
+                    generatedFiles.AddRange(GenerateTypeInit(typeDependency));
                 }
 
                 // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
@@ -685,7 +688,7 @@ namespace TypeGen.Core.Generator
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
                     _generationContext.Add(typeDependency);
-                    generatedFiles = generatedFiles.Concat(GenerateNotMarked(typeDependency, defaultOutputDir));
+                    generatedFiles.AddRange(GenerateNotMarked(typeDependency, defaultOutputDir));
                 }
             }
 

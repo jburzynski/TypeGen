@@ -42,16 +42,16 @@ namespace TypeGen.TestWebApp.GenerationSpecs
 
         private IEnumerable<string> GetAllDirectoriesRecursive(string directory)
         {
-            IEnumerable<string> result = Enumerable.Empty<string>();
+            var result = new List<string>();
             string[] subdirectories = Directory.GetDirectories(directory);
 
             if (!subdirectories.Any()) return result;
             
-            result = result.Concat(subdirectories);
+            result.AddRange(subdirectories);
 
             foreach (string subdirectory in subdirectories)
             {
-                result = result.Concat(GetAllDirectoriesRecursive(subdirectory));
+                result.AddRange(GetAllDirectoriesRecursive(subdirectory));
             }
 
             return result;
