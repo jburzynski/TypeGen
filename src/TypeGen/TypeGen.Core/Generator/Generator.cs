@@ -25,17 +25,17 @@ namespace TypeGen.Core.Generator
         /// An event that fires when a file's content is generated
         /// </summary>
         public event EventHandler<FileContentGeneratedArgs> FileContentGenerated;
-        
+
         /// <summary>
         /// A logger instance used to log messages raised by a Generator instance
         /// </summary>
         public ILogger Logger { get; }
-        
+
         /// <summary>
         /// Generator options. Cannot be null.
         /// </summary>
         public GeneratorOptions Options { get; }
-        
+
         private readonly MetadataReaderFactory _metadataReaderFactory;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
@@ -49,13 +49,13 @@ namespace TypeGen.Core.Generator
         public Generator(GeneratorOptions options, ILogger logger = null)
         {
             Requires.NotNull(options, nameof(options));
-            
+
             _generationContext = new GenerationContext();
             FileContentGenerated += OnFileContentGenerated;
-            
+
             Options = options;
             Logger = logger;
-            
+
             var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
 
             var internalStorage = new InternalStorage();
@@ -73,7 +73,7 @@ namespace TypeGen.Core.Generator
                 generatorOptionsProvider,
                 logger);
         }
-        
+
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
         {
         }
@@ -91,7 +91,7 @@ namespace TypeGen.Core.Generator
         {
             _fileSystem = fileSystem;
         }
-        
+
         /// <summary>
         /// The default event handler for the FileContentGenerated event
         /// </summary>
@@ -110,7 +110,7 @@ namespace TypeGen.Core.Generator
             FileContentGenerated -= OnFileContentGenerated;
             FileContentGenerated += OnFileContentGenerated;
         }
-        
+
         /// <summary>
         /// Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
         /// </summary>
@@ -142,11 +142,11 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(IEnumerable<GenerationSpec> generationSpecs)
         {
             Requires.NotNullOrEmpty(generationSpecs, nameof(generationSpecs));
-            
+
             var files = new List<string>();
-            
+
             // generate types
-            
+
             _generationContext.InitializeGroupGeneratedTypes();
 
             foreach (GenerationSpec generationSpec in generationSpecs)
@@ -159,23 +159,23 @@ namespace TypeGen.Core.Generator
                     files.AddRange(GenerateTypeInit(kvp.Key));
                 }
             }
-            
+
             files = files.Distinct().ToList();
-            
+
             _generationContext.ClearGroupGeneratedTypes();
-            
+
             // generate barrels
-            
+
             if (Options.CreateIndexFile)
             {
                 files.AddRange(GenerateIndexFile(files));
             }
-            
+
             foreach (GenerationSpec generationSpec in generationSpecs)
             {
                 generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options, files));
             }
-            
+
             foreach (GenerationSpec generationSpec in generationSpecs)
             {
                 foreach (BarrelSpec barrelSpec in generationSpec.BarrelSpecs)
@@ -190,20 +190,20 @@ namespace TypeGen.Core.Generator
         private IEnumerable<string> GenerateBarrel(BarrelSpec barrelSpec)
         {
             string directory = Path.Combine(Options.BaseOutputDirectory ?? "", barrelSpec.Directory);
-            
+
             var fileName = "index";
             if (!string.IsNullOrWhiteSpace(Options.TypeScriptFileExtension)) fileName += $".{Options.TypeScriptFileExtension}";
             string filePath = Path.Combine(directory, fileName);
 
             var entries = new List<string>();
-            
+
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Files))
             {
                 entries.AddRange(_fileSystem.GetDirectoryFiles(directory)
                     .Where(x => Path.GetFileName(x) != fileName && x.EndsWith($".{Options.TypeScriptFileExtension}"))
                     .Select(Path.GetFileNameWithoutExtension));
             }
-            
+
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
             {
                 entries.AddRange(_fileSystem.GetDirectoryDirectories(directory));
@@ -211,11 +211,11 @@ namespace TypeGen.Core.Generator
 
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
-            
+
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
             return new[] { Path.Combine(barrelSpec.Directory, fileName) };
         }
-        
+
         /// <summary>
         /// DEPRECATED, will be removed in the future.
         /// Generates an `index.ts` file which exports all types within the generated files
@@ -242,11 +242,11 @@ namespace TypeGen.Core.Generator
 
             return new[] { filename };
         }
-        
+
         private IEnumerable<string> GenerateTypeInit(Type type)
         {
             IEnumerable<string> files = Enumerable.Empty<string>();
-            
+
             _generationContext.InitializeTypeGeneratedTypes();
             _generationContext.Add(type);
 
@@ -263,7 +263,7 @@ namespace TypeGen.Core.Generator
 
             return files.Distinct();
         }
-        
+
         /// <summary>
         /// Contains the actual logic of generating TypeScript files for a given type
         /// Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
@@ -293,7 +293,7 @@ namespace TypeGen.Core.Generator
 
             return GenerateNotMarked(type, Options.BaseOutputDirectory);
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from an assembly
         /// </summary>
@@ -303,7 +303,7 @@ namespace TypeGen.Core.Generator
         {
             return Task.Run(() => Generate(assembly));
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from an assembly
         /// </summary>
@@ -314,7 +314,7 @@ namespace TypeGen.Core.Generator
             Requires.NotNull(assembly, nameof(assembly));
             return Generate(new[] { assembly });
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from multiple assemblies
         /// </summary>
@@ -324,7 +324,7 @@ namespace TypeGen.Core.Generator
         {
             return Task.Run(() => Generate(assemblies));
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from multiple assemblies
         /// </summary>
@@ -333,7 +333,7 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(IEnumerable<Assembly> assemblies)
         {
             Requires.NotNullOrEmpty(assemblies, nameof(assemblies));
-            
+
             var generationSpecProvider = new GenerationSpecProvider();
             GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(assemblies);
 
@@ -349,7 +349,7 @@ namespace TypeGen.Core.Generator
         {
             return Task.Run(() => Generate(type));
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from a type
         /// </summary>
@@ -358,7 +358,7 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            
+
             var generationSpecProvider = new GenerationSpecProvider();
             GenerationSpec generationSpec = generationSpecProvider.GetGenerationSpec(type);
 
@@ -440,7 +440,7 @@ namespace TypeGen.Core.Generator
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
             string content;
-            
+
             if (classAttribute != null)
             {
                 content = _typeService.UseDefaultExport(type) ?
@@ -476,7 +476,7 @@ namespace TypeGen.Core.Generator
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
 
-            string enumText = _typeService.UseDefaultExport(type) ? 
+            string enumText = _typeService.UseDefaultExport(type) ?
                 _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading) :
                 _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading);
 
@@ -491,7 +491,7 @@ namespace TypeGen.Core.Generator
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotStaticAttribute>(memberInfo) != null) return false;
             return _metadataReaderFactory.GetInstance().GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic();
         }
-        
+
         private bool IsReadonlyTsProperty(MemberInfo memberInfo)
         {
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotReadonlyAttribute>(memberInfo) != null) return false;
@@ -506,7 +506,7 @@ namespace TypeGen.Core.Generator
         private string GetClassPropertyText(MemberInfo memberInfo)
         {
             LogClassPropertyWarnings(memberInfo);
-            
+
             string modifiers = Options.ExplicitPublicAccessor ? "public " : "";
 
             if (IsStaticTsProperty(memberInfo)) modifiers += "static ";
@@ -533,11 +533,11 @@ namespace TypeGen.Core.Generator
 
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions);
         }
-        
+
         private void LogClassPropertyWarnings(MemberInfo memberInfo)
         {
             if (Logger == null) return;
-            
+
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null)
                 Logger.Log($"TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.", LogLevel.Warning);
         }
@@ -568,10 +568,10 @@ namespace TypeGen.Core.Generator
         private string GetInterfacePropertyText(MemberInfo memberInfo)
         {
             LogInterfacePropertyWarnings(memberInfo);
-            
+
             string modifiers = "";
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";
-            
+
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
 
@@ -585,13 +585,13 @@ namespace TypeGen.Core.Generator
         private void LogInterfacePropertyWarnings(MemberInfo memberInfo)
         {
             if (Logger == null) return;
-            
+
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsStaticAttribute>(memberInfo) != null)
                 Logger.Log($"TsStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.", LogLevel.Warning);
-            
+
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotStaticAttribute>(memberInfo) != null)
                 Logger.Log($"TsNotStaticAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.", LogLevel.Warning);
-            
+
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo) != null)
                 Logger.Log($"TsDefaultValueAttribute used for an interface property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.", LogLevel.Warning);
         }
@@ -622,10 +622,10 @@ namespace TypeGen.Core.Generator
         private string GetEnumMemberText(FieldInfo fieldInfo)
         {
             Type type = fieldInfo.DeclaringType;
-            
+
             string name = Options.EnumValueNameConverters.Convert(fieldInfo.Name, fieldInfo);
             var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(type);
-            
+
             if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
                 (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
             {
