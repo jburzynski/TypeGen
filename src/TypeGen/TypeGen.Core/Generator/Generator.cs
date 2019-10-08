@@ -200,14 +200,15 @@ namespace TypeGen.Core.Generator
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Files))
             {
                 entries.AddRange(_fileSystem.GetDirectoryFiles(directory)
-                    .Where(x => Path.GetFileName(x) != fileName && x.EndsWith($".{Options.TypeScriptFileExtension}"))
-                    .Select(Path.GetFileNameWithoutExtension));
+                    .Where(x => Path.GetFileName(x) != fileName && x.EndsWith($".{Options.TypeScriptFileExtension}")));
             }
 
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
             {
                 entries.AddRange(_fileSystem.GetDirectoryDirectories(directory));
             }
+
+            entries = entries.Select(Path.GetFileNameWithoutExtension).ToList();
 
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
