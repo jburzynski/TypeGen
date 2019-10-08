@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NSubstitute;
-using TypeGen.Core.Business;
+using TypeGen.Core.Generator.Services;
 using TypeGen.Core.Storage;
 using Xunit;
 

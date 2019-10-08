@@ -6,6 +6,7 @@ using TypeGen.Cli.Extensions;
 using TypeGen.Core;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
 
 namespace TypeGen.Cli.Models
 {
@@ -15,6 +16,7 @@ namespace TypeGen.Cli.Models
     internal class TgConfig
     {
         public static bool DefaultAddFilesToProject => false;
+        public static bool DefaultBuildProject => false;
 
         [Obsolete("Use Assemblies instead")]
         public string AssemblyPath { get; set; }
@@ -28,17 +30,19 @@ namespace TypeGen.Cli.Models
         public string[] ExternalAssemblyPaths { get; set; }
         public string TypeScriptFileExtension { get; set; }
         public int? TabLength { get; set; }
+        public bool? UseTabCharacter { get; set; }
         public bool? ExplicitPublicAccessor { get; set; }
         public bool? SingleQuotes { get; set; }
+        public bool? BuildProject { get; set; }
         public bool? AddFilesToProject { get; set; }
         public string OutputPath { get; set; }
         public bool? ClearOutputDirectory { get; set; }
         public bool? CreateIndexFile { get; set; }
         public string CsNullableTranslation { get; set; }
         public Dictionary<string, string> DefaultValuesForTypes { get; set; }
+        public Dictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; }
         public Dictionary<string, string> CustomTypeMappings { get; set; }
         public bool? GenerateFromAssemblies { get; set; }
-        public bool? UseAttributesWithGenerationSpec { get; set; }
         public bool? EnumStringInitializers { get; set; }
         public string FileHeading { get; set; }
         public bool? UseDefaultExport { get; set; }
@@ -61,9 +65,11 @@ namespace TypeGen.Cli.Models
             if (GenerationSpecs == null) GenerationSpecs = new string[0];
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
             if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
+            if (BuildProject == null) BuildProject = DefaultBuildProject;
             if (AddFilesToProject == null) AddFilesToProject = DefaultAddFilesToProject;
             if (TypeScriptFileExtension == null) TypeScriptFileExtension = GeneratorOptions.DefaultTypeScriptFileExtension;
             if (TabLength == null) TabLength = GeneratorOptions.DefaultTabLength;
+            if (UseTabCharacter == null) UseTabCharacter = GeneratorOptions.DefaultUseTabCharacter;
             if (FileNameConverters == null) FileNameConverters = GeneratorOptions.DefaultFileNameConverters.GetTypeNames().ToArray();
             if (TypeNameConverters == null) TypeNameConverters = GeneratorOptions.DefaultTypeNameConverters.GetTypeNames().ToArray();
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
@@ -75,9 +81,9 @@ namespace TypeGen.Cli.Models
             if (OutputPath == null) OutputPath = "";
             if (ClearOutputDirectory == null) ClearOutputDirectory = false;
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            if (TypeUnionsForTypes == null) TypeUnionsForTypes = GeneratorOptions.DefaultTypeUnionsForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (CustomTypeMappings == null) CustomTypeMappings = GeneratorOptions.DefaultCustomTypeMappings.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             // GenerateFromAssemblies should stay null if no value is provided
-            if (UseAttributesWithGenerationSpec == null) UseAttributesWithGenerationSpec = GeneratorOptions.DefaultUseAttributesWithGenerationSpec;
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
             if (UseDefaultExport == null) UseDefaultExport = GeneratorOptions.DefaultUseDefaultExport;

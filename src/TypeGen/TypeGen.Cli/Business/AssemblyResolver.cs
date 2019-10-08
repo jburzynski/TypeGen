@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NuGet.Configuration;
 using TypeGen.Cli.Extensions;
+using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
-using TypeGen.Core.Business;
 
 namespace TypeGen.Cli.Business
 {
@@ -65,7 +65,7 @@ namespace TypeGen.Cli.Business
 
         private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            if (_logger.LogVerbose) _logger.Log($"Attempting to resolve assembly '{args.Name}'...");
+            _logger.Log($"Attempting to resolve assembly '{args.Name}'...", LogLevel.Debug);
             
             // step 1 - search by assembly name (nuget global + nuget fallback + user-defined)
 
@@ -97,8 +97,8 @@ namespace TypeGen.Cli.Business
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             
             // log if assembly not found
-            IEnumerable<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder});
-            if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", searchedDirectories)}");
+            List<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder}).ToList();
+            if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", searchedDirectories)}", LogLevel.Error);
             
             // return assembly or null
             return assembly;
@@ -154,7 +154,7 @@ namespace TypeGen.Cli.Business
                     Assembly assembly = Assembly.LoadFile(path);
                     if (assembly.GetName().Version.ToString() == assemblyVersion)
                     {
-                        if (_logger.LogVerbose) _logger.Log($"Assembly '{assembly.FullName}' found in: {path}");
+                        _logger.Log($"Assembly '{assembly.FullName}' found in: {path}", LogLevel.Debug);
                         return assembly;
                     }
                 }

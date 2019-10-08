@@ -5,8 +5,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using NSubstitute;
-using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Generator.Services;
+using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 
@@ -119,64 +121,6 @@ namespace TypeGen.Core.Test.Business
         {
             bool actualResult = _typeService.IsTsInterface(type);
             Assert.Equal(expectedResult, actualResult);
-        }
-
-        [Fact]
-        public void GetTsExportableMembers_TypeGiven_TsExportableMembersReturned()
-        {
-            IEnumerable<MemberInfo> expectedResult = new MemberInfo[]
-            {
-                typeof(GetTsExportableMembers_TestData).GetField("c"),
-                typeof(GetTsExportableMembers_TestData).GetField("c1"),
-                typeof(GetTsExportableMembers_TestData).GetField("d"),
-                typeof(GetTsExportableMembers_TestData).GetField("L"),
-                typeof(GetTsExportableMembers_TestData).GetField("N"),
-                typeof(GetTsExportableMembers_TestData).GetProperty("C"),
-                typeof(GetTsExportableMembers_TestData).GetProperty("D")
-            };
-            
-            IEnumerable<MemberInfo> actualResult = _typeService.GetTsExportableMembers(typeof(GetTsExportableMembers_TestData)).ToArray();
-            Assert.Equal(expectedResult, actualResult);
-        }
-
-        public class GetTsExportableMembers_TestData
-        {
-            public GetTsExportableMembers_TestData() {}
-            private GetTsExportableMembers_TestData(int a) {}
-            static GetTsExportableMembers_TestData() {}
-            
-            private string a;
-            private string A { get; set; }
-            private static int b;
-            private static int B { get; set; }
-            public string c;
-            public string C { get; set; }
-            public readonly int c1;
-            private readonly string c2;
-            public static int d;
-            public static int D { get; set; }
-            
-            private void e() {}
-            private static void E() {}
-            private bool f() => true;
-            private static bool F() => true;
-            public bool g() => true;
-            public static bool G() => true;
-
-            private event EventHandler h;
-            private static event EventHandler H;
-            public event EventHandler i;
-            public static event EventHandler I;
-
-            private delegate string j();
-            public delegate string k();
-
-            private const int l = 1;
-            public const byte L = 2;
-
-            [TsIgnore] public string m;
-            [TsIgnore] public int M { get; set; }
-            public static readonly byte N = 2;
         }
 
         [Theory]
@@ -362,7 +306,7 @@ namespace TypeGen.Core.Test.Business
         [Theory]
         [MemberData(nameof(GetTsTypeName_FromMember_TestData))]
         public void GetTsTypeName_MemberGiven_TsTypeNameReturned(MemberInfo memberInfo, TypeNameConverterCollection converters,
-            StrictNullFlags csNullableTranslation, string expectedResult)
+            StrictNullTypeUnionFlags csNullableTranslation, string expectedResult)
         {
             //arrange
             var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions
@@ -419,53 +363,53 @@ namespace TypeGen.Core.Test.Business
 
         public static IEnumerable<object[]> GetTsTypeName_FromMember_TestData = new[]
         {
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "Object" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullFlags.Regular, "Object" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("boolField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "boolean" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("CharProperty"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "string" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("stringField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "string" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("SbyteProperty"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("byteField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("shortField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("ushortField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("intField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("uintField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("longField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("ulongField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("floatField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("doubleField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("decimalField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("dateTimeField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "Date" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("MyClassProperty"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "MyClass" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("MyClassProperty"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullFlags.Regular, "my-class" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("myEnumField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "MyEnum" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass1Field"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "GenericClass1<number>" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass2Field"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "GenericClass2<number, string>" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass3Field"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "GenericClass3<number, MyClass, string>" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "any" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullFlags.Regular, "any" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullFlags.Null | StrictNullFlags.Undefined, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "number | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("intUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableByteNotNullNullField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "number | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNotUndefinedUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullFlags.Null | StrictNullFlags.Undefined, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "number | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null | StrictNullFlags.Undefined, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null | StrictNullFlags.Undefined, "number | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("intCustomTypeField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "CustomType" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeNullField"), new TypeNameConverterCollection(), StrictNullFlags.Undefined, "Date | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Null, "Date | null | undefined" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeNullField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "Date | null" },
-            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeUndefinedField"), new TypeNameConverterCollection(), StrictNullFlags.Regular, "Date | undefined" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "Object" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "Object" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("boolField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "boolean" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("CharProperty"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "string" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("stringField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "string" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("SbyteProperty"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("byteField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("shortField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("ushortField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("intField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("uintField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("longField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("ulongField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("floatField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("doubleField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("decimalField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("dateTimeField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "Date" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("MyClassProperty"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "MyClass" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("MyClassProperty"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "my-class" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("myEnumField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "MyEnum" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass1Field"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "GenericClass1<number>" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass2Field"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "GenericClass2<number, string>" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("genericClass3Field"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "GenericClass3<number, MyClass, string>" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "any" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetProperty("DynamicProperty"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "any" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null | StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("intUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableByteNotNullNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNotUndefinedUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null | StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null | StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntNullUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null | StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("intCustomTypeField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "CustomType" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "Date" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "Date" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "Date" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntCustomTypeUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "Date" },
         };
 
         [Theory]

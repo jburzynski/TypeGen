@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 

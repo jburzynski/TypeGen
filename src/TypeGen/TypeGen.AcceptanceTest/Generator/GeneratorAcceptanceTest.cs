@@ -5,8 +5,9 @@ using System.Text;
 using NSubstitute;
 using TypeGen.Cli.Business;
 using TypeGen.Core;
-using TypeGen.Core.Business;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Logging;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
 using TypeGen.TestWebApp.TestEntities;
@@ -48,6 +49,7 @@ namespace TypeGen.AcceptanceTest.Generator
             { "enum-short-values.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.enum-short-values.ts") },
             { "static-readonly.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.static-readonly.ts") },
             { "strict-nulls-class.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.strict-nulls-class.ts") },
+            { "type-unions.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.type-unions.ts") },
             { "with-generic-base-class-custom-type.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-generic-base-class-custom-type.ts") },
             { "with-ignored-base-and-custom-base.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-ignored-base-and-custom-base.ts") },
             { "with-ignored-base.ts", GetEmbeddedResource("TypeGen.AcceptanceTest.Generator.Expected.with-ignored-base.ts") },
@@ -77,7 +79,7 @@ namespace TypeGen.AcceptanceTest.Generator
         
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
 //        [Theory]
-		[InlineData("")]
+		[InlineData("./")]
 		[InlineData("generated-typescript/")]
 		[InlineData("nested/directory/generated-typescript/")]
         public void Generate_AssemblyGiven_TypeScriptContentGenerated(string outputPath)
@@ -86,10 +88,10 @@ namespace TypeGen.AcceptanceTest.Generator
             
             const string assemblyPath = ProjectPath + "bin/Debug/netcoreapp2.0/TypeGen.TestWebApp.dll";
             
-            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
+            var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
             
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(false), ProjectPath);
             
             //act
             
@@ -125,6 +127,7 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + "enum-short-values.ts", Content["enum-short-values.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "static-readonly.ts", Content["static-readonly.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "strict-nulls-class.ts", Content["strict-nulls-class.ts"]);
+            _fileSystem.Received().SaveFile(outputPath + "type-unions.ts", Content["type-unions.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-generic-base-class-custom-type.ts", Content["with-generic-base-class-custom-type.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base-and-custom-base.ts", Content["with-ignored-base-and-custom-base.ts"]);
             _fileSystem.Received().SaveFile(outputPath + "with-ignored-base.ts", Content["with-ignored-base.ts"]);
@@ -156,21 +159,21 @@ namespace TypeGen.AcceptanceTest.Generator
         
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
 //        [Theory]
-        [InlineData("")]
+        [InlineData("./")]
         [InlineData("generated-typescript/")]
         [InlineData("nested/directory/generated-typescript/")]
         public void Generate_GenerationSpecGiven_TypeScriptContentGenerated(string outputPath)
         {
             //arrange
             
-            var generator = new Core.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
-            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(), ProjectPath);
+            var generator = new Core.Generator.Generator(new GeneratorOptions { BaseOutputDirectory = outputPath, CreateIndexFile = true }, _fileSystem);
+            var assemblyResolver = new AssemblyResolver(new FileSystem(), new ConsoleLogger(false), ProjectPath);
             var generationSpec = new AcceptanceTestGenerationSpec();
             
             //act
             
             assemblyResolver.Register();
-            generator.Generate(generationSpec);
+            generator.Generate(new[] { generationSpec });
             assemblyResolver.Unregister();
             
             //assert

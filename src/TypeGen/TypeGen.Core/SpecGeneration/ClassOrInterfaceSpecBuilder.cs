@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
@@ -162,6 +163,28 @@ namespace TypeGen.Core.SpecGeneration
         public TDerived Type(TsType tsType)
         {
             AddActiveMemberAttribute(new TsTypeAttribute(tsType));
+            return this as TDerived;
+        }
+
+        /// <summary>
+        /// Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+        /// </summary>
+        /// <param name="typeUnions"></param>
+        /// <returns></returns>
+        public TDerived TypeUnions(IEnumerable<string> typeUnions)
+        {
+            AddActiveMemberAttribute(new TsTypeUnionsAttribute(typeUnions));
+            return this as TDerived;
+        }
+        
+        /// <summary>
+        /// Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+        /// </summary>
+        /// <param name="typeUnions"></param>
+        /// <returns></returns>
+        public TDerived TypeUnions(params string[] typeUnions)
+        {
+            AddActiveMemberAttribute(new TsTypeUnionsAttribute(typeUnions));
             return this as TDerived;
         }
         

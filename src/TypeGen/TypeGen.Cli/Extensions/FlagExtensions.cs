@@ -8,25 +8,25 @@ namespace TypeGen.Cli.Extensions
 {
     internal static class FlagExtensions
     {
-        public static string ToFlagString(this StrictNullFlags strictNullFlags)
+        public static string ToFlagString(this StrictNullTypeUnionFlags strictNullTypeUnionFlags)
         {
             var result = "";
 
-            if (strictNullFlags.HasFlag(StrictNullFlags.Null)) result += "null ";
-            if (strictNullFlags.HasFlag(StrictNullFlags.Undefined)) result += "undefined ";
+            if (strictNullTypeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Null)) result += "null ";
+            if (strictNullTypeUnionFlags.HasFlag(StrictNullTypeUnionFlags.Undefined)) result += "undefined ";
 
             return result.TrimEnd().Replace(" ", "|");
         }
 
-        public static StrictNullFlags ToStrictNullFlags(this string str)
+        public static StrictNullTypeUnionFlags ToStrictNullFlags(this string str)
         {
-            var result = StrictNullFlags.Regular;
+            var result = StrictNullTypeUnionFlags.None;
             if (string.IsNullOrWhiteSpace(str)) return result;
 
             string[] parts = str.Split('|');
 
-            if (parts.Contains("null")) result |= StrictNullFlags.Null;
-            if (parts.Contains("undefined")) result |= StrictNullFlags.Undefined;
+            if (parts.Contains("null")) result |= StrictNullTypeUnionFlags.Null;
+            if (parts.Contains("undefined")) result |= StrictNullTypeUnionFlags.Undefined;
 
             return result;
         }

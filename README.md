@@ -15,9 +15,9 @@ Single-class-per-file C# to TypeScript generator
 
 ## Quick start
 
-Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project.
+1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. If you wish to use TypeGen as a .NET Core CLI tool, you'll need to install it from [this package](https://www.nuget.org/packages/TypeGen.DotNetCli)
 
-Mark your C# classes/enums as exportable to TypeScript:
+2. Mark your C# classes/enums as exportable to TypeScript:
 
 ```c#
 // with attributes
@@ -29,7 +29,7 @@ public class ProductDto
     public string[] Tags { get; set; }
 }
 
-// or with a generation spec
+// or with a generation spec (created anywhere in your project)
 
 public class MyGenerationSpec : GenerationSpec
 {
@@ -40,9 +40,17 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-After building your project, type `TypeGen generate` into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET CLI tool. **Note**: if you're using generation specs, you should also add your spec(s) in `tgconfig.json` under the `generationSpecs` parameter (more details [in the docs](https://typegen.readthedocs.io/en/latest/cli.html#configuration-file)).
+3. If you're using a generation spec, create a file named `tgconfig.json` directly in your project folder and place the following content there:
 
-This will generate a single TypeScript file (named *product-dto.ts*) in your project directory. The file will look like this:
+```json
+{
+  "generationSpecs": ["MyGenerationSpec"]
+}
+```
+
+4. Build your project and type `TypeGen generate` or `TypeGen -p "MyProjectName" generate` (depending on the current working directory of the PM Console) into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET Core CLI tool.
+
+After completing the steps described above, a single TypeScript file (named *product-dto.ts*) will be generated in your project directory. The file will look like this:
 
 ```typescript
 export class ProductDto {
@@ -56,9 +64,10 @@ export class ProductDto {
 Some of TypeGen's features include:
 
 * generating TypeScript classes, interfaces and enums - single class per file
+* generating barrel (index) files
 * support for collection (or nested collection) types
 * generic classes/types generation
 * support for inheritance
 * customizable convertion between C#/TypeScript names (naming conventions)
 
-For complete list of features with examples, please refer to the project's documentation: http://typegen.readthedocs.io
+For a complete list of features with examples, please refer to the project's documentation: http://typegen.readthedocs.io

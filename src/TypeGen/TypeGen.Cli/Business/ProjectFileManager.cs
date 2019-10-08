@@ -37,7 +37,7 @@ namespace TypeGen.Cli.Business
 
         public XmlDocument ReadFromProjectFolder(string projectFolder)
         {
-            string projectFilePath = FileSystemUtils.GetProjectFilePath(projectFolder, _fileSystem);
+            string projectFilePath = GetProjectPath(projectFolder);
             if (string.IsNullOrEmpty(projectFilePath)) return null;
 
             var document = new XmlDocument();
@@ -48,8 +48,14 @@ namespace TypeGen.Cli.Business
 
         public void SaveProjectFile(string projectFolder, XmlDocument projectFile)
         {
-            string projectFilePath = FileSystemUtils.GetProjectFilePath(projectFolder, _fileSystem);
+            string projectFilePath = GetProjectPath(projectFolder);
             projectFile.Save(projectFilePath);
+        }
+
+        private string GetProjectPath(string projectFolder)
+        {
+            return _fileSystem.GetDirectoryFiles(projectFolder)
+                .FirstOrDefault(x => x.EndsWith(".csproj"));
         }
 
         public void AddTsFile(XmlDocument projectFile, string filePath)

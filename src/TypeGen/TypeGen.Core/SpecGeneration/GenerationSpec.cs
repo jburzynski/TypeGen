@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using TypeGen.Core.TypeAnnotations;
@@ -11,14 +12,24 @@ namespace TypeGen.Core.SpecGeneration
     public abstract class GenerationSpec
     {
         internal IDictionary<Type, TypeSpec> TypeSpecs { get; }
+        internal IList<BarrelSpec> BarrelSpecs { get; }
 
         protected GenerationSpec()
         {
             TypeSpecs = new Dictionary<Type, TypeSpec>();
+            BarrelSpecs = new List<BarrelSpec>();
+        }
+
+        public virtual void OnBeforeGeneration(OnBeforeGenerationArgs args)
+        {
+        }
+
+        public virtual void OnBeforeBarrelGeneration(OnBeforeBarrelGenerationArgs args)
+        {
         }
 
         /// <summary>
-        /// Adds class configuration section
+        /// Adds a class
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
@@ -30,7 +41,7 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
-        /// Adds class configuration section
+        /// Adds a class
         /// </summary>
         /// <param name="outputDir"></param>
         /// <typeparam name="T"></typeparam>
@@ -42,7 +53,7 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
-        /// Adds interface configuration section
+        /// Adds an interface
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
@@ -54,7 +65,7 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
-        /// Adds interface configuration section
+        /// Adds an interface
         /// </summary>
         /// <param name="outputDir"></param>
         /// <typeparam name="T"></typeparam>
@@ -66,7 +77,7 @@ namespace TypeGen.Core.SpecGeneration
         }
 
         /// <summary>
-        /// Adds enum configuration section
+        /// Adds an enum
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
@@ -79,7 +90,7 @@ namespace TypeGen.Core.SpecGeneration
         }
 
         /// <summary>
-        /// Adds enum configuration section
+        /// Adds an enum
         /// </summary>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
@@ -98,5 +109,12 @@ namespace TypeGen.Core.SpecGeneration
 
             return typeSpec;
         }
+
+        /// <summary>
+        /// Adds a barrel file for a specified directory
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <param name="barrelScope"></param>
+        protected void AddBarrel(string directory, BarrelScope barrelScope = BarrelScope.Files | BarrelScope.Directories) => BarrelSpecs.Add(new BarrelSpec(directory, barrelScope));
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Validation;
@@ -11,9 +12,9 @@ namespace TypeGen.Core.Converters
     /// <summary>
     /// Converts under_score (or UNDER_SCORE) names to camelCase names
     /// </summary>
-    public class UnderscoreCaseToCamelCaseConverter : INameConverter, ITypeNameConverter
+    public class UnderscoreCaseToCamelCaseConverter : IMemberNameConverter, ITypeNameConverter
     {
-        public string Convert(string name)
+        public string Convert(string name, MemberInfo memberInfo)
         {
             Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);

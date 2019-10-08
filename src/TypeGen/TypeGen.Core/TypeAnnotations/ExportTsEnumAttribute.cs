@@ -3,7 +3,7 @@
 namespace TypeGen.Core.TypeAnnotations
 {
     /// <summary>
-    /// Indentifies an enum that a TypeScript file should be generated for
+    /// Identifies an enum that a TypeScript file should be generated for
     /// </summary>
     [AttributeUsage(AttributeTargets.Enum)]
     public class ExportTsEnumAttribute : ExportAttribute

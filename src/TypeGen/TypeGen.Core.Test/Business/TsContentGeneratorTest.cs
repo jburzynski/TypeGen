@@ -4,8 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NSubstitute;
-using TypeGen.Core.Business;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Generator;
+using TypeGen.Core.Generator.Services;
+using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 
@@ -74,7 +76,6 @@ namespace TypeGen.Core.Test.Business
             TypeNameConverterCollection fileNameConverters,
             TypeNameConverterCollection typeNameConverters,
             IEnumerable<object> typeDependencies,
-            IEnumerable<MemberInfo> tsExportableMembers,
                 string expectedOutput)
         {
             //arrange
@@ -84,7 +85,6 @@ namespace TypeGen.Core.Test.Business
                 TypeNameConverters = typeNameConverters
             } };
             _typeDependencyService.GetTypeDependencies(Arg.Any<Type>()).Returns(typeDependencies);
-            _typeService.GetTsExportableMembers(Arg.Any<Type>()).Returns(tsExportableMembers);
             _templateService.FillImportTemplate(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(i => $"{i.ArgAt<string>(0)} | {i.ArgAt<string>(1)} | {i.ArgAt<string>(2)};");
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
 
@@ -99,7 +99,6 @@ namespace TypeGen.Core.Test.Business
         {
             new object[] { typeof(GetImportsText_TestData.Parent), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 GetImportsText_TestData.ParentTypeDependencies,
-                GetImportsText_TestData.ParentMemberInfos,
                 "Base |  | ./base;" +
                 "DataType1 |  | ./data-type1;" +
                 "DataType2 |  | ./data-type2;" +
@@ -114,7 +113,6 @@ namespace TypeGen.Core.Test.Business
 
             new object[] { typeof(GetImportsText_TestData.Parent), "./child/dir/", new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 GetImportsText_TestData.ParentTypeDependencies,
-                GetImportsText_TestData.ParentMemberInfos,
                 "Base |  | ./base;" +
                 "DataType1 |  | ./data-type1;" +
                 "DataType2 |  | ./data-type2;" +
@@ -129,13 +127,11 @@ namespace TypeGen.Core.Test.Business
             
             new object[] { typeof(GetImportsText_TestData.ParentCustomBase), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 new TypeDependencyInfo[] {},
-                new MemberInfo[] {},
                 "Base |  | base/directory/base;\r\n"
             },
             
             new object[] { typeof(GetImportsText_TestData.ParentCustomBaseAlias), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 new TypeDependencyInfo[] {},
-                new MemberInfo[] {},
                 "Base | B | other/directory/base;\r\n"
             },
         };
@@ -167,19 +163,6 @@ namespace TypeGen.Core.Test.Business
                 new TypeDependencyInfo(typeof(Child3)),
                 new TypeDependencyInfo(typeof(Child4), new Attribute[] { new TsDefaultTypeOutputAttribute("child4/default/output/dir") }),
                 new TypeDependencyInfo(typeof(ChildEnum))
-            };
-
-            public static readonly IEnumerable<MemberInfo> ParentMemberInfos = new MemberInfo[]
-            {
-                typeof(Parent).GetProperty("PropertyChild1"),
-                typeof(Parent).GetProperty("PropertyChild2"),
-                typeof(Parent).GetField("FieldChild3"),
-                typeof(Parent).GetProperty("PropertyChild4"),
-                typeof(Parent).GetProperty("PropertyChildEnum"),
-                typeof(Parent).GetProperty("CustomTypeProperty"),
-                typeof(Parent).GetProperty("CustomTypePropertyDuplicate"),
-                typeof(Parent).GetProperty("CustomTypeAliasProperty"),
-                typeof(Parent).GetProperty("CustomTypeAliasPropertyDuplicate")
             };
 
             public class Parent : Base<DataType1, DataType2>

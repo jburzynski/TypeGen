@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using TypeGen.Core.Extensions;
+using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.TypeAnnotations
 {
@@ -16,12 +17,8 @@ namespace TypeGen.Core.TypeAnnotations
         /// </summary>
         public string OutputDir
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_outputDir)) return _outputDir;
-                return _outputDir.Last().In('\\', '/') ? _outputDir : _outputDir + '/';
-            }
-            set => _outputDir = value;
+            get => _outputDir;
+            set => _outputDir = FileSystemUtils.AsDirectory(value);
         }
     }
 }

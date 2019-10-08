@@ -46,6 +46,13 @@ namespace TypeGen.Core.Storage
         /// <param name="directory"></param>
         /// <returns></returns>
         IEnumerable<string> GetDirectoryFiles(string directory);
+        
+        /// <summary>
+        /// Gets all directories in a directory (only directories, not files)
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetDirectoryDirectories(string directory);
 
         /// <summary>
         /// Gets the current directory
@@ -58,5 +65,11 @@ namespace TypeGen.Core.Storage
         /// </summary>
         /// <param name="directory"></param>
         void ClearDirectory(string directory);
+
+        /// <summary>
+        /// Sets the current working directory
+        /// </summary>
+        /// <param name="directory"></param>
+        void SetCurrentDirectory(string directory);
     }
 }

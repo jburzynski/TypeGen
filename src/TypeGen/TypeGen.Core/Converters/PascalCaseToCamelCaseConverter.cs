@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Converters
@@ -7,9 +8,9 @@ namespace TypeGen.Core.Converters
     /// <summary>
     /// Converts PascalCase names to camelCase names
     /// </summary>
-    public class PascalCaseToCamelCaseConverter : INameConverter, ITypeNameConverter
+    public class PascalCaseToCamelCaseConverter : IMemberNameConverter, ITypeNameConverter
     {
-        public string Convert(string name)
+        public string Convert(string name, MemberInfo memberInfo)
         {
             Requires.NotNullOrEmpty(name, nameof(name));
             return ConvertTypeInvariant(name);
