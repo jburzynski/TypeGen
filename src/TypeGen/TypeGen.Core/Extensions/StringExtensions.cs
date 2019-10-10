@@ -81,5 +81,84 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(value, nameof(value));
             return value.Split('|')[index].Trim();
         }
+
+
+        /// <summary>
+        /// Ensures that a given string has a prefix. If it does not, it is added. Otherwise the string returned, unmodified.
+        /// </summary>
+        /// <param name="str">The initial string value</param>
+        /// <param name="prefix">The prefix desired at the beginning of str</param>
+        /// <param name="comparison">How the startswith comparison is done</param>
+        /// <returns>prefix + str or str</returns>
+        public static string EnsurePrefix(this string str, string prefix, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            Requires.NotNull(str, nameof(str));
+            Requires.NotNull(prefix, nameof(prefix));
+
+            if (!str.StartsWith(prefix, comparison))
+                return prefix + str;
+            return str;
+        }
+
+        /// <summary>
+        /// Ensures that a given string has a postfix. If it does not, it is added. Otherwise the string returned, unmodified.
+        /// </summary>
+        /// <param name="str">The initial string value</param>
+        /// <param name="postfix">The postfix desired at the end of str</param>
+        /// <param name="comparison">How the endswith comparison is done</param>
+        /// <returns>str + postfix or str</returns>
+        public static string EnsurePostfix(this string str, string postfix, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            Requires.NotNull(str, nameof(str));
+            Requires.NotNull(postfix, nameof(postfix));
+
+            if (!str.EndsWith(postfix, comparison))
+                return str + postfix;
+            return str;
+        }
+
+        /// <summary>
+        /// Ensures that a given string does NOT have a prefix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+        /// </summary>
+        /// <param name="str">The initial string value</param>
+        /// <param name="prefix">The prefix that should be removed</param>
+        /// <param name="comparison">How the startswith comparison is done</param>
+        /// <returns>-prefix + str or str</returns>
+        public static string EnsureRemovedPrefix(this string str, string prefix, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            Requires.NotNull(str, nameof(str));
+            Requires.NotNull(prefix, nameof(prefix));
+
+            if (str.StartsWith(prefix, comparison))
+            {
+                if (prefix.Length == str.Length)
+                    return "";
+
+                return str.Substring(prefix.Length);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Ensures that a given string does NOT have a postfix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+        /// </summary>
+        /// <param name="str">The initial string value</param>
+        /// <param name="postfix">The postfix that should be removed</param>
+        /// <param name="comparison">How the endswith comparison is done</param>
+        /// <returns>str - postfix or str</returns>
+        public static string EnsureRemovedPostfix(this string str, string postfix, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            Requires.NotNull(str, nameof(str));
+            Requires.NotNull(postfix, nameof(postfix));
+
+            if (str.EndsWith(postfix, comparison))
+            {
+                if (postfix.Length == str.Length)
+                    return "";
+
+                return str.Substring(0, str.Length - postfix.Length);
+            }
+            return str;
+        }
     }
 }
