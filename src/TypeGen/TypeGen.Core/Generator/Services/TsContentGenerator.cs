@@ -123,7 +123,7 @@ namespace TypeGen.Core.Generator.Services
                 string fileName = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
 
                 // get file path
-                string dependencyPath = Path.Combine(pathDiff, fileName);
+                string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), fileName);
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
