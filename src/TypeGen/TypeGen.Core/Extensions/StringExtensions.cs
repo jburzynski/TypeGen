@@ -38,7 +38,7 @@ namespace TypeGen.Core.Extensions
             
             string[] tokens = value.ToLowerInvariant().Split(new[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens.Length == 1 && value != value.ToUpperInvariant())
-                return char.ToUpperInvariant(value[0]) + value.Substring(1);
+                return (value.Length <= 1) ? value.ToLowerInvariant() : char.ToUpperInvariant(value[0]) + value.Substring(1);
 
             for (var i = 0; i < tokens.Length; i++)
             {

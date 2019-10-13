@@ -52,6 +52,7 @@ namespace TypeGen.Core.Test.Converters
         [InlineData("SOME", "some")]
         [InlineData("SomeName", "someName")]
         [InlineData("someName", "someName")]
+        [InlineData("S", "s")]
         [InlineData("A_Some_Name", "aSomeName")]
         [InlineData("A_SOME_A_NAME", "aSomeAName")]
         public void UnderscoreCaseToCamelCaseConverter_Test(string input, string expectedResult)
@@ -72,7 +73,8 @@ namespace TypeGen.Core.Test.Converters
         [InlineData("Some_Name", "SomeName")]
         [InlineData("SOME", "Some")]
         [InlineData("SomeName", "SomeName")]
-        [InlineData("some Name", "SomeName")]
+        [InlineData("someName", "SomeName")]
+        [InlineData("S", "S")]
         [InlineData("A_Some_Name", "ASomeName")]
         [InlineData("A_SOME_A_NAME", "ASomeAName")]
         public void UnderscoreCaseToPascalCaseConverter_Test(string input, string expectedResult)
