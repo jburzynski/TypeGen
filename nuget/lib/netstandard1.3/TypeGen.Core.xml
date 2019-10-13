@@ -205,6 +205,42 @@
             <param name="index">The index of the type in the type union to retrieve</param>
             <returns>The type from the given TS type union indicated by the index</returns>
         </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsurePrefix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string has a prefix. If it does not, it is added. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="prefix">The prefix desired at the beginning of str</param>
+            <param name="comparison">How the startswith comparison is done</param>
+            <returns>prefix + str or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsurePostfix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string has a postfix. If it does not, it is added. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="postfix">The postfix desired at the end of str</param>
+            <param name="comparison">How the endswith comparison is done</param>
+            <returns>str + postfix or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsureRemovedPrefix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string does NOT have a prefix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="prefix">The prefix that should be removed</param>
+            <param name="comparison">How the startswith comparison is done</param>
+            <returns>-prefix + str or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsureRemovedPostfix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string does NOT have a postfix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="postfix">The postfix that should be removed</param>
+            <param name="comparison">How the endswith comparison is done</param>
+            <returns>str - postfix or str</returns>
+        </member>
         <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type,TypeGen.Core.Metadata.IMetadataReader)">
             <summary>
             Checks if a type is marked with an ExportTs... attribute
