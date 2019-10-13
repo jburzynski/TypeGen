@@ -28,7 +28,7 @@ namespace TypeGen.Core.Test.Extensions
         [InlineData("I like a lot_of_spaces", "ILikeALotOfSpaces")]
         [InlineData("i like a lot of spaces", "ILikeALotOfSpaces")]
         [InlineData("PascalCaseSingleWord", "PascalCaseSingleWord")]
-        [InlineData("camelCaseSingleWord", "camelCaseSingleWord")]
+        [InlineData("camelCaseSingleWord", "CamelCaseSingleWord")]
         public void ToTitleCase_Test(string input, string expectedResult)
         {
             string actualResult = input.ToTitleCase();
