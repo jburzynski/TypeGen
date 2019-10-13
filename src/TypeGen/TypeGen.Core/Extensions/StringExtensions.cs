@@ -37,6 +37,8 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(value, nameof(value));
             
             string[] tokens = value.ToLowerInvariant().Split(new[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length == 1 && value != value.ToUpperInvariant())
+                return char.ToUpperInvariant(value[0]) + value.Remove(0,1);
 
             for (var i = 0; i < tokens.Length; i++)
             {
