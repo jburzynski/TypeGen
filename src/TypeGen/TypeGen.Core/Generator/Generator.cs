@@ -189,11 +189,11 @@ namespace TypeGen.Core.Generator
 
         private IEnumerable<string> GenerateBarrel(BarrelSpec barrelSpec)
         {
-            string directory = Path.Combine(Options.BaseOutputDirectory ?? "", barrelSpec.Directory);
+            string directory = Path.Combine(Options.BaseOutputDirectory?.EnsurePostfix("/") ?? "", barrelSpec.Directory);
             
             var fileName = "index";
             if (!string.IsNullOrWhiteSpace(Options.TypeScriptFileExtension)) fileName += $".{Options.TypeScriptFileExtension}";
-            string filePath = Path.Combine(directory, fileName);
+            string filePath = Path.Combine(directory.EnsurePostfix("/"), fileName);
 
             var entries = new List<string>();
             
@@ -206,14 +206,17 @@ namespace TypeGen.Core.Generator
             
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
             {
-                entries.AddRange(_fileSystem.GetDirectoryDirectories(directory));
+                entries.AddRange(
+                    _fileSystem.GetDirectoryDirectories(directory)
+                        .Select(dir => dir.Replace("\\", "/").Split('/').Last())
+                    );
             }
 
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
             
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
-            return new[] { Path.Combine(barrelSpec.Directory, fileName) };
+            return new[] { Path.Combine(barrelSpec.Directory.EnsurePostfix("/"), fileName) };
         }
         
         /// <summary>
@@ -713,7 +716,7 @@ namespace TypeGen.Core.Generator
 
             return string.IsNullOrEmpty(outputDir)
                 ? fileName
-                : Path.Combine(outputDir, fileName);
+                : Path.Combine(outputDir.EnsurePostfix("/"), fileName);
         }
 
         /// <summary>
@@ -726,7 +729,7 @@ namespace TypeGen.Core.Generator
         private string GetFilePath(Type type, string outputDir)
         {
             string fileName = GetRelativeFilePath(type, outputDir);
-            return Path.Combine(Options.BaseOutputDirectory ?? "", fileName);
+            return Path.Combine(Options.BaseOutputDirectory?.EnsurePostfix("/") ?? "", fileName);
         }
 
         /// <summary>
