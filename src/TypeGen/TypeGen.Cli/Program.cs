@@ -196,21 +196,21 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            Console.WriteLine($"TypeGen v{AppConfig.Version}",
-                "",
-                "Usage: [dotnet] typegen [options] [command]",
-                "",
-                "Options:",
-                "-h|--help               Show help information",
-                "-v|--verbose            Show verbose output",
-                "-p|--project-folder     Set project folder path(s)",
-                "-c|--config-path        Set config path(s) to use",
-                "",
-                "Commands:",
-                "generate     Generate TypeScript files",
-                "getcwd       Get current working directory",
-                "",
-                "For more information please visit project's website: http://jburzynski.net/TypeGen");
+            Console.WriteLine($"TypeGen v{AppConfig.Version}" + Environment.NewLine +
+                              Environment.NewLine +
+                              "Usage: [dotnet] typegen [options] [command]" + Environment.NewLine +
+                              Environment.NewLine +
+                              "Options:" + Environment.NewLine +
+                              "-h|--help               Show help information" + Environment.NewLine +
+                              "-v|--verbose            Show verbose output" + Environment.NewLine +
+                              "-p|--project-folder     Set project folder path(s)" + Environment.NewLine +
+                              "-c|--config-path        Set config path(s) to use" + Environment.NewLine +
+                              Environment.NewLine +
+                              "Commands:" + Environment.NewLine +
+                              "generate     Generate TypeScript files" + Environment.NewLine +
+                              "getcwd       Get current working directory" + Environment.NewLine +
+                              Environment.NewLine +
+                              "For more information please visit project's website: http://jburzynski.net/TypeGen");
         }
     }
 }
