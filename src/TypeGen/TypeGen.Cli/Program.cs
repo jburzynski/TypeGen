@@ -198,7 +198,7 @@ namespace TypeGen.Cli
         {
             Console.WriteLine($"TypeGen v{AppConfig.Version}" + Environment.NewLine +
                               Environment.NewLine +
-                              "Usage: [dotnet] typegen [options] [command]" + Environment.NewLine +
+                              "Usage: [dotnet-]typegen [options] [command]" + Environment.NewLine +
                               Environment.NewLine +
                               "Options:" + Environment.NewLine +
                               "-h|--help               Show help information" + Environment.NewLine +
