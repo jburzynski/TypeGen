@@ -11,11 +11,11 @@ Single-class-per-file C# to TypeScript generator
 ## How to get
 
 * [NuGet](https://www.nuget.org/packages/TypeGen)
-* [NuGet - .NET CLI tool](https://www.nuget.org/packages/TypeGen.DotNetCli)
+* [NuGet - .NET CLI tool](https://www.nuget.org/packages/dotnet-typegen)
 
 ## Quick start
 
-1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. If you wish to use TypeGen as a .NET Core CLI tool, you'll need to install it from [this package](https://www.nuget.org/packages/TypeGen.DotNetCli)
+1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. If you wish to use TypeGen as a .NET Core CLI tool, you'll need to install it from [this package](https://www.nuget.org/packages/dotnet-typegen)
 
 2. Mark your C# classes/enums as exportable to TypeScript:
 
