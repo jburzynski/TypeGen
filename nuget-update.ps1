@@ -3,6 +3,7 @@
 #tools
 
 rm -Recurse -Force nuget\tools\runtimes
+rm nuget\tools\TypeGen.exe
 copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp3.0\publish\* nuget\tools
 mv nuget\tools\TypeGen.Cli.exe nuget\tools\TypeGen.exe
 
