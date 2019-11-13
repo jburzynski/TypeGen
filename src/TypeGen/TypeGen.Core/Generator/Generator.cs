@@ -376,12 +376,18 @@ namespace TypeGen.Core.Generator
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         private IEnumerable<string> GenerateNotMarked(Type type, string outputDirectory)
         {
-            if (type.GetTypeInfo().IsClass)
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsClass)
             {
                 return GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
             }
 
-            if (type.GetTypeInfo().IsEnum)
+            if (typeInfo.IsInterface)
+            {
+                return GenerateInterface(type, new ExportTsInterfaceAttribute { OutputDir = outputDirectory });
+            }
+
+            if (typeInfo.IsEnum)
             {
                 return GenerateEnum(type, new ExportTsEnumAttribute { OutputDir = outputDirectory });
             }
