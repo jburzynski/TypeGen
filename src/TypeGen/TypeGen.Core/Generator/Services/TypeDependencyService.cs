@@ -35,8 +35,10 @@ namespace TypeGen.Core.Generator.Services
         public IEnumerable<TypeDependencyInfo> GetTypeDependencies(Type type)
         {
             Requires.NotNull(type, nameof(type));
+
+            var typeInfo = type.GetTypeInfo();
             
-            if (!type.GetTypeInfo().IsClass) return Enumerable.Empty<TypeDependencyInfo>();
+            if (!typeInfo.IsClass && !typeInfo.IsInterface) return Enumerable.Empty<TypeDependencyInfo>();
 
             type = _typeService.StripNullable(type);
 
