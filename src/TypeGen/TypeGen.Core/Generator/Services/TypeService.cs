@@ -242,7 +242,8 @@ namespace TypeGen.Core.Generator.Services
                     throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
                 }
 
-                return typeAttribute.TypeName;
+                Type type = GetMemberType(memberInfo);
+                return GenerateCustomType(type, typeAttribute.TypeName);
             }
 
             return GetTsTypeNameForMember(memberInfo);
