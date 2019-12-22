@@ -35,16 +35,55 @@ namespace TypeGen.Core.Generator.Services
             return GetTsSimpleTypeName(type) != null;
         }
 
+        private string GenerateCustomType(Type t, string customTypeMappingValue)
+        {
+            // For custom types mappings ending with <>, construct the relevant generic custom type
+            if (customTypeMappingValue.EndsWith("<>"))
+            {
+                customTypeMappingValue = customTypeMappingValue.Substring(0, customTypeMappingValue.Length - 2); // Strip <>
+                string[] genericArgumentNames = t.GetGenericArguments()
+                    .Select(t2 => t2.IsGenericParameter ? t2.Name : GetTsTypeName(t2, false))
+                    .ToArray();
+                customTypeMappingValue = $"{customTypeMappingValue}<{string.Join(", ", genericArgumentNames)}>";
+            }
+
+            // For custom types not ending with <>, leave the custom type as-is (not generic)
+            return customTypeMappingValue;
+        }
+
+        private bool TryGetCustomTypeMapping(Type t, out string customType)
+        {
+            if (t != null && t.FullName != null && GeneratorOptions.CustomTypeMappings != null)
+            {
+                // Check for given type as-is (and combined generics)
+                if (GeneratorOptions.CustomTypeMappings.TryGetValue(t.FullName, out string customTypeMappingValue))
+                {
+                    customType = GenerateCustomType(t, customTypeMappingValue);
+                    return true;
+                }
+                else
+                {
+                    // Type can be a constructed generic or the generic itself
+                    if (t.IsConstructedGenericType || t.GenericTypeArguments.Length > 0)
+                    {
+                        Type genericType = t.IsConstructedGenericType ? t.GetGenericTypeDefinition() : t;
+                        if (GeneratorOptions.CustomTypeMappings.TryGetValue(genericType.FullName, out customTypeMappingValue))
+                        {
+                            customType = GenerateCustomType(t, customTypeMappingValue);
+                            return true;
+                        }
+                    }
+                }
+            }
+            customType = null;
+            return false;
+        }
+
         /// <inheritdoc />
         public string GetTsSimpleTypeName(Type type)
         {
             Requires.NotNull(type, nameof(type));
             if (string.IsNullOrWhiteSpace(type.FullName)) return null;
-
-            if (GeneratorOptions.CustomTypeMappings != null && GeneratorOptions.CustomTypeMappings.Any() && GeneratorOptions.CustomTypeMappings.ContainsKey(type.FullName))
-            {
-                return GeneratorOptions.CustomTypeMappings[type.FullName];
-            }
 
             switch (type.FullName)
             {
@@ -157,6 +196,11 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
             type = StripNullable(type);
+
+            if (TryGetCustomTypeMapping(type, out string customType))
+            {
+                return customType;
+            }
 
             // handle simple types
             if (IsTsSimpleType(type))
