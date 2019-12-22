@@ -61,17 +61,14 @@ namespace TypeGen.Core.Generator.Services
                     customType = GenerateCustomType(t, customTypeMappingValue);
                     return true;
                 }
-                else
+                else if (t.IsConstructedGenericType)
                 {
-                    // Type can be a constructed generic or the generic itself
-                    if (t.IsConstructedGenericType || t.GenericTypeArguments.Length > 0)
+                    // Check for generic type
+                    Type genericType = t.GetGenericTypeDefinition();
+                    if (GeneratorOptions.CustomTypeMappings.TryGetValue(genericType.FullName, out customTypeMappingValue))
                     {
-                        Type genericType = t.IsConstructedGenericType ? t.GetGenericTypeDefinition() : t;
-                        if (GeneratorOptions.CustomTypeMappings.TryGetValue(genericType.FullName, out customTypeMappingValue))
-                        {
-                            customType = GenerateCustomType(t, customTypeMappingValue);
-                            return true;
-                        }
+                        customType = GenerateCustomType(t, customTypeMappingValue);
+                        return true;
                     }
                 }
             }
