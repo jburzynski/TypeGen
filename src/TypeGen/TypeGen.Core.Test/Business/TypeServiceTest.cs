@@ -461,5 +461,48 @@ namespace TypeGen.Core.Test.Business
         public class GetBaseType_TestData2<T> : GenericClass1<T> {}
         public class GetBaseType_TestData3 : GenericClass3<int, MyClass, string> {}
         public class GetBaseType_TestData4<T, V> : GenericClass3<T, MyClass, V> {}
+
+        
+
+        public static IEnumerable<object[]> GetCustomTsTypeName_TestData = new[]
+        {
+            new object[] { typeof(MyClass), new TypeNameConverterCollection(), false, typeof(MyClass), "MyCustomClass", "MyCustomClass" },
+            // TypeNameConverter is ignored when using a CustomTypeMapping
+            new object[] { typeof(MyClass), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), false, typeof(MyClass), "MyCustomClass", "MyCustomClass" },
+            new object[] { typeof(MyEnum), new TypeNameConverterCollection(), false, typeof(MyEnum), "MyCustomEnum", "MyCustomEnum" },
+            new object[] { typeof(GenericClass1<>), new TypeNameConverterCollection(), false,  typeof(GenericClass1<>), "MyCustomGenericClass1", "MyCustomGenericClass1" },
+            new object[] { typeof(GenericClass1<>), new TypeNameConverterCollection(), false,  typeof(GenericClass1<>), "MyCustomGenericClass1<>", "MyCustomGenericClass1<T>" },
+            new object[] { typeof(GenericClass1<int>), new TypeNameConverterCollection(), false,  typeof(GenericClass1<int>), "MyCustomGenericClass1Combined", "MyCustomGenericClass1Combined" },
+            new object[] { typeof(List<int>), new TypeNameConverterCollection(), false, typeof(List<>), "MyCustomList<>", "MyCustomList<number>" },
+            new object[] { typeof(List<>), new TypeNameConverterCollection(), false, typeof(List<>), "Set<>", "Set<T>" },
+            new object[] { typeof(List<MyClass>), new TypeNameConverterCollection(), false, typeof(List<>), "MyCustomList<>", "MyCustomList<MyClass>" },
+            new object[] { typeof(Dictionary<string, int>), new TypeNameConverterCollection(), false, typeof(Dictionary<,>), "MyCustomDictionary<>", "MyCustomDictionary<string, number>" },
+            new object[] { typeof(Dictionary<string, int>), new TypeNameConverterCollection(), false, typeof(Dictionary<,>), "MyCustomDictionary", "MyCustomDictionary" },
+            new object[] { typeof(Dictionary<string, MyClass>), new TypeNameConverterCollection(), false, typeof(Dictionary<,>), "MyCustomDictionary<>", "MyCustomDictionary<string, MyClass>" },
+
+        };
+
+        [Theory]
+        [MemberData(nameof(GetCustomTsTypeName_TestData))]
+        public void GetTsTypeName_CustomTypeGiven_CustomTsTypeNameReturned(Type type, TypeNameConverterCollection converters, bool forTypeDeclaration,
+            Type customMappingKey, string customMappingValue, string expectedResult)
+        {
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider
+            {
+                GeneratorOptions = new GeneratorOptions
+                {
+                    CustomTypeMappings = { { customMappingKey.FullName, customMappingValue } },
+                    TypeNameConverters = converters
+                }
+            };
+            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
+            
+            //act
+            string actualResult = _typeService.GetTsTypeName(type, forTypeDeclaration);
+            
+            //assert
+            Assert.Equal(expectedResult, actualResult);
+        }
     }
 }
