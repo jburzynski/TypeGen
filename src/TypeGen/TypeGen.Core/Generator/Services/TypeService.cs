@@ -35,20 +35,20 @@ namespace TypeGen.Core.Generator.Services
             return GetTsSimpleTypeName(type) != null;
         }
 
-        private string GenerateCustomType(Type t, string customTypeMappingValue)
+        private string GenerateCustomType(Type t, string customType)
         {
             // For custom types mappings ending with <>, construct the relevant generic custom type
-            if (customTypeMappingValue.EndsWith("<>"))
+            if (customType.EndsWith("<>"))
             {
-                customTypeMappingValue = customTypeMappingValue.Substring(0, customTypeMappingValue.Length - 2); // Strip <>
+                customType = customType.Substring(0, customType.Length - 2); // Strip <>
                 string[] genericArgumentNames = t.GetGenericArguments()
                     .Select(t2 => t2.IsGenericParameter ? t2.Name : GetTsTypeName(t2, false))
                     .ToArray();
-                customTypeMappingValue = $"{customTypeMappingValue}<{string.Join(", ", genericArgumentNames)}>";
+                customType = $"{customType}<{string.Join(", ", genericArgumentNames)}>";
             }
 
             // For custom types not ending with <>, leave the custom type as-is (not generic)
-            return customTypeMappingValue;
+            return customType;
         }
 
         private bool TryGetCustomTypeMapping(Type t, out string customType)
