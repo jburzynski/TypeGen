@@ -2,21 +2,10 @@
 
 #tools
 
-rm -Recurse -Force nuget\tools\netcoreapp2.1\any\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.1\publish\* nuget\tools\netcoreapp2.1\any
-
-rm -Recurse -Force nuget\tools\netcoreapp2.2\any\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp2.2\publish\* nuget\tools\netcoreapp2.2\any
-
-rm nuget\tools\netcoreapp3.0\any\TypeGen.exe
-rm -Recurse -Force nuget\tools\netcoreapp3.0\any\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp3.0\publish\* nuget\tools\netcoreapp3.0\any
-mv nuget\tools\netcoreapp3.0\any\TypeGen.Cli.exe nuget\tools\netcoreapp3.0\any\TypeGen.exe
-
-rm nuget\tools\netcoreapp3.1\any\TypeGen.exe
-rm -Recurse -Force nuget\tools\netcoreapp3.1\any\runtimes
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp3.1\publish\* nuget\tools\netcoreapp3.1\any
-mv nuget\tools\netcoreapp3.1\any\TypeGen.Cli.exe nuget\tools\netcoreapp3.1\any\TypeGen.exe
+rm nuget\tools\TypeGen.exe
+rm -Recurse -Force nuget\tools\runtimes
+copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\netcoreapp3.1\publish\* nuget\tools
+mv nuget\tools\TypeGen.Cli.exe nuget\tools\TypeGen.exe
 
 
 
