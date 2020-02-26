@@ -81,6 +81,11 @@ namespace TypeGen.Core.Generator.Services
         {
             Requires.NotNull(type, nameof(type));
             if (string.IsNullOrWhiteSpace(type.FullName)) return null;
+            
+            if (TryGetCustomTypeMapping(type, out string customType))
+            {
+                return new[] { "Object", "boolean", "string", "number", "Date" }.Contains(customType) ? customType : null;
+            }
 
             switch (type.FullName)
             {

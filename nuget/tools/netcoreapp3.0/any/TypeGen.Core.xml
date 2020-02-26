@@ -1,0 +1,1872 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TypeGen.Core</name>
+    </assembly>
+    <members>
+        <member name="T:TypeGen.Core.AssemblyResolutionException">
+            <summary>
+            An exception that is thrown when assembly reference cannot be resolved
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Converters.IConverter">
+            <summary>
+            Groups the converter interfaces
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Converters.IMemberNameConverter">
+            <summary>
+            Interface for member name converters
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Converters.IMemberNameConverter.Convert(System.String,System.Reflection.MemberInfo)">
+            <summary>
+            Converts a member name to a new name.
+            Conversion can optionally depend on the MemberInfo of the member, which name is being changed.
+            </summary>
+            <param name="name"></param>
+            <param name="memberInfo">The MemberInfo of the member, which name is being changed</param>
+            <returns>Converted name</returns>
+        </member>
+        <member name="T:TypeGen.Core.Converters.ITypeNameConverter">
+            <summary>
+            Interface for type name converters
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Converters.ITypeNameConverter.Convert(System.String,System.Type)">
+            <summary>
+            Converts a type's name to a new name.
+            Conversion can optionally depend on the type, which name is being changed.
+            </summary>
+            <param name="name"></param>
+            <param name="type">The type, which name is being changed</param>
+            <returns>Converted name</returns>
+        </member>
+        <member name="T:TypeGen.Core.Converters.MemberNameConverterCollection">
+            <summary>
+            Represents a collection of member name converters
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Add(TypeGen.Core.Converters.IMemberNameConverter)">
+            <summary>
+            Adds a converter to the collection.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Remove(TypeGen.Core.Converters.IMemberNameConverter)">
+            <summary>
+            Removes a converter from the collection.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Converters.MemberNameConverterCollection.Convert(System.String,System.Reflection.MemberInfo)">
+            <summary>
+            Converts a name using the chain of converters
+            </summary>
+            <param name="name"></param>
+            <param name="memberInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Converters.PascalCaseToCamelCaseConverter">
+            <summary>
+            Converts PascalCase names to camelCase names
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Converters.PascalCaseToKebabCaseConverter">
+            <summary>
+            Converts PascalCase names to kebab-case names
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.Converters.PascalCaseToKebabCaseConverter._regex">
+            <summary>
+            Regex taken from http://stackoverflow.com/a/37301354
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Converters.TypeNameConverterCollection">
+            <summary>
+            Represents a collection of type name converters
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Converters.TypeNameConverterCollection.Add(TypeGen.Core.Converters.ITypeNameConverter)">
+            <summary>
+            Adds a type converter to the collection.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Converters.TypeNameConverterCollection.Remove(TypeGen.Core.Converters.ITypeNameConverter)">
+            <summary>
+            Removes a type converter from the collection.
+            </summary>
+            <param name="converter"></param>
+        </member>
+        <member name="M:TypeGen.Core.Converters.TypeNameConverterCollection.Convert(System.String,System.Type)">
+            <summary>
+            Converts a type name using the chain of converters
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Converters.UnderscoreCaseToCamelCaseConverter">
+            <summary>
+            Converts under_score (or UNDER_SCORE) names to camelCase names
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Converters.UnderscoreCaseToPascalCaseConverter">
+            <summary>
+            Converts under_score (or UNDER_SCORE) names to PascalCase names
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.CoreException">
+            <summary>
+            An exception that occurred on TypeGen Core level
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.AssemblyExtensions.GetLoadableTypes(System.Reflection.Assembly)">
+            <summary>
+            Gets all types that can be loaded from an assembly.
+            Source: http://stackoverflow.com/questions/11915389/assembly-gettypes-throwing-an-exception
+            </summary>
+            <param name="assembly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.In``1(``0,``0[])">
+            <summary>
+            Checks if element is in a given set of elements
+            </summary>
+            <param name="element"></param>
+            <param name="elements"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.WhereNotNull``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters away null values from an IEnumerable
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="enumerable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.HasIndex``1(``0[],System.Int32)">
+            <summary>
+            Checks if an array has the specified index
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="array"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.EnumerableExtensions.IsNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks if an enumerable is null or empty
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="enumerable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.ObjectExtensions.Is``1(System.Object)">
+            <summary>
+            Checks if obj is of type T.
+            Used for readable "is" negations ("is not").
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.ReplaceFirst(System.String,System.String,System.String)">
+            <summary>
+            Replaces the first occurrence of "search" in "text" with "replace"
+            </summary>
+            <param name="text"></param>
+            <param name="search"></param>
+            <param name="replace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.ToTitleCase(System.String)">
+            <summary>
+            Converts a string to TitleCase format
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.RemoveTypeArity(System.String)">
+            <summary>
+            Removes arity information from type name
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TypeGen.Core.Extensions.StringExtensions.RemoveTypeGenericComponent(System.String)" -->
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.GetTsTypeUnion(System.String,System.Int32)">
+            <summary>
+            Gets the type from a TypeScript type union indicated by the given index.
+            E.g. the following string: "Date | null | undefined" is a TS type union with 3 types and each of these types can be accessed with an index from 0 to 2.
+            </summary>
+            <param name="value">The TypeScript type union string</param>
+            <param name="index">The index of the type in the type union to retrieve</param>
+            <returns>The type from the given TS type union indicated by the index</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsurePrefix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string has a prefix. If it does not, it is added. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="prefix">The prefix desired at the beginning of str</param>
+            <param name="comparison">How the startswith comparison is done</param>
+            <returns>prefix + str or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsurePostfix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string has a postfix. If it does not, it is added. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="postfix">The postfix desired at the end of str</param>
+            <param name="comparison">How the endswith comparison is done</param>
+            <returns>str + postfix or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsureRemovedPrefix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string does NOT have a prefix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="prefix">The prefix that should be removed</param>
+            <param name="comparison">How the startswith comparison is done</param>
+            <returns>-prefix + str or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.StringExtensions.EnsureRemovedPostfix(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures that a given string does NOT have a postfix as specified. If it does, it is removed. Otherwise the string returned, unmodified.
+            </summary>
+            <param name="str">The initial string value</param>
+            <param name="postfix">The postfix that should be removed</param>
+            <param name="comparison">How the endswith comparison is done</param>
+            <returns>str - postfix or str</returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.HasExportAttribute(System.Type,TypeGen.Core.Metadata.IMetadataReader)">
+            <summary>
+            Checks if a type is marked with an ExportTs... attribute
+            </summary>
+            <param name="type"></param>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetExportMarkedTypes(System.Collections.Generic.IEnumerable{System.Type},TypeGen.Core.Metadata.IMetadataReader)">
+            <summary>
+            Gets all types marked with ExportTs... attributes
+            </summary>
+            <param name="types"></param>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithoutTsIgnore``1(System.Collections.Generic.IEnumerable{``0},TypeGen.Core.Metadata.IMetadataReader)">
+            <summary>
+            Removes members marked with TsIgnore attribute
+            </summary>
+            <param name="memberInfos"></param>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
+            <summary>
+            Filters members for TypeScript export
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memberInfos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.WithMembersFilter(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
+            <summary>
+            Filters members for TypeScript export
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memberInfos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.IsStatic(System.Reflection.MemberInfo)">
+            <summary>
+            Checks if a property or field is static
+            </summary>
+            <param name="memberInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetTypeNames(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Maps an enumerable to an enumerable of the elements' type names
+            </summary>
+            <param name="enumerable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetInterface(System.Type,System.String)">
+            <summary>
+            Shim for Type.GetInterface
+            </summary>
+            <param name="type"></param>
+            <param name="interfaceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Extensions.TypeExtensions.GetTsExportableMembers(System.Type,TypeGen.Core.Metadata.IMetadataReader,System.Boolean)">
+            <summary>
+            Gets MemberInfos of all members in a type that can be exported to TypeScript.
+            Members marked with TsIgnore attribute are not included in the result.
+            If the passed type is not a class type, empty enumeration is returned.
+            </summary>
+            <param name="type">Class type</param>
+            <param name="metadataReader"></param>
+            <param name="withoutTsIgnore"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Generator.FileContentGeneratedArgs">
+            <summary>
+            Event args for the Generator.FileContentGenerated event
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.Type">
+            <summary>
+            The type for which the file was generated
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FilePath">
+            <summary>
+            The generated file's path
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.FileContentGeneratedArgs.FileContent">
+            <summary>
+            The generated file content
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Generator.GenerationContext">
+            <summary>
+            File generation context (used per Generator.Generate() invocation)
+            Helps with logging by storing the generation history ("stack")
+            Also serves for preventing infinite loops when generating types with looped references
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GenerationContext.GroupGeneratedTypes">
+            <summary>
+            Types that have already been generated for a group of types in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GenerationContext.TypeGeneratedTypes">
+            <summary>
+            Types that have already been generated for a type in the current call to Generator.Generate()
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.Add(System.Type)">
+            <summary>
+            Adds the type to the generation context
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.IsGroupContext">
+            <summary>
+            Checks if the generation context is for type group generation
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.HasBeenGeneratedForGroup(System.Type)">
+            <summary>
+            Checks if a type has already been generated for a type group in the current context
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.HasBeenGeneratedForType(System.Type)">
+            <summary>
+            Checks if a type dependency has already been generated for a currently generated type.
+            This method also returns true if the argument is the currently generated type itself.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.InitializeGroupGeneratedTypes">
+            <summary>
+            Initializes the group generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.ClearGroupGeneratedTypes">
+            <summary>
+            Clears the group generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.InitializeTypeGeneratedTypes">
+            <summary>
+            Initializes the type generated types collection
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.GenerationContext.ClearTypeGeneratedTypes">
+            <summary>
+            Clears the type generated types collection
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Generator">
+            <summary>
+            Class used for generating TypeScript files from C# types
+            </summary>
+        </member>
+        <member name="E:TypeGen.Core.Generator.Generator.FileContentGenerated">
+            <summary>
+            An event that fires when a file's content is generated
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.Generator.Logger">
+            <summary>
+            A logger instance used to log messages raised by a Generator instance
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.Generator.Options">
+            <summary>
+            Generator options. Cannot be null.
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.#ctor(TypeGen.Core.Generator.GeneratorOptions,TypeGen.Core.Storage.IFileSystem)">
+            <summary>
+            For unit testing (mocking FileSystem)
+            </summary>
+            <param name="options"></param>
+            <param name="fileSystem"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.OnFileContentGenerated(System.Object,TypeGen.Core.Generator.FileContentGeneratedArgs)">
+            <summary>
+            The default event handler for the FileContentGenerated event
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.SubscribeDefaultFileContentGeneratedHandler">
+            <summary>
+            Subscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.UnsubscribeDefaultFileContentGeneratedHandler">
+            <summary>
+            Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
+            <summary>
+            Generates TypeScript files from a GenerationSpec
+            </summary>
+            <param name="generationSpecs"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{TypeGen.Core.SpecGeneration.GenerationSpec})">
+            <summary>
+            Generates TypeScript files from a GenerationSpec
+            </summary>
+            <param name="generationSpecs"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateIndexFile(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            DEPRECATED, will be removed in the future.
+            Generates an `index.ts` file which exports all types within the generated files
+            </summary>
+            <param name="generatedFiles"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateType(System.Type)">
+            <summary>
+            Contains the actual logic of generating TypeScript files for a given type
+            Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
+            </summary>
+            <param name="type"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Reflection.Assembly)">
+            <summary>
+            Generates TypeScript files from an assembly
+            </summary>
+            <param name="assembly"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Reflection.Assembly)">
+            <summary>
+            Generates TypeScript files from an assembly
+            </summary>
+            <param name="assembly"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Generates TypeScript files from multiple assemblies
+            </summary>
+            <param name="assemblies"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Generates TypeScript files from multiple assemblies
+            </summary>
+            <param name="assemblies"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateAsync(System.Type)">
+            <summary>
+            Generates TypeScript files from a type
+            </summary>
+            <param name="type"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.Generate(System.Type)">
+            <summary>
+            Generates TypeScript files from a type
+            </summary>
+            <param name="type"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateNotMarked(System.Type,System.String)">
+            <summary>
+            Generates TypeScript files for types that are not marked with an ExportTs... attribute
+            </summary>
+            <param name="type"></param>
+            <param name="outputDirectory"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateClass(System.Type,TypeGen.Core.TypeAnnotations.ExportTsClassAttribute)">
+            <summary>
+            Generates a TypeScript class file from a class type
+            </summary>
+            <param name="type"></param>
+            <param name="classAttribute"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateInterface(System.Type,TypeGen.Core.TypeAnnotations.ExportTsInterfaceAttribute)">
+            <summary>
+            Generates a TypeScript interface file from a class type
+            </summary>
+            <param name="type"></param>
+            <param name="interfaceAttribute"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateEnum(System.Type,TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute)">
+            <summary>
+            Generates a TypeScript enum file from a class type
+            </summary>
+            <param name="type"></param>
+            <param name="enumAttribute"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetClassPropertyText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets TypeScript class property definition source code
+            </summary>
+            <param name="memberInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetClassPropertiesText(System.Type)">
+            <summary>
+            Gets TypeScript class properties definition source code
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetInterfacePropertyText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets TypeScript interface property definition source code
+            </summary>
+            <param name="memberInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetInterfacePropertiesText(System.Type)">
+            <summary>
+            Gets TypeScript interface properties definition source code
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetEnumMemberText(System.Reflection.FieldInfo)">
+            <summary>
+            Gets TypeScript enum member definition source code
+            </summary>
+            <param name="fieldInfo">MemberInfo for an enum value</param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetEnumMembersText(System.Type)">
+            <summary>
+            Gets TypeScript enum member definition source code
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GenerateTypeDependencies(System.Type,System.String)">
+            <summary>
+            Generates type dependencies' files for a given type
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetRelativeFilePath(System.Type,System.String)">
+            <summary>
+            Gets the output TypeScript file path based on a type.
+            The path is relative to the base output directory.
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.GetFilePath(System.Type,System.String)">
+            <summary>
+            Gets the output TypeScript file path based on a type.
+            The path includes base output directory.
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Generator.ExecuteWithTypeContextLogging(System.Action)">
+            <summary>
+            Executes the passed action and adds additional info about the currently generated types in case of a CoreException
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="T:TypeGen.Core.Generator.GeneratorOptions">
+            <summary>
+            Options for generating TypeScript files
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.FileNameConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# file names to TypeScript file names
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.TypeNameConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# type names (classes, enums etc.) to TypeScript type names
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.PropertyNameConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# class property names to TypeScript class property names
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.EnumValueNameConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.EnumStringInitializersConverters">
+            <summary>
+            A collection (chain) of converters used for converting C# enum value names to TypeScript enum string initializers
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.ExplicitPublicAccessor">
+            <summary>
+            Whether to generate explicit "public" accessor in TypeScript classes
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.SingleQuotes">
+            <summary>
+            Whether to use single quotes instead of double quotes in TypeScript sources
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.TypeScriptFileExtension">
+            <summary>
+            File extension used for the generated TypeScript files
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.TabLength">
+            <summary>
+            Number of space characters per tab
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.UseTabCharacter">
+            <summary>
+            Whether to use the tab character instead of multiple spaces
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.BaseOutputDirectory">
+            <summary>
+            The base directory for generating TypeScript files.
+            Any relative paths defined in ExportTs... attributes (OutputDir) will be resolved relatively to this path.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.CreateIndexFile">
+            <summary>
+            Whether to create an index file which exports all generated types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.CsNullableTranslation">
+            <summary>
+            Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.DefaultValuesForTypes">
+            <summary>
+            Specifies default values to generate for given TypeScript types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.TypeUnionsForTypes">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for TypeScript properties of specified types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.CustomTypeMappings">
+            <summary>
+            Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").
+            Specified C# types will be always translated to the corresponding TypeScript types.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.EnumStringInitializers">
+            <summary>
+            Indicates whether to use enum string initializers
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.FileHeading">
+            <summary>
+            Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.UseDefaultExport">
+            <summary>
+            Whether to use default exports for the generated TypeScript types
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.GeneratorOptions.IndexFileExtension">
+            <summary>
+            The file extension to use for the index file(s). Defaults to whatever is set for TypeScriptFileExtension.
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetImportsText(System.Type,System.String)">
+            <summary>
+            Gets code for the 'imports' section for a given type
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetExtendsText(System.Type)">
+            <summary>
+            Gets the text for the "extends" section
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetCustomBody(System.String,System.Int32)">
+            <summary>
+            Gets custom code for a TypeScript file given by filePath.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <param name="indentSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetCustomHead(System.String)">
+            <summary>
+            Gets custom code for a TypeScript file given by filePath.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentGenerator.GetMemberValueText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets text to be used as a member value
+            </summary>
+            <param name="memberInfo"></param>
+            <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITsContentParser.GetTagContent(System.String,System.Int32,System.String[])">
+            <summary>
+            Gets text within specified tag(s).
+            If tag(s) occurs multiple times, concatenated text from all occurrences is returned.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <param name="indentSize"></param>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeDependencyService.GetTypeDependencies(System.Type)">
+            <summary>
+            Gets all non-simple and non-collection types the given type depends on.
+            Types of properties/fields marked with TsIgnoreAttribute will be omitted.
+            Returns an empty array if no dependencies were detected.
+            Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the type is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsTsSimpleType(System.Type)">
+            <summary>
+            Determines if a type has a TypeScript simple type representation
+            </summary>
+            <param name="type"></param>
+            <returns>True if a corresponding TypeScript simple type exists; false otherwise.</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetTsSimpleTypeName(System.Type)">
+            <summary>
+            Gets TypeScript type name for a simple type.
+            Simple type must be one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings.
+            </summary>
+            <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
+            <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsTsClass(System.Type)">
+            <summary>
+            Determines whether the type represents a TypeScript class
+            </summary>
+            <param name="type"></param>
+            <returns>True if the type represents a TypeScript class; false otherwise</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the type is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsTsInterface(System.Type)">
+            <summary>
+            Determines whether the type represents a TypeScript class
+            </summary>
+            <param name="type"></param>
+            <returns>True is the type represents a TypeScript class; false otherwise</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the type is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetMemberType(System.Reflection.MemberInfo)">
+            <summary>
+            Gets member's type.
+            MemberInfo must be a PropertyInfo or a FieldInfo.
+            </summary>
+            <param name="memberInfo">PropertyInfo or FieldInfo</param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsCollectionType(System.Type)">
+            <summary>
+            Determines if a type is a collection type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsDictionaryType(System.Type)">
+            <summary>
+            Determines if a type is a dictionary type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.IsCustomGenericType(System.Type)">
+            <summary>
+            Determines if a type is a user-defined generic type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetTsTypeName(System.Type,System.Boolean)">
+            <summary>
+            Gets TypeScript type name for a type
+            </summary>
+            <param name="type"></param>
+            <param name="forTypeDeclaration"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
+            <exception cref="T:TypeGen.Core.CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetTsTypeName(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the TypeScript type name to generate for a member
+            </summary>
+            <param name="memberInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetFlatType(System.Type)">
+            <summary>
+            Gets the type of the deepest element from a jagged collection of the given type.
+            If the passed type is not an array type or does not implement IEnumerable interface, the type itself is returned.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.StripNullable(System.Type)">
+            <summary>
+            Converts a type to a 'TS-exportable' type.
+            If the type is nullable, returns the underlying type.
+            Otherwise, returns the passed type.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.GetBaseType(System.Type)">
+            <summary>
+            Gets custom base type for a class type.
+            If no custom base type exists, null is returned.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if type is null</exception>
+            <exception cref="T:TypeGen.Core.CoreException">Thrown if the type is not a class type or inheritance chain cannot be represented in TypeScript</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.ITypeService.UseDefaultExport(System.Type)">
+            <summary>
+            Determines whether to use default export in TypeScript for a given type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TemplateService">
+            <summary>
+            Fills templates with data
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TsContentGenerator">
+            <summary>
+            Generates TypeScript file contents
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetImportsText(System.Type,System.String)">
+            <summary>
+            Gets code for the 'imports' section for a given type
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir">ExportTs... attribute's output dir</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetExtendsText(System.Type)">
+            <summary>
+            Gets the text for the "extends" section
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetTypeDependencyImportsText(System.Type,System.String)">
+            <summary>
+            Returns TypeScript imports source code related to type dependencies
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetCustomImportsText(System.Type)">
+            <summary>
+            Gets code for imports that are specified in TsTypeAttribute.ImportPath or TsCustomBaseAttribute.ImportPath properties
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetTypeDependencyOutputDir(TypeGen.Core.Generator.Services.TypeDependencyInfo,System.String)">
+            <summary>
+            Gets the output directory for a type dependency
+            </summary>
+            <param name="typeDependencyInfo"></param>
+            <param name="parentTypeOutputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetCustomBody(System.String,System.Int32)">
+            <summary>
+            Gets custom code for a TypeScript file given by filePath.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <param name="indentSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetCustomHead(System.String)">
+            <summary>
+            Gets custom code for a TypeScript file given by filePath.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentGenerator.GetMemberValueText(System.Reflection.MemberInfo)">
+            <summary>
+            Gets text to be used as a member value
+            </summary>
+            <param name="memberInfo"></param>
+            <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TsContentParser">
+            <summary>
+            Parses TypeScript file contents
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TsContentParser.GetTagContent(System.String,System.Int32,System.String[])">
+            <summary>
+            Gets text within specified tag(s).
+            If tag(s) occurs multiple times, concatenated text from all occurrences is returned.
+            Returns an empty string if a file does not exist.
+            </summary>
+            <param name="filePath"></param>
+            <param name="indentSize"></param>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TypeDependencyInfo">
+            <summary>
+            Contains information about a type dependency.
+            Type dependency is a type which the exported type depends on (complex type of a property or field).
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.Services.TypeDependencyInfo.Type">
+            <summary>
+            The type dependency
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.Services.TypeDependencyInfo.MemberAttributes">
+            <summary>
+            Custom attributes of the property or field that is of the dependent type
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.Generator.Services.TypeDependencyInfo.IsBase">
+            <summary>
+            Indicates whether type dependency is a base class type
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TypeDependencyInfoTypeComparer`1">
+            <summary>
+            A comparer class that compares types of TypeDependencyInfo instances
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TypeDependencyService">
+            <summary>
+            Retrieves information about type dependencies (i.e. types that a type depends on)
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeDependencyService.GetTypeDependencies(System.Type)">
+            <summary>
+            Gets all non-simple and non-collection types the given type depends on.
+            Types of properties/fields marked with TsIgnoreAttribute will be omitted.
+            Returns an empty array if no dependencies were detected.
+            Returns a distinct result (i.e. no duplicate TypeDependencyInfo instances)
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the type is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeDependencyService.GetGenericTypeDefinitionDependencies(System.Type)">
+            <summary>
+            Gets type dependencies related to generic type definition
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeDependencyService.GetBaseTypeDependency(System.Type)">
+            <summary>
+            Gets the base type dependency for a type, if the base type exists
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeDependencyService.GetMemberTypeDependencies(System.Type)">
+            <summary>
+            Gets type dependencies for the members inside a given type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeDependencyService.GetGenericTypeNonDefinitionDependencies(System.Type)">
+            <summary>
+            Gets type dependencies for a single generic member type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Generator.Services.TypeService">
+            <summary>
+            Retrieves information about types
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsTsSimpleType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsSimpleTypeName(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsTsClass(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsTsInterface(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetMemberType(System.Reflection.MemberInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsCollectionType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsDictionaryType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.IsCustomGenericType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.UseDefaultExport(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsTypeName(System.Type,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsTypeName(System.Reflection.MemberInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsTypeNameForMember(System.Reflection.MemberInfo)">
+            <summary>
+            Gets TypeScript type name for a member
+            </summary>
+            <param name="memberInfo"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsDictionaryTypeName(System.Type)">
+            <summary>
+            Gets TypeScript type name for a dictionary type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsCollectionTypeName(System.Type)">
+            <summary>
+            Gets TypeScript type name for a collection type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetGenericTsTypeName(System.Type,System.Boolean)">
+            <summary>
+            Gets TypeScript type name for a generic type
+            </summary>
+            <param name="type"></param>
+            <param name="forTypeDeclaration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetGenericTsTypeNameForDeclaration(System.Type)">
+            <summary>
+            Gets TypeScript type name for a generic type - used in type declarations
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetGenericTsTypeNameForNonDeclaration(System.Type)">
+            <summary>
+            Gets TypeScript type name for a generic type - used NOT in type declarations
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetTsCollectionElementType(System.Type)">
+            <summary>
+            Gets a type of a collection element from the given type.
+            If the passed type is not an array type or does not contain the IEnumerable interface, null is returned.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetFlatType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.StripNullable(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Generator.Services.TypeService.GetBaseType(System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="T:TypeGen.Core.Logging.ConsoleLogger">
+            <summary>
+            Logs messages to the Console
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Logging.ConsoleLogger.Log(System.String,TypeGen.Core.Logging.LogLevel)">
+            <summary>
+            Logs messages
+            </summary>
+            <param name="message"></param>
+            <param name="level"></param>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2">
+            <summary>
+            Base class for class and interface spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.CustomBase(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Specifies custom base for the type (equivalent of TsCustomBaseAttribute)
+            </summary>
+            <param name="base"></param>
+            <param name="importPath"></param>
+            <param name="originalTypeName"></param>
+            <param name="isDefaultExport"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultExport(System.Boolean)">
+            <summary>
+            Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+            </summary>
+            <param name="enabled"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultTypeOutput(System.String)">
+            <summary>
+            Specifies the default type output path for the selected member (equivalent of TsDefaultTypeOutputAttribute)
+            </summary>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.DefaultValue(System.String)">
+            <summary>
+            Specifies default value for the selected member (equivalent of TsDefaultValueAttribute)
+            </summary>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Ignore">
+            <summary>
+            Marks selected member as ignored (equivalent of TsIgnoreAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.IgnoreBase">
+            <summary>
+            Indicates whether to ignore base class declaration for type (equivalent of TsIgnoreBaseAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.MemberName(System.String)">
+            <summary>
+            Specifies name for the selected member (equivalent of TsMemberNameAttribute)
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.NotNull">
+            <summary>
+            Marks selected member as not null (equivalent of TsNotNullAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.NotReadonly">
+            <summary>
+            Marks selected member as not readonly (equivalent of TsNotReadonlyAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.NotUndefined">
+            <summary>
+            Marks selected member as not undefined (equivalent of TsNotUndefinedAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Null">
+            <summary>
+            Marks selected member as null (equivalent of TsNullAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Readonly">
+            <summary>
+            Marks selected member as readonly (equivalent of TsReadonlyAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Specifies custom type for the selected member (equivalent of TsTypeAttribute)
+            </summary>
+            <param name="typeName"></param>
+            <param name="importPath"></param>
+            <param name="originalTypeName"></param>
+            <param name="isDefaultExport"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Type(TypeGen.Core.TypeAnnotations.TsType)">
+            <summary>
+            Specifies custom type for the selected member (equivalent of TsTypeAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.TypeUnions(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+            </summary>
+            <param name="typeUnions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.TypeUnions(System.String[])">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field (equivalent of TsTypeUnionsAttribute)
+            </summary>
+            <param name="typeUnions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.ClassOrInterfaceSpecBuilder`2.Undefined">
+            <summary>
+            Marks selected member as undefined (equivalent of TsUndefinedAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.ClassSpecBuilder">
+            <summary>
+            Builds the class configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.CommonClassSpecBuilder`2">
+            <summary>
+            Base class for interface spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonClassSpecBuilder`2.Static">
+            <summary>
+            Marks selected member as static (equivalent of TsStaticAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonClassSpecBuilder`2.NotStatic">
+            <summary>
+            Marks selected member as not static (equivalent of TsNotStaticAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2">
+            <summary>
+            Base class for enum spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2.StringInitializers(System.Boolean)">
+            <summary>
+            Specifies whether to use TypeScript string initializers for an enum
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonEnumSpecBuilder`2.DefaultExport(System.Boolean)">
+            <summary>
+            Indicates whether to use default export for the generated TypeScript type (equivalent of TsDefaultExportAttribute)
+            </summary>
+            <param name="enabled"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.CommonInterfaceSpecBuilder`2">
+            <summary>
+            Base class for interface spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.CommonInterfaceSpecBuilder`2.Optional">
+            <summary>
+            Marks selected member as optional (equivalent of TsOptionalAttribute)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.EnumSpecBuilder">
+            <summary>
+            Builds the enum configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.GenerationSpec">
+            <summary>
+            Base class for generation specs
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass(System.Type,System.String)">
+            <summary>
+            Adds a class
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddClass``1(System.String)">
+            <summary>
+            Adds a class
+            </summary>
+            <param name="outputDir"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface(System.Type,System.String)">
+            <summary>
+            Adds an interface
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddInterface``1(System.String)">
+            <summary>
+            Adds an interface
+            </summary>
+            <param name="outputDir"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum(System.Type,System.String,System.Boolean)">
+            <summary>
+            Adds an enum
+            </summary>
+            <param name="type"></param>
+            <param name="outputDir"></param>
+            <param name="isConst"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddEnum``1(System.String,System.Boolean)">
+            <summary>
+            Adds an enum
+            </summary>
+            <param name="outputDir"></param>
+            <param name="isConst"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.SpecGeneration.GenerationSpec.AddBarrel(System.String,TypeGen.Core.SpecGeneration.BarrelScope)">
+            <summary>
+            Adds a barrel file for a specified directory
+            </summary>
+            <param name="directory"></param>
+            <param name="barrelScope"></param>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.ClassSpecBuilder`1">
+            <summary>
+            Builds the class configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.EnumSpecBuilder`1">
+            <summary>
+            Builds the enum configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder`1">
+            <summary>
+            Builds the interface configuration section inside generation spec
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.InterfaceSpecBuilder">
+            <summary>
+            Builds the interface configuration section inside generation spec
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.SpecGeneration.TypeSpecBuilder`2">
+            <summary>
+            Base class for all type spec builders
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TDerived"></typeparam>
+        </member>
+        <member name="T:TypeGen.Core.Storage.FileSystem">
+            <summary>
+            Represents the file system
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.SaveFile(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.ReadFile(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.FileExists(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetFilesRecursive(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.DirectoryExists(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetDirectoryFiles(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetDirectoryDirectories(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.SetCurrentDirectory(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.GetCurrentDirectory">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.FileSystem.ClearDirectory(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.SaveFile(System.String,System.String)">
+            <summary>
+            Writes a text file to the specified location
+            </summary>
+            <param name="filePath"></param>
+            <param name="content"></param>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.ReadFile(System.String)">
+            <summary>
+            Reads file as string
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.FileExists(System.String)">
+            <summary>
+            Checks if the file exists
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.GetFilesRecursive(System.String,System.String)">
+            <summary>
+            Searches recursively for a file in a directory
+            </summary>
+            <param name="rootDirectory"></param>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.DirectoryExists(System.String)">
+            <summary>
+            Checks if the directory exists
+            </summary>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.GetDirectoryFiles(System.String)">
+            <summary>
+            Gets all files in a directory (only files, not directories)
+            </summary>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.GetDirectoryDirectories(System.String)">
+            <summary>
+            Gets all directories in a directory (only directories, not files)
+            </summary>
+            <param name="directory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.GetCurrentDirectory">
+            <summary>
+            Gets the current directory
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.ClearDirectory(System.String)">
+            <summary>
+            Clears the directory (removes all files and recursively removes all subdirectories)
+            </summary>
+            <param name="directory"></param>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IFileSystem.SetCurrentDirectory(System.String)">
+            <summary>
+            Sets the current working directory
+            </summary>
+            <param name="directory"></param>
+        </member>
+        <member name="M:TypeGen.Core.Storage.IInternalStorage.GetEmbeddedResource(System.String)">
+            <summary>
+            Gets embedded resource as string
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Storage.InternalStorage">
+            <summary>
+            Represents the internal storage
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Storage.InternalStorage.GetEmbeddedResource(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:TypeGen.Core.StrictNullTypeUnionFlags">
+            <summary>
+            Represents flags used in TypeScript strict null checking mode
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.None">
+            <summary>
+            Not null and not undefined
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
+        <member name="F:TypeGen.Core.StrictNullTypeUnionFlags.Undefined">
+            <summary>
+            Undefined
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.ExportAttribute">
+            <summary>
+            Base class for 'ExportTs...' attributes
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.ExportAttribute.OutputDir">
+            <summary>
+            TypeScript file output directory
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.ExportTsClassAttribute">
+            <summary>
+            Identifies a class that a TypeScript file should be generated for
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute">
+            <summary>
+            Identifies an enum that a TypeScript file should be generated for
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.ExportTsEnumAttribute.IsConst">
+            <summary>
+            Specifies whether an enum should be exported as TypeScript const enum
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.ExportTsInterfaceAttribute">
+            <summary>
+            Identifies a class that a TypeScript interface file should be generated for
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute">
+            <summary>
+            Specifies custom base class declaration for a TypeScript class or interface.
+            Base class declaration is empty if no content is specified.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.Base">
+            <summary>
+            Base class/interface type name
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.ImportPath">
+            <summary>
+            The path of custom base type file to import (can be left null if no imports are required)
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.OriginalTypeName">
+            <summary>
+            The original TypeScript base type name.
+            This property should be used when the specified Base differs from the original base type name defined in the file under ImportPath.
+            This property should only be used in conjunction with ImportPath.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.IsDefaultExport">
+            <summary>
+            Whether default export is used for the referenced TypeScript type - used only in combination with ImportPath
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.#ctor(System.String)">
+            <summary>
+            TsCustomBaseAttribute constructor
+            </summary>
+            <param name="base">The base type name (or alias)</param>
+        </member>
+        <member name="M:TypeGen.Core.TypeAnnotations.TsCustomBaseAttribute.#ctor(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            TsCustomBaseAttribute constructor
+            </summary>
+            <param name="base">The base type name (or alias)</param>
+            <param name="importPath">The path of base type file to import (optional)</param>
+            <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
+            <param name="isDefaultExport">Whether default export is used for the referenced TypeScript type - used only in combination with importPath</param>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultExportAttribute">
+            <summary>
+            Specifies that default export will be used for a TypeScript type
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute">
+            <summary>
+            Specifies the generated TypeScript type's default output directory.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsDefaultTypeOutputAttribute.OutputDir">
+            <summary>
+            The file's default output directory
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsDefaultValueAttribute">
+            <summary>
+            Specifies a default value for a TypeScript property
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsDefaultValueAttribute.DefaultValue">
+            <summary>
+            Default value for a property
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsIgnoreAttribute">
+            <summary>
+            Identifies a property that should be ignored when generating a TypeScript file
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsIgnoreBaseAttribute">
+            <summary>
+            Marked TypeScript classes/interfaces will not have base type declaration.
+            Also, base classes/interfaces will not be generated if they're not marked with an ExportTs... attribute.
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsMemberNameAttribute">
+            <summary>
+            Specifies the generated member's name
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsMemberNameAttribute.Name">
+            <summary>
+            The member's name
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotNullAttribute">
+            <summary>
+            Identifies a non-nullable TypeScript property (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotReadonlyAttribute">
+            <summary>
+            Identifies a TypeScript property that is not readonly
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotStaticAttribute">
+            <summary>
+            Identifies a TypeScript property that is not static
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNotUndefinedAttribute">
+            <summary>
+            Identifies a TypeScript property that cannot be set to undefined (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsNullAttribute">
+            <summary>
+            Identifies a nullable TypeScript property (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsOptionalAttribute">
+            <summary>
+            Identifies an optional interface property
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsReadonlyAttribute">
+            <summary>
+            Identifies a readonly TypeScript property
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsStaticAttribute">
+            <summary>
+            Identifies a static TypeScript property
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsStringInitializersAttribute">
+            <summary>
+            Specifies whether TypeScript string initializers should be used for an enum
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsType">
+            <summary>
+            TypeScript type used for file generation
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsTypeAttribute">
+            <summary>
+            Specifies the generated TypeScript type for a property or field
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.TypeName">
+            <summary>
+            The TypeScript property type name (or alias)
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.FlatTypeName">
+            <summary>
+            Type name without special characters ([], &lt;&gt;)
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.ImportPath">
+            <summary>
+            The path of the file to import (can be left null if no imports are required)
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.OriginalTypeName">
+            <summary>
+            The original TypeScript type name.
+            This property should be used when the specified TypeName differs from the original type name defined in the file under ImportPath.
+            This property should only be used in conjunction with ImportPath.
+            </summary>
+        </member>
+        <member name="P:TypeGen.Core.TypeAnnotations.TsTypeAttribute.IsDefaultExport">
+            <summary>
+            Whether default export is used for the referenced TypeScript type - used only in combination with ImportPath
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.TypeAnnotations.TsTypeAttribute.#ctor(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            TsTypeAttribute constructor
+            </summary>
+            <param name="typeName">The TypeScript property type name (or alias)</param>
+            <param name="importPath">The path of the file to import (optional)</param>
+            <param name="originalTypeName">The original TypeScript type name, defined in the file under ImportPath - used only if type alias is specified</param>
+            <param name="isDefaultExport">Whether default export is used for the referenced TypeScript type - used only in combination with importPath</param>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsTypeAttributeComparer">
+            <summary>
+            A comparer class that compares TsTypeAttribute properties
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsTypeUnionsAttribute">
+            <summary>
+            Specifies TypeScript type unions (excluding the main type) for a property or field
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.TypeAnnotations.TsUndefinedAttribute">
+            <summary>
+            Identifies a TypeScript property that can be set to undefined (used only with enabled strict null checking mode)
+            </summary>
+        </member>
+        <member name="T:TypeGen.Core.Utils.FileSystemUtils">
+            <summary>
+            File system-related utility class
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Utils.FileSystemUtils.SplitPathSeparator(System.String)">
+            <summary>
+            Split paths by separator with \\ and /
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Utils.FileSystemUtils.GetPathDiff(System.String,System.String)">
+            <summary>
+            Gets path prefix required to navigate from pathFrom to pathTo.
+            E.g. if path1=path/to/file.txt and path2=path/file.txt, this method will return "../file.txt"
+            </summary>
+            <param name="pathFrom"></param>
+            <param name="pathTo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TypeGen.Core.Utils.StringUtils">
+            <summary>
+            String-related utility class
+            </summary>
+        </member>
+        <member name="M:TypeGen.Core.Utils.StringUtils.GetTabText(System.Int32)">
+            <summary>
+            Gets a string value to use as a tab text
+            </summary>
+            <param name="tabLength">The number of spaces per tab.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNull(System.Object,System.String)">
+            <summary>
+            Throws exception if value of the object is null
+            </summary>
+            <param name="obj"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNullOrEmpty(System.String,System.String)">
+            <summary>
+            Throws an exception if the specified parameter's value is null or empty
+            </summary>
+            <param name="value"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:TypeGen.Core.Validation.Requires.NotNullOrEmpty(System.Collections.IEnumerable,System.String)">
+            <summary>
+            Throws an exception if the specified parameter's value is null,
+            has no elements or has an element with a null value
+            </summary>
+            <param name="values"></param>
+            <param name="argumentName"></param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+    </members>
+</doc>

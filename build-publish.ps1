@@ -8,3 +8,4 @@ dotnet restore .\src\TypeGen\TypeGen.Cli
 dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f netcoreapp2.1
 dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f netcoreapp2.2
 dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f netcoreapp3.0
+dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f netcoreapp3.1
