@@ -226,7 +226,29 @@ namespace TypeGen.Core.Test.Business
             //act,assert
             Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(typeof(string)));
         }
-        
+
+        [Fact]
+        public void GetImplementsText_TypeNull_ExceptionThrown()
+        {
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImplementsText(null));
+        }
+
+        [Fact]
+        public void GetImplementsText_TypeNameConvertersNull_ExceptionThrown()
+        {
+            //arrange
+            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
+
+            //act,assert
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImplementsText(typeof(string)));
+        }
+
         [Fact]
         public void GetCustomBody_FilePathNull_ExceptionThrown()
         {

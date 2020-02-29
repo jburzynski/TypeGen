@@ -43,8 +43,9 @@ namespace TypeGen.Core.Generator.Services
             type = _typeService.StripNullable(type);
 
             return GetGenericTypeDefinitionDependencies(type)
-                .Concat(GetBaseTypeDependency(type)
-                .Concat(GetMemberTypeDependencies(type)))
+                .Concat(GetBaseTypeDependency(type))
+                .Concat(GetInterfacesTypeDepency(type))
+                .Concat(GetMemberTypeDependencies(type))
                 .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
                 .ToList();
         }
@@ -88,6 +89,23 @@ namespace TypeGen.Core.Generator.Services
 
             return GetFlatTypeDependencies(baseType, null, true);
         }
+
+        /// <summary>
+        /// Gets implemented interfaces type dependency for a type, if the interfaces types exist
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private IEnumerable<TypeDependencyInfo> GetInterfacesTypeDepency(Type type)
+        {
+            if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
+
+            var baseTypes = _typeService.GetInterfaces(type);
+            if (!baseTypes.Any()) return Enumerable.Empty<TypeDependencyInfo>();
+
+            return baseTypes
+                .SelectMany(baseType => GetFlatTypeDependencies(baseType, null, true));
+        }
+
 
         /// <summary>
         /// Gets type dependencies for the members inside a given type
