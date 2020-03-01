@@ -45,7 +45,7 @@ namespace TypeGen.Cli.Business
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
             
             _typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
-            
+
             return new GeneratorOptions
             {
                 TypeScriptFileExtension = config.TypeScriptFileExtension,
@@ -59,6 +59,7 @@ namespace TypeGen.Cli.Business
                 EnumValueNameConverters = GetMemberNameConvertersFromConfig(config.EnumValueNameConverters),
                 EnumStringInitializersConverters = GetMemberNameConvertersFromConfig(config.EnumStringInitializersConverters),
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
+                CsAllowNullsForAllTypes = config.CsAllowNullsForAllTypes ?? GeneratorOptions.DefaultCsAllowNullsForAllTypes,
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 TypeUnionsForTypes = config.TypeUnionsForTypes ?? GeneratorOptions.DefaultTypeUnionsForTypes,

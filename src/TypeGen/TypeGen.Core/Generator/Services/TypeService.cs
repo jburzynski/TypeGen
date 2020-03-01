@@ -304,7 +304,8 @@ namespace TypeGen.Core.Generator.Services
                     result.AddRange(GeneratorOptions.TypeUnionsForTypes[tsTypeName]);
                 }
 
-                if (Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None)
+                if ((Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None) ||
+                        GeneratorOptions.CsAllowNullsForAllTypes)
                 {
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add(nullLiteral);
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add(undefinedLiteral);

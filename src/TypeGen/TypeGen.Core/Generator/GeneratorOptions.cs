@@ -22,6 +22,7 @@ namespace TypeGen.Core.Generator
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
         public static StrictNullTypeUnionFlags DefaultCsNullableTranslation => StrictNullTypeUnionFlags.None;
+        public static bool DefaultCsAllowNullsForAllTypes = false;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, IEnumerable<string>> DefaultTypeUnionsForTypes => new Dictionary<string, IEnumerable<string>>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
@@ -44,6 +45,7 @@ namespace TypeGen.Core.Generator
             SingleQuotes = DefaultSingleQuotes;
             CreateIndexFile = DefaultCreateIndexFile;
             CsNullableTranslation = DefaultCsNullableTranslation;
+            CsAllowNullsForAllTypes = DefaultCsAllowNullsForAllTypes;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             TypeUnionsForTypes = DefaultTypeUnionsForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
@@ -124,6 +126,11 @@ namespace TypeGen.Core.Generator
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
         /// </summary>
         public StrictNullTypeUnionFlags CsNullableTranslation { get; set; }
+
+        /// <summary>
+        /// Indicates to allow null for all types.
+        /// </summary>
+        public bool CsAllowNullsForAllTypes { get; set; }
 
         /// <summary>
         /// Specifies default values to generate for given TypeScript types
