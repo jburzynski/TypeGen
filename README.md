@@ -4,7 +4,7 @@ Single-class-per-file C# to TypeScript generator
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
-***[Click here for the info on how to create NuGet packages from the source](https://github.com/jburzynski/TypeGen/blob/master/docs/how-to-create-nuget-from-source.md)***
+# In case I don't respond, please find a guide on how to create NuGet packages from your code [here](https://github.com/jburzynski/TypeGen/blob/master/docs/how-to-create-nuget-from-source.md)
 
 ***Project's website: http://jburzynski.net/TypeGen***
 
