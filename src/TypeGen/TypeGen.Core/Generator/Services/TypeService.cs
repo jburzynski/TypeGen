@@ -495,5 +495,17 @@ namespace TypeGen.Core.Generator.Services
 
             return baseType;
         }
+
+        /// <inheritdoc />
+        public IEnumerable<Type> GetInterfaces(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+
+            IEnumerable<Type> baseTypes = type.GetTypeInfo().ImplementedInterfaces;
+
+            // if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");
+
+            return baseTypes;
+        }
     }
 }

@@ -44,5 +44,7 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="memberInfo"></param>
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
         string GetMemberValueText(MemberInfo memberInfo);
+        string GetImplementsText(Type type);
+        string GetExtendsForInterfacesText(Type type);
     }
 }

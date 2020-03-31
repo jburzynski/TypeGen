@@ -427,7 +427,12 @@ namespace TypeGen.Core.Generator
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
-            if (tsCustomBaseAttribute != null)
+            if (classAttribute == null)
+            {
+                // this is an interface, generate extends for an interface.
+                extendsText = _tsContentGenerator.GetExtendsForInterfacesText(type);
+            }
+            else if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
@@ -435,6 +440,8 @@ namespace TypeGen.Core.Generator
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type);
             }
+
+            string implementsText = _tsContentGenerator.GetImplementsText(type);
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
@@ -453,8 +460,8 @@ namespace TypeGen.Core.Generator
             if (classAttribute != null)
             {
                 content = _typeService.UseDefaultExport(type) ?
-                    _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, customHead, customBody, Options.FileHeading) :
-                    _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, propertiesText, customHead, customBody, Options.FileHeading);
+                    _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading) :
+                    _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading);
             }
             else
             {
