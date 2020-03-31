@@ -18,7 +18,7 @@ namespace TypeGen.Core.Generator.Services
         string FillIndexTemplate(string exports);
         string FillIndexExportTemplate(string filename);
         string GetExtendsText(string name);
-        string GetExtendsText(IEnumerable<string> name);
+        string GetExtendsText(IEnumerable<string> names);
         string GetImplementsText(IEnumerable<string> names);
     }
 }

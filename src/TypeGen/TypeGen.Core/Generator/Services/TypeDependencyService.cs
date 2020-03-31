@@ -44,7 +44,7 @@ namespace TypeGen.Core.Generator.Services
 
             return GetGenericTypeDefinitionDependencies(type)
                 .Concat(GetBaseTypeDependency(type))
-                .Concat(GetInterfacesTypeDepency(type))
+                .Concat(GetImplementedInterfaceTypesDependencies(type))
                 .Concat(GetMemberTypeDependencies(type))
                 .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
                 .ToList();
@@ -95,7 +95,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private IEnumerable<TypeDependencyInfo> GetInterfacesTypeDepency(Type type)
+        private IEnumerable<TypeDependencyInfo> GetImplementedInterfaceTypesDependencies(Type type)
         {
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
 
