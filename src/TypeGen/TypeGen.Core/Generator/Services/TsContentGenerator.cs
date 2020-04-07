@@ -91,6 +91,40 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <summary>
+        /// Gets the text for the "extends" section for interfaces.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetExtendsForInterfacesText(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
+
+            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
+            if (!baseTypes.Any()) return "";
+
+            IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
+            return _templateService.GetExtendsText(baseTypeNames);
+        }
+
+        /// <summary>
+        /// Gets the text for the "implements" section
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetImplementsText(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
+
+            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
+            if (!baseTypes.Any()) return "";
+
+            IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
+            return _templateService.GetImplementsText(baseTypeNames);
+        }
+        
+        /// <summary>
         /// Returns TypeScript imports source code related to type dependencies
         /// </summary>
         /// <param name="type"></param>

@@ -54,7 +54,7 @@ namespace TypeGen.Core.Generator.Services
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -62,13 +62,14 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("extends"), extends)
+                .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -77,6 +78,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("exportName"), exportName)
                 .Replace(GetTag("extends"), extends)
+                .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
@@ -201,6 +203,9 @@ namespace TypeGen.Core.Generator.Services
         }
 
         public string GetExtendsText(string name) => $" extends {name}";
+        public string GetExtendsText(IEnumerable<string> names) => $" extends {string.Join(", ", names)}";
+
+        public string GetImplementsText(IEnumerable<string> names) => $" implements {string.Join(", ", names)}";
 
         private static string GetTag(string tagName) => $"$tg{{{tagName}}}";
 
