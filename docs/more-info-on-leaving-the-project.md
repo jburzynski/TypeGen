@@ -1,7 +1,5 @@
 Due to lack of time and the need to do other things, I had to quit maintaining TypeGen.
 
-Possible Qs and the corresponding As:
-
 Q: Is this forever? Will you come back to this project at some point?\
 A: I'm very glad you asked that question! I'm not planning to return to maintaining the project. This may potentially happen, but most likely not in the near future.
 
