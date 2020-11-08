@@ -47,6 +47,7 @@ namespace TypeGen.Core.Generator.Services
                 .Concat(GetImplementedInterfaceTypesDependencies(type))
                 .Concat(GetMemberTypeDependencies(type))
                 .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
+                .Where(t => t.Type != type)
                 .ToList();
         }
 
@@ -63,13 +64,14 @@ namespace TypeGen.Core.Generator.Services
 
             foreach (Type genericArgumentType in type.GetGenericArguments())
             {
-                Type baseType = genericArgumentType.GetTypeInfo().BaseType;
-                if (baseType == null || baseType == typeof(object)) continue;
+                foreach(Type constraint in genericArgumentType.GetGenericParameterConstraints())
+                {
 
-                baseType = _typeService.StripNullable(baseType);
-                Type baseFlatType = _typeService.GetFlatType(baseType);
+                    var stripped = _typeService.StripNullable(constraint);
+                    Type baseFlatType = _typeService.GetFlatType(stripped);
 
-                result.AddRange(GetFlatTypeDependencies(baseFlatType));
+                    result.AddRange(GetFlatTypeDependencies(baseFlatType));
+                }
             }
 
             return result;

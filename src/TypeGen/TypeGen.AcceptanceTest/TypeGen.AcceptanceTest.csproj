@@ -6,6 +6,7 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+
     <ItemGroup>
       <None Remove="Generator\Expected\foo-constants.ts" />
     </ItemGroup>
@@ -70,6 +71,17 @@
       <ProjectReference Include="..\TypeGen.Cli\TypeGen.Cli.csproj" />
       <ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj" />
       <ProjectReference Include="..\TypeGen.TestWebApp\TypeGen.TestWebApp.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterface.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\RecursiveConstraintClass.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithClassConstraint.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\ICicrularConstraintInterface.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IMultipleConstraintInterface.ts" />
+	</ItemGroup>
+
+    <ItemGroup>
     </ItemGroup>
 
 </Project>

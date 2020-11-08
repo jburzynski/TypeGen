@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;</TargetFrameworks>
     <DocumentationFile>TypeGen.Core.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
