@@ -50,7 +50,7 @@ namespace TypeGen.Core.Test.GeneratorTestingUtils
 
         private void OnOutputCreated(object sender, Gen.FileContentGeneratedArgs e)
         {
-            _GeneratedOutputs.Add(e.Type, new GeneratedOutput(e));
+            _GeneratedOutputs[e.Type] = new GeneratedOutput(e);
         }
 
         #endregion
