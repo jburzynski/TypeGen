@@ -31,9 +31,9 @@
 	</PropertyGroup>
 	<!-- Deploy -->
 	<PropertyGroup Condition=" '$(BUILD_BUILDNUMBER)' != '' ">
-		<AssemblyVersion>$(TYPEGEN_VERSION).$(BUILD_BUILDID)</AssemblyVersion>
-		<FileVersion>$(TYPEGEN_VERSION).$(BUILD_BUILDID)</FileVersion>
-		<Version>$(TYPEGEN_DATA_VERSION).$(BUILD_BUILDID)$(PRERELEASEFLAG)</Version>
+		<AssemblyVersion>$(TYPEGEN_CORE_VERSION).$(BUILD_BUILDID)</AssemblyVersion>
+		<FileVersion>$(TYPEGEN_CORE_VERSION).$(BUILD_BUILDID)</FileVersion>
+		<Version>$(TYPEGEN_CORE_VERSION).$(BUILD_BUILDID)$(PRERELEASEFLAG)</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
