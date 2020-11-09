@@ -22,7 +22,11 @@ namespace TypeGen.AcceptanceTest.GeneratorTestingUtils
                 var contentBytes = new byte[stream.Length];
                 await stream.ReadAsync(contentBytes, 0, (int)stream.Length);
                 var res = Encoding.UTF8.GetString(contentBytes);
-                return res.Trim('\uFEFF');
+                return res
+                    .Trim('\uFEFF')
+                    .Replace("\n", "")
+                    .Replace("\r", "")
+                    .Replace("\r\n", "");
             }
         }
     }
