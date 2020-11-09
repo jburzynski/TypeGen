@@ -56,7 +56,7 @@ jobs:
         displayName: 'Run tests'
         inputs:
           command: test
-          projects: '**/*.Test.csproj'
+          projects: '**/*Test.csproj'
           arguments: '--configuration $(buildConfiguration)'
 
       - task: NuGetAuthenticate@0
