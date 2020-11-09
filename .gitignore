@@ -258,7 +258,5 @@ paket-files/
 /local-nuget-path.txt
 /src/TypeGen/TypeGen.Cli/Properties/launchSettings.json
 /src/TypeGen/TypeGen.TestWebApp/wwwroot/lib/**
-/NuGet.config
-/src/TypeGen/TypeGen.Cli/NuGet.config
 /src/TypeGen/TypeGen.Core/TypeGen.Core.xml
 generated-typescript
