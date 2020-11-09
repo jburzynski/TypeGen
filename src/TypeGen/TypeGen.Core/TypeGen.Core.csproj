@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<DocumentationFile>TypeGen.Core.xml</DocumentationFile>
 		<LangVersion>latest</LangVersion>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Nullable>enable</Nullable>
 		<RootNamespace>TypeGen.Core</RootNamespace>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Product>TypeGenEnhanced</Product>
@@ -29,6 +27,7 @@
 		<FileVersion>0.0.0.1</FileVersion>
 		<Version>0.0.0.1</Version>
 	</PropertyGroup>
+	
 	<!-- Deploy -->
 	<PropertyGroup Condition=" '$(BUILD_BUILDNUMBER)' != '' ">
 		<AssemblyVersion>$(TYPEGEN_CORE_VERSION).$(BUILD_BUILDID)</AssemblyVersion>
@@ -37,17 +36,17 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0">
+			<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-		<PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />>
+		<PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
