@@ -427,14 +427,15 @@ namespace TypeGen.Core.Generator
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
-            if (type.IsInterface)
+            
+            if (tsCustomBaseAttribute != null)
+            {
+                extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
+            }
+            else if (type.IsInterface)
             {
                 // this is an interface, generate extends for an interface.
                 extendsText = _tsContentGenerator.GetExtendsForInterfacesText(type);
-            }
-            else if (tsCustomBaseAttribute != null)
-            {
-                extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
             }
             else if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
