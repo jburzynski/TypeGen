@@ -1,0 +1,78 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+variables:
+  - group: TypeGen-Vars
+  - name: solution
+    value: '**/*.sln'
+  - name: buildPlatform
+    value: 'Any CPU'
+  - name: buildConfiguration
+    value: 'Release'
+  # Prerelease flag appended to every version indicating that this build is a Prerelease. Has to start with a '-'
+
+
+trigger:
+  - Publish
+
+jobs:
+  - job: Run_Tests_And_Publish_NuGet
+
+    timeoutInMinutes: 10
+
+    pool:
+      vmImage: 'windows-latest'
+
+    steps:
+
+    #  - task: UseDotNet@2
+    #    displayName: 'Use specific .NET Core sdk'
+    #    inputs:
+    #      version: 3.1.302
+
+      - task: NuGetToolInstaller@1
+
+      # Restore solution
+      - task: DotNetCoreCLI@2
+        displayName: 'Restore Solution'
+        inputs:
+          command: restore
+          projects: '**/*.csproj'
+          feedsToUse: config
+          nugetConfigPath: 'nuget.config'    # Relative to root of the repository
+
+       # Build the entire solution
+      - task: DotNetCoreCLI@2
+        displayName: 'Build Solution'
+        inputs:
+          command: 'build'
+          projects: '$(solution)'
+          arguments: '--configuration $(buildConfiguration)'
+
+      # Run all test in the test directory
+      - task: DotNetCoreCLI@2
+        displayName: 'Run tests'
+        inputs:
+          command: test
+          projects: 'tests/*/*.csproj'
+          arguments: '--configuration $(buildConfiguration)'
+
+      - task: NuGetAuthenticate@0
+        displayName: 'NuGet Authenticate'
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet push'
+        inputs:
+          command: push
+          packagesToPush: '**/*.nupkg'
+          publishVstsFeed: 'VEP/Main_Feed'
+          allowPackageConflicts: true
+
+      - task: PublishSymbols@2
+        displayName: 'Publish symbols'
+        inputs:
+          SearchPattern: '**/bin/**/*.pdb'
+          SymbolServerType: 'TeamServices'
+          SymbolsVersion: '2.\*'

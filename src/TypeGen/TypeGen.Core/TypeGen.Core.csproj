@@ -1,41 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;</TargetFrameworks>
-    <DocumentationFile>TypeGen.Core.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Templates\Class.tpl" />
-    <None Remove="Templates\ClassProperty.tpl" />
-    <None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
-    <None Remove="Templates\Constant.tpl" />
-    <None Remove="Templates\Enum.tpl" />
-    <None Remove="Templates\EnumValue.tpl" />
-    <None Remove="Templates\Import.tpl" />
-    <None Remove="Templates\Interface.tpl" />
-    <None Remove="Templates\InterfaceProperty.tpl" />
-    <None Remove="Templates\Index.tpl" />
-    <None Remove="Templates\IndexExport.tpl" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Templates\Class.tpl" />
-    <EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
-    <EmbeddedResource Include="Templates\ClassProperty.tpl" />
-    <EmbeddedResource Include="Templates\Enum.tpl" />
-    <EmbeddedResource Include="Templates\EnumDefaultExport.tpl" />
-    <EmbeddedResource Include="Templates\EnumValue.tpl" />
-    <EmbeddedResource Include="Templates\Heading.tpl" />
-    <EmbeddedResource Include="Templates\Import.tpl" />
-    <EmbeddedResource Include="Templates\ImportDefaultExport.tpl" />
-    <EmbeddedResource Include="Templates\Interface.tpl" />
-    <EmbeddedResource Include="Templates\InterfaceDefaultExport.tpl" />
-    <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
-    <EmbeddedResource Include="Templates\Index.tpl" />
-    <EmbeddedResource Include="Templates\IndexExport.tpl" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
-  </ItemGroup>
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;</TargetFrameworks>
+		<DocumentationFile>TypeGen.Core.xml</DocumentationFile>
+		<LangVersion>latest</LangVersion>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<Nullable>enable</Nullable>
+		<RootNamespace>TypeGen.Core</RootNamespace>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Product>TypeGenEnhanced</Product>
+		<Description>Fork from TypeGen</Description>
+		<PackageId>TypeGenEnhanced</PackageId>
+	</PropertyGroup>
+
+	<!-- Parameters only set in pipeline -->
+	<PropertyGroup Condition="'$(TF_BUILD)' == 'True'">
+		<!-- Only build NuGet package and symbols when deploying for performance reasons -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!-- Versioning -->
+	<!-- Local -->
+	<PropertyGroup Condition=" '$(BUILD_BUILDNUMBER)' == '' ">
+		<AssemblyVersion>0.0.0.1</AssemblyVersion>
+		<FileVersion>0.0.0.1</FileVersion>
+		<Version>0.0.0.1</Version>
+	</PropertyGroup>
+	<!-- Deploy -->
+	<PropertyGroup Condition=" '$(BUILD_BUILDNUMBER)' != '' ">
+		<AssemblyVersion>$(TYPEGEN_VERSION).$(BUILD_BUILDID)</AssemblyVersion>
+		<FileVersion>$(TYPEGEN_VERSION).$(BUILD_BUILDID)</FileVersion>
+		<Version>$(TYPEGEN_DATA_VERSION).$(BUILD_BUILDID)$(PRERELEASEFLAG)</Version>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+		<PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Templates\Class.tpl" />
+		<None Remove="Templates\ClassProperty.tpl" />
+		<None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
+		<None Remove="Templates\Constant.tpl" />
+		<None Remove="Templates\Enum.tpl" />
+		<None Remove="Templates\EnumValue.tpl" />
+		<None Remove="Templates\Import.tpl" />
+		<None Remove="Templates\Interface.tpl" />
+		<None Remove="Templates\InterfaceProperty.tpl" />
+		<None Remove="Templates\Index.tpl" />
+		<None Remove="Templates\IndexExport.tpl" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="Templates\Class.tpl" />
+		<EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
+		<EmbeddedResource Include="Templates\ClassProperty.tpl" />
+		<EmbeddedResource Include="Templates\Enum.tpl" />
+		<EmbeddedResource Include="Templates\EnumDefaultExport.tpl" />
+		<EmbeddedResource Include="Templates\EnumValue.tpl" />
+		<EmbeddedResource Include="Templates\Heading.tpl" />
+		<EmbeddedResource Include="Templates\Import.tpl" />
+		<EmbeddedResource Include="Templates\ImportDefaultExport.tpl" />
+		<EmbeddedResource Include="Templates\Interface.tpl" />
+		<EmbeddedResource Include="Templates\InterfaceDefaultExport.tpl" />
+		<EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
+		<EmbeddedResource Include="Templates\Index.tpl" />
+		<EmbeddedResource Include="Templates\IndexExport.tpl" />
+	</ItemGroup>
+	
 </Project>
