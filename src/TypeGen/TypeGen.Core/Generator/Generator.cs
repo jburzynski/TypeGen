@@ -427,7 +427,7 @@ namespace TypeGen.Core.Generator
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
-            if (interfaceAttribute != null)
+            if (type.IsInterface)
             {
                 // this is an interface, generate extends for an interface.
                 extendsText = _tsContentGenerator.GetExtendsForInterfacesText(type);

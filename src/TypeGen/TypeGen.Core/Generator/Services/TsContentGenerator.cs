@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -314,18 +315,19 @@ namespace TypeGen.Core.Generator.Services
                 string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
 
+
                 switch (valueObj)
                 {
                     case Guid valueGuid when memberType == "string":
                         return quote + valueGuid + quote;
                     case DateTime valueDateTime when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTime}{quote})";
+                        return $@"new Date({quote}{valueDateTime.ToString(CultureInfo.InvariantCulture)}{quote})";
                     case DateTime valueDateTime when memberType == "string":
-                        return quote + valueDateTime + quote;
+                        return quote + valueDateTime.ToString(CultureInfo.InvariantCulture) + quote;
                     case DateTimeOffset valueDateTimeOffset when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTimeOffset}{quote})";
+                        return $@"new Date({quote}{valueDateTimeOffset.ToString(CultureInfo.InvariantCulture)}{quote})";
                     case DateTimeOffset valueDateTimeOffset when memberType == "string":
-                        return quote + valueDateTimeOffset + quote;
+                        return quote + valueDateTimeOffset.ToString(CultureInfo.InvariantCulture) + quote;
                     default:
                         return JsonConvert.SerializeObject(valueObj).Replace("\"", quote);
                 }
