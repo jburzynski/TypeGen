@@ -26,6 +26,13 @@ namespace TypeGen.AcceptanceTest.Issues
     }
 
     [ExportTsInterface]
+    public interface IRecursiveConstraintInterfaceWithStructConstraint<TSelf>
+        where TSelf : struct, IRecursiveConstraintInterfaceWithStructConstraint<TSelf>
+    {
+
+    }
+
+    [ExportTsInterface]
     public interface ICicrularConstraintInterface<TSelf, TOther>
         where TSelf : ICicrularConstraintInterface<TSelf, TOther>
         where TOther : ICicrularConstraintInterface<TOther, TSelf>

@@ -24,6 +24,7 @@ namespace TypeGen.AcceptanceTest.Issues
         [InlineData(typeof(RecursiveConstraintClass<>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.RecursiveConstraintClass.ts")]
         [InlineData(typeof(IRecursiveConstraintInterface<>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.IRecursiveConstraintInterface.ts")]
         [InlineData(typeof(IRecursiveConstraintInterfaceWithClassConstraint<>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.IRecursiveConstraintInterfaceWithClassConstraint.ts")]
+        [InlineData(typeof(IRecursiveConstraintInterfaceWithStructConstraint<>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.IRecursiveConstraintInterfaceWithStructConstraint.ts")]
         [InlineData(typeof(IMultipleConstraintInterface<>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.IMultipleConstraintInterface.ts")]
         [InlineData(typeof(ICicrularConstraintInterface<,>), @"TypeGen.AcceptanceTest.Issues.CircularGenericConstraint.Expected.ICicrularConstraintInterface.ts")]
         public async Task GeneratesCorrectly(Type type, string expectedLocation)

@@ -15,6 +15,11 @@ namespace TypeGen.Core.Generator.Services
     /// </summary>
     internal class TypeService : ITypeService
     {
+        private static HashSet<Type> IgnoredGenricConstraints = new HashSet<Type>
+        {
+            typeof(ValueType)
+        };
+
         private readonly IMetadataReaderFactory _metadataReaderFactory;
         private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
@@ -182,6 +187,12 @@ namespace TypeGen.Core.Generator.Services
         {
             Requires.NotNull(type, nameof(type));
             return type.GetTypeInfo().IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
+        }
+
+        /// <inheritdoc/>
+        public bool IsIngoredGenericConstarint(Type type)
+        {
+            return IgnoredGenricConstraints.Contains(type);
         }
 
         /// <inheritdoc />
@@ -413,7 +424,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetGenericTsTypeConstraintsForDeclaration(Type type)
         {
-            var constraints = type.GetGenericParameterConstraints();
+            var constraints = type.GetGenericParameterConstraints().Where(t => !IsIngoredGenericConstarint(t)).ToArray();
             var attributes = GetGenericTsTypeConstraintAttributesForDecleration(type);
             if (constraints.Length + attributes.Length < 1)
                 return type.Name;
