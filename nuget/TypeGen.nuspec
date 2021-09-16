@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>TypeGen</id>
-    <version>2.4.9</version>
+    <version>2.4.9.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -12,9 +12,9 @@
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
 	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
-	<dependencies>
-      <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
-	  <dependency id="Newtonsoft.Json" version="12.0.2" />
+    <dependencies>
+      <dependency id="System.Reflection.TypeExtensions" version="4.7.0"/>
+      <dependency id="Newtonsoft.Json" version="13.0.1"/>
     </dependencies>
   </metadata>
 </package>
