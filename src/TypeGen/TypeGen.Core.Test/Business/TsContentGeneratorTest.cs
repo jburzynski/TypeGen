@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -295,18 +296,18 @@ namespace TypeGen.Core.Test.Business
             new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.IntPropertyValue)), false, 2 },
             new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.StringFieldValue)), false, @"""value""" },
             new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.StringPropertyValue)), false, @"""value""" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime}"")" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime}"")" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset}"")" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime.ToString(CultureInfo.InvariantCulture)}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTime.ToString(CultureInfo.InvariantCulture)}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset.ToString(CultureInfo.InvariantCulture)}"")" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), false, $@"new Date(""{GetMemberValueText_TestClass.TestDateTimeOffset.ToString(CultureInfo.InvariantCulture)}"")" },
             new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.TestClassFieldValue)), false, @"{""TestField"":2,""TestProperty"":""value""}" },
             new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.TestClassPropertyValue)), false, @"{""TestField"":2,""TestProperty"":""value""}" },
             new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.GuidFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestGuid}""" },
             new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.GuidPropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestGuid}""" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime}""" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime}""" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset}""" },
-            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime.ToString(CultureInfo.InvariantCulture)}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimePropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTime.ToString(CultureInfo.InvariantCulture)}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetField(nameof(GetMemberValueText_TestClass.DateTimeOffsetFieldValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset.ToString(CultureInfo.InvariantCulture)}""" },
+            new object[] { typeof(GetMemberValueText_TestClass).GetProperty(nameof(GetMemberValueText_TestClass.DateTimeOffsetPropertyValue)), true, $@"""{GetMemberValueText_TestClass.TestDateTimeOffset.ToString(CultureInfo.InvariantCulture)}""" },
         };
 
         private class GetMemberValueText_TestClass

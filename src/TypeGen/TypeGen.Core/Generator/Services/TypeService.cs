@@ -15,6 +15,11 @@ namespace TypeGen.Core.Generator.Services
     /// </summary>
     internal class TypeService : ITypeService
     {
+        private static HashSet<Type> IgnoredGenricConstraints = new HashSet<Type>
+        {
+            typeof(ValueType)
+        };
+
         private readonly IMetadataReaderFactory _metadataReaderFactory;
         private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
@@ -182,6 +187,12 @@ namespace TypeGen.Core.Generator.Services
         {
             Requires.NotNull(type, nameof(type));
             return type.GetTypeInfo().IsGenericType && !IsDictionaryType(type) && !IsCollectionType(type);
+        }
+
+        /// <inheritdoc/>
+        public bool IsIngoredGenericConstarint(Type type)
+        {
+            return IgnoredGenricConstraints.Contains(type);
         }
 
         /// <inheritdoc />
@@ -398,10 +409,53 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetGenericTsTypeNameForDeclaration(Type type)
         {
-            return GetGenericTsTypeNameDeclarationAgnostic(type,
-                t => t.GetTypeInfo().BaseType != null && t.GetTypeInfo().BaseType != typeof(object)
-                    ? $"{t.Name} extends {GetTsTypeName(t.GetTypeInfo().BaseType, true)}"
-                    : t.Name);
+            return GetGenericTsTypeNameDeclarationAgnostic(type, GetGenericTsTypeConstraintsForDeclaration);
+        }
+
+        /// <summary>
+        /// Returns the string describing the generic parameter within a class or
+        /// interface defenition. Generic type constraints will be added, matching the
+        /// .net constraints as clolesly as possible
+        /// </summary>
+        /// <param name="type">
+        /// Needs to be a genericParameter  (<see cref="Type.IsGenericParameter"/>
+        /// flag set)
+        /// </param>
+        /// <returns></returns>
+        private string GetGenericTsTypeConstraintsForDeclaration(Type type)
+        {
+            var constraints = type.GetGenericParameterConstraints().Where(t => !IsIngoredGenericConstarint(t)).ToArray();
+            var attributes = GetGenericTsTypeConstraintAttributesForDecleration(type);
+            if (constraints.Length + attributes.Length < 1)
+                return type.Name;
+
+            var tsConstraints = constraints.Select(GetGenericTsTypeConstraintForDeclaration).Concat(attributes).Aggregate((a, b) => a + " & " + b);
+
+            return $"{type.Name} extends { tsConstraints }";
+            
+        }
+
+        /// <summary>
+        /// Extracts cconstarint attributes from genericParameters (<see cref="Type.IsGenericParameter"/> <br/>
+        /// Not doing anything at the moment as constraints like new() have no exact ts equivalent.
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string[] GetGenericTsTypeConstraintAttributesForDecleration(Type type)
+        {
+            var attributes = type.GenericParameterAttributes;
+            return new string[] { };
+
+        }
+
+        /// <summary>
+        /// Translates a .net type into the according ts constraint. <br/>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string GetGenericTsTypeConstraintForDeclaration(Type type)
+        {
+            return GetTsTypeName(type, false);
         }
 
         /// <summary>

@@ -1,75 +1,78 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
 
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-    <ItemGroup>
-      <None Remove="Generator\Expected\foo-constants.ts" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+		<PackageReference Include="NSubstitute" Version="3.1.0" />
+		<PackageReference Include="xunit" Version="2.4.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-        <PackageReference Include="NSubstitute" Version="3.1.0" />
-        <PackageReference Include="xunit" Version="2.4.0" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Generator\Expected\bar.ts" />
+		<EmbeddedResource Include="Generator\Expected\base-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\base-class2.ts" />
+		<EmbeddedResource Include="Generator\Expected\c.ts" />
+		<EmbeddedResource Include="Generator\Expected\custom-base-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\custom-base-custom-import.ts" />
+		<EmbeddedResource Include="Generator\Expected\custom-empty-base-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\d.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-export\class-with-default-export.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-export\class-with-imports.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-export\class-without-default-export.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-export\generic-class-with-default-export.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-export\interface-with-default-export.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-member-values.ts" />
+		<EmbeddedResource Include="Generator\Expected\e-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\extended-primitives-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\external-deps-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\f-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\foo-constants.ts" />
+		<EmbeddedResource Include="Generator\Expected\foo-type.ts" />
+		<EmbeddedResource Include="Generator\Expected\foo.ts" />
+		<EmbeddedResource Include="Generator\Expected\generic-base-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\generic-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\generic-with-restrictions.ts" />
+		<EmbeddedResource Include="Generator\Expected\index.ts" />
+		<EmbeddedResource Include="Generator\Expected\lite-db-entity.ts" />
+		<EmbeddedResource Include="Generator\Expected\no\slash\output\dir\no-slash-output-dir.ts" />
+		<EmbeddedResource Include="Generator\Expected\readonly-interface.ts" />
+		<EmbeddedResource Include="Generator\Expected\standalone-enum.ts" />
+		<EmbeddedResource Include="Generator\Expected\strict-nulls-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-classes\base-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-classes\base-class2.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-classes\circular-ref-class1.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-classes\circular-ref-class2.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-classes\test-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-enums\test-enum.ts" />
+		<EmbeddedResource Include="Generator\Expected\test-interfaces\test-interface.ts" />
+		<EmbeddedResource Include="Generator\Expected\type-unions.ts" />
+		<EmbeddedResource Include="Generator\Expected\very\nested\directory\nested-entity.ts" />
+		<EmbeddedResource Include="Generator\Expected\with-generic-base-class-custom-type.ts" />
+		<EmbeddedResource Include="Generator\Expected\with-ignored-base-and-custom-base.ts" />
+		<EmbeddedResource Include="Generator\Expected\with-ignored-base.ts" />
+		<EmbeddedResource Include="Generator\Expected\static-readonly.ts" />
+		<EmbeddedResource Include="Generator\Expected\enum-short-values.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithStructConstraint.ts" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="Generator\Expected\bar.ts" />
-      <EmbeddedResource Include="Generator\Expected\base-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\base-class2.ts" />
-      <EmbeddedResource Include="Generator\Expected\c.ts" />
-      <EmbeddedResource Include="Generator\Expected\custom-base-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\custom-base-custom-import.ts" />
-      <EmbeddedResource Include="Generator\Expected\custom-empty-base-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\d.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-export\class-with-default-export.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-export\class-with-imports.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-export\class-without-default-export.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-export\generic-class-with-default-export.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-export\interface-with-default-export.ts" />
-      <EmbeddedResource Include="Generator\Expected\default-member-values.ts" />
-      <EmbeddedResource Include="Generator\Expected\e-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\extended-primitives-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\external-deps-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\f-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\foo-constants.ts" />
-      <EmbeddedResource Include="Generator\Expected\foo-type.ts" />
-      <EmbeddedResource Include="Generator\Expected\foo.ts" />
-      <EmbeddedResource Include="Generator\Expected\generic-base-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\generic-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\generic-with-restrictions.ts" />
-      <EmbeddedResource Include="Generator\Expected\index.ts" />
-      <EmbeddedResource Include="Generator\Expected\lite-db-entity.ts" />
-      <EmbeddedResource Include="Generator\Expected\no\slash\output\dir\no-slash-output-dir.ts" />
-      <EmbeddedResource Include="Generator\Expected\readonly-interface.ts" />
-      <EmbeddedResource Include="Generator\Expected\standalone-enum.ts" />
-      <EmbeddedResource Include="Generator\Expected\strict-nulls-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-classes\base-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-classes\base-class2.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-classes\circular-ref-class1.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-classes\circular-ref-class2.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-classes\test-class.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-enums\test-enum.ts" />
-      <EmbeddedResource Include="Generator\Expected\test-interfaces\test-interface.ts" />
-      <EmbeddedResource Include="Generator\Expected\type-unions.ts" />
-      <EmbeddedResource Include="Generator\Expected\very\nested\directory\nested-entity.ts" />
-      <EmbeddedResource Include="Generator\Expected\with-generic-base-class-custom-type.ts" />
-      <EmbeddedResource Include="Generator\Expected\with-ignored-base-and-custom-base.ts" />
-      <EmbeddedResource Include="Generator\Expected\with-ignored-base.ts" />
-      <None Remove="Generator\Expected\static-readonly.ts" />
-      <EmbeddedResource Include="Generator\Expected\static-readonly.ts" />
-      <None Remove="Generator\Expected\enum-short-values.ts" />
-      <EmbeddedResource Include="Generator\Expected\enum-short-values.ts" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TypeGen.Cli\TypeGen.Cli.csproj" />
+		<ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj" />
+		<ProjectReference Include="..\TypeGen.TestWebApp\TypeGen.TestWebApp.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\TypeGen.Cli\TypeGen.Cli.csproj" />
-      <ProjectReference Include="..\TypeGen.Core\TypeGen.Core.csproj" />
-      <ProjectReference Include="..\TypeGen.TestWebApp\TypeGen.TestWebApp.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterface.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\RecursiveConstraintClass.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithClassConstraint.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\ICicrularConstraintInterface.ts" />
+		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IMultipleConstraintInterface.ts" />
+	</ItemGroup>
 
 </Project>

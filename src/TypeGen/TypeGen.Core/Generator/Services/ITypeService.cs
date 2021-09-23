@@ -67,6 +67,14 @@ namespace TypeGen.Core.Generator.Services
         bool IsCustomGenericType(Type type);
 
         /// <summary>
+        /// Returns if the provided type should be exclueded 
+        /// as a generic type constraint in typescript
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        bool IsIngoredGenericConstarint(Type type);
+
+        /// <summary>
         /// Gets TypeScript type name for a type
         /// </summary>
         /// <param name="type"></param>

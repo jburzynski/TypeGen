@@ -76,10 +76,10 @@ namespace TypeGen.AcceptanceTest.Generator
         };
 
         #region Assembly
-        
+
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
-//        [Theory]
-		[InlineData("./")]
+        //[Theory]
+        [InlineData("./")]
 		[InlineData("generated-typescript/")]
 		[InlineData("nested/directory/generated-typescript/")]
         public void Generate_AssemblyGiven_TypeScriptContentGenerated(string outputPath)
@@ -152,13 +152,13 @@ namespace TypeGen.AcceptanceTest.Generator
             _fileSystem.Received().SaveFile(outputPath + @"default-export/class-without-default-export.ts", Content[@"default-export\class-without-default-export.ts"]);
             _fileSystem.Received().SaveFile(outputPath + @"default-export/interface-with-default-export.ts", Content[@"default-export\interface-with-default-export.ts"]);
         }
-        
+
         #endregion
-        
+
         #region GenerationSpec
-        
+
         [Theory(Skip = "This test should be run only in local environment. It's marked as skipped, because remote services (build servers etc.) should not pick it up.")]
-//        [Theory]
+        //[Theory]
         [InlineData("./")]
         [InlineData("generated-typescript/")]
         [InlineData("nested/directory/generated-typescript/")]
