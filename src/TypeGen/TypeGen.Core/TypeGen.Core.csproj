@@ -3,6 +3,10 @@
     <DocumentationFile>TypeGen.Core.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
     <TargetFramework>net5.0</TargetFramework>
+    <Id>TypeGen</Id>
+    <Version>2.4.9.1</Version>
+    <Authors>Jacek Burzynski</Authors>
+    <PackageTags>code-generator generator code typescript ts csharp cs</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Templates\Class.tpl" />
