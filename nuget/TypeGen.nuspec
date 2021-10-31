@@ -19,11 +19,11 @@
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
-      <group targetFramework=".NETStandard1.3" />
+      <group targetFramework=".NETStandard2.0" />
       <group targetFramework="net5.0" />
       <group>
-        <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
-        <dependency id="Newtonsoft.Json" version="12.0.2" />
+        <dependency id="System.Reflection.TypeExtensions" version="4.7.0" />
+        <dependency id="Newtonsoft.Json" version="13.0.1" />
       </group>
     </dependencies>
   </metadata>
