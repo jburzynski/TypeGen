@@ -8,11 +8,11 @@ init:
   - git config --global core.autocrlf false
 
 before_build:
-  - dotnet restore src/TypeGen/TypeGen.AcceptanceTest
   - dotnet restore src/TypeGen/TypeGen.Cli
   - dotnet restore src/TypeGen/TypeGen.Core
   - dotnet restore src/TypeGen/TypeGen.Cli.Test
   - dotnet restore src/TypeGen/TypeGen.Core.Test
+  - dotnet restore src/TypeGen/TypeGen.IntegrationTest
   - dotnet restore src/TypeGen/TypeGen.TestWebApp
 
 build:
