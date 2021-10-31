@@ -20,7 +20,7 @@ dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f net5.0
 
 
 $cliBinFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU") {"bin\Any CPU"} else {"bin"}
-$coreBinFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU") {"bin\Any CPU"} else {"bin"}
+$coreBinFolder = if (test-path "src\TypeGen\TypeGen.Core\bin\Any CPU") {"bin\Any CPU"} else {"bin"}
 
 
 # create TypeGen NuGet package
