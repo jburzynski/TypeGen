@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.Core.Test", "TypeGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.Cli.Test", "TypeGen.Cli.Test\TypeGen.Cli.Test.csproj", "{7A524558-A065-44EB-B9BC-1DC46ED4042C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.AcceptanceTest", "TypeGen.AcceptanceTest\TypeGen.AcceptanceTest.csproj", "{CC91A6B3-AA7E-42B5-B920-5F21DB14D791}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeGen.IntegrationTest", "TypeGen.IntegrationTest\TypeGen.IntegrationTest.csproj", "{CC91A6B3-AA7E-42B5-B920-5F21DB14D791}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

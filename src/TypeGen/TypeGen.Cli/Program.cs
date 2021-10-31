@@ -110,7 +110,6 @@ namespace TypeGen.Cli
                 : Path.Combine(projectFolder, "tgconfig.json");
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
-            LogConfigWarnings(config);
 
             // register assembly resolver
 
@@ -167,14 +166,6 @@ namespace TypeGen.Cli
             _assemblyResolver.Unregister();
             
             _logger.Log($"Files for project \"{projectFolder}\" generated successfully.{Environment.NewLine}", LogLevel.Info);
-        }
-
-        private static void LogConfigWarnings(TgConfig config)
-        {
-            if (config.CreateIndexFile == true)
-            {
-                _logger.Log("Deprecated 'createIndexFile' CLI option used. This option may be removed in future versions.", LogLevel.Warning);
-            }
         }
 
         private static void AddFilesToProject(string projectFolder, IEnumerable<string> generatedFiles)

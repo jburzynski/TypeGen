@@ -4,6 +4,9 @@ image: Visual Studio 2019
 platform: Any CPU
 configuration: Release
 
+init:
+- git config --global core.autocrlf false
+
 before_build:
   - dotnet restore src/TypeGen/TypeGen.AcceptanceTest
   - dotnet restore src/TypeGen/TypeGen.Cli
