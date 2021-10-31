@@ -19,7 +19,7 @@ build:
   project: src/TypeGen/TypeGen.sln
   
 before_package:
-  - ./publish.ps1 -nobuild
+  - ps: publish.ps1 -nobuild
   
 deploy:
   provider: NuGet
