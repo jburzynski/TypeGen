@@ -18,7 +18,7 @@ before_build:
 build:
   project: src/TypeGen/TypeGen.sln
   
-before_package:
+after_test:
   - ps: ./publish.ps1 -nobuild
   
 deploy:

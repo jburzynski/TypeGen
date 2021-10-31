@@ -19,6 +19,9 @@ dotnet restore .\src\TypeGen\TypeGen.Cli
 dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f net5.0
 
 
+$binFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU") {"bin\Any CPU"} else {"bin"}
+
+
 # create TypeGen NuGet package
 
 #tools
@@ -30,7 +33,7 @@ if (test-path nuget\tools)
 
 new-item -Force -Path nuget\tools -ItemType Directory
 
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\net5.0\publish\* nuget\tools
+copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net5.0\publish\*" nuget\tools
 mv nuget\tools\TypeGen.Cli.exe nuget\tools\TypeGen.exe
 
 
@@ -43,13 +46,13 @@ if (test-path nuget\lib)
 
 #netstandard2.0
 new-item -Force -Path nuget\lib\netstandard2.0 -ItemType Directory
-copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.dll nuget\lib\netstandard2.0
-copy src\TypeGen\TypeGen.Core\bin\Release\netstandard2.0\TypeGen.Core.xml nuget\lib\netstandard2.0
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\netstandard2.0\TypeGen.Core.dll" nuget\lib\netstandard2.0
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\netstandard2.0\TypeGen.Core.xml" nuget\lib\netstandard2.0
 
 #net5.0
 new-item -Force -Path nuget\lib\net5.0 -ItemType Directory
-copy src\TypeGen\TypeGen.Core\bin\Release\net5.0\TypeGen.Core.dll nuget\lib\net5.0
-copy src\TypeGen\TypeGen.Core\bin\Release\net5.0\TypeGen.Core.xml nuget\lib\net5.0
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net5.0\TypeGen.Core.dll" nuget\lib\net5.0
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net5.0\TypeGen.Core.xml" nuget\lib\net5.0
 
 nuget pack nuget\TypeGen.nuspec
 
@@ -62,7 +65,7 @@ if (test-path nuget-dotnetcli\tools)
 }
 
 new-item -Force -Path nuget-dotnetcli\tools\net5.0\any -ItemType Directory
-copy -Recurse src\TypeGen\TypeGen.Cli\bin\Release\net5.0\publish\* nuget-dotnetcli\tools\net5.0\any
+copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net5.0\publish\*" nuget-dotnetcli\tools\net5.0\any
 
 New-Item nuget-dotnetcli\tools\net5.0\any\DotnetToolSettings.xml
 set-content nuget-dotnetcli\tools\net5.0\any\DotnetToolSettings.xml '<?xml version="1.0" encoding="utf-8"?>
