@@ -21,6 +21,10 @@ build:
 after_test:
   - ps: ./publish.ps1 -nobuild
   
+artifacts:
+  - path: '*.nupkg'
+    name: NuGet packages
+  
 deploy:
   provider: NuGet
   api_key:
