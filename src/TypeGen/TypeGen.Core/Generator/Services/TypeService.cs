@@ -315,7 +315,8 @@ namespace TypeGen.Core.Generator.Services
                     result.AddRange(GeneratorOptions.TypeUnionsForTypes[tsTypeName]);
                 }
 
-                if (Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None)
+                if ((Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None) ||
+                    GeneratorOptions.CsAllowNullsForAllTypes)
                 {
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add(nullLiteral);
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add(undefinedLiteral);
@@ -425,31 +426,16 @@ namespace TypeGen.Core.Generator.Services
         private string GetGenericTsTypeConstraintsForDeclaration(Type type)
         {
             var constraints = type.GetGenericParameterConstraints().Where(t => !IsIngoredGenericConstarint(t)).ToArray();
-            var attributes = GetGenericTsTypeConstraintAttributesForDecleration(type);
-            if (constraints.Length + attributes.Length < 1)
+            if (constraints.Length < 1)
                 return type.Name;
 
-            var tsConstraints = constraints.Select(GetGenericTsTypeConstraintForDeclaration).Concat(attributes).Aggregate((a, b) => a + " & " + b);
+            var tsConstraints = constraints.Select(GetGenericTsTypeConstraintForDeclaration).Aggregate((a, b) => a + " & " + b);
 
             return $"{type.Name} extends { tsConstraints }";
-            
-        }
-
-        /// <summary>
-        /// Extracts cconstarint attributes from genericParameters (<see cref="Type.IsGenericParameter"/> <br/>
-        /// Not doing anything at the moment as constraints like new() have no exact ts equivalent.
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private string[] GetGenericTsTypeConstraintAttributesForDecleration(Type type)
-        {
-            var attributes = type.GenericParameterAttributes;
-            return new string[] { };
-
         }
 
         /// <summary>
         /// Translates a .net type into the according ts constraint. <br/>
-        /// 
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>2.4.9</version>
+    <version>2.5.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -10,11 +10,21 @@
     <iconUrl>https://raw.githubusercontent.com/jburzynski/type-gen/master/docs/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
-	<releaseNotes>see the changelog on http://jburzynski.net/TypeGen/changelog</releaseNotes>
+    <releaseNotes>
+- moved TypeGen to .NET 5.0. TypeGen CLI is now only available in .NET 5.0 and TypeGen.Core targets .NET Standard 2.0 and .NET 5.0
+- dates are now represented in ISO 8601 Invariant Culture format (they are not culture specific) (issue #100)
+- fixed issues with generic constraints (issue #110)
+- fixed TsCustomBase not working for interfaces (issue #111)
+- added "csAllowNullsForAllTypes" config option that specifies whether to add null union type to all generated types
+	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
-	<dependencies>
-      <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
-	  <dependency id="Newtonsoft.Json" version="12.0.2" />
+    <dependencies>
+      <group targetFramework=".NETStandard1.3" />
+      <group targetFramework="net5.0" />
+      <group>
+        <dependency id="System.Reflection.TypeExtensions" version="4.5.0" />
+        <dependency id="Newtonsoft.Json" version="12.0.2" />
+      </group>
     </dependencies>
   </metadata>
 </package>
