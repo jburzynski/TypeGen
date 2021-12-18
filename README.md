@@ -4,23 +4,32 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
-***Project's website: http://jburzynski.net/TypeGen***
+***Website: http://jburzynski.net/TypeGen***
 
-***Complete documentation: http://typegen.readthedocs.io***
+***Documentation: http://typegen.readthedocs.io***
 
 ## How to get
 
 * [NuGet](https://www.nuget.org/packages/TypeGen)
 * [NuGet - .NET CLI tool](https://www.nuget.org/packages/dotnet-typegen)
 
-## Quick start
+## How to build
 
-1. Add [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. If you wish to use TypeGen as a .NET Core CLI tool, you'll need to install it from [this package](https://www.nuget.org/packages/dotnet-typegen)
+Running the following commands will create NuGet packages in the root directory (in this example for version 3.0.0):
 
-2. Mark your C# classes/enums as exportable to TypeScript:
+```powershell
+.\update-version.ps1 3.0.0
+.\publish.ps1
+```
+
+## How to use
+
+1. Add the [TypeGen NuGet package](https://www.nuget.org/packages/TypeGen) to your project. The [dotnet-typegen](https://www.nuget.org/packages/dotnet-typegen) package can be used for a .NET tool. 
+
+2. Select the types to export to TypeScript:
 
 ```c#
-// with attributes
+// using attributes
 
 [ExportTsClass]
 public class ProductDto
@@ -29,7 +38,7 @@ public class ProductDto
     public string[] Tags { get; set; }
 }
 
-// or with a generation spec (created anywhere in your project)
+// or using a specification file (a "generation spec") created anywhere in your project
 
 public class MyGenerationSpec : GenerationSpec
 {
@@ -40,7 +49,7 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-3. If you're using a generation spec, create a file named `tgconfig.json` directly in your project folder and place the following content there:
+3. If you're using a generation spec, create a file named `tgconfig.json` directly in your project folder with the following content:
 
 ```json
 {
@@ -48,9 +57,9 @@ public class MyGenerationSpec : GenerationSpec
 }
 ```
 
-4. Build your project and type `TypeGen generate` or `TypeGen -p "MyProjectName" generate` (depending on the current working directory of the PM Console) into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console if you're using TypeGen .NET Core CLI tool.
+4. Build your project and type `TypeGen generate` or `TypeGen -p "MyProjectName" generate` (depending on the current working directory of the PM Console) into the Package Manager Console (you might need to restart Visual Studio), or `dotnet typegen generate` in the system console to use the .NET tool.
 
-After completing the steps described above, a single TypeScript file (named *product-dto.ts*) will be generated in your project directory. The file will look like this:
+After completing the above, a single TypeScript file (named *product-dto.ts*) should be generated in your project's root directory with the following content:
 
 ```typescript
 export class ProductDto {
@@ -61,13 +70,11 @@ export class ProductDto {
 
 ## Features
 
-Some of TypeGen's features include:
+The features include (full list of features is available in the [documentation](http://typegen.readthedocs.io)):
 
-* generating TypeScript classes, interfaces and enums - single class per file
+* generating TypeScript classes, interfaces and enums (single class per file)
 * generating barrel (index) files
-* support for collection (or nested collection) types
-* generic classes/types generation
+* support for collections
+* support for generic types
 * support for inheritance
-* customizable convertion between C#/TypeScript names (naming conventions)
-
-For a complete list of features with examples, please refer to the project's documentation: http://typegen.readthedocs.io
+* customizable translation of naming conventions
