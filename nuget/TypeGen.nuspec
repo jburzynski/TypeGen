@@ -20,7 +20,7 @@
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0" />
-      <group targetFramework="net5.0" />
+      <group targetFramework="net6.0" />
       <group>
         <dependency id="System.Reflection.TypeExtensions" version="4.7.0" />
         <dependency id="Newtonsoft.Json" version="13.0.1" />
