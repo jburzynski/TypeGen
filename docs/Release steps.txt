@@ -1,18 +1,8 @@
-TypeGen:
-	- version-update
-	- build-publish
-	- nuget-update
-
-- git merge dev to master
-
-Upload:
-- nuget
-- nuget-dotnetcli
+1. run update-version.ps1
+2. push all necessary changes to the 'release' branch - this will trigger a build which will automatically upload packages to NuGet
+(pushing to any other branch does not upload to NuGet)
 
 
 - Docs
  + content (TypeGenDocs repo)
- + API reference (docfx metadata; docfx build)
-
-- website
- + changelog
+ + API reference if needed (docfx metadata; docfx build)
