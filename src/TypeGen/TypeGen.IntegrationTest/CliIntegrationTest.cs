@@ -31,7 +31,7 @@ namespace TypeGen.IntegrationTest
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = cliFilePath,
-                    Arguments = $"-p {projectToGeneratePath}",
+                    Arguments = $"generate -p {projectToGeneratePath}",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true
@@ -39,6 +39,7 @@ namespace TypeGen.IntegrationTest
             };
             
             // act
+            
             process.Start();
             
             // assert
