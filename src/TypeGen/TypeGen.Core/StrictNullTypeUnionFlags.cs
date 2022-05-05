@@ -21,6 +21,11 @@ namespace TypeGen.Core
         /// <summary>
         /// Undefined
         /// </summary>
-        Undefined = 2
+        Undefined = 2,
+
+        /// <summary>
+        /// Optional
+        /// </summary>
+        Optional = 3
     }
 }
