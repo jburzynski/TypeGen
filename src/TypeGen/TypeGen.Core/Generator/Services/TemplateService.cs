@@ -85,7 +85,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, string defaultValue = null)
+        public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string defaultValue = null)
         {
             type = $": {type}";
             type = ConcatenateWithTypeUnions(type, typeUnions);
@@ -94,7 +94,7 @@ namespace TypeGen.Core.Generator.Services
             
             return ReplaceSpecialChars(_classPropertyTemplate)
                 .Replace(GetTag("modifiers"), modifiers)
-                .Replace(GetTag("name"), name)
+                .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
                 .Replace(GetTag("type"), type)
                 .Replace(GetTag("defaultValue"), defaultValue);
         }

@@ -27,6 +27,7 @@ namespace TypeGen.Cli.Extensions
 
             if (parts.Contains("null")) result |= StrictNullTypeUnionFlags.Null;
             if (parts.Contains("undefined")) result |= StrictNullTypeUnionFlags.Undefined;
+            if (parts.Contains("optional")) result |= StrictNullTypeUnionFlags.Optional;
 
             return result;
         }

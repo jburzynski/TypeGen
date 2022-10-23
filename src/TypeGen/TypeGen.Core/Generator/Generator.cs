@@ -534,21 +534,28 @@ namespace TypeGen.Core.Generator
             string typeName = _typeService.GetTsTypeName(memberInfo);
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
+            bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
+            var isNullable = memberInfo is PropertyInfo info ? Nullable.GetUnderlyingType(info.PropertyType) != null : false;
+            if (isNullable && Options.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
+            {
+                isOptional = true;
+            }
+
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, defaultValueAttribute.DefaultValue);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, defaultValueAttribute.DefaultValue);
 
             // try to get default value from the member's default value
             string valueText = _tsContentGenerator.GetMemberValueText(memberInfo);
             if (!string.IsNullOrWhiteSpace(valueText))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, valueText);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, valueText);
 
             // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any() && Options.DefaultValuesForTypes.ContainsKey(typeName))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, Options.DefaultValuesForTypes[typeName]);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, Options.DefaultValuesForTypes[typeName]);
 
-            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions);
+            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional);
         }
         
         private void LogClassPropertyWarnings(MemberInfo memberInfo)
@@ -594,7 +601,13 @@ namespace TypeGen.Core.Generator
 
             string typeName = _typeService.GetTsTypeName(memberInfo);
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
+            
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
+            var isNullable = memberInfo is PropertyInfo info ? Nullable.GetUnderlyingType(info.PropertyType) != null : false;
+            if (isNullable && Options.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
+            {
+                isOptional = true;
+            }
 
             return _templateService.FillInterfacePropertyTemplate(modifiers, name, typeName, typeUnions, isOptional);
         }

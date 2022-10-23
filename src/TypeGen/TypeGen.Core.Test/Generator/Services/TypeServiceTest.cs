@@ -390,6 +390,7 @@ namespace TypeGen.Core.Test.Generator.Services
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null | StrictNullTypeUnionFlags.Undefined, "number" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("nullableIntField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Optional, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("intUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Null, "number" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("intNullUndefinedField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.Undefined, "number" },
