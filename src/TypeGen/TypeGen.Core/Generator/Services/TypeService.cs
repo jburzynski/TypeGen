@@ -333,7 +333,8 @@ namespace TypeGen.Core.Generator.Services
                 var nullable = Nullable.GetUnderlyingType(memberType) != null;
 #endif
 
-                if (nullable && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.Optional)
+                if ((nullable && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.Optional) ||
+                    GeneratorOptions.CsAllowNullsForAllTypes)
                 {
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add(nullLiteral);
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Undefined)) result.Add(undefinedLiteral);
