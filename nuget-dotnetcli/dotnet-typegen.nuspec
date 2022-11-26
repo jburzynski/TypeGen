@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>dotnet-typegen</id>
-    <version>3.1.0</version>
+    <version>4.0.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
