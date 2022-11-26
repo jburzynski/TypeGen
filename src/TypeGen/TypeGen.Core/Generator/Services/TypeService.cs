@@ -286,6 +286,10 @@ namespace TypeGen.Core.Generator.Services
             return GetTsTypeName(type);
         }
 
+#if NET6_0_OR_GREATER
+        private NullabilityInfoContext _nullabilityContext = new NullabilityInfoContext();
+#endif
+
         public IEnumerable<string> GetTypeUnions(MemberInfo memberInfo)
         {
             const string nullLiteral = "null";
@@ -315,7 +319,21 @@ namespace TypeGen.Core.Generator.Services
                     result.AddRange(GeneratorOptions.TypeUnionsForTypes[tsTypeName]);
                 }
 
-                if ((Nullable.GetUnderlyingType(memberType) != null && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.Optional) ||
+#if NET6_0_OR_GREATER
+                var memberNullability = memberInfo switch {
+                    PropertyInfo pInfo => _nullabilityContext.Create(pInfo),
+                    FieldInfo fInfo => _nullabilityContext.Create(fInfo),
+                    EventInfo eInfo => _nullabilityContext.Create(eInfo),
+                    _ => null
+                };
+
+                var nullable = memberNullability != null ? new[] { memberNullability.ReadState, memberNullability.WriteState }.Any(i => new[] { NullabilityState.Nullable, NullabilityState.Unknown }.Contains(i))
+                    : Nullable.GetUnderlyingType(memberType) != null;
+#else
+                var nullable = Nullable.GetUnderlyingType(memberType) != null;
+#endif
+
+                if ((nullable && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.None && GeneratorOptions.CsNullableTranslation != StrictNullTypeUnionFlags.Optional) ||
                     GeneratorOptions.CsAllowNullsForAllTypes)
                 {
                     if (GeneratorOptions.CsNullableTranslation.HasFlag(StrictNullTypeUnionFlags.Null)) result.Add(nullLiteral);
