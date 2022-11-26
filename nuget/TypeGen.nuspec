@@ -11,7 +11,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
     <releaseNotes>
-- added new 'optional' strict null type union flag (PR #131, issue #101)
+- moved to .NET 7.0
+- added support for reference nullability (PR #137)
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
