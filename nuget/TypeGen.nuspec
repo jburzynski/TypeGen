@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,8 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
     <releaseNotes>
-- moved to .NET 7.0
-- added support for reference nullability (PR #137)
+- bumped Newtonsoft.Json to 13.0.2 due to security vulnerability
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
@@ -20,7 +19,7 @@
       <group targetFramework="net7.0" />
       <group>
         <dependency id="System.Reflection.TypeExtensions" version="4.7.0" />
-        <dependency id="Newtonsoft.Json" version="13.0.1" />
+        <dependency id="Newtonsoft.Json" version="13.0.2" />
       </group>
     </dependencies>
   </metadata>
