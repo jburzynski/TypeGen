@@ -40,5 +40,7 @@ namespace TypeGen.TestWebApp.TestEntities
         public string UndefinedableTsType { get; set; }
 
         public BaseClass<string> GenericField;
+        public int NewProp { get; set; }
+        public int OldProp { set => NewProp = value; }
     }
 }
