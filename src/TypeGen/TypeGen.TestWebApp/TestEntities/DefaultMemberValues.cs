@@ -18,5 +18,7 @@ namespace TypeGen.TestWebApp.TestEntities
         public float fieldFloatAssignedDefaultValue = 0f;
 
         public DateTime fieldDateTimeUnassigned;
+
+        public DefaultMemberComplexValues PropertyComplex { get; set; } = new();
     }
 }
