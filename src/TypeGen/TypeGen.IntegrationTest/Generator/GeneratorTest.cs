@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TypeGen.Core;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.Generator.TestingUtils;
 using Xunit;
@@ -100,7 +101,29 @@ namespace TypeGen.IntegrationTest.Generator
             Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
         }
 
-        private string FormatOutput(string output) 
+        /// <summary>
+        /// Tests exception containing initial type name is thrown when dependency type fails
+        /// </summary>
+        [Fact]
+        public async Task ShouldThrowExceptionWithInitialTypeNameWhenDependencyTypeFails()
+        {
+            var type = typeof(TestEntities.TestExceptions);
+            var spec = new TestExceptionsGenerationSpec();
+            var generator = new Gen.Generator();
+            try
+            {
+                await generator.GenerateAsync(new[] { spec });
+                Assert.True(true, "Exception not thrown");
+            }
+            catch (CoreException ex)
+            {
+                Assert.Contains(type.Name, ex.Message);
+                Assert.NotNull(ex.InnerException);
+                Assert.Contains("Nullable`1", ex.InnerException.Message);
+            }
+        }
+
+        private string FormatOutput(string output)
             => output
                 .Trim()
                 .Replace("\n", "") 
@@ -126,6 +149,14 @@ namespace TypeGen.IntegrationTest.Generator
                 AddClass(typeof(TestEntities.GenericWithRestrictions<>));
                 AddClass<TestEntities.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
                 AddInterface<TestEntities.NestedEntity>("./very/nested/directory/").Member(nameof(TestEntities.NestedEntity.OptionalProperty)).Optional();
+            }
+        }
+
+        private class TestExceptionsGenerationSpec : GenerationSpec
+        {
+            public TestExceptionsGenerationSpec()
+            {
+                AddClass<TestEntities.TestExceptions>();
             }
         }
     }
