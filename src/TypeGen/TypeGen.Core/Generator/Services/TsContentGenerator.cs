@@ -295,16 +295,21 @@ namespace TypeGen.Core.Generator.Services
                 object instance = memberInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(memberInfo.DeclaringType);
                 var valueObj = new object();
                 object valueObjGuard = valueObj;
+                bool isConstant = false;
                 
                 switch (memberInfo)
                 {
                     case FieldInfo fieldInfo:
                         valueObj = fieldInfo.GetValue(instance);
+                        isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
                         break;
                     case PropertyInfo propertyInfo:
                         valueObj = propertyInfo.GetValue(instance);
                         break;
                 }
+
+                // if only default values for constants are allowed
+                if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return null;
 
                 // if valueObj hasn't been assigned in the switch
                 if (valueObj == valueObjGuard) return null;

@@ -40,6 +40,7 @@ namespace TypeGen.Cli.Models
         public bool? CreateIndexFile { get; set; }
         public string CsNullableTranslation { get; set; }
         public bool? CsAllowNullsForAllTypes { get; set; }
+        public bool? CsDefaultValuesForConstantsOnly { get; set; }
         public Dictionary<string, string> DefaultValuesForTypes { get; set; }
         public Dictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; }
         public Dictionary<string, string> CustomTypeMappings { get; set; }
@@ -80,6 +81,7 @@ namespace TypeGen.Cli.Models
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (CsAllowNullsForAllTypes == null) CsAllowNullsForAllTypes = GeneratorOptions.DefaultCsAllowNullsForAllTypes;
+            if (CsDefaultValuesForConstantsOnly == null) CsDefaultValuesForConstantsOnly = GeneratorOptions.DefaultCsDefaultValuesForConstantsOnly;
             if (OutputPath == null) OutputPath = "";
             if (ClearOutputDirectory == null) ClearOutputDirectory = false;
             if (DefaultValuesForTypes == null) DefaultValuesForTypes = GeneratorOptions.DefaultDefaultValuesForTypes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

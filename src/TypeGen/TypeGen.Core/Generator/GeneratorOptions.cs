@@ -23,6 +23,7 @@ namespace TypeGen.Core.Generator
         public static bool DefaultCreateIndexFile => false;
         public static StrictNullTypeUnionFlags DefaultCsNullableTranslation => StrictNullTypeUnionFlags.None;
         public static bool DefaultCsAllowNullsForAllTypes = false;
+        public static bool DefaultCsDefaultValuesForConstantsOnly = false;
         public static IDictionary<string, string> DefaultDefaultValuesForTypes => new Dictionary<string, string>();
         public static IDictionary<string, IEnumerable<string>> DefaultTypeUnionsForTypes => new Dictionary<string, IEnumerable<string>>();
         public static IDictionary<string, string> DefaultCustomTypeMappings => new Dictionary<string, string>();
@@ -46,6 +47,7 @@ namespace TypeGen.Core.Generator
             CreateIndexFile = DefaultCreateIndexFile;
             CsNullableTranslation = DefaultCsNullableTranslation;
             CsAllowNullsForAllTypes = DefaultCsAllowNullsForAllTypes;
+            CsDefaultValuesForConstantsOnly = DefaultCsDefaultValuesForConstantsOnly;
             DefaultValuesForTypes = DefaultDefaultValuesForTypes;
             TypeUnionsForTypes = DefaultTypeUnionsForTypes;
             CustomTypeMappings = DefaultCustomTypeMappings;
@@ -131,6 +133,11 @@ namespace TypeGen.Core.Generator
         /// Specifies whether null union types should be added for all types
         /// </summary>
         public bool CsAllowNullsForAllTypes { get; set; }
+
+        /// <summary>
+        /// Specifies that only default values for constants are generated
+        /// </summary>
+        public bool CsDefaultValuesForConstantsOnly { get; set; }
 
         /// <summary>
         /// Specifies default values to generate for given TypeScript types

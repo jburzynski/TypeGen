@@ -60,6 +60,7 @@ namespace TypeGen.Cli.Business
                 EnumStringInitializersConverters = GetMemberNameConvertersFromConfig(config.EnumStringInitializersConverters),
                 CsNullableTranslation = config.CsNullableTranslation.ToStrictNullFlags(),
                 CsAllowNullsForAllTypes = config.CsAllowNullsForAllTypes ?? GeneratorOptions.DefaultCsAllowNullsForAllTypes,
+                CsDefaultValuesForConstantsOnly = config.CsDefaultValuesForConstantsOnly ?? GeneratorOptions.DefaultCsDefaultValuesForConstantsOnly,
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 TypeUnionsForTypes = config.TypeUnionsForTypes ?? GeneratorOptions.DefaultTypeUnionsForTypes,
