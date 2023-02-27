@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Namotion.Reflection;
 using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
 using TypeGen.Core.Validation;
@@ -93,6 +94,19 @@ namespace TypeGen.Core.Extensions
             if (memberInfo is PropertyInfo propertyInfo) return propertyInfo.GetMethod.IsStatic;
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks if a property or field is nullable
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this MemberInfo memberInfo)
+        {
+            Requires.NotNull(memberInfo, nameof(memberInfo));
+
+            var contextualMember = memberInfo.ToContextualAccessor();
+            return contextualMember.Nullability == Nullability.Nullable;
         }
 
         /// <summary>

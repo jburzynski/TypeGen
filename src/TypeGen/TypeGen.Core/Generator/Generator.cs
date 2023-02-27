@@ -535,7 +535,7 @@ namespace TypeGen.Core.Generator
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
-            var isNullable = memberInfo is PropertyInfo info ? Nullable.GetUnderlyingType(info.PropertyType) != null : false;
+            var isNullable = memberInfo.IsNullable();
             if (isNullable && Options.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
             {
                 isOptional = true;
@@ -603,7 +603,7 @@ namespace TypeGen.Core.Generator
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
             
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
-            var isNullable = memberInfo is PropertyInfo info ? Nullable.GetUnderlyingType(info.PropertyType) != null : false;
+            var isNullable = memberInfo.IsNullable();
             if (isNullable && Options.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
             {
                 isOptional = true;

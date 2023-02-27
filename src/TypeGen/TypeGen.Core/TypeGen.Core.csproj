@@ -34,6 +34,7 @@
     <EmbeddedResource Include="Templates\IndexExport.tpl" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Namotion.Reflection" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />

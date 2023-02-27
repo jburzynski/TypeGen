@@ -100,6 +100,29 @@ namespace TypeGen.IntegrationTest.Generator
             Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
         }
 
+        [Theory]
+        [InlineData(typeof(TestEntities.NullableClass), "TypeGen.IntegrationTest.Generator.Expected.nullable-class.ts")]
+        public async Task TestNullableTranslationGenerateSpec(Type type, string expectedLocation)
+        {
+            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
+
+            var spec = new TestNullableTranslationGenerationSpec();
+            var generator = new Gen.Generator()
+            {
+                Options =
+                {
+                    CsNullableTranslation = Core.StrictNullTypeUnionFlags.Optional
+                }
+            };
+            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
+
+            await generator.GenerateAsync(new[] { spec });
+            var expected = (await readExpectedTask).Trim();
+
+            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
+            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+        }
+
         private string FormatOutput(string output) 
             => output
                 .Trim()
@@ -126,6 +149,14 @@ namespace TypeGen.IntegrationTest.Generator
                 AddClass(typeof(TestEntities.GenericWithRestrictions<>));
                 AddClass<TestEntities.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
                 AddInterface<TestEntities.NestedEntity>("./very/nested/directory/").Member(nameof(TestEntities.NestedEntity.OptionalProperty)).Optional();
+            }
+        }
+
+        private class TestNullableTranslationGenerationSpec : GenerationSpec
+        {
+            public TestNullableTranslationGenerationSpec()
+            {
+                AddClass<TestEntities.NullableClass>();
             }
         }
     }
