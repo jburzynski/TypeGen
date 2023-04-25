@@ -20,6 +20,27 @@ namespace TypeGen.IntegrationTest.Generator
         /// <param name="expectedLocation"></param>
         /// <returns></returns>
         [Theory]
+        [InlineData(typeof(TestEntities.Point), "TypeGen.IntegrationTest.Generator.Expected.point.ts")]
+        public async Task TestGenerate2(Type type, string expectedLocation)
+        {
+            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
+
+            var generator = new Gen.Generator();
+            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
+
+            await generator.GenerateAsync(type.Assembly);
+            var expected = (await readExpectedTask).Trim();
+
+            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
+            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+        }
+        /// <summary>
+        /// Tests if a variety of different classes are correctly translated to typescript
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="expectedLocation"></param>
+        /// <returns></returns>
+        [Theory]
         [InlineData(typeof(Constants.FooConstants), "TypeGen.IntegrationTest.Generator.Expected.foo-constants.ts")]
         [InlineData(typeof(TestEntities.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
         [InlineData(typeof(ErrorCase.Bar), "TypeGen.IntegrationTest.Generator.Expected.bar.ts")]
@@ -27,6 +48,8 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.BaseClass2<>), "TypeGen.IntegrationTest.Generator.Expected.base-class2.ts")]
         [InlineData(typeof(ErrorCase.C), "TypeGen.IntegrationTest.Generator.Expected.c.ts")]
         [InlineData(typeof(TestEntities.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
+        [InlineData(typeof(TestEntities.Point), "TypeGen.IntegrationTest.Generator.Expected.point.ts")]
+        [InlineData(typeof(TestEntities.Point3), "TypeGen.IntegrationTest.Generator.Expected.point3.ts")]
         [InlineData(typeof(TestEntities.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
         [InlineData(typeof(ErrorCase.D), "TypeGen.IntegrationTest.Generator.Expected.d.ts")]
         [InlineData(typeof(TestEntities.DefaultMemberValues), "TypeGen.IntegrationTest.Generator.Expected.default-member-values.ts")]
@@ -111,7 +134,11 @@ namespace TypeGen.IntegrationTest.Generator
         {
             public TestGenerationSpec()
             {
-
+                AddStruct<TestEntities.Point>()
+                    .Member(nameof(TestEntities.Point.X)).DefaultValue("0")
+                    .Member(nameof(TestEntities.Point.Y)).DefaultValue("0");
+                
+                AddStruct(typeof(TestEntities.Point3));
                 AddClass<TestEntities.CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
                 AddInterface<TestEntities.CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
                 AddInterface<TestEntities.CustomEmptyBaseClass>().CustomBase();

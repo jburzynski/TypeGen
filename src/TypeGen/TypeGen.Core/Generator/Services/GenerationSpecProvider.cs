@@ -23,7 +23,7 @@ namespace TypeGen.Core.Generator.Services
             foreach (Assembly assembly in assemblies)
             {
                 IEnumerable<Type> types = assembly.GetLoadableTypes()
-                    .GetExportMarkedTypes(metadataReader);
+                    .GetExportMarkedTypes(metadataReader).ToList();
 
                 foreach (Type type in types)
                 {

@@ -278,6 +278,7 @@ namespace TypeGen.Core.Generator
             var classAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsClassAttribute>(type);
             var interfaceAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsInterfaceAttribute>(type);
             var enumAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsEnumAttribute>(type);
+            var structAttribute = _metadataReaderFactory.GetInstance().GetAttribute<ExportTsStructAttribute>(type);
 
             if (classAttribute != null)
             {
@@ -292,6 +293,11 @@ namespace TypeGen.Core.Generator
             if (enumAttribute != null)
             {
                 return GenerateEnum(type, enumAttribute);
+            }
+
+            if (structAttribute != null)
+            {
+                return GenerateStruct(type, structAttribute);
             }
 
             return GenerateNotMarked(type, Options.BaseOutputDirectory);
@@ -391,6 +397,12 @@ namespace TypeGen.Core.Generator
             {
                 return GenerateEnum(type, new ExportTsEnumAttribute { OutputDir = outputDirectory });
             }
+            
+            if (typeInfo.IsValueType)
+            {
+                return GenerateStruct(type, new ExportTsStructAttribute { OutputDir = outputDirectory });
+            }
+            
 
             throw new CoreException($"Generated type must be either a C# class or enum. Error when generating type {type.FullName}");
         }
@@ -502,6 +514,44 @@ namespace TypeGen.Core.Generator
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, enumText));
             return new[] { filePathRelative };
         }
+        
+        /// <summary>
+        /// Generates a TypeScript enum file from a class type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="structAttribute"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        private IEnumerable<string> GenerateStruct(Type type, ExportTsStructAttribute structAttribute)
+        {
+            string outputDir = structAttribute.OutputDir;
+            IEnumerable<string> dependenciesGenerationResult = GenerateTypeDependencies(type, outputDir);
+
+            // get text for sections
+
+            var extendsText = "";
+
+            string implementsText = _tsContentGenerator.GetImplementsText(type);
+
+            string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
+            string propertiesText = GetClassPropertiesText(type);
+
+            // generate the file content
+
+            string tsTypeName = _typeService.GetTsTypeName(type, true);
+            string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
+            string filePath = GetFilePath(type, outputDir);
+            string filePathRelative = GetRelativeFilePath(type, outputDir);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+
+            var content = _typeService.UseDefaultExport(type) ?
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading);
+
+            // write TypeScript file
+            FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
+            return new[] { filePathRelative }.Concat(dependenciesGenerationResult).ToList();
+        }
 
         private bool IsStaticTsProperty(MemberInfo memberInfo)
         {
@@ -572,6 +622,24 @@ namespace TypeGen.Core.Generator
         /// <param name="type"></param>
         /// <returns></returns>
         private string GetClassPropertiesText(Type type)
+        {
+            var propertiesText = "";
+            IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
+
+            // create TypeScript source code for properties' definition
+
+            propertiesText += memberInfos
+                .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(memberInfo));
+
+            return RemoveLastLineEnding(propertiesText);
+        }
+        
+        /// <summary>
+        /// Gets TypeScript class properties definition source code
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string GetStructPropertiesText(Type type)
         {
             var propertiesText = "";
             IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());

@@ -62,6 +62,8 @@
 		<EmbeddedResource Include="Generator\Expected\static-readonly.ts" />
 		<EmbeddedResource Include="Generator\Expected\enum-short-values.ts" />
 		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithStructConstraint.ts" />
+		<EmbeddedResource Include="Generator\Expected\point.ts" />
+		<EmbeddedResource Include="Generator\Expected\point3.ts" />
 	</ItemGroup>
 
 	<ItemGroup>

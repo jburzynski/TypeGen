@@ -53,6 +53,30 @@ namespace TypeGen.Core.SpecGeneration
         }
         
         /// <summary>
+        /// Adds a struct
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
+        protected StructSpecBuilder AddStruct(Type type, string outputDir = null)
+        {
+            TypeSpec typeSpec = AddTypeSpec(type, new ExportTsStructAttribute { OutputDir = outputDir });
+            return new StructSpecBuilder(typeSpec);
+        }
+        
+        /// <summary>
+        /// Adds a struct
+        /// </summary>
+        /// <param name="outputDir"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        protected Generic.StructSpecBuilder<T> AddStruct<T>(string outputDir = null) where T : struct
+        {
+            TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsStructAttribute { OutputDir = outputDir });
+            return new Generic.StructSpecBuilder<T>(typeSpec);
+        }
+        
+        /// <summary>
         /// Adds an interface
         /// </summary>
         /// <param name="type"></param>

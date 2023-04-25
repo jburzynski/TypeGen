@@ -25,6 +25,7 @@ namespace TypeGen.Core.Extensions
             
             return reader.GetAttribute<ExportTsClassAttribute>(type) != null ||
                    reader.GetAttribute<ExportTsInterfaceAttribute>(type) != null ||
+                   reader.GetAttribute<ExportTsStructAttribute>(type) != null ||
                    reader.GetAttribute<ExportTsEnumAttribute>(type) != null;
         }
 
@@ -137,7 +138,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
-            if (!typeInfo.IsClass && !typeInfo.IsInterface) return Enumerable.Empty<MemberInfo>();
+            if (!typeInfo.IsClass && !typeInfo.IsInterface && !typeInfo.IsValueType) return Enumerable.Empty<MemberInfo>();
 
             var fieldInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredFields
                 .WithMembersFilter();
