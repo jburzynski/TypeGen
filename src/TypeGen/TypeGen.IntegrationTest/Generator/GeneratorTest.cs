@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using TypeGen.Core;
 using TypeGen.Core.SpecGeneration;
+using TypeGen.IntegrationTest.Extensions;
 using TypeGen.IntegrationTest.Generator.TestingUtils;
 using Xunit;
 using Gen = TypeGen.Core.Generator;
@@ -102,9 +103,8 @@ namespace TypeGen.IntegrationTest.Generator
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
-
 
         [Theory]
         [InlineData(typeof(TestEntities.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
@@ -127,7 +127,7 @@ namespace TypeGen.IntegrationTest.Generator
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
         
         [Theory]
@@ -149,7 +149,7 @@ namespace TypeGen.IntegrationTest.Generator
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
         
         /// <summary>
@@ -194,7 +194,7 @@ namespace TypeGen.IntegrationTest.Generator
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
         
         [Theory]
@@ -217,15 +217,8 @@ namespace TypeGen.IntegrationTest.Generator
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
-
-        private string FormatOutput(string output)
-            => output
-                .Trim()
-                .Replace("\n", "")
-                .Replace("\r", "")
-                .Replace("\r\n", "");
 
         private class TestRefTypesGenerationSpec : GenerationSpec
         {

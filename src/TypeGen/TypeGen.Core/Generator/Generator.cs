@@ -62,7 +62,7 @@ namespace TypeGen.Core.Generator
             _fileSystem = new FileSystem();
             _metadataReaderFactory = new MetadataReaderFactory();
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
-            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory);
+            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory, generatorOptionsProvider);
             _templateService = new TemplateService(internalStorage, generatorOptionsProvider);
 
             _tsContentGenerator = new TsContentGenerator(_typeDependencyService,

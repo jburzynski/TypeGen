@@ -16,11 +16,18 @@ namespace TypeGen.Core.Generator.Services
     {
         private readonly ITypeService _typeService;
         private readonly IMetadataReaderFactory _metadataReaderFactory;
+        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        
+        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
 
-        public TypeDependencyService(ITypeService typeService, IMetadataReaderFactory metadataReaderFactory)
+        public TypeDependencyService(
+            ITypeService typeService,
+            IMetadataReaderFactory metadataReaderFactory,
+            IGeneratorOptionsProvider generatorOptionsProvider)
         {
             _typeService = typeService;
             _metadataReaderFactory = metadataReaderFactory;
+            _generatorOptionsProvider = generatorOptionsProvider;
         }
 
         /// <summary>
@@ -131,6 +138,7 @@ namespace TypeGen.Core.Generator.Services
                 Type memberFlatType = _typeService.GetFlatType(memberType);
 
                 if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
+                if (GeneratorOptions.CustomTypeMappings.ContainsKey(memberFlatType.FullName ?? "")) continue; // NOT a dependency if specified in custom type mappings
 
                 IEnumerable<Attribute> memberAttributes = _metadataReaderFactory.GetInstance().GetAttributes<Attribute>(memberInfo);
                 result.AddRange(GetFlatTypeDependencies(memberFlatType, memberAttributes));

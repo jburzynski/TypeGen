@@ -70,6 +70,7 @@
 		<EmbeddedResource Include="Generator\Expected\static-readonly.ts" />
 		<EmbeddedResource Include="Generator\Expected\enum-short-values.ts" />
 		<EmbeddedResource Include="Issues\CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithStructConstraint.ts" />
+		<EmbeddedResource Include="Issues\CustomMappingsClassGeneration\Expected\class-with-uri.ts" />
 	</ItemGroup>
 
 	<ItemGroup>
