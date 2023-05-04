@@ -29,3 +29,6 @@ deploy:
   api_key:
     secure: EuSmStKVNp99uph6Pdk2MWwEuo2wRJCW5yDnv0uEvJDOn/adbFNFGwlvjVWXHFLi
   skip_symbols: true
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
