@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using TypeGen.Core.SpecGeneration;
+using TypeGen.Core.SpecGeneration.Builders;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using TypeGen.Core.SpecGeneration.Builders;
+using TypeGen.Core.SpecGeneration.Builders.Generic;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration
@@ -44,12 +46,11 @@ namespace TypeGen.Core.SpecGeneration
         /// Adds a class
         /// </summary>
         /// <param name="outputDir"></param>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected Generic.ClassSpecBuilder<T> AddClass<T>(string outputDir = null) where T : class
+        protected ClassSpecBuilder<T> AddClass<T>(string outputDir = null) where T : class
         {
             TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsClassAttribute { OutputDir = outputDir });
-            return new Generic.ClassSpecBuilder<T>(typeSpec);
+            return new ClassSpecBuilder<T>(typeSpec);
         }
         
         /// <summary>
@@ -68,12 +69,11 @@ namespace TypeGen.Core.SpecGeneration
         /// Adds an interface
         /// </summary>
         /// <param name="outputDir"></param>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected Generic.InterfaceSpecBuilder<T> AddInterface<T>(string outputDir = null) where T : class
+        protected InterfaceSpecBuilder<T> AddInterface<T>(string outputDir = null) where T : class
         {
             TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsInterfaceAttribute { OutputDir = outputDir });
-            return new Generic.InterfaceSpecBuilder<T>(typeSpec);
+            return new InterfaceSpecBuilder<T>(typeSpec);
         }
 
         /// <summary>
@@ -94,12 +94,11 @@ namespace TypeGen.Core.SpecGeneration
         /// </summary>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected Generic.EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false) where T : Enum
+        protected EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false) where T : Enum
         {
             TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
-            return new Generic.EnumSpecBuilder<T>(typeSpec);
+            return new EnumSpecBuilder<T>(typeSpec);
         }
 
         private TypeSpec AddTypeSpec(Type type, ExportAttribute exportAttribute)

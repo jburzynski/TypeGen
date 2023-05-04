@@ -21,7 +21,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         public void DefaultExport_Invoked_SpecUpdated(bool enabled)
         {
             var spec = new TypeSpec(new ExportTsEnumAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.EnumSpecBuilder<ExportedEnum>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.EnumSpecBuilder<ExportedEnum>(spec);
 
             builder.DefaultExport(enabled);
 
@@ -36,7 +36,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         public void StringInitializers_Invoked_SpecUpdated(bool enabled)
         {
             var spec = new TypeSpec(new ExportTsEnumAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.EnumSpecBuilder<ExportedEnum>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.EnumSpecBuilder<ExportedEnum>(spec);
 
             builder.StringInitializers(enabled);
 

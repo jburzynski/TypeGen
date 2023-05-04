@@ -4,7 +4,7 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.TypeAnnotations;
 using Xunit;
 
-namespace TypeGen.Core.Test.SpecGeneration.Generic
+namespace TypeGen.Core.Test.SpecGeneration.Builders.Generic
 {
     public class InterfaceSpecBuilderTest
     {
@@ -18,7 +18,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member);
 
@@ -31,7 +31,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string member1 = "member1";
             const string member2 = "member2";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member1).Ignore().Member(member2).Null();
 
@@ -46,7 +46,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(x => nameof(x.member));
 
@@ -58,7 +58,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member);
 
@@ -73,7 +73,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string originalTypeName = "originalTypeName";
             const bool isDefaultExport = true;
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.CustomBase(@base, importPath, originalTypeName, isDefaultExport);
 
@@ -91,7 +91,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         public void DefaultExport_Invoked_SpecUpdated(bool enabled)
         {
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.DefaultExport(enabled);
 
@@ -106,7 +106,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string member = "member";
             const string outputDir = "outputDir";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).DefaultTypeOutput(outputDir);
 
@@ -121,7 +121,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string member = "member";
             const string defaultValue = "defaultValue";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).DefaultValue(defaultValue);
 
@@ -135,7 +135,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).Ignore();
 
@@ -147,7 +147,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         public void IgnoreBase_Invoked_SpecUpdated()
         {
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.IgnoreBase();
 
@@ -161,7 +161,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string member = "member";
             const string name = "name";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).MemberName(name);
 
@@ -175,7 +175,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).NotNull();
 
@@ -188,7 +188,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).NotUndefined();
 
@@ -201,7 +201,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).Null();
 
@@ -214,7 +214,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).Optional();
 
@@ -231,7 +231,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string originalTypeName = "originalTypeName";
             const bool isDefaultExport = true;
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).Type(typeName, importPath, originalTypeName, isDefaultExport);
 
@@ -249,7 +249,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
             const string member = "member";
             string[] typeUnions = { "null", "undefined" };
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).TypeUnions(typeUnions);
 
@@ -263,7 +263,7 @@ namespace TypeGen.Core.Test.SpecGeneration.Generic
         {
             const string member = "member";
             var spec = new TypeSpec(new ExportTsInterfaceAttribute());
-            var builder = new TypeGen.Core.SpecGeneration.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
+            var builder = new TypeGen.Core.SpecGeneration.Builders.Generic.InterfaceSpecBuilder<ExportedClass>(spec);
 
             builder.Member(member).Undefined();
 
