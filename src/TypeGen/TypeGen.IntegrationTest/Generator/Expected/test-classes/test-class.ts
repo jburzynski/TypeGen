@@ -25,4 +25,5 @@ export class TestClass<T, U extends BaseClass2<string>> extends BaseClass<number
     arrayTsType: SomeOtherClass[][];
     genericTsType: TestClass<string, BaseClass2<string>>;
     undefinedableTsType: string?;
+    newProp: number;
 }

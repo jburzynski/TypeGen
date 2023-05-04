@@ -77,7 +77,7 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<PropertyInfo> WithMembersFilter(this IEnumerable<PropertyInfo> memberInfos)
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
-            return memberInfos.Where(i => i.GetMethod.IsPublic);
+            return memberInfos.Where(i => i.GetMethod?.IsPublic == true);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(memberInfo, nameof(memberInfo));
 
             if (memberInfo is FieldInfo fieldInfo) return fieldInfo.IsStatic;
-            if (memberInfo is PropertyInfo propertyInfo) return propertyInfo.GetMethod.IsStatic;
+            if (memberInfo is PropertyInfo propertyInfo) return propertyInfo.GetMethod?.IsStatic == true;
 
             return false;
         }
