@@ -716,7 +716,15 @@ namespace TypeGen.Core.Generator
                     string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
 
                     _generationContext.Add(typeDependency);
-                    generatedFiles.AddRange(GenerateNotMarked(typeDependency, defaultOutputDir));
+
+                    try
+                    {
+                        generatedFiles.AddRange(GenerateNotMarked(typeDependency, defaultOutputDir));
+                    }
+                    catch (CoreException ex)
+                    {
+                        throw new CoreException($"Error generating dependencies types for {type.FullName}", ex);
+                    }
                 }
             }
 
