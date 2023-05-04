@@ -73,7 +73,7 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.Structs.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
         [InlineData(typeof(TestEntities.Structs.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
         [InlineData(typeof(TestEntities.Structs.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
-        [InlineData(typeof(TestEntities.Structs.DefaultMemberValues), "TypeGen.IntegrationTest.Generator.Expected.default-member-values.ts")]
+        [InlineData(typeof(TestEntities.Structs.DefaultMemberValues), "TypeGen.IntegrationTest.Generator.Expected.default-member-values_struct.ts")]
         [InlineData(typeof(TestEntities.Structs.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
         [InlineData(typeof(TestEntities.Structs.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
         [InlineData(typeof(TestEntities.Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]

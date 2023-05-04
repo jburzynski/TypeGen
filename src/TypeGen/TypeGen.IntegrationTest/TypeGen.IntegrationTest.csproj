@@ -36,6 +36,7 @@
 		<EmbeddedResource Include="Generator\Expected\default-export\interface-with-default-export.ts" />
 		<EmbeddedResource Include="Generator\Expected\constants-only.ts" />
 		<EmbeddedResource Include="Generator\Expected\default-member-values.ts" />
+		<EmbeddedResource Include="Generator\Expected\default-member-values_struct.ts" />
 		<EmbeddedResource Include="Generator\Expected\e-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\extended-primitives-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\external-deps-class.ts" />
