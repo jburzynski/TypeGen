@@ -2,6 +2,8 @@
 
 **Single-class-per-file C# to TypeScript generator**
 
+[☕ Buy me a coffee](https://www.buymeacoffee.com/jburzynski)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/pwi1gh8o1byigo2x?svg=true)](https://ci.appveyor.com/project/JacekBurzynski/typegen)
 
 ***Documentation: http://typegen.readthedocs.io***
