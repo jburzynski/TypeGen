@@ -173,11 +173,34 @@ namespace TypeGen.IntegrationTest.Generator
                 Assert.Contains("Nullable`1", ex.InnerException.Message);
             }
         }
+        
+        [Theory]
+        [InlineData(typeof(TestEntities.ConstantsOnly), "TypeGen.IntegrationTest.Generator.Expected.constants-only.ts")]
+        public async Task TestConstantsOnlyGenerateSpec(Type type, string expectedLocation)
+        {
+            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
+            var spec = new TestConstantsOnlyGenerationSpec();
+            var generator = new Gen.Generator()
+            {
+                Options =
+                {
+                    CsDefaultValuesForConstantsOnly = true
+                }
+            };
+            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
+
+            await generator.GenerateAsync(new[] { spec });
+            var expected = (await readExpectedTask).Trim();
+
+            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
+            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+        }
+        
         private string FormatOutput(string output)
             => output
                 .Trim()
-                .Replace("\n", "") 
+                .Replace("\n", "")
                 .Replace("\r", "")
                 .Replace("\r\n", "");
 
@@ -228,6 +251,14 @@ namespace TypeGen.IntegrationTest.Generator
             public TestExceptionsGenerationSpec()
             {
                 AddClass<TestEntities.TestExceptions>();
+            }
+        }
+
+        private class TestConstantsOnlyGenerationSpec : GenerationSpec
+        {
+            public TestConstantsOnlyGenerationSpec()
+            {
+                AddClass<TestEntities.ConstantsOnly>();
             }
         }
     }
