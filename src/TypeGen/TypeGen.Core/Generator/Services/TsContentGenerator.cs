@@ -26,6 +26,7 @@ namespace TypeGen.Core.Generator.Services
         private readonly IMetadataReaderFactory _metadataReaderFactory;
         private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
         private readonly ILogger _logger;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
@@ -48,6 +49,11 @@ namespace TypeGen.Core.Generator.Services
             _metadataReaderFactory = metadataReaderFactory;
             _generatorOptionsProvider = generatorOptionsProvider;
             _logger = logger;
+
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new TsJsonContractResolver(_metadataReaderFactory, GeneratorOptions)
+            };
         }
 
         /// <summary>
@@ -329,7 +335,7 @@ namespace TypeGen.Core.Generator.Services
                     case DateTimeOffset valueDateTimeOffset when memberType == "string":
                         return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
                     default:
-                        return JsonConvert.SerializeObject(valueObj).Replace("\"", quote);
+                        return JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
                 }
             }
             catch (MissingMethodException e)
