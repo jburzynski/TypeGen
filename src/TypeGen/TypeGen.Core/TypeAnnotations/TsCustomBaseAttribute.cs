@@ -8,7 +8,7 @@ namespace TypeGen.Core.TypeAnnotations
     /// Specifies custom base class declaration for a TypeScript class or interface.
     /// Base class declaration is empty if no content is specified.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct, Inherited = false)]
     public class TsCustomBaseAttribute : Attribute
     {
         /// <summary>

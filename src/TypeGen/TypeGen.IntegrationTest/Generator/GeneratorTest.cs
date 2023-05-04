@@ -14,7 +14,8 @@ namespace TypeGen.IntegrationTest.Generator
     public class GeneratorTest
     {
         /// <summary>
-        /// Tests if a variety of different classes are correctly translated to typescript
+        /// Tests if types are correctly translated to TypeScript.
+        /// The tested types contain all major use cases that should be supported.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="expectedLocation"></param>
@@ -39,6 +40,7 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
         [InlineData(typeof(TestEntities.GenericClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-class.ts")]
         [InlineData(typeof(TestEntities.GenericWithRestrictions<>), "TypeGen.IntegrationTest.Generator.Expected.generic-with-restrictions.ts")]
+        [InlineData(typeof(TestEntities.ITestInterface), "TypeGen.IntegrationTest.Generator.Expected.i-test-interface.ts")]
         [InlineData(typeof(TestEntities.LiteDbEntity), "TypeGen.IntegrationTest.Generator.Expected.lite-db-entity.ts")]
         [InlineData(typeof(TestEntities.ReadonlyInterface), "TypeGen.IntegrationTest.Generator.Expected.readonly-interface.ts")]
         [InlineData(typeof(TestEntities.StandaloneEnum), "TypeGen.IntegrationTest.Generator.Expected.standalone-enum.ts")]
@@ -63,6 +65,31 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(DefaultExport.ClassWithImports), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-imports.ts")]
         [InlineData(typeof(DefaultExport.ClassWithoutDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-without-default-export.ts")]
         [InlineData(typeof(DefaultExport.InterfaceWithDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.interface-with-default-export.ts")]
+        
+        // now do the cases above for structs (when possible)
+        
+        [InlineData(typeof(Constants.Structs.FooConstants), "TypeGen.IntegrationTest.Generator.Expected.foo-constants.ts")]
+        [InlineData(typeof(TestEntities.Structs.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
+        [InlineData(typeof(TestEntities.Structs.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.DefaultMemberValues), "TypeGen.IntegrationTest.Generator.Expected.default-member-values.ts")]
+        [InlineData(typeof(TestEntities.Structs.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.GenericWithRestrictions<>), "TypeGen.IntegrationTest.Generator.Expected.generic-with-restrictions.ts")]
+        [InlineData(typeof(TestEntities.Structs.ITestInterface), "TypeGen.IntegrationTest.Generator.Expected.i-test-interface.ts")]
+        [InlineData(typeof(TestEntities.Structs.LiteDbEntity), "TypeGen.IntegrationTest.Generator.Expected.lite-db-entity.ts")]
+        [InlineData(typeof(TestEntities.Structs.ReadonlyInterface), "TypeGen.IntegrationTest.Generator.Expected.readonly-interface.ts")]
+        [InlineData(typeof(TestEntities.Structs.StaticReadonly), "TypeGen.IntegrationTest.Generator.Expected.static-readonly.ts")]
+        [InlineData(typeof(TestEntities.Structs.StrictNullsClass), "TypeGen.IntegrationTest.Generator.Expected.strict-nulls-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.TypeUnions), "TypeGen.IntegrationTest.Generator.Expected.type-unions.ts")]
+        [InlineData(typeof(TestEntities.Structs.NoSlashOutputDir), "TypeGen.IntegrationTest.Generator.Expected.no.slash.output.dir.no-slash-output-dir.ts")]
+        [InlineData(typeof(TestEntities.Structs.TestInterface), "TypeGen.IntegrationTest.Generator.Expected.test_interfaces.test-interface.ts")]
+        [InlineData(typeof(DefaultExport.Structs.ClassWithDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-default-export.ts")]
+        [InlineData(typeof(DefaultExport.Structs.GenericClassWithDefaultExport<,>), "TypeGen.IntegrationTest.Generator.Expected.default_export.generic-class-with-default-export.ts")]
+        [InlineData(typeof(DefaultExport.Structs.ClassWithImports), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-imports.ts")]
+        [InlineData(typeof(DefaultExport.Structs.ClassWithoutDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-without-default-export.ts")]
+        [InlineData(typeof(DefaultExport.Structs.InterfaceWithDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.interface-with-default-export.ts")]
         public async Task TestGenerate(Type type, string expectedLocation)
         {
             var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
@@ -84,12 +111,36 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
         [InlineData(typeof(TestEntities.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
         [InlineData(typeof(TestEntities.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
+        [InlineData(typeof(TestEntities.GenericClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-class.ts")]
         [InlineData(typeof(TestEntities.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
-        public async Task TestGenerateSpec(Type type, string expectedLocation)
+        [InlineData(typeof(TestEntities.NestedEntity), "TypeGen.IntegrationTest.Generator.Expected.very.nested.directory.nested-entity.ts")]
+        public async Task TestGenerateSpecForRefTypes(Type type, string expectedLocation)
         {
             var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
-            var spec = new TestGenerationSpec();
+            var spec = new TestRefTypesGenerationSpec();
+            var generator = new Gen.Generator();
+            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
+
+            await generator.GenerateAsync(new[] { spec });
+            var expected = (await readExpectedTask).Trim();
+
+            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
+            Assert.Equal(expected, FormatOutput(interceptor.GeneratedOutputs[type].Content));
+        }
+        
+        [Theory]
+        [InlineData(typeof(TestEntities.Structs.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
+        [InlineData(typeof(TestEntities.Structs.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
+        [InlineData(typeof(TestEntities.Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
+        public async Task TestGenerateSpecForStructs(Type type, string expectedLocation)
+        {
+            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
+
+            var spec = new TestStructsGenerationSpec();
             var generator = new Gen.Generator();
             var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
@@ -107,9 +158,9 @@ namespace TypeGen.IntegrationTest.Generator
                 .Replace("\r", "")
                 .Replace("\r\n", "");
 
-        private class TestGenerationSpec : GenerationSpec
+        private class TestRefTypesGenerationSpec : GenerationSpec
         {
-            public TestGenerationSpec()
+            public TestRefTypesGenerationSpec()
             {
 
                 AddClass<TestEntities.CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
@@ -126,6 +177,26 @@ namespace TypeGen.IntegrationTest.Generator
                 AddClass(typeof(TestEntities.GenericWithRestrictions<>));
                 AddClass<TestEntities.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
                 AddInterface<TestEntities.NestedEntity>("./very/nested/directory/").Member(nameof(TestEntities.NestedEntity.OptionalProperty)).Optional();
+                AddEnum<TestEntities.TestEnum>("test-enums", true);
+            }
+        }
+        
+        private class TestStructsGenerationSpec : GenerationSpec
+        {
+            public TestStructsGenerationSpec()
+            {
+                AddClass<TestEntities.Structs.CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
+                AddInterface<TestEntities.Structs.CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
+                AddInterface<TestEntities.Structs.CustomEmptyBaseClass>().CustomBase();
+                AddClass<TestEntities.Structs.ExtendedPrimitivesClass>()
+                    .Member(x => nameof(x.DateTimeStringField))
+                    .Type("string")
+                    .Member(x => nameof(x.DateTimeOffsetStringField))
+                    .Type("string");
+                AddClass<TestEntities.Structs.ExternalDepsClass>().Member(nameof(TestEntities.ExternalDepsClass.User)).Ignore();
+                AddClass(typeof(TestEntities.Structs.GenericBaseClass<>));
+                AddClass(typeof(TestEntities.Structs.GenericWithRestrictions<>));
+                AddClass<TestEntities.Structs.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
             }
         }
     }

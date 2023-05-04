@@ -41,6 +41,7 @@
 		<EmbeddedResource Include="Generator\Expected\generic-base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\generic-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\generic-with-restrictions.ts" />
+		<EmbeddedResource Include="Generator\Expected\i-test-interface.ts" />
 		<EmbeddedResource Include="Generator\Expected\index.ts" />
 		<EmbeddedResource Include="Generator\Expected\lite-db-entity.ts" />
 		<EmbeddedResource Include="Generator\Expected\no\slash\output\dir\no-slash-output-dir.ts" />

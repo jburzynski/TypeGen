@@ -377,7 +377,7 @@ namespace TypeGen.Core.Generator
         private IEnumerable<string> GenerateNotMarked(Type type, string outputDirectory)
         {
             var typeInfo = type.GetTypeInfo();
-            if (typeInfo.IsClass)
+            if (typeInfo.IsClass || typeInfo.IsStruct())
             {
                 return GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
             }
@@ -392,7 +392,7 @@ namespace TypeGen.Core.Generator
                 return GenerateEnum(type, new ExportTsEnumAttribute { OutputDir = outputDirectory });
             }
 
-            throw new CoreException($"Generated type must be either a C# class or enum. Error when generating type {type.FullName}");
+            throw new CoreException($"Generated type must be a C# class, interface, struct or enum. Error when generating type {type.FullName}");
         }
 
         /// <summary>
@@ -427,7 +427,6 @@ namespace TypeGen.Core.Generator
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
             var extendsText = "";
 
-            
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
@@ -437,7 +436,7 @@ namespace TypeGen.Core.Generator
                 // this is an interface, generate extends for an interface.
                 extendsText = _tsContentGenerator.GetExtendsForInterfacesText(type);
             }
-            else if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
+            else if (type.IsClass && _metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
             {
                 extendsText = _tsContentGenerator.GetExtendsText(type);
             }

@@ -38,7 +38,7 @@ namespace TypeGen.Core.Generator.Services
 
             var typeInfo = type.GetTypeInfo();
 
-            if (!typeInfo.IsClass && !typeInfo.IsInterface) return Enumerable.Empty<TypeDependencyInfo>();
+            if (!typeInfo.IsClass && !typeInfo.IsInterface && !typeInfo.IsStruct()) return Enumerable.Empty<TypeDependencyInfo>();
 
             type = _typeService.StripNullable(type);
 
@@ -86,7 +86,9 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
-            if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
+            if (type.IsStruct()
+                ||_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null)
+                return Enumerable.Empty<TypeDependencyInfo>();
 
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return Enumerable.Empty<TypeDependencyInfo>();

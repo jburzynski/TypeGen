@@ -5,7 +5,7 @@ namespace TypeGen.Core.TypeAnnotations
     /// <summary>
     /// Specifies that default export will be used for a TypeScript type
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct | AttributeTargets.Enum, Inherited = false)]
     public class TsDefaultExportAttribute : Attribute
     {
         public bool Enabled { get; set; }

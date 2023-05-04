@@ -47,7 +47,7 @@ namespace TypeGen.Core.SpecGeneration
         /// </summary>
         /// <param name="outputDir"></param>
         /// <returns></returns>
-        protected ClassSpecBuilder<T> AddClass<T>(string outputDir = null) where T : class
+        protected ClassSpecBuilder<T> AddClass<T>(string outputDir = null)
         {
             TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsClassAttribute { OutputDir = outputDir });
             return new ClassSpecBuilder<T>(typeSpec);
@@ -70,7 +70,7 @@ namespace TypeGen.Core.SpecGeneration
         /// </summary>
         /// <param name="outputDir"></param>
         /// <returns></returns>
-        protected InterfaceSpecBuilder<T> AddInterface<T>(string outputDir = null) where T : class
+        protected InterfaceSpecBuilder<T> AddInterface<T>(string outputDir = null)
         {
             TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsInterfaceAttribute { OutputDir = outputDir });
             return new InterfaceSpecBuilder<T>(typeSpec);

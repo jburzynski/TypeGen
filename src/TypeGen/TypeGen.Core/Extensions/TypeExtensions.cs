@@ -137,7 +137,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(type, nameof(type));
             TypeInfo typeInfo = type.GetTypeInfo();
 
-            if (!typeInfo.IsClass && !typeInfo.IsInterface) return Enumerable.Empty<MemberInfo>();
+            if (!typeInfo.IsClass && !typeInfo.IsInterface && !typeInfo.IsStruct()) return Enumerable.Empty<MemberInfo>();
 
             var fieldInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredFields
                 .WithMembersFilter();
@@ -153,5 +153,13 @@ namespace TypeGen.Core.Extensions
 
             return fieldInfos.Union(propertyInfos);
         }
+
+        /// <summary>
+        /// Determines whether the type is a struct.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>true if the type is a struct, false otherwise.</returns>
+        public static bool IsStruct(this Type type)
+            => type.IsValueType && !type.IsEnum && !type.IsPrimitive;
     }
 }
