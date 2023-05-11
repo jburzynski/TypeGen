@@ -139,7 +139,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("type"), type);
         }
 
-        public string FillEnumTemplate(string imports, string name, string values, bool isConst, string fileHeading = null)
+        public string FillEnumTemplate(string imports, string name, string values, bool isConst, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -147,6 +147,8 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
+                .Replace(GetTag("customHead"), customHead)
+                .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("modifiers"), isConst ? " const" : "")
                 .Replace(GetTag("fileHeading"), fileHeading);
         }

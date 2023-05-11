@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,13 +11,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
     <releaseNotes>
-- added support for generating from C# structs #154
-- fixed nullable detection of string? when CsNullableTranslation enabled #152
-- added default values for constants only option #150
-- fixed JSON serialization of complex default values #149
-- added new exception with initial type name #148
-- fixed null exception when no property getter #147
-- fixed types defined in custom type mappings being generated as type dependencies #134
+- added the possibility to specify the project's output folder (instead of hardcoded 'bin/') via the "projectOutputFolder" config parameter
+- fixed custom-head and custom-body tags not working for enums
+- the CLI now returns an error code on failure
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>

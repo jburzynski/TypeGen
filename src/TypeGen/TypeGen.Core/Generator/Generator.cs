@@ -491,10 +491,12 @@ namespace TypeGen.Core.Generator
             string tsEnumName = _typeService.GetTsTypeName(type, true);
             string filePath = GetFilePath(type, enumAttribute.OutputDir);
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
+            string customHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
             string enumText = _typeService.UseDefaultExport(type) ? 
                 _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading) :
-                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading);
+                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
 

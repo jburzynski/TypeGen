@@ -17,6 +17,7 @@ namespace TypeGen.Cli.Models
     {
         public static bool DefaultAddFilesToProject => false;
         public static bool DefaultBuildProject => false;
+        public static string DefaultProjectOutputFolder => "bin";
 
         [Obsolete("Use Assemblies instead")]
         public string AssemblyPath { get; set; }
@@ -48,6 +49,7 @@ namespace TypeGen.Cli.Models
         public bool? EnumStringInitializers { get; set; }
         public string FileHeading { get; set; }
         public bool? UseDefaultExport { get; set; }
+        public string ProjectOutputFolder { get; set; }
 
         public TgConfig Normalize()
         {
@@ -63,8 +65,8 @@ namespace TypeGen.Cli.Models
 
         public TgConfig MergeWithDefaultParams()
         {
-            if (Assemblies == null) Assemblies = new string[0];
-            if (GenerationSpecs == null) GenerationSpecs = new string[0];
+            if (Assemblies == null) Assemblies = Array.Empty<string>();
+            if (GenerationSpecs == null) GenerationSpecs = Array.Empty<string>();
             if (ExplicitPublicAccessor == null) ExplicitPublicAccessor = GeneratorOptions.DefaultExplicitPublicAccessor;
             if (SingleQuotes == null) SingleQuotes = GeneratorOptions.DefaultSingleQuotes;
             if (BuildProject == null) BuildProject = DefaultBuildProject;
@@ -77,7 +79,7 @@ namespace TypeGen.Cli.Models
             if (PropertyNameConverters == null) PropertyNameConverters = GeneratorOptions.DefaultPropertyNameConverters.GetTypeNames().ToArray();
             if (EnumValueNameConverters == null) EnumValueNameConverters = GeneratorOptions.DefaultEnumValueNameConverters.GetTypeNames().ToArray();
             if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
-            if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = new string[0];
+            if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = Array.Empty<string>();
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (CsAllowNullsForAllTypes == null) CsAllowNullsForAllTypes = GeneratorOptions.DefaultCsAllowNullsForAllTypes;
@@ -91,6 +93,7 @@ namespace TypeGen.Cli.Models
             if (EnumStringInitializers == null) EnumStringInitializers = GeneratorOptions.DefaultEnumStringInitializers;
             if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
             if (UseDefaultExport == null) UseDefaultExport = GeneratorOptions.DefaultUseDefaultExport;
+            if (ProjectOutputFolder == null) ProjectOutputFolder = DefaultProjectOutputFolder;
             return this;
         }
 

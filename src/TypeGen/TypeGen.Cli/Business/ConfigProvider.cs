@@ -64,38 +64,38 @@ namespace TypeGen.Cli.Business
         {
             if (!string.IsNullOrEmpty(config.AssemblyPath))
             {
-                config.AssemblyPath = GetAssemblyPath(config.AssemblyPath, projectFolder);
-                _logger.Log("assemblyPath config parameter is deprecated and can be removed in future versions. Please use 'assemblies' instead.", LogLevel.Warning);
+                config.AssemblyPath = GetAssemblyPathRelativeToCwd(config.AssemblyPath, projectFolder, config.ProjectOutputFolder);
+                _logger.Log("The 'assemblyPath' config parameter is deprecated and can be removed in future versions. Please use 'assemblies' instead.", LogLevel.Warning);
             }
 
-            config.Assemblies = config.Assemblies.Select(a => GetAssemblyPath(a, projectFolder)).ToArray();
+            config.Assemblies = config.Assemblies.Select(a => GetAssemblyPathRelativeToCwd(a, projectFolder, config.ProjectOutputFolder)).ToArray();
 
             if (!config.Assemblies.Any())
             {
-                config.Assemblies = new[] { GetAssemblyPath(null, projectFolder) };
+                config.Assemblies = new[] { GetAssemblyPathRelativeToCwd(null, projectFolder, config.ProjectOutputFolder) };
             }
         }
 
-        private string GetAssemblyPath(string configAssemblyPath, string projectFolder)
+        private string GetAssemblyPathRelativeToCwd(string assemblyPathUserInput, string projectFolder, string projectOutputFolder)
         {
-            if (string.IsNullOrEmpty(configAssemblyPath))
+            if (string.IsNullOrEmpty(assemblyPathUserInput))
             {
-                _logger.Log("Assembly path not found in the config file. Assembly file will be searched for recursively in the project's bin\\.", LogLevel.Debug);
-                return GetDefaultAssemblyPath(projectFolder);
+                _logger.Log($"Assembly path not found in the config file. Assembly file will be searched for recursively in the project's output folder '{projectOutputFolder}\\'.", LogLevel.Debug);
+                return GetDefaultAssemblyPath(projectFolder, projectOutputFolder);
             }
 
-            _logger.Log($"Reading assembly path from the config file: '{configAssemblyPath}'", LogLevel.Debug);
-            string assemblyPath = Path.Combine(projectFolder, configAssemblyPath);
+            _logger.Log($"Reading the assembly path from the config file: '{assemblyPathUserInput}'", LogLevel.Debug);
+            string assemblyPath = Path.Combine(projectFolder, assemblyPathUserInput);
 
             if (!_fileSystem.FileExists(assemblyPath))
             {
-                throw new CliException($"The specified assembly: '{configAssemblyPath}' not found in the project folder");
+                throw new CliException($"The specified assembly: '{assemblyPathUserInput}' not found in the project folder");
             }
 
             return assemblyPath;
         }
 
-        private string GetDefaultAssemblyPath(string projectFolder)
+        private string GetDefaultAssemblyPath(string projectFolder, string projectOutputFolder)
         {
             string projectFileName = _fileSystem.GetDirectoryFiles(projectFolder)
                 .Select(Path.GetFileName)
@@ -108,10 +108,10 @@ namespace TypeGen.Cli.Business
 
             string dllFileName = Path.ChangeExtension(projectFileName, "dll");
             string exeFileName = Path.ChangeExtension(projectFileName, "exe");
-            string binPath = Path.Combine(projectFolder, "bin");
+            string projectOutputFolderRelativeToCwd = Path.Combine(projectFolder, projectOutputFolder);
 
-            List<string> foundFiles = _fileSystem.GetFilesRecursive(binPath, dllFileName)
-                .Concat(_fileSystem.GetFilesRecursive(binPath, exeFileName)).ToList();
+            List<string> foundFiles = _fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, dllFileName)
+                .Concat(_fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, exeFileName)).ToList();
 
             if (foundFiles.Any())
             {
@@ -120,7 +120,7 @@ namespace TypeGen.Cli.Business
                 return foundFile;
             }
 
-            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's bin\\ folder; searched recursively). Please make sure your project is built.");
+            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's output folder '{projectOutputFolder}\\'; searched recursively). Please make sure your project is built.");
         }
     }
 }

@@ -42,7 +42,7 @@ namespace TypeGen.Cli
             _projectBuilder = new ProjectBuilder(_logger);
         }
 
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             try
             {
@@ -51,14 +51,14 @@ namespace TypeGen.Cli
                 if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpOption(args) || _consoleArgsReader.ContainsAnyCommand(args) == false)
                 {
                     ShowHelp();
-                    return;
+                    return (int)ExitCode.Success;
                 }
 
                 if (_consoleArgsReader.ContainsGetCwdCommand(args))
                 {
                     string cwd = _fileSystem.GetCurrentDirectory();
                     Console.WriteLine($"Current working directory is: {cwd}");
-                    return;
+                    return (int)ExitCode.Success;
                 }
                 
                 string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
@@ -76,10 +76,13 @@ namespace TypeGen.Cli
 
                     Generate(projectFolder, configPath);
                 }
+                
+                return (int)ExitCode.Success;
             }
             catch (Exception e) when (e is CliException || e is CoreException)
             {
                 _logger.Log($"APPLICATION ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+                return (int)ExitCode.Error;
             }
             catch (AssemblyResolutionException e)
             {
@@ -87,6 +90,7 @@ namespace TypeGen.Cli
                                  "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
                                  "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (you can use global NuGet packages directory alias: \"<global-packages>\")";
                 _logger.Log($"{message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+                return (int)ExitCode.Error;
             }
             catch (ReflectionTypeLoadException e)
             {
@@ -94,10 +98,12 @@ namespace TypeGen.Cli
                 {
                     _logger.Log($"TYPE LOAD ERROR: {loaderException.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
                 }
+                return (int)ExitCode.Error;
             }
             catch (Exception e)
             {
                 _logger.Log($"GENERIC ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+                return (int)ExitCode.Error;
             }
         }
 
