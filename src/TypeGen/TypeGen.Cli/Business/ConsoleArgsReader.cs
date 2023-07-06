@@ -24,10 +24,12 @@ namespace TypeGen.Cli.Business
 
         public bool ContainsHelpOption(string[] args) => ContainsOption(args, "-h", "--help");
         public bool ContainsProjectFolderOption(string[] args) => ContainsOption(args, "-p", "--project-folder");
+        public bool ContainsOutputOption(string[] args) => ContainsOption(args, "-o", "--output-folder");
         public bool ContainsVerboseOption(string[] args) => ContainsOption(args, "-v", "--verbose");
         private bool ContainsOption(string[] args, string optionShortName, string optionFullName) => args.Any(arg => string.Equals(arg, optionShortName, StringComparison.InvariantCultureIgnoreCase) || string.Equals(arg, optionFullName, StringComparison.InvariantCultureIgnoreCase));
 
         public IEnumerable<string> GetProjectFolders(string[] args) => GetPathsParam(args, "-p", "--project-folder");
+        public string GetOutputFolder(string[] args) => GetPathsParam(args, "-o", "--output-folder").FirstOrDefault();
         public IEnumerable<string> GetConfigPaths(string[] args) => GetPathsParam(args, "-c", "--config-path");
 
         private IEnumerable<string> GetPathsParam(string[] args, string paramShortName, string paramFullName)

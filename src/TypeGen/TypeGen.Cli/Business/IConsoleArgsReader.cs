@@ -9,8 +9,10 @@ namespace TypeGen.Cli.Business
         bool ContainsAnyCommand(string[] args);
         bool ContainsHelpOption(string[] args);
         bool ContainsProjectFolderOption(string[] args);
+        bool ContainsOutputOption(string[] args);
         bool ContainsVerboseOption(string[] args);
         IEnumerable<string> GetProjectFolders(string[] args);
+        string GetOutputFolder(string[] args);
         IEnumerable<string> GetConfigPaths(string[] args);
     }
 }

@@ -67,6 +67,9 @@ namespace TypeGen.Cli
                     _consoleArgsReader.GetProjectFolders(args).ToArray() :
                     new [] { "." };
 
+                string? outputFolder = _consoleArgsReader.ContainsOutputOption(args) ?
+                    _consoleArgsReader.GetOutputFolder(args) : null;
+
                 for (var i = 0; i < projectFolders.Length; i++)
                 {
                     string projectFolder = projectFolders[i];
@@ -74,7 +77,7 @@ namespace TypeGen.Cli
 
                     _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
-                    Generate(projectFolder, configPath);
+                    Generate(projectFolder, configPath, outputFolder);
                 }
                 
                 return (int)ExitCode.Success;
@@ -107,7 +110,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath)
+        private static void Generate(string projectFolder, string configPath, string? outputFolder)
         {
             // get config
 
@@ -127,7 +130,7 @@ namespace TypeGen.Cli
             // create generator
 
             GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder);
-            generatorOptions.BaseOutputDirectory = Path.Combine(projectFolder, config.OutputPath);
+            generatorOptions.BaseOutputDirectory = outputFolder ?? Path.Combine(projectFolder, config.OutputPath);
             var generator = new Generator(generatorOptions, _logger);
 
             // generate
