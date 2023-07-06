@@ -582,7 +582,7 @@ namespace TypeGen.Core.Generator
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(memberInfo));
 
-            return RemoveLastLineEnding(propertiesText, false);
+            return RemoveLastLineEnding(propertiesText);
         }
 
         /// <summary>
@@ -642,7 +642,7 @@ namespace TypeGen.Core.Generator
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetInterfacePropertyText(memberInfo));
 
-            return RemoveLastLineEnding(propertiesText, false);
+            return RemoveLastLineEnding(propertiesText);
         }
 
         /// <summary>
@@ -683,7 +683,7 @@ namespace TypeGen.Core.Generator
 
             valuesText += fieldInfos.Aggregate(valuesText, (current, fieldInfo) => current + GetEnumMemberText(fieldInfo, asUnionType));
 
-            return RemoveLastLineEnding(valuesText, asUnionType);
+            return asUnionType ? TrimForEnumUnionTypeValues(valuesText) : RemoveLastLineEnding(valuesText);
         }
 
         /// <summary>
@@ -792,10 +792,14 @@ namespace TypeGen.Core.Generator
             }
         }
 
-        private static string RemoveLastLineEnding(string propertiesText, bool asUnionType)
+        private static string RemoveLastLineEnding(string propertiesText)
         {
-            var trimmed = propertiesText.Trim().TrimEnd('\r', '\n');
-            return asUnionType ? trimmed.TrimEnd('|') : trimmed;
+            return propertiesText.TrimEnd('\r', '\n');
+        }
+
+        private static string TrimForEnumUnionTypeValues(string propertiesText)
+        {
+            return RemoveLastLineEnding(propertiesText).Trim().TrimEnd('|');
         }
     }
 }
