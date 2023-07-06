@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TypeGen.Cli.Business;
 using Xunit;
 
@@ -110,7 +111,28 @@ namespace TypeGen.Cli.Test.Business
             new object[] { new[] { "asdf", "d" }, false },
             new object[] { new string[] {}, false }
         };
-        
+
+        [Theory]
+        [MemberData(nameof(ContainsOutputFolderOption_TestData))]
+        public void ContainsOutputFolderOption_Test(string[] args, bool expectedResult)
+        {
+            bool actualResult = _consoleArgsReader.ContainsOutputOption(args);
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        public static IEnumerable<object[]> ContainsOutputFolderOption_TestData = new[]
+        {
+            new object[] { new[] { "asdf", "-o", "d" }, true },
+            new object[] { new[] { "asdf", "--output-folder", "d" }, true },
+            new object[] { new[] { "asdf", "-O", "d" }, true },
+            new object[] { new[] { "asdf", "--OUTPUT-FOLDER", "d" }, true },
+            new object[] { new[] { "asdf", "--OuTpUt-FoldER", "d" }, true },
+            new object[] { new[] { "-o" }, true },
+            new object[] { new[] { "--output-folder" }, true },
+            new object[] { new[] { "asdf", "d" }, false },
+            new object[] { new string[] {}, false }
+        };
+
         [Theory]
         [MemberData(nameof(ContainsVerboseOption_TestData))]
         public void ContainsVerboseOption_Test(string[] args, bool expectedResult)
@@ -155,6 +177,31 @@ namespace TypeGen.Cli.Test.Business
         {
             var args = new[] { "--project-folder" };
             Assert.Throws<CliException>(() => _consoleArgsReader.GetProjectFolders(args));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetOutputFolder_TestData))]
+        public void GetOutputFolder_Test(string[] args, string expectedResult)
+        {
+            string actualResult = _consoleArgsReader.GetOutputFolder(args);
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        public static IEnumerable<object[]> GetOutputFolder_TestData = new[]
+        {
+            new object[] { new[] { "-o", "asdf", "project/folder" },  "asdf" },
+            new object[] { new[] { "--output-folder", "asdf", @"C:\project\folder" }, "asdf" },
+            new object[] { new[] { "-o", "asdf|qwer", "--config-path", "zxcv" }, "asdf" },
+            new object[] { new[] { "--output-folder", @"D:\my\folder|some/other/folder|that/folder", "--config-path", "zxcv|qwer" }, @"D:\my\folder" },
+            new object[] { new[] { "asdf" }, null },
+            new object[] { new string[] {}, null }
+        };
+
+        [Fact]
+        public void GetOutputFolder_ParameterPresentAndNoPathsSpecified_ExceptionThrown()
+        {
+            var args = new[] { "--output-folder" };
+            Assert.Throws<CliException>(() => _consoleArgsReader.GetOutputFolder(args));
         }
 
         [Theory]
