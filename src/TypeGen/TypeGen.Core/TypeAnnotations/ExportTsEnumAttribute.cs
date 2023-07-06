@@ -12,6 +12,9 @@ namespace TypeGen.Core.TypeAnnotations
         /// Specifies whether an enum should be exported as TypeScript const enum
         /// </summary>
         public bool IsConst { get; set; }
+        /// <summary>
+        /// Specifies whether the enum should be exported as a TypeScript UnionType
+        /// </summary>
         public bool AsUnionType { get; set; }
     }
 }

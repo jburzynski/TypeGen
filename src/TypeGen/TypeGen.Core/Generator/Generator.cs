@@ -649,6 +649,7 @@ namespace TypeGen.Core.Generator
         /// Gets TypeScript enum member definition source code
         /// </summary>
         /// <param name="fieldInfo">MemberInfo for an enum value</param>
+        /// <param name="asUnionType">defines if generated Text should ab applicable for union types</param>
         /// <returns></returns>
         private string GetEnumMemberText(FieldInfo fieldInfo, bool asUnionType)
         {
@@ -673,6 +674,7 @@ namespace TypeGen.Core.Generator
         /// Gets TypeScript enum member definition source code
         /// </summary>
         /// <param name="type"></param>
+        /// <param name="asUnionType"></param>
         /// <returns></returns>
         private string GetEnumMembersText(Type type, bool asUnionType)
         {
