@@ -10,6 +10,9 @@
     <None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
     <None Remove="Templates\Constant.tpl" />
     <None Remove="Templates\Enum.tpl" />
+    <None Remove="Templates\EnumUnionType.tpl" />
+    <None Remove="Templates\EnumUnionTypeDefaultExport.tpl" />
+    <None Remove="Templates\EnumUnionTypeValue.tpl" />
     <None Remove="Templates\EnumValue.tpl" />
     <None Remove="Templates\Import.tpl" />
     <None Remove="Templates\Interface.tpl" />
@@ -21,8 +24,11 @@
     <EmbeddedResource Include="Templates\Class.tpl" />
     <EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
+    <EmbeddedResource Include="Templates\EnumUnionTypeDefaultExport.tpl" />
+    <EmbeddedResource Include="Templates\EnumUnionType.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
     <EmbeddedResource Include="Templates\EnumDefaultExport.tpl" />
+    <EmbeddedResource Include="Templates\EnumUnionTypeValue.tpl" />
     <EmbeddedResource Include="Templates\EnumValue.tpl" />
     <EmbeddedResource Include="Templates\Heading.tpl" />
     <EmbeddedResource Include="Templates\Import.tpl" />

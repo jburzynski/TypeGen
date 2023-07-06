@@ -17,8 +17,11 @@ namespace TypeGen.Core.Generator.Services
         private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
 
         private readonly string _enumTemplate;
+        private readonly string _enumUnionTypeTemplate;
         private readonly string _enumDefaultExportTemplate;
+        private readonly string _enumUnionTypeDefaultExportTemplate;
         private readonly string _enumValueTemplate;
+        private readonly string _enumUnionTypeValueTemplate;
         private readonly string _classTemplate;
         private readonly string _classDefaultExportTemplate;
         private readonly string _classPropertyTemplate;
@@ -39,8 +42,11 @@ namespace TypeGen.Core.Generator.Services
             _generatorOptionsProvider = generatorOptionsProvider;
 
             _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
+            _enumUnionTypeTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumUnionType.tpl");
             _enumDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumDefaultExport.tpl");
+            _enumUnionTypeDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumUnionTypeDefaultExport.tpl");
             _enumValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumValue.tpl");
+            _enumUnionTypeValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumUnionTypeValue.tpl");
             _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
             _classDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassDefaultExport.tpl");
             _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
@@ -139,11 +145,11 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("type"), type);
         }
 
-        public string FillEnumTemplate(string imports, string name, string values, bool isConst, string customHead, string customBody, string fileHeading = null)
+        public string FillEnumTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
-            return ReplaceSpecialChars(_enumTemplate)
+            return ReplaceSpecialChars(asUnionType ? _enumUnionTypeTemplate : _enumTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
@@ -153,11 +159,11 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillEnumDefaultExportTemplate(string imports, string name, string values, bool isConst, string fileHeading = null)
+        public string FillEnumDefaultExportTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
-            return ReplaceSpecialChars(_enumDefaultExportTemplate)
+            return ReplaceSpecialChars(asUnionType ? _enumUnionTypeDefaultExportTemplate : _enumDefaultExportTemplate)
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
@@ -173,6 +179,14 @@ namespace TypeGen.Core.Generator.Services
             return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("value"), valueString);
+        }
+
+        public string FillEnumUnionTypeValueTemplate(string name)
+        {
+            char quote = GeneratorOptions.SingleQuotes ? '\'' : '"';
+
+            return ReplaceSpecialChars(_enumUnionTypeValueTemplate)
+                .Replace(GetTag("name"), $@"{quote}{name}{quote}");
         }
 
         public string FillImportTemplate(string name, string typeAlias, string path)

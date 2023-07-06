@@ -484,7 +484,7 @@ namespace TypeGen.Core.Generator
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
         private IEnumerable<string> GenerateEnum(Type type, ExportTsEnumAttribute enumAttribute)
         {
-            string valuesText = GetEnumMembersText(type);
+            string valuesText = GetEnumMembersText(type, enumAttribute.AsUnionType);
 
             // create TypeScript source code for the enum
 
@@ -495,8 +495,8 @@ namespace TypeGen.Core.Generator
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
 
             string enumText = _typeService.UseDefaultExport(type) ? 
-                _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, Options.FileHeading) :
-                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, customHead, customBody, Options.FileHeading);
+                _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, Options.FileHeading) :
+                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
 
@@ -582,7 +582,7 @@ namespace TypeGen.Core.Generator
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(memberInfo));
 
-            return RemoveLastLineEnding(propertiesText);
+            return RemoveLastLineEnding(propertiesText, false);
         }
 
         /// <summary>
@@ -642,7 +642,7 @@ namespace TypeGen.Core.Generator
             propertiesText += memberInfos
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetInterfacePropertyText(memberInfo));
 
-            return RemoveLastLineEnding(propertiesText);
+            return RemoveLastLineEnding(propertiesText, false);
         }
 
         /// <summary>
@@ -650,7 +650,7 @@ namespace TypeGen.Core.Generator
         /// </summary>
         /// <param name="fieldInfo">MemberInfo for an enum value</param>
         /// <returns></returns>
-        private string GetEnumMemberText(FieldInfo fieldInfo)
+        private string GetEnumMemberText(FieldInfo fieldInfo, bool asUnionType)
         {
             Type type = fieldInfo.DeclaringType;
             
@@ -661,12 +661,12 @@ namespace TypeGen.Core.Generator
                 (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
             {
                 string enumValueString = Options.EnumStringInitializersConverters.Convert(fieldInfo.Name, fieldInfo);
-                return _templateService.FillEnumValueTemplate(name, enumValueString);
+                return asUnionType ? _templateService.FillEnumUnionTypeValueTemplate(name) : _templateService.FillEnumValueTemplate(name, enumValueString);
             }
 
             object enumValue = fieldInfo.GetValue(null);
             object enumValueAsUnderlyingType = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(type));
-            return _templateService.FillEnumValueTemplate(name, enumValueAsUnderlyingType);
+            return asUnionType ? _templateService.FillEnumUnionTypeValueTemplate(name) : _templateService.FillEnumValueTemplate(name, enumValueAsUnderlyingType);
         }
 
         /// <summary>
@@ -674,14 +674,14 @@ namespace TypeGen.Core.Generator
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string GetEnumMembersText(Type type)
+        private string GetEnumMembersText(Type type, bool asUnionType)
         {
             var valuesText = "";
             IEnumerable<FieldInfo> fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
-            valuesText += fieldInfos.Aggregate(valuesText, (current, fieldInfo) => current + GetEnumMemberText(fieldInfo));
+            valuesText += fieldInfos.Aggregate(valuesText, (current, fieldInfo) => current + GetEnumMemberText(fieldInfo, asUnionType));
 
-            return RemoveLastLineEnding(valuesText);
+            return RemoveLastLineEnding(valuesText, asUnionType);
         }
 
         /// <summary>
@@ -790,9 +790,10 @@ namespace TypeGen.Core.Generator
             }
         }
 
-        private static string RemoveLastLineEnding(string propertiesText)
+        private static string RemoveLastLineEnding(string propertiesText, bool asUnionType)
         {
-            return propertiesText.TrimEnd('\r', '\n');
+            var trimmed = propertiesText.Trim().TrimEnd('\r', '\n');
+            return asUnionType ? trimmed.TrimEnd('|') : trimmed;
         }
     }
 }
