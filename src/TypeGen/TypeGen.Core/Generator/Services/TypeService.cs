@@ -40,6 +40,13 @@ namespace TypeGen.Core.Generator.Services
             return GetTsSimpleTypeName(type) != null;
         }
 
+        public bool IsEnumType(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+
+            return type.IsEnum;
+        }
+
         private string GenerateCustomType(Type t, string customType)
         {
             // For custom types mappings ending with <>, construct the relevant generic custom type
@@ -360,14 +367,15 @@ namespace TypeGen.Core.Generator.Services
 
                 string keyTypeName = GetTsTypeName(keyType);
                 string valueTypeName = GetTsTypeName(valueType);
+                bool keyIsEnumType = IsEnumType(keyType);
 
-                if (!keyTypeName.In("number", "string"))
+                if (!keyTypeName.In("number", "string") && !keyIsEnumType)
                 {
                     throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
-                                            " TypeScript dictionary key type must be either 'number' or 'string'");
+                                            " TypeScript dictionary key type must be either 'number', 'string' or an 'enum'");
                 }
 
-                return GetTsDictionaryTypeText(keyTypeName, valueTypeName);
+                return keyIsEnumType ? GetTsDictionaryTypeWithEnumKeyText(keyTypeName, valueTypeName) : GetTsDictionaryTypeText(keyTypeName, valueTypeName);
             }
             
             // handle IDictionary
@@ -382,6 +390,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         private string GetTsDictionaryTypeText(string keyTypeName, string valueTypeName) => $"{{ [key: {keyTypeName}]: {valueTypeName}; }}";
+        private string GetTsDictionaryTypeWithEnumKeyText(string keyTypeName, string valueTypeName) => $"{{ [key in {keyTypeName}]?: {valueTypeName}; }}";
 
         /// <summary>
         /// Gets TypeScript type name for a collection type
