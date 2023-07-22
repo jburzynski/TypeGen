@@ -47,6 +47,8 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.ReadonlyInterface), "TypeGen.IntegrationTest.Generator.Expected.readonly-interface.ts")]
         [InlineData(typeof(TestEntities.StandaloneEnum), "TypeGen.IntegrationTest.Generator.Expected.standalone-enum.ts")]
         [InlineData(typeof(TestEntities.EnumShortValues), "TypeGen.IntegrationTest.Generator.Expected.enum-short-values.ts")]
+        [InlineData(typeof(TestEntities.EnumAsUnionType), "TypeGen.IntegrationTest.Generator.Expected.enum-as-union-type.ts")]
+        [InlineData(typeof(TestEntities.DictionaryWithEnumKey), "TypeGen.IntegrationTest.Generator.Expected.dictionary-with-enum-key.ts")]
         [InlineData(typeof(TestEntities.StaticReadonly), "TypeGen.IntegrationTest.Generator.Expected.static-readonly.ts")]
         [InlineData(typeof(TestEntities.StrictNullsClass), "TypeGen.IntegrationTest.Generator.Expected.strict-nulls-class.ts")]
         [InlineData(typeof(TestEntities.TypeUnions), "TypeGen.IntegrationTest.Generator.Expected.type-unions.ts")]

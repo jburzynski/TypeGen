@@ -372,7 +372,7 @@ namespace TypeGen.Core.Generator.Services
                 if (!keyTypeName.In("number", "string") && !keyIsEnumType)
                 {
                     throw new CoreException($"Error when determining TypeScript type for C# type '{type.FullName}':" +
-                                            " TypeScript dictionary key type must be either 'number', 'string' or an 'enum'");
+                                            " TypeScript dictionary key type must be either 'number', 'string' or an enum.");
                 }
 
                 return keyIsEnumType ? GetTsDictionaryTypeWithEnumKeyText(keyTypeName, valueTypeName) : GetTsDictionaryTypeText(keyTypeName, valueTypeName);

@@ -1,1 +1,1 @@
-$tg{tab}$tg{name}|
+$tg{tab}$tg{name} |

@@ -82,11 +82,6 @@ namespace TypeGen.Cli
                 
                 return (int)ExitCode.Success;
             }
-            catch (Exception e) when (e is CliException || e is CoreException)
-            {
-                _logger.Log($"APPLICATION ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
-                return (int)ExitCode.Error;
-            }
             catch (AssemblyResolutionException e)
             {
                 string message = e.Message +
@@ -105,7 +100,7 @@ namespace TypeGen.Cli
             }
             catch (Exception e)
             {
-                _logger.Log($"GENERIC ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+                _logger.Log($"ERROR: {e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
                 return (int)ExitCode.Error;
             }
         }
