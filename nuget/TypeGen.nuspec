@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>4.2.0</version>
+    <version>4.3.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,10 +11,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
     <releaseNotes>
-- added support for enum keys in TypeScript dictionaries (#160)
-- added support for exporting enums as union types (#159)
-- added the ability to set the output path using a CLI parameter (#159)
-- in error logging: removed the distinction between "APPLICATION ERROR" and "GENERIC ERROR" for clarity
+- fixed UseDefaultExport breaking interface inheritance #128
+- fixed IgnoreBase()/TsIgnoreBaseAttribute not working with interfaces #129
+- added the ability to specify implemented interfaces to CustomBase()/TsCustomBaseAttribute
+- fixed crashing when trying to generate an IEnumerable of nullables #92
+- added the option to specify whether to generate interfaces by default (for example for member types not explicitly selected to be generated)
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
