@@ -379,18 +379,16 @@ namespace TypeGen.Core.Generator
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.IsClass || typeInfo.IsStruct())
             {
-                return GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
+                return Options.ExportTypesAsInterfacesByDefault
+                    ? GenerateInterface(type, new ExportTsInterfaceAttribute { OutputDir = outputDirectory })
+                    : GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
             }
-
+            
             if (typeInfo.IsInterface)
-            {
                 return GenerateInterface(type, new ExportTsInterfaceAttribute { OutputDir = outputDirectory });
-            }
 
             if (typeInfo.IsEnum)
-            {
                 return GenerateEnum(type, new ExportTsEnumAttribute { OutputDir = outputDirectory });
-            }
 
             throw new CoreException($"Generated type must be a C# class, interface, struct or enum. Error when generating type {type.FullName}");
         }

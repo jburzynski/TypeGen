@@ -31,81 +31,57 @@ namespace TypeGen.Core.Generator
         public static string DefaultFileHeading => null;
         public static bool DefaultUseDefaultExport => false;
         public static string DefaultIndexFileExtension => DefaultTypeScriptFileExtension;
-
-        public GeneratorOptions()
-        {
-            TabLength = DefaultTabLength;
-            UseTabCharacter = DefaultUseTabCharacter;
-            ExplicitPublicAccessor = DefaultExplicitPublicAccessor;
-            FileNameConverters = DefaultFileNameConverters;
-            TypeNameConverters = DefaultTypeNameConverters;
-            PropertyNameConverters = DefaultPropertyNameConverters;
-            EnumValueNameConverters = DefaultEnumValueNameConverters;
-            EnumStringInitializersConverters = DefaultEnumStringInitializersConverters;
-            TypeScriptFileExtension = DefaultTypeScriptFileExtension;
-            SingleQuotes = DefaultSingleQuotes;
-            CreateIndexFile = DefaultCreateIndexFile;
-            CsNullableTranslation = DefaultCsNullableTranslation;
-            CsAllowNullsForAllTypes = DefaultCsAllowNullsForAllTypes;
-            CsDefaultValuesForConstantsOnly = DefaultCsDefaultValuesForConstantsOnly;
-            DefaultValuesForTypes = DefaultDefaultValuesForTypes;
-            TypeUnionsForTypes = DefaultTypeUnionsForTypes;
-            CustomTypeMappings = DefaultCustomTypeMappings;
-            EnumStringInitializers = DefaultEnumStringInitializers;
-            FileHeading = DefaultFileHeading;
-            UseDefaultExport = DefaultUseDefaultExport;
-            IndexFileExtension = DefaultIndexFileExtension;
-        }
+        public static bool DefaultExportTypesAsInterfacesByDefault => false;
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# file names to TypeScript file names
         /// </summary>
-        public TypeNameConverterCollection FileNameConverters { get; set; }
+        public TypeNameConverterCollection FileNameConverters { get; set; } = DefaultFileNameConverters;
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# type names (classes, enums etc.) to TypeScript type names
         /// </summary>
-        public TypeNameConverterCollection TypeNameConverters { get; set; }
+        public TypeNameConverterCollection TypeNameConverters { get; set; } = DefaultTypeNameConverters;
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# class property names to TypeScript class property names
         /// </summary>
-        public MemberNameConverterCollection PropertyNameConverters { get; set; }
+        public MemberNameConverterCollection PropertyNameConverters { get; set; } = DefaultPropertyNameConverters;
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum value names
         /// </summary>
-        public MemberNameConverterCollection EnumValueNameConverters { get; set; }
-        
+        public MemberNameConverterCollection EnumValueNameConverters { get; set; } = DefaultEnumValueNameConverters;
+
         /// <summary>
         /// A collection (chain) of converters used for converting C# enum value names to TypeScript enum string initializers
         /// </summary>
-        public MemberNameConverterCollection EnumStringInitializersConverters { get; set; }
+        public MemberNameConverterCollection EnumStringInitializersConverters { get; set; } = DefaultEnumStringInitializersConverters;
 
         /// <summary>
         /// Whether to generate explicit "public" accessor in TypeScript classes
         /// </summary>
-        public bool ExplicitPublicAccessor { get; set; }
+        public bool ExplicitPublicAccessor { get; set; } = DefaultExplicitPublicAccessor;
 
         /// <summary>
         /// Whether to use single quotes instead of double quotes in TypeScript sources
         /// </summary>
-        public bool SingleQuotes { get; set; }
+        public bool SingleQuotes { get; set; } = DefaultSingleQuotes;
 
         /// <summary>
         /// File extension used for the generated TypeScript files
         /// </summary>
-        public string TypeScriptFileExtension { get; set; }
+        public string TypeScriptFileExtension { get; set; } = DefaultTypeScriptFileExtension;
 
         /// <summary>
         /// Number of space characters per tab
         /// </summary>
-        public int TabLength { get; set; }
-        
+        public int TabLength { get; set; } = DefaultTabLength;
+
         /// <summary>
         /// Whether to use the tab character instead of multiple spaces
         /// </summary>
-        public bool UseTabCharacter { get; set; }
+        public bool UseTabCharacter { get; set; } = DefaultUseTabCharacter;
 
         private string _baseOutputDirectory;
 
@@ -122,57 +98,62 @@ namespace TypeGen.Core.Generator
         /// <summary>
         /// Whether to create an index file which exports all generated types
         /// </summary>
-        public bool CreateIndexFile { get; set; }
+        public bool CreateIndexFile { get; set; } = DefaultCreateIndexFile;
 
         /// <summary>
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default
         /// </summary>
-        public StrictNullTypeUnionFlags CsNullableTranslation { get; set; }
-        
+        public StrictNullTypeUnionFlags CsNullableTranslation { get; set; } = DefaultCsNullableTranslation;
+
         /// <summary>
         /// Specifies whether null union types should be added for all types
         /// </summary>
-        public bool CsAllowNullsForAllTypes { get; set; }
+        public bool CsAllowNullsForAllTypes { get; set; } = DefaultCsAllowNullsForAllTypes;
 
         /// <summary>
         /// Specifies that only default values for constants are generated
         /// </summary>
-        public bool CsDefaultValuesForConstantsOnly { get; set; }
+        public bool CsDefaultValuesForConstantsOnly { get; set; } = DefaultCsDefaultValuesForConstantsOnly;
 
         /// <summary>
         /// Specifies default values to generate for given TypeScript types
         /// </summary>
-        public IDictionary<string, string> DefaultValuesForTypes { get; set; }
-        
+        public IDictionary<string, string> DefaultValuesForTypes { get; set; } = DefaultDefaultValuesForTypes;
+
         /// <summary>
         /// Specifies TypeScript type unions (excluding the main type) for TypeScript properties of specified types
         /// </summary>
-        public IDictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; }
+        public IDictionary<string, IEnumerable<string>> TypeUnionsForTypes { get; set; } = DefaultTypeUnionsForTypes;
 
         /// <summary>
         /// Custom [C# -> TS] type mappings. C# type name must be a full type name (e.g. "SomeNs.My.Type").
         /// Specified C# types will be always translated to the corresponding TypeScript types.
         /// </summary>
-        public IDictionary<string, string> CustomTypeMappings { get; set; }
+        public IDictionary<string, string> CustomTypeMappings { get; set; } = DefaultCustomTypeMappings;
 
         /// <summary>
         /// Indicates whether to use enum string initializers
         /// </summary>
-        public bool EnumStringInitializers { get; set; }
+        public bool EnumStringInitializers { get; set; } = DefaultEnumStringInitializers;
 
         /// <summary>
         /// Heading section (initial section) of a TypeScript file. By default it's "This is a TypeGen auto-generated file. (...)"
         /// </summary>
-        public string FileHeading { get; set; }
-        
+        public string FileHeading { get; set; } = DefaultFileHeading;
+
         /// <summary>
         /// Whether to use default exports for the generated TypeScript types
         /// </summary>
-        public bool UseDefaultExport { get; set; }
+        public bool UseDefaultExport { get; set; } = DefaultUseDefaultExport;
 
         /// <summary>
         /// The file extension to use for the index file(s). Defaults to whatever is set for TypeScriptFileExtension.
         /// </summary>
-        public string IndexFileExtension { get; set; }
+        public string IndexFileExtension { get; set; } = DefaultIndexFileExtension;
+
+        /// <summary>
+        /// Whether to export types as interfaces by default. For example affects member types which aren't explicitly selected to be generated.
+        /// </summary>
+        public bool ExportTypesAsInterfacesByDefault { get; set; } = DefaultExportTypesAsInterfacesByDefault;
     }
 }

@@ -50,6 +50,7 @@ namespace TypeGen.Cli.Models
         public string FileHeading { get; set; }
         public bool? UseDefaultExport { get; set; }
         public string ProjectOutputFolder { get; set; }
+        public bool? ExportTypesAsInterfacesByDefault { get; set; }
 
         public TgConfig Normalize()
         {
@@ -94,6 +95,7 @@ namespace TypeGen.Cli.Models
             if (FileHeading == null) FileHeading = GeneratorOptions.DefaultFileHeading;
             if (UseDefaultExport == null) UseDefaultExport = GeneratorOptions.DefaultUseDefaultExport;
             if (ProjectOutputFolder == null) ProjectOutputFolder = DefaultProjectOutputFolder;
+            if (ExportTypesAsInterfacesByDefault == null) ExportTypesAsInterfacesByDefault = GeneratorOptions.DefaultExportTypesAsInterfacesByDefault;
             return this;
         }
 
