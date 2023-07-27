@@ -357,7 +357,9 @@ namespace TypeGen.Core.Generator.Services
                         return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
                     default:
                         var serializedValue = JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
-                        if (serializedValue.StartsWith("{") && // Make sure it's not a list, array, or other special type
+                        if (!_typeService.IsCollectionType(valueType) &&
+                            !_typeService.IsDictionaryType(valueType) &&
+                            _typeService.IsTsClass(valueType) && // Make sure it's not a list, array, or other special type
                             !valueType.GetTypeInfo().IsValueType && // Ignore value types
                             valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
                         {
