@@ -7,7 +7,7 @@ init:
   - git config --global core.autocrlf false
 
 before_build:
-  - ps: |
+  - ps: >
     if (($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -match "^nobuild"))
     {
       echo "Skipping build, because the tag has the 'nobuild' prefix."
