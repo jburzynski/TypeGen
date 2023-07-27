@@ -15,6 +15,7 @@ using DefaultExport = TypeGen.TestWebApp.DefaultExport;
 using Structs = TypeGen.TestWebApp.TestEntities.Structs;
 using IgnoreBaseInterfaces129 = TypeGen.TestWebApp.IgnoreBaseInterfaces129;
 using CustomBaseInterfaces = TypeGen.TestWebApp.CustomBaseInterfaces;
+using UseDefaultExportBreaksInterfaceInheritance128 = TypeGen.TestWebApp.UseDefaultExportBreaksInterfaceInheritance128;
 
 namespace TypeGen.IntegrationTest.Generator
 {
@@ -127,20 +128,20 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.GenericClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-class.ts")]
         [InlineData(typeof(TestEntities.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
         [InlineData(typeof(TestEntities.NestedEntity), "TypeGen.IntegrationTest.Generator.Expected.very.nested.directory.nested-entity.ts")]
-        public async Task TestGenerateSpecForRefTypes(Type type, string expectedLocation)
+        public async Task TestGenerationSpecForRefTypes(Type type, string expectedLocation)
         {
             var generationSpec = new TestRefTypesGenerationSpec();
             await TestGenerationSpec(type, expectedLocation, generationSpec, new Gen.GeneratorOptions());
         }
         
         [Theory]
-        [InlineData(typeof(TestEntities.Structs.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
-        [InlineData(typeof(TestEntities.Structs.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
-        [InlineData(typeof(TestEntities.Structs.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
-        [InlineData(typeof(TestEntities.Structs.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
-        [InlineData(typeof(TestEntities.Structs.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
-        [InlineData(typeof(TestEntities.Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
-        public async Task TestGenerateSpecForStructs(Type type, string expectedLocation)
+        [InlineData(typeof(Structs.CustomBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-base-class.ts")]
+        [InlineData(typeof(Structs.CustomBaseCustomImport), "TypeGen.IntegrationTest.Generator.Expected.custom-base-custom-import.ts")]
+        [InlineData(typeof(Structs.CustomEmptyBaseClass), "TypeGen.IntegrationTest.Generator.Expected.custom-empty-base-class.ts")]
+        [InlineData(typeof(Structs.ExtendedPrimitivesClass), "TypeGen.IntegrationTest.Generator.Expected.extended-primitives-class.ts")]
+        [InlineData(typeof(Structs.ExternalDepsClass), "TypeGen.IntegrationTest.Generator.Expected.external-deps-class.ts")]
+        [InlineData(typeof(Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
+        public async Task TestGenerationSpecForStructs(Type type, string expectedLocation)
         {
             var generationSpec = new TestStructsGenerationSpec();
             await TestGenerationSpec(type, expectedLocation, generationSpec, new Gen.GeneratorOptions());
@@ -148,23 +149,45 @@ namespace TypeGen.IntegrationTest.Generator
         
         [Theory]
         [InlineData(typeof(TestEntities.ConstantsOnly), "TypeGen.IntegrationTest.Generator.Expected.constants-only.ts")]
-        public async Task TestConstantsOnlyGenerateSpec(Type type, string expectedLocation)
+        public async Task TestConstantsOnlyGenerationSpec(Type type, string expectedLocation)
         {
-            var generationSpec = new TestConstantsOnlyGenerationSpec();
+            var generationSpec = new ConstantsOnlyGenerationSpec();
             var generatorOptions = new Gen.GeneratorOptions { CsDefaultValuesForConstantsOnly = true };
             await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
         }
         
         [Theory]
         [InlineData(typeof(TestEntities.NullableClass), "TypeGen.IntegrationTest.Generator.Expected.nullable-class.ts")]
-        public async Task TestNullableTranslationGenerateSpec(Type type, string expectedLocation)
+        public async Task TestNullableTranslationGenerationSpec(Type type, string expectedLocation)
         {
-            var generationSpec = new TestNullableTranslationGenerationSpec();
+            var generationSpec = new NullableTranslationGenerationSpec();
             var generatorOptions = new Gen.GeneratorOptions { CsNullableTranslation = StrictNullTypeUnionFlags.Optional };
             await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
         }
+        
+        [Theory]
+        [InlineData(typeof(CustomBaseInterfaces.Foo), "TypeGen.IntegrationTest.Generator.Expected.custom_base_interfaces.foo.ts")]
+        public async Task TestCustomBaseInterfacesGenerationSpec(Type type, string expectedLocation)
+        {
+            var generationSpec = new CustomBaseInterfacesGenerationSpec();
+            var generatorOptions = new Gen.GeneratorOptions();
+            await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
+        }
+        
+        [Theory]
+        [InlineData(typeof(UseDefaultExportBreaksInterfaceInheritance128.ProductDto), "TypeGen.IntegrationTest.Generator.Expected.use_default_export_breaks_interface_inheritance_128.product-dto.ts")]
+        public async Task TestUseDefaultExportBreaksInterfaceInheritanceGenerationSpec(Type type, string expectedLocation)
+        {
+            var generationSpec = new UseDefaultExportBreaksInterfaceInheritanceGenerationSpec();
+            var generatorOptions = new Gen.GeneratorOptions
+            {
+                BaseOutputDirectory = "./types",
+                UseDefaultExport = true
+            };
+            await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
+        }
 
-        private async Task TestGenerationSpec(Type type, string expectedLocation,
+        private static async Task TestGenerationSpec(Type type, string expectedLocation,
             GenerationSpec generationSpec, Gen.GeneratorOptions generatorOptions)
         {
             var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
@@ -191,7 +214,7 @@ namespace TypeGen.IntegrationTest.Generator
         public async Task ShouldThrowExceptionWithInitialTypeNameWhenDependencyTypeFails()
         {
             var type = typeof(TestEntities.TestExceptions);
-            var spec = new TestExceptionsGenerationSpec();
+            var spec = new ExceptionsGenerationSpec();
             var generator = new Gen.Generator();
             try
             {
@@ -233,24 +256,24 @@ namespace TypeGen.IntegrationTest.Generator
         {
             public TestStructsGenerationSpec()
             {
-                AddClass<TestEntities.Structs.CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
-                AddInterface<TestEntities.Structs.CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
-                AddInterface<TestEntities.Structs.CustomEmptyBaseClass>().CustomBase();
-                AddClass<TestEntities.Structs.ExtendedPrimitivesClass>()
+                AddClass<Structs.CustomBaseClass>().CustomBase("AcmeCustomBase<string>");
+                AddInterface<Structs.CustomBaseCustomImport>().CustomBase("MB", "./my/base/my-base", "MyBase");
+                AddInterface<Structs.CustomEmptyBaseClass>().CustomBase();
+                AddClass<Structs.ExtendedPrimitivesClass>()
                     .Member(x => nameof(x.DateTimeStringField))
                     .Type("string")
                     .Member(x => nameof(x.DateTimeOffsetStringField))
                     .Type("string");
-                AddClass<TestEntities.Structs.ExternalDepsClass>().Member(nameof(TestEntities.ExternalDepsClass.User)).Ignore();
-                AddClass(typeof(TestEntities.Structs.GenericBaseClass<>));
-                AddClass(typeof(TestEntities.Structs.GenericWithRestrictions<>));
-                AddClass<TestEntities.Structs.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
+                AddClass<Structs.ExternalDepsClass>().Member(nameof(TestEntities.ExternalDepsClass.User)).Ignore();
+                AddClass(typeof(Structs.GenericBaseClass<>));
+                AddClass(typeof(Structs.GenericWithRestrictions<>));
+                AddClass<Structs.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
             }
         }
         
-        private class TestCustomBaseInterfacesGenerationSpec : GenerationSpec
+        private class CustomBaseInterfacesGenerationSpec : GenerationSpec
         {
-            public TestCustomBaseInterfacesGenerationSpec()
+            public CustomBaseInterfacesGenerationSpec()
             {
                 AddClass<CustomBaseInterfaces.Foo>()
                     .CustomBase(implementedInterfaces: new[]
@@ -262,27 +285,35 @@ namespace TypeGen.IntegrationTest.Generator
             }
         }
 
-        private class TestExceptionsGenerationSpec : GenerationSpec
+        private class ExceptionsGenerationSpec : GenerationSpec
         {
-            public TestExceptionsGenerationSpec()
+            public ExceptionsGenerationSpec()
             {
                 AddClass<TestEntities.TestExceptions>();
             }
         }
 
-        private class TestConstantsOnlyGenerationSpec : GenerationSpec
+        private class ConstantsOnlyGenerationSpec : GenerationSpec
         {
-            public TestConstantsOnlyGenerationSpec()
+            public ConstantsOnlyGenerationSpec()
             {
                 AddClass<TestEntities.ConstantsOnly>();
             }
         }
 
-        private class TestNullableTranslationGenerationSpec : GenerationSpec
+        private class NullableTranslationGenerationSpec : GenerationSpec
         {
-            public TestNullableTranslationGenerationSpec()
+            public NullableTranslationGenerationSpec()
             {
                 AddClass<TestEntities.NullableClass>();
+            }
+        }
+        
+        private class UseDefaultExportBreaksInterfaceInheritanceGenerationSpec : GenerationSpec
+        {
+            public UseDefaultExportBreaksInterfaceInheritanceGenerationSpec()
+            {
+                AddClass<UseDefaultExportBreaksInterfaceInheritance128.ProductDto>();
             }
         }
     }

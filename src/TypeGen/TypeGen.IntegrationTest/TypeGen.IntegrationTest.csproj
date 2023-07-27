@@ -31,6 +31,7 @@
 		<EmbeddedResource Include="Generator\Expected\custom-base-interfaces\foo.ts" />
 		<EmbeddedResource Include="Generator\Expected\custom-empty-base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\d.ts" />
+		<EmbeddedResource Include="Generator\Expected\use-default-export-breaks-interface-inheritance-128\product-dto.ts" />
 		<EmbeddedResource Include="Generator\Expected\default-export\class-with-default-export.ts" />
 		<EmbeddedResource Include="Generator\Expected\default-export\class-with-imports.ts" />
 		<EmbeddedResource Include="Generator\Expected\default-export\class-without-default-export.ts" />
