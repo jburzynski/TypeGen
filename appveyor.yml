@@ -7,12 +7,11 @@ init:
   - git config --global core.autocrlf false
 
 before_build:
-  - ps: >
-    if (($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -match "^nobuild"))
+  - ps: 'if (($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -match "^nobuild"))
     {
-      echo "Skipping build, because the tag has the 'nobuild' prefix."
+      echo "Skipping build, because the tag has the ''nobuild'' prefix."
       Exit-AppVeyorBuild
-    }
+    }'
   - dotnet restore src/TypeGen/TypeGen.Cli
   - dotnet restore src/TypeGen/TypeGen.Core
   - dotnet restore src/TypeGen/TypeGen.Cli.Test
