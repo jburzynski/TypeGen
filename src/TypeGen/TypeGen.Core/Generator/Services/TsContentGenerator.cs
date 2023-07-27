@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -312,25 +313,21 @@ namespace TypeGen.Core.Generator.Services
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
         public string GetMemberValueText(MemberInfo memberInfo)
         {
+            var temp = memberInfo.Name;
             if (memberInfo.DeclaringType == null) return null;
 
             try
             {
                 object instance = memberInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(memberInfo.DeclaringType);
+                if (instance != null)
+                {
+                    memberInfo = instance.GetType().GetMember(memberInfo.Name).First(); // Properties and fields can't overload, right?
+                }
                 var valueObj = new object();
                 object valueObjGuard = valueObj;
                 bool isConstant = false;
-                
-                switch (memberInfo)
-                {
-                    case FieldInfo fieldInfo:
-                        valueObj = fieldInfo.GetValue(instance);
-                        isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
-                        break;
-                    case PropertyInfo propertyInfo:
-                        valueObj = propertyInfo.GetValue(instance);
-                        break;
-                }
+
+                GetMemberValue(memberInfo, instance, out valueObj, out isConstant);
 
                 // if only default values for constants are allowed
                 if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return null;
@@ -341,6 +338,7 @@ namespace TypeGen.Core.Generator.Services
                 // if valueObj's value is the default value for its type
                 if (valueObj == null || valueObj.Equals(TypeUtils.GetDefaultValue(valueObj.GetType()))) return null;
 
+                var valueType = valueObj.GetType();
                 string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
 
@@ -358,7 +356,18 @@ namespace TypeGen.Core.Generator.Services
                     case DateTimeOffset valueDateTimeOffset when memberType == "string":
                         return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
                     default:
-                        return JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
+                        var serializedValue = JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
+                        if (serializedValue.StartsWith("{") && // Make sure it's not a list, array, or other special type
+                            !valueType.GetTypeInfo().IsValueType && // Ignore value types
+                            valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
+                        {
+                            var defaultCtorValueType = Activator.CreateInstance(valueType);
+                            if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
+                            {
+                                return $@"new {_typeService.GetTsTypeName(memberInfo)}()";
+                            }
+                        }
+                        return serializedValue;
                 }
             }
             catch (MissingMethodException e)
@@ -375,6 +384,43 @@ namespace TypeGen.Core.Generator.Services
             }
 
             return null;
+        }
+
+        private bool memberwiseEquals(object a, object b)
+        {
+            if (a == b || a.Equals(b)) return true;
+            if (a.GetType() != b.GetType()) return false;
+            var type = a.GetType();
+            if (type.GetTypeInfo().IsValueType)
+            {
+                return false;
+            }
+            foreach (var member in type.GetTsExportableMembers(this._metadataReaderFactory.GetInstance()))
+            {
+                if (member is PropertyInfo p && p.GetIndexParameters().Length > 0) continue;
+                GetMemberValue(member, a, out var aVal, out var _);
+                GetMemberValue(member, b, out var bVal, out var _);
+                if (!memberwiseEquals(aVal, bVal)) return false;
+            }
+            return true;
+        }
+
+        private void GetMemberValue(MemberInfo memberInfo, object instance, out object valueObj, out bool isConstant)
+        {
+            switch (memberInfo)
+            {
+                case FieldInfo fieldInfo:
+                    valueObj = fieldInfo.GetValue(instance);
+                    isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
+                    break;
+                case PropertyInfo propertyInfo:
+                    valueObj = propertyInfo.GetValue(instance);
+                    isConstant = false;
+                    break;
+                default:
+                    throw new Exception();
+            }
+
         }
     }
 }

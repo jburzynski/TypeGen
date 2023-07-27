@@ -19,6 +19,8 @@ namespace TypeGen.IntegrationTest.CommonCases.Entities
 
         public DateTime fieldDateTimeUnassigned;
 
-        public DefaultMemberComplexValues PropertyComplex { get; set; } = new();
+        public DefaultMemberComplexValues PropertyComplexDefaultValue { get; set; } = new();
+
+        public DefaultMemberComplexValues PropertyComplexNotDefaultValue { get; set; } = new() { Number = 4 };
     }
 }
