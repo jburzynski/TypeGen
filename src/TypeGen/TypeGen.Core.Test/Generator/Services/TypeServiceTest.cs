@@ -64,9 +64,9 @@ namespace TypeGen.Core.Test.Generator.Services
         [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(int?), false)]
         [InlineData(typeof(DateTime?), false)]
-        public void IsTsSimpleType_TypeGiven_DeterminedIfTsSimpleType(Type type, bool expectedResult)
+        public void IsTsBuiltInType_TypeGiven_DeterminedIfTsBuiltInType(Type type, bool expectedResult)
         {
-            bool actualResult = _typeService.IsTsSimpleType(type);
+            bool actualResult = _typeService.IsTsBuiltInType(type);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -92,9 +92,9 @@ namespace TypeGen.Core.Test.Generator.Services
         [InlineData(typeof(MyClass), null)]
         [InlineData(typeof(int?), null)]
         [InlineData(typeof(DateTime?), null)]
-        public void GetTsSimpleTypeName_TypeGiven_TsSimpleTypeNameReturned(Type type, string expectedResult)
+        public void GetTsBuiltInTypeName_TypeGiven_TsBuiltInTypeNameReturned(Type type, string expectedResult)
         {
-            string actualResult = _typeService.GetTsSimpleTypeName(type);
+            string actualResult = _typeService.GetTsBuiltInTypeName(type);
             Assert.Equal(expectedResult, actualResult);
         }
         

@@ -57,17 +57,22 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <summary>
-        /// Gets code for the 'imports' section for a given type
+        /// Gets code for the 'imports' section for a given type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="outputDir">ExportTs... attribute's output dir</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown when one of: type, fileNameConverters or typeNameConverters is null</exception>
+        /// <param name="type">The type.</param>
+        /// <param name="outputDir">ExportTs... attribute's output dir.</param>
+        /// <returns>The 'imports' section for the <see cref="type"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <see cref="type"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when <see cref="GeneratorOptions.FileNameConverters"/> or <see cref="GeneratorOptions.TypeNameConverters"/> is null.</exception>
         public string GetImportsText(Type type, string outputDir)
         {
             Requires.NotNull(type, nameof(type));
-            Requires.NotNull(GeneratorOptions.FileNameConverters, nameof(GeneratorOptions.FileNameConverters));
-            Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
+            
+            if (GeneratorOptions.FileNameConverters == null)
+                throw new InvalidOperationException($"{nameof(GeneratorOptions.FileNameConverters)} should not be null.");
+            
+            if (GeneratorOptions.TypeNameConverters == null)
+                throw new InvalidOperationException($"{nameof(GeneratorOptions.TypeNameConverters)} should not be null.");
 
             string result = GetTypeDependencyImportsText(type, outputDir);
             result += GetCustomImportsText(type);
@@ -210,10 +215,23 @@ namespace TypeGen.Core.Generator.Services
         private IEnumerable<string> GetCustomImportsFromCustomBase(Type type)
         {
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
-            if (tsCustomBaseAttribute == null || string.IsNullOrEmpty(tsCustomBaseAttribute.ImportPath)) yield break;
+            if (tsCustomBaseAttribute == null) yield break;
 
-            yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName, tsCustomBaseAttribute.IsDefaultExport);
+            if (ImportPathIsNotNullOrEmpty(tsCustomBaseAttribute))
+                yield return FillCustomImportTemplate(tsCustomBaseAttribute.Base, tsCustomBaseAttribute.ImportPath, tsCustomBaseAttribute.OriginalTypeName, tsCustomBaseAttribute.IsDefaultExport);
+
+            foreach (var implementedInterface in tsCustomBaseAttribute.ImplementedInterfaces
+                         .Where(x => !string.IsNullOrEmpty(x.ImportPath)))
+            {
+                yield return FillCustomImportTemplate(implementedInterface.Name, implementedInterface.ImportPath, implementedInterface.OriginalTypeName, implementedInterface.IsDefaultExport);
+            }
         }
+
+        private static bool ImportPathIsNullOrEmpty(TsCustomBaseAttribute tsCustomBaseAttribute)
+            => string.IsNullOrEmpty(tsCustomBaseAttribute.ImportPath);
+
+        private static bool ImportPathIsNotNullOrEmpty(TsCustomBaseAttribute tsCustomBaseAttribute)
+            => !ImportPathIsNullOrEmpty(tsCustomBaseAttribute);
 
         private string FillCustomImportTemplate(string typeName, string importPath, string originalTypeName, bool isDefaultExport)
         {

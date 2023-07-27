@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using TypeGen.Core;
+using TypeGen.Core.Logging;
 using TypeGen.Core.SpecGeneration;
+using TypeGen.Core.TypeAnnotations;
 using TypeGen.IntegrationTest.Extensions;
 using TypeGen.IntegrationTest.Generator.TestingUtils;
 using Xunit;
@@ -10,6 +12,9 @@ using TestEntities = TypeGen.TestWebApp.TestEntities;
 using Constants = TypeGen.TestWebApp.Constants;
 using ErrorCase = TypeGen.TestWebApp.ErrorCase;
 using DefaultExport = TypeGen.TestWebApp.DefaultExport;
+using Structs = TypeGen.TestWebApp.TestEntities.Structs;
+using IgnoreBaseInterfaces129 = TypeGen.TestWebApp.IgnoreBaseInterfaces129;
+using CustomBaseInterfaces = TypeGen.TestWebApp.CustomBaseInterfaces;
 
 namespace TypeGen.IntegrationTest.Generator
 {
@@ -70,6 +75,9 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(DefaultExport.ClassWithImports), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-imports.ts")]
         [InlineData(typeof(DefaultExport.ClassWithoutDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-without-default-export.ts")]
         [InlineData(typeof(DefaultExport.InterfaceWithDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.interface-with-default-export.ts")]
+        [InlineData(typeof(Structs.ImplementsInterfaces), "TypeGen.IntegrationTest.Generator.Expected.structs.implements-interfaces.ts")]
+        [InlineData(typeof(IgnoreBaseInterfaces129.Test), "TypeGen.IntegrationTest.Generator.Expected.ignore_base_interfaces_129.test.ts")]
+        [InlineData(typeof(CustomBaseInterfaces.Foo), "TypeGen.IntegrationTest.Generator.Expected.custom_base_interfaces.foo.ts")]
         
         // now do the cases above for structs (when possible)
         
@@ -120,17 +128,8 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.NestedEntity), "TypeGen.IntegrationTest.Generator.Expected.very.nested.directory.nested-entity.ts")]
         public async Task TestGenerateSpecForRefTypes(Type type, string expectedLocation)
         {
-            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
-
-            var spec = new TestRefTypesGenerationSpec();
-            var generator = new Gen.Generator();
-            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
-
-            await generator.GenerateAsync(new[] { spec });
-            var expected = (await readExpectedTask).Trim();
-
-            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
+            var generationSpec = new TestRefTypesGenerationSpec();
+            await TestGenerationSpec(type, expectedLocation, generationSpec, new Gen.GeneratorOptions());
         }
         
         [Theory]
@@ -142,13 +141,42 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.Structs.GenericBaseClass<>), "TypeGen.IntegrationTest.Generator.Expected.generic-base-class.ts")]
         public async Task TestGenerateSpecForStructs(Type type, string expectedLocation)
         {
-            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
+            var generationSpec = new TestStructsGenerationSpec();
+            await TestGenerationSpec(type, expectedLocation, generationSpec, new Gen.GeneratorOptions());
+        }
+        
+        [Theory]
+        [InlineData(typeof(TestEntities.ConstantsOnly), "TypeGen.IntegrationTest.Generator.Expected.constants-only.ts")]
+        public async Task TestConstantsOnlyGenerateSpec(Type type, string expectedLocation)
+        {
+            var generationSpec = new TestConstantsOnlyGenerationSpec();
+            var generatorOptions = new Gen.GeneratorOptions { CsDefaultValuesForConstantsOnly = true };
+            await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
+        }
+        
+        [Theory]
+        [InlineData(typeof(TestEntities.NullableClass), "TypeGen.IntegrationTest.Generator.Expected.nullable-class.ts")]
+        public async Task TestNullableTranslationGenerateSpec(Type type, string expectedLocation)
+        {
+            var generationSpec = new TestNullableTranslationGenerationSpec();
+            var generatorOptions = new Gen.GeneratorOptions { CsNullableTranslation = StrictNullTypeUnionFlags.Optional };
+            await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
+        }
 
-            var spec = new TestStructsGenerationSpec();
-            var generator = new Gen.Generator();
+        private async Task TestGenerationSpec(Type type, string expectedLocation,
+            GenerationSpec generationSpec, Gen.GeneratorOptions generatorOptions)
+        {
+            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
+            var generator = new Gen.Generator(generatorOptions)
+            {
+                Options =
+                {
+                    CsNullableTranslation = StrictNullTypeUnionFlags.Optional
+                }
+            };
             var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
-            await generator.GenerateAsync(new[] { spec });
+            await generator.GenerateAsync(new[] { generationSpec });
             var expected = (await readExpectedTask).Trim();
 
             Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
@@ -175,52 +203,6 @@ namespace TypeGen.IntegrationTest.Generator
                 Assert.NotNull(ex.InnerException);
                 Assert.Contains("Nullable`1", ex.InnerException.Message);
             }
-        }
-        
-        [Theory]
-        [InlineData(typeof(TestEntities.ConstantsOnly), "TypeGen.IntegrationTest.Generator.Expected.constants-only.ts")]
-        public async Task TestConstantsOnlyGenerateSpec(Type type, string expectedLocation)
-        {
-            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
-
-            var spec = new TestConstantsOnlyGenerationSpec();
-            var generator = new Gen.Generator()
-            {
-                Options =
-                {
-                    CsDefaultValuesForConstantsOnly = true
-                }
-            };
-            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
-
-            await generator.GenerateAsync(new[] { spec });
-            var expected = (await readExpectedTask).Trim();
-
-            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
-        }
-        
-        [Theory]
-        [InlineData(typeof(TestEntities.NullableClass), "TypeGen.IntegrationTest.Generator.Expected.nullable-class.ts")]
-        public async Task TestNullableTranslationGenerateSpec(Type type, string expectedLocation)
-        {
-            var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
-
-            var spec = new TestNullableTranslationGenerationSpec();
-            var generator = new Gen.Generator()
-            {
-                Options =
-                {
-                    CsNullableTranslation = StrictNullTypeUnionFlags.Optional
-                }
-            };
-            var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
-
-            await generator.GenerateAsync(new[] { spec });
-            var expected = (await readExpectedTask).Trim();
-
-            Assert.True(interceptor.GeneratedOutputs.ContainsKey(type));
-            Assert.Equal(expected, interceptor.GeneratedOutputs[type].Content.FormatOutput());
         }
 
         private class TestRefTypesGenerationSpec : GenerationSpec
@@ -262,6 +244,20 @@ namespace TypeGen.IntegrationTest.Generator
                 AddClass(typeof(TestEntities.Structs.GenericBaseClass<>));
                 AddClass(typeof(TestEntities.Structs.GenericWithRestrictions<>));
                 AddClass<TestEntities.Structs.LiteDbEntity>().Member(nameof(TestEntities.LiteDbEntity.MyBsonArray)).Ignore();
+            }
+        }
+        
+        private class TestCustomBaseInterfacesGenerationSpec : GenerationSpec
+        {
+            public TestCustomBaseInterfacesGenerationSpec()
+            {
+                AddClass<CustomBaseInterfaces.Foo>()
+                    .CustomBase(implementedInterfaces: new[]
+                    {
+                        new ImplementedInterface("IFoo"),
+                        new ImplementedInterface("IBar", "./my/path", "IOrig"),
+                        new ImplementedInterface("IBaz", "./my/path/baz", IsDefaultExport: true),
+                    });
             }
         }
 

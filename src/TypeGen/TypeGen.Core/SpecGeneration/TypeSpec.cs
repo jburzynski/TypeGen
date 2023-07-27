@@ -24,8 +24,9 @@ namespace TypeGen.Core.SpecGeneration
         
         public void AddMember(string memberName) => _memberAttributes[memberName] = new List<Attribute>();
 
-        public void AddCustomBaseAttribute(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false)
-            => AddAdditionalAttribute(new TsCustomBaseAttribute(@base, importPath, originalTypeName, isDefaultExport));
+        public void AddCustomBaseAttribute(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
+            params object[] implementedInterfaces)
+            => AddAdditionalAttribute(new TsCustomBaseAttribute(@base, importPath, originalTypeName, isDefaultExport, implementedInterfaces));
         public void AddDefaultExportAttribute(bool enabled = true) => AddAdditionalAttribute(new TsDefaultExportAttribute(enabled));
         public void AddDefaultTypeOutputAttribute(string memberName, string outputDir) => AddMemberAttribute(memberName, new TsDefaultTypeOutputAttribute(outputDir));
         public void AddDefaultValueAttribute(string memberName, string defaultValue) => AddMemberAttribute(memberName, new TsDefaultValueAttribute(defaultValue));

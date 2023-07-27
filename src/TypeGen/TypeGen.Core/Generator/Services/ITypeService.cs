@@ -11,7 +11,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns>True if a corresponding TypeScript simple type exists; false otherwise.</returns>
-        bool IsTsSimpleType(Type type);
+        bool IsTsBuiltInType(Type type);
 
         /// <summary>
         /// Gets TypeScript type name for a simple type.
@@ -19,7 +19,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
         /// <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
-        string GetTsSimpleTypeName(Type type);
+        string GetTsBuiltInTypeName(Type type);
         
         /// <summary>
         /// Determines whether the type represents a TypeScript class

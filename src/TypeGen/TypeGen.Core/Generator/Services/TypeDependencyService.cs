@@ -94,7 +94,7 @@ namespace TypeGen.Core.Generator.Services
         private IEnumerable<TypeDependencyInfo> GetBaseTypeDependency(Type type)
         {
             if (type.IsStruct()
-                ||_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null)
+                || _metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null)
                 return Enumerable.Empty<TypeDependencyInfo>();
 
             Type baseType = _typeService.GetBaseType(type);
@@ -149,7 +149,7 @@ namespace TypeGen.Core.Generator.Services
 
         private IEnumerable<TypeDependencyInfo> GetFlatTypeDependencies(Type flatType, IEnumerable<Attribute> memberAttributes = null, bool isBase = false)
         {
-            if (_typeService.IsTsSimpleType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
+            if (_typeService.IsTsBuiltInType(flatType) || flatType.IsGenericParameter) return Enumerable.Empty<TypeDependencyInfo>();
 
             if (flatType.GetTypeInfo().IsGenericType)
             {
@@ -177,7 +177,7 @@ namespace TypeGen.Core.Generator.Services
             {
                 Type argumentType = _typeService.StripNullable(genericArgument);
                 Type flatArgumentType = _typeService.GetFlatType(argumentType);
-                if (_typeService.IsTsSimpleType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
+                if (_typeService.IsTsBuiltInType(flatArgumentType) || flatArgumentType.IsGenericParameter) continue;
 
                 result.AddRange(flatArgumentType.GetTypeInfo().IsGenericType
                     ? GetGenericTypeNonDefinitionDependencies(flatArgumentType)

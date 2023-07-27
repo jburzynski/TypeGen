@@ -425,23 +425,27 @@ namespace TypeGen.Core.Generator
             // get text for sections
 
             var tsCustomBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsCustomBaseAttribute>(type);
+            var tsIgnoreBaseAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type);
             var extendsText = "";
+            var implementsText = "";
 
             if (tsCustomBaseAttribute != null)
             {
                 extendsText = string.IsNullOrEmpty(tsCustomBaseAttribute.Base) ? "" : _templateService.GetExtendsText(tsCustomBaseAttribute.Base);
+                
+                var implementedInterfaceNames = GetNotNullOrEmptyImplementedInterfaceNames(tsCustomBaseAttribute);
+                if (interfaceAttribute != null && implementedInterfaceNames.Any())
+                    throw new InvalidOperationException($"TS Interface type ({type.FullName}) cannot implement interfaces.");
+                
+                implementsText = interfaceAttribute != null || implementedInterfaceNames.None() ? "" : _templateService.GetImplementsText(implementedInterfaceNames);
             }
-            else if (type.IsInterface)
+            else if (tsIgnoreBaseAttribute == null)
             {
-                // this is an interface, generate extends for an interface.
-                extendsText = _tsContentGenerator.GetExtendsForInterfacesText(type);
-            }
-            else if (type.IsClass && _metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) == null)
-            {
-                extendsText = _tsContentGenerator.GetExtendsText(type);
-            }
+                if (!type.IsStruct())
+                    extendsText = interfaceAttribute != null ? _tsContentGenerator.GetExtendsForInterfacesText(type) : _tsContentGenerator.GetExtendsText(type);
 
-            string implementsText = _tsContentGenerator.GetImplementsText(type);
+                implementsText = interfaceAttribute != null ? "" : _tsContentGenerator.GetImplementsText(type);
+            }
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
@@ -475,7 +479,13 @@ namespace TypeGen.Core.Generator
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
             return new[] { filePathRelative }.Concat(dependenciesGenerationResult).ToList();
         }
-
+        
+        private static List<string> GetNotNullOrEmptyImplementedInterfaceNames(TsCustomBaseAttribute tsCustomBaseAttribute)
+            => tsCustomBaseAttribute.ImplementedInterfaces
+                .Select(x => x.Name)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToList();
+            
         /// <summary>
         /// Generates a TypeScript enum file from a class type
         /// </summary>

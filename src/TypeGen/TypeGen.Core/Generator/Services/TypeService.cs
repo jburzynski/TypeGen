@@ -33,17 +33,15 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public bool IsTsSimpleType(Type type)
+        public bool IsTsBuiltInType(Type type)
         {
             Requires.NotNull(type, nameof(type));
-
-            return GetTsSimpleTypeName(type) != null;
+            return GetTsBuiltInTypeName(type) != null;
         }
 
         public bool IsEnumType(Type type)
         {
             Requires.NotNull(type, nameof(type));
-
             return type.IsEnum;
         }
 
@@ -89,7 +87,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public string GetTsSimpleTypeName(Type type)
+        public string GetTsBuiltInTypeName(Type type)
         {
             Requires.NotNull(type, nameof(type));
             if (string.IsNullOrWhiteSpace(type.FullName)) return null;
@@ -223,9 +221,9 @@ namespace TypeGen.Core.Generator.Services
             }
 
             // handle simple types
-            if (IsTsSimpleType(type))
+            if (IsTsBuiltInType(type))
             {
-                return GetTsSimpleTypeName(type);
+                return GetTsBuiltInTypeName(type);
             }
 
             // handle collection types

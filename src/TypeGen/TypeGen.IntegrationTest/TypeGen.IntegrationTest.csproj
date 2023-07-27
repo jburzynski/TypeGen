@@ -27,6 +27,7 @@
 		<EmbeddedResource Include="Generator\Expected\c.ts" />
 		<EmbeddedResource Include="Generator\Expected\custom-base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\custom-base-custom-import.ts" />
+		<EmbeddedResource Include="Generator\Expected\custom-base-interfaces\foo.ts" />
 		<EmbeddedResource Include="Generator\Expected\custom-empty-base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\d.ts" />
 		<EmbeddedResource Include="Generator\Expected\default-export\class-with-default-export.ts" />
@@ -51,6 +52,7 @@
 		<EmbeddedResource Include="Generator\Expected\generic-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\generic-with-restrictions.ts" />
 		<EmbeddedResource Include="Generator\Expected\i-test-interface.ts" />
+		<EmbeddedResource Include="Generator\Expected\ignore-base-interfaces-129\test.ts" />
 		<EmbeddedResource Include="Generator\Expected\index.ts" />
 		<EmbeddedResource Include="Generator\Expected\lite-db-entity.ts" />
 		<EmbeddedResource Include="Generator\Expected\no\slash\output\dir\no-slash-output-dir.ts" />
@@ -58,6 +60,7 @@
 		<EmbeddedResource Include="Generator\Expected\readonly-interface.ts" />
 		<EmbeddedResource Include="Generator\Expected\standalone-enum.ts" />
 		<EmbeddedResource Include="Generator\Expected\strict-nulls-class.ts" />
+		<EmbeddedResource Include="Generator\Expected\structs\implements-interfaces.ts" />
 		<EmbeddedResource Include="Generator\Expected\test-classes\base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\test-classes\base-class2.ts" />
 		<EmbeddedResource Include="Generator\Expected\test-classes\circular-ref-class1.ts" />

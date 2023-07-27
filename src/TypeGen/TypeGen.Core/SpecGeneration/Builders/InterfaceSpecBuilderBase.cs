@@ -67,8 +67,14 @@ namespace TypeGen.Core.SpecGeneration.Builders
         }
         
         /// <inheritdoc />
-        public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false)
-            => _customBaseTrait.CustomBase(@base, importPath, originalTypeName, isDefaultExport);
+        public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
+            IEnumerable<ImplementedInterface> implementedInterfaces = null)
+            => _customBaseTrait.CustomBase(@base, importPath, originalTypeName, isDefaultExport, implementedInterfaces);
+        
+        /// <inheritdoc />
+        public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
+            params ImplementedInterface[] implementedInterfaces)
+            => _customBaseTrait.CustomBase(@base, importPath, originalTypeName, isDefaultExport, implementedInterfaces);
         
         /// <inheritdoc />
         public TSelf DefaultExport(bool enabled = true) => _defaultExportTrait.DefaultExport(enabled);

@@ -54,7 +54,7 @@ namespace TypeGen.Core.Test.Generator.Services
             
             //act,assert
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
+            Assert.Throws<InvalidOperationException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
         }
         
         [Fact]
@@ -65,7 +65,7 @@ namespace TypeGen.Core.Test.Generator.Services
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
+            Assert.Throws<InvalidOperationException>(() => tsContentGenerator.GetImportsText(typeof(string), "asdf"));
         }
         
         [Theory]

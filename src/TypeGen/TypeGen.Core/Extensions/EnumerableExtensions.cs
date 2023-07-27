@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TypeGen.Core.TypeAnnotations;
@@ -58,5 +59,22 @@ namespace TypeGen.Core.Extensions
             if (enumerable == null) return true;
             return !enumerable.Any();
         }
+
+        /// <summary>
+        /// Checks if the <see cref="enumerable" /> is empty.
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool None<T>(this IEnumerable<T> enumerable) => !enumerable.Any();
+        
+        /// <summary>
+        /// Checks if the <see cref="enumerable"/> has no elements satisfying the <see cref="predicate"/>.
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="predicate"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
     }
 }
