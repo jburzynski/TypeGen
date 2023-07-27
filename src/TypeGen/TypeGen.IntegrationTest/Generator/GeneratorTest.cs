@@ -70,6 +70,7 @@ namespace TypeGen.IntegrationTest.Generator
         [InlineData(typeof(TestEntities.TestEnum), "TypeGen.IntegrationTest.Generator.Expected.test_enums.test-enum.ts")]
         [InlineData(typeof(TestEntities.TestInterface), "TypeGen.IntegrationTest.Generator.Expected.test_interfaces.test-interface.ts")]
         [InlineData(typeof(TestEntities.NestedEntity), "TypeGen.IntegrationTest.Generator.Expected.very.nested.directory.nested-entity.ts")]
+        [InlineData(typeof(TestEntities.ArrayOfNullable), "TypeGen.IntegrationTest.Generator.Expected.array-of-nullable.ts")]
         [InlineData(typeof(DefaultExport.ClassWithDefaultExport), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-default-export.ts")]
         [InlineData(typeof(DefaultExport.GenericClassWithDefaultExport<,>), "TypeGen.IntegrationTest.Generator.Expected.default_export.generic-class-with-default-export.ts")]
         [InlineData(typeof(DefaultExport.ClassWithImports), "TypeGen.IntegrationTest.Generator.Expected.default_export.class-with-imports.ts")]

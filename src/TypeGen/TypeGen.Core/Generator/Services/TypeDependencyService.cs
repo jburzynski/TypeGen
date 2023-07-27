@@ -132,7 +132,9 @@ namespace TypeGen.Core.Generator.Services
             IEnumerable<MemberInfo> memberInfos = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance());
             foreach (MemberInfo memberInfo in memberInfos)
             {
-                if (_metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo) != null) continue;
+                if (_metadataReaderFactory.GetInstance().GetAttribute<TsTypeAttribute>(memberInfo) != null
+                    || _metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreAttribute>(memberInfo) != null)
+                    continue;
 
                 Type memberType = _typeService.GetMemberType(memberInfo);
                 Type memberFlatType = _typeService.GetFlatType(memberType);

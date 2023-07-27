@@ -21,6 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="Generator\Expected\array-of-nullable.ts" />
 		<EmbeddedResource Include="Generator\Expected\bar.ts" />
 		<EmbeddedResource Include="Generator\Expected\base-class.ts" />
 		<EmbeddedResource Include="Generator\Expected\base-class2.ts" />

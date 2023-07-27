@@ -480,7 +480,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <summary>
-        /// Gets a type of a collection element from the given type.
+        /// Gets type of a collection element from the given type.
         /// If the passed type is not an array type or does not contain the IEnumerable interface, null is returned.
         /// </summary>
         /// <param name="type"></param>
@@ -491,14 +491,14 @@ namespace TypeGen.Core.Generator.Services
             Type elementType = type.GetElementType();
             if (elementType != null)
             {
-                return elementType;
+                return StripNullable(elementType);
             }
 
             switch (type.Name)
             {
                 // handle IEnumerable<>
                 case "IEnumerable`1":
-                    return type.GetGenericArguments()[0];
+                    return StripNullable(type.GetGenericArguments()[0]);
                 // handle IEnumerable
                 case "IEnumerable":
                     return typeof(object);
@@ -507,7 +507,7 @@ namespace TypeGen.Core.Generator.Services
             // handle types implementing IEnumerable or IEnumerable<>
 
             Type ienumerable1Interface = type.GetInterface("IEnumerable`1");
-            if (ienumerable1Interface != null) return ienumerable1Interface.GetGenericArguments()[0];
+            if (ienumerable1Interface != null) return StripNullable(ienumerable1Interface.GetGenericArguments()[0]);
             
             Type ienumerableInterface = type.GetInterface("IEnumerable");
             if (ienumerableInterface != null) return typeof(object);
