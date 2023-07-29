@@ -212,7 +212,7 @@ namespace TypeGen.Core.Test.Generator.Services
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(null));
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsForClassesText(null));
         }
         
         [Fact]
@@ -223,7 +223,7 @@ namespace TypeGen.Core.Test.Generator.Services
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
-            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsText(typeof(string)));
+            Assert.Throws<ArgumentNullException>(() => tsContentGenerator.GetExtendsForClassesText(typeof(string)));
         }
 
         [Fact]

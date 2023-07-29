@@ -82,10 +82,11 @@ namespace TypeGen.Core.SpecGeneration
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
+        /// <param name="asUnionType"></param>
         /// <returns></returns>
-        protected EnumSpecBuilder AddEnum(Type type, string outputDir = null, bool isConst = false)
+        protected EnumSpecBuilder AddEnum(Type type, string outputDir = null, bool isConst = false, bool asUnionType = false)
         {
-            TypeSpec typeSpec = AddTypeSpec(type, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
+            TypeSpec typeSpec = AddTypeSpec(type, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst, AsUnionType = asUnionType });
             return new EnumSpecBuilder(typeSpec);
         }
 
@@ -94,10 +95,11 @@ namespace TypeGen.Core.SpecGeneration
         /// </summary>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
+        /// <param name="asUnionType"></param>
         /// <returns></returns>
-        protected EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false) where T : Enum
+        protected EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false, bool asUnionType = false) where T : Enum
         {
-            TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
+            TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst, AsUnionType = asUnionType });
             return new EnumSpecBuilder<T>(typeSpec);
         }
 

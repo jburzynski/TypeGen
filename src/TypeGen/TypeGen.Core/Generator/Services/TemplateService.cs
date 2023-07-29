@@ -60,7 +60,8 @@ namespace TypeGen.Core.Generator.Services
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassTemplate(string imports, string name, string extends, string implements, string properties,
+            string tsDoc, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -70,12 +71,14 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements,
+            string properties, string tsDoc, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -86,12 +89,14 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string defaultValue = null)
+        public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions,
+            bool isOptional, string tsDoc, string defaultValue = null)
         {
             type = $": {type}";
             type = ConcatenateWithTypeUnions(type, typeUnions);
@@ -102,10 +107,12 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
                 .Replace(GetTag("type"), type)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("defaultValue"), defaultValue);
         }
 
-        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string tsDoc,
+            string customHead,string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -114,12 +121,14 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties,
+            string tsDoc, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -129,12 +138,14 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("exportName"), exportName)
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillInterfacePropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional)
+        public string FillInterfacePropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional,
+            string tsDoc)
         {
             type = $": {type}";
             type = ConcatenateWithTypeUnions(type, typeUnions);
@@ -142,10 +153,12 @@ namespace TypeGen.Core.Generator.Services
             return ReplaceSpecialChars(_interfacePropertyTemplate)
                 .Replace(GetTag("modifiers"), modifiers)
                 .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
-                .Replace(GetTag("type"), type);
+                .Replace(GetTag("type"), type)
+                .Replace(GetTag("tsDoc"), tsDoc);
         }
 
-        public string FillEnumTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string customHead, string customBody, string fileHeading = null)
+        public string FillEnumTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string tsDoc,
+            string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -153,13 +166,15 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
+                .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
-                .Replace(GetTag("modifiers"), isConst ? " const" : "")
+                .Replace(GetTag("modifiers"), isConst ? "const " : "")
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillEnumDefaultExportTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string fileHeading = null)
+        public string FillEnumDefaultExportTemplate(string imports, string name, string values, string tsDoc,
+            bool isConst, bool asUnionType, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -167,18 +182,20 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("imports"), imports)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("values"), values)
-                .Replace(GetTag("modifiers"), isConst ? " const" : "")
+                .Replace(GetTag("tsDoc"), tsDoc)
+                .Replace(GetTag("modifiers"), isConst ? "const " : "")
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
 
-        public string FillEnumValueTemplate(string name, object value)
+        public string FillEnumValueTemplate(string name, object value, string tsDoc)
         {
             char quote = GeneratorOptions.SingleQuotes ? '\'' : '"';
             string valueString = value is string str ? $@"{quote}{str}{quote}" : value.ToString();
             
             return ReplaceSpecialChars(_enumValueTemplate)
                 .Replace(GetTag("name"), name)
-                .Replace(GetTag("value"), valueString);
+                .Replace(GetTag("value"), valueString)
+                .Replace(GetTag("tsDoc"), tsDoc);
         }
 
         public string FillEnumUnionTypeValueTemplate(string name)

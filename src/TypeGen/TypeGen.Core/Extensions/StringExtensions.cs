@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
@@ -161,6 +162,25 @@ namespace TypeGen.Core.Extensions
                 return str.Substring(0, str.Length - postfix.Length);
             }
             return str;
+        }
+
+        public static string NormalizeNewLines(this string str)
+        {
+            return Regex.Replace(str, @"\r\n|\n|\r", Environment.NewLine);
+        }
+
+        public static string SetIndentation(this string str, int indentationLength)
+            => str.MakeIndentation(indentationLength, true);
+
+        public static string AddIndentation(this string str, int indentationLength)
+            => str.MakeIndentation(indentationLength, false);
+
+        private static string MakeIndentation(this string str, int indentationLength, bool trimLinesStart)
+        {
+            var indentation = string.Join("", Enumerable.Repeat(" ", indentationLength));
+            str = str.NormalizeNewLines();
+            var lines = str.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            return string.Join(Environment.NewLine, lines.Select(x => indentation + (trimLinesStart ? x.TrimStart() : x)));
         }
     }
 }

@@ -1,3 +1,3 @@
-$tg{fileHeading}$tg{customHead}export$tg{modifiers} enum $tg{name} {
+$tg{fileHeading}$tg{customHead}$tg{tsDoc}export $tg{modifiers}enum $tg{name} {
 $tg{values}$tg{customBody}
 }

@@ -8,6 +8,10 @@
 		<PackageId>TypeGen.IntegrationTest</PackageId>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+	  <DocumentationFile>bin\Debug\TypeGen.IntegrationTest.xml</DocumentationFile>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="Generator\Expected\constants-only.ts" />
 	</ItemGroup>
@@ -30,6 +34,16 @@
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithClassConstraint.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithStructConstraint.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\RecursiveConstraintClass.ts" />
+		<EmbeddedResource Include="Comments\Expected\i-ts-interface-default-export.ts" />
+		<EmbeddedResource Include="Comments\Expected\i-ts-interface.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-class-default-export.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-class.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-enum-default-export.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-enum-union-default-export.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-enum-union.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-enum.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-generic-default-export.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-generic.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\array-of-nullable.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\bar.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\base-class.ts" />

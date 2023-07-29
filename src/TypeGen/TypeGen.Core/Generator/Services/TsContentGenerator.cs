@@ -90,7 +90,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public string GetExtendsText(Type type)
+        public string GetExtendsForClassesText(Type type)
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
