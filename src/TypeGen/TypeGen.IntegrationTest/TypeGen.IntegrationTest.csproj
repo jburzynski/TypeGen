@@ -12,6 +12,10 @@
 	  <DocumentationFile>bin\Debug\TypeGen.IntegrationTest.xml</DocumentationFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+	  <DocumentationFile>bin\Release\TypeGen.IntegrationTest.xml</DocumentationFile>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="Generator\Expected\constants-only.ts" />
 	</ItemGroup>
