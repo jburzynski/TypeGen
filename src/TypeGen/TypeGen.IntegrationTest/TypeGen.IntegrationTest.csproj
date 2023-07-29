@@ -100,6 +100,8 @@
 		<EmbeddedResource Include="ExportTypesAsInterfacesByDefault\Expected\child-as-class.ts" />
 		<EmbeddedResource Include="ExportTypesAsInterfacesByDefault\Expected\child-as-interface.ts" />
 		<EmbeddedResource Include="IgnoreBaseInterfaces\Expected\test.ts" />
+		<EmbeddedResource Include="ImportType\Expected\ts-class-default-export.ts" />
+		<EmbeddedResource Include="ImportType\Expected\ts-class.ts" />
 		<EmbeddedResource Include="NullableTranslation\Expected\nullable-class.ts" />
 		<EmbeddedResource Include="StructImplementsInterfaces\Expected\implements-interfaces.ts" />
 		<EmbeddedResource Include="UseDefaultExportBreaksInterfaceInheritance\Expected\product-dto.ts" />

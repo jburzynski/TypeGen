@@ -130,9 +130,7 @@ namespace TypeGen.Core.Generator
                 generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
 
                 foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
-                {
                     files.AddRange(GenerateTypePrivate(kvp.Key));
-                }
             }
             
             files = files.Distinct().ToList();
@@ -140,22 +138,17 @@ namespace TypeGen.Core.Generator
             // generate barrels
             
             if (Options.CreateIndexFile)
-            {
                 files.AddRange(GenerateIndexFile(files));
-            }
             
             foreach (GenerationSpec generationSpec in generationSpecs)
-            {
-                generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options, files));
-            }
+                generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options, files.ToList()));
             
             foreach (GenerationSpec generationSpec in generationSpecs)
-            {
                 foreach (BarrelSpec barrelSpec in generationSpec.BarrelSpecs)
-                {
                     files.AddRange(GenerateBarrel(barrelSpec));
-                }
-            }
+            
+            foreach (GenerationSpec generationSpec in generationSpecs)
+                generationSpec.OnAfterGeneration(new OnAfterGenerationArgs(Options, files.ToList()));
 
             return files;
         }

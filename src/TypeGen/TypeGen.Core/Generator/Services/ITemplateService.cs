@@ -14,8 +14,8 @@ namespace TypeGen.Core.Generator.Services
         string FillEnumDefaultExportTemplate(string imports, string name, string values, string tsDoc, bool isConst, bool asUnionType, string fileHeading = null);
         string FillEnumValueTemplate(string name, object value, string tsDoc);
         string FillEnumUnionTypeValueTemplate(string name);
-        string FillImportTemplate(string name, string typeAlias, string path);
-        string FillImportDefaultExportTemplate(string name, string path);
+        string FillImportTemplate(string name, string typeAlias, string path, bool useImportType);
+        string FillImportDefaultExportTemplate(string name, string path, bool useImportType);
         string FillIndexTemplate(string exports);
         string FillIndexExportTemplate(string filename);
         string GetExtendsText(string name);

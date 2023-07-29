@@ -29,6 +29,10 @@ namespace TypeGen.Core.SpecGeneration
         public virtual void OnBeforeBarrelGeneration(OnBeforeBarrelGenerationArgs args)
         {
         }
+        
+        public virtual void OnAfterGeneration(OnAfterGenerationArgs args)
+        {
+        }
 
         /// <summary>
         /// Adds a class

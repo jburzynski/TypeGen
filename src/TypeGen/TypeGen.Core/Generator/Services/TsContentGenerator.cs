@@ -175,8 +175,8 @@ namespace TypeGen.Core.Generator.Services
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
                 
                 result += _typeService.UseDefaultExport(typeDependency) ?
-                    _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath) :
-                    _templateService.FillImportTemplate(typeName, "", dependencyPath);
+                    _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath, GeneratorOptions.UseImportType) :
+                    _templateService.FillImportTemplate(typeName, "", dependencyPath, GeneratorOptions.UseImportType);
             }
 
             return result;
@@ -240,8 +240,8 @@ namespace TypeGen.Core.Generator.Services
             string name = withOriginalTypeName ? originalTypeName : typeName;
             string typeAlias = withOriginalTypeName ? typeName : null;
             
-            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath) : 
-                _templateService.FillImportTemplate(name, typeAlias, importPath);
+            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) : 
+                _templateService.FillImportTemplate(name, typeAlias, importPath, GeneratorOptions.UseImportType);
         }
 
         /// <summary>

@@ -206,20 +206,22 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("name"), $@"{quote}{name}{quote}");
         }
 
-        public string FillImportTemplate(string name, string typeAlias, string path)
+        public string FillImportTemplate(string name, string typeAlias, string path, bool useImportType)
         {
             string aliasText = string.IsNullOrEmpty(typeAlias) ? "" : $" as {typeAlias}";
 
             return ReplaceSpecialChars(_importTemplate)
                 .Replace(GetTag("name"), name)
                 .Replace(GetTag("aliasText"), aliasText)
+                .Replace(GetTag("importType"), useImportType ? " type" : "")
                 .Replace(GetTag("path"), path);
         }
         
-        public string FillImportDefaultExportTemplate(string name, string path)
+        public string FillImportDefaultExportTemplate(string name, string path, bool useImportType)
         {
             return ReplaceSpecialChars(_importDefaultExportTemplate)
                 .Replace(GetTag("name"), name)
+                .Replace(GetTag("importType"), useImportType ? " type" : "")
                 .Replace(GetTag("path"), path);
         }
 
