@@ -48,11 +48,13 @@ internal class XmlDocs
     {
         if (!_assemblyToXmlDocMapping.ContainsKey(assemblyName))
             throw new InvalidOperationException($"Assembly '{assemblyName}' has not been previously added.");
-
+        
+        var xmlDoc = _assemblyToXmlDocMapping[assemblyName];
+        if (xmlDoc == null) return null;
+        
         var typeFullNameForRegex = typeFullName.Replace(".", "\\.");
         var memberNameForRegex = memberName != null ? "\\." + memberName : null;
         
-        var xmlDoc = _assemblyToXmlDocMapping[assemblyName];
         var regex = new Regex($"""<member name="{xmlDocMemberType}:{typeFullNameForRegex}{memberNameForRegex}\">(.*?)<\/member>""",
             RegexOptions.Singleline);
         var match = regex.Match(xmlDoc);
