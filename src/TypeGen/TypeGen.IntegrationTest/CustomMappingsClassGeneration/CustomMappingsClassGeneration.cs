@@ -7,11 +7,14 @@ using TypeGen.IntegrationTest.CommonCases.Entities.CustomMappingsClassGeneration
 using TypeGen.IntegrationTest.Extensions;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.CustomMappingsClassGeneration
 {
     public class CustomMappingsClassGeneration : GenerationTestBase
     {
+        public CustomMappingsClassGeneration(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task GeneratesCorrectly()
         {

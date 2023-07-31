@@ -4,11 +4,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.TestingUtils;
 using TypeGen.IntegrationTest.UseDefaultExportBreaksInterfaceInheritance.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.UseDefaultExportBreaksInterfaceInheritance;
 
 public class UseDefaultExportBreaksInterfaceInheritanceTest : GenerationTestBase
 {
+    public UseDefaultExportBreaksInterfaceInheritanceTest(ITestOutputHelper output) : base(output) { }
+
     [Theory]
     [InlineData(typeof(ProductDto), "TypeGen.IntegrationTest.UseDefaultExportBreaksInterfaceInheritance.Expected.product-dto.ts")]
     public async Task TestUseDefaultExportBreaksInterfaceInheritanceGenerationSpec(Type type, string expectedLocation)

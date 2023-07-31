@@ -447,7 +447,7 @@ namespace TypeGen.Core.Generator
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = classAttribute != null ? GetClassPropertiesText(type) : GetInterfacePropertiesText(type);
-
+            string constructorText = _tsContentGenerator.GetConstructorText(type);
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, true);
@@ -462,8 +462,8 @@ namespace TypeGen.Core.Generator
             if (classAttribute != null)
             {
                 content = _typeService.UseDefaultExport(type) ?
-                    _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading) :
-                    _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, customHead, customBody, Options.FileHeading);
+                    _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, constructorText, customHead, customBody, Options.FileHeading) :
+                    _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, constructorText, customHead, customBody, Options.FileHeading);
             }
             else
             {
@@ -477,7 +477,7 @@ namespace TypeGen.Core.Generator
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
             return new[] { filePathRelative }.Concat(dependenciesGenerationResult).ToList();
         }
-        
+
         private static List<string> GetNotNullOrEmptyImplementedInterfaceNames(TsCustomBaseAttribute tsCustomBaseAttribute)
             => tsCustomBaseAttribute.ImplementedInterfaces
                 .Select(x => x.Name)
@@ -549,6 +549,10 @@ namespace TypeGen.Core.Generator
             {
                 isOptional = true;
             }
+
+            var ctorAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsConstructorAttribute>(memberInfo);
+            if (ctorAttribute != null)
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional);
 
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);

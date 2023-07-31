@@ -24,6 +24,8 @@ namespace TypeGen.Core.Generator.Services
         private readonly string _enumUnionTypeValueTemplate;
         private readonly string _classTemplate;
         private readonly string _classDefaultExportTemplate;
+        private readonly string _constructorTemplate;
+        private readonly string _constructorAssignmentTemplate;
         private readonly string _classPropertyTemplate;
         private readonly string _interfaceTemplate;
         private readonly string _interfaceDefaultExportTemplate;
@@ -49,6 +51,8 @@ namespace TypeGen.Core.Generator.Services
             _enumUnionTypeValueTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumUnionTypeValue.tpl");
             _classTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Class.tpl");
             _classDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassDefaultExport.tpl");
+            _constructorTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Constructor.tpl");
+            _constructorAssignmentTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ConstructorAssignment.tpl");
             _classPropertyTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassProperty.tpl");
             _interfaceTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Interface.tpl");
             _interfaceDefaultExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.InterfaceDefaultExport.tpl");
@@ -60,7 +64,7 @@ namespace TypeGen.Core.Generator.Services
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
         }
 
-        public string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string constructor, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -70,12 +74,13 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("constructor"), constructor)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
         }
         
-        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null)
+        public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string constructor, string customHead, string customBody, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -86,9 +91,25 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("extends"), extends)
                 .Replace(GetTag("implements"), implements)
                 .Replace(GetTag("properties"), properties)
+                .Replace(GetTag("constructor"), constructor)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("fileHeading"), fileHeading);
+        }
+
+        public string FillConstructorTemplate(string type, string parameters, string superCall, string body)
+        {
+            return ReplaceSpecialChars(_constructorTemplate)
+                .Replace(GetTag("type"), type)
+                .Replace(GetTag("parameters"), parameters)
+                .Replace(GetTag("super"), superCall)
+                .Replace(GetTag("body"), body);
+        }
+
+        public string FillConstructorAssignmentTemplate(string name)
+        {
+            return ReplaceSpecialChars(_constructorAssignmentTemplate)
+                .Replace(GetTag("name"), name);
         }
 
         public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string defaultValue = null)

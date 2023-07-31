@@ -5,11 +5,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.CommonCases.Entities.Structs;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.GenerationSpecForStructs;
 
 public class GenerationSpecsForStructsTest : GenerationTestBase
 {
+    public GenerationSpecsForStructsTest(ITestOutputHelper output) : base(output) { }
+
     [Theory]
     [InlineData(typeof(CustomBaseClass), "TypeGen.IntegrationTest.CommonCases.Expected.custom-base-class.ts")]
     [InlineData(typeof(CustomBaseCustomImport), "TypeGen.IntegrationTest.CommonCases.Expected.custom-base-custom-import.ts")]

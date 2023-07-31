@@ -9,6 +9,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="CommonCases\Expected\constructor-child-class.ts" />
+	  <None Remove="CommonCases\Expected\constructor-class.ts" />
 	  <None Remove="Generator\Expected\constants-only.ts" />
 	</ItemGroup>
 
@@ -30,6 +32,8 @@
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithClassConstraint.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IRecursiveConstraintInterfaceWithStructConstraint.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\RecursiveConstraintClass.ts" />
+		<EmbeddedResource Include="CommonCases\Expected\constructor-child-class.ts" />
+		<EmbeddedResource Include="CommonCases\Expected\constructor-class.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\array-of-nullable.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\bar.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\base-class.ts" />

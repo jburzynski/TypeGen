@@ -9,6 +9,8 @@
     <None Remove="Templates\ClassProperty.tpl" />
     <None Remove="Templates\ClassPropertyWithDefaultValue.tpl" />
     <None Remove="Templates\Constant.tpl" />
+    <None Remove="Templates\Constructor.tpl" />
+    <None Remove="Templates\ConstructorAssignment.tpl" />
     <None Remove="Templates\Enum.tpl" />
     <None Remove="Templates\EnumUnionType.tpl" />
     <None Remove="Templates\EnumUnionTypeDefaultExport.tpl" />
@@ -23,6 +25,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
     <EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
+    <EmbeddedResource Include="Templates\ConstructorAssignment.tpl" />
+    <EmbeddedResource Include="Templates\Constructor.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
     <EmbeddedResource Include="Templates\EnumUnionTypeDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\EnumUnionType.tpl" />

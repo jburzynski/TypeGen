@@ -23,11 +23,14 @@ using StaticReadonly = TypeGen.IntegrationTest.CommonCases.Entities.StaticReadon
 using StrictNullsClass = TypeGen.IntegrationTest.CommonCases.Entities.StrictNullsClass;
 using TestInterface = TypeGen.IntegrationTest.CommonCases.Entities.TestInterface;
 using TypeUnions = TypeGen.IntegrationTest.CommonCases.Entities.TypeUnions;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.CommonCases
 {
     public class CommonCasesGenerationTest : GenerationTestBase
     {
+        public CommonCasesGenerationTest(ITestOutputHelper output) : base(output) {}
+
         /// <summary>
         /// Tests if types are correctly translated to TypeScript.
         /// The tested types contain all major use cases that should be supported.
@@ -42,6 +45,8 @@ namespace TypeGen.IntegrationTest.CommonCases
         [InlineData(typeof(Entities.BaseClass<>), "TypeGen.IntegrationTest.CommonCases.Expected.base-class.ts")]
         [InlineData(typeof(BaseClass2<>), "TypeGen.IntegrationTest.CommonCases.Expected.base-class2.ts")]
         [InlineData(typeof(C), "TypeGen.IntegrationTest.CommonCases.Expected.c.ts")]
+        [InlineData(typeof(ConstructorClass), "TypeGen.IntegrationTest.CommonCases.Expected.constructor-class.ts")]
+        [InlineData(typeof(ConstructorChildClass), "TypeGen.IntegrationTest.CommonCases.Expected.constructor-child-class.ts")]
         [InlineData(typeof(CustomBaseClass), "TypeGen.IntegrationTest.CommonCases.Expected.custom-base-class.ts")]
         [InlineData(typeof(CustomEmptyBaseClass), "TypeGen.IntegrationTest.CommonCases.Expected.custom-empty-base-class.ts")]
         [InlineData(typeof(D), "TypeGen.IntegrationTest.CommonCases.Expected.d.ts")]

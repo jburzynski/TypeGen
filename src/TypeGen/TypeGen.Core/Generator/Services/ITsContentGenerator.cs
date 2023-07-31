@@ -46,5 +46,6 @@ namespace TypeGen.Core.Generator.Services
         string GetMemberValueText(MemberInfo memberInfo);
         string GetImplementsText(Type type);
         string GetExtendsForInterfacesText(Type type);
+        string GetConstructorText(Type type);
     }
 }

@@ -6,11 +6,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.NullableTranslation.Entities;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.NullableTranslation;
 
 public class NullableTranslationTest : GenerationTestBase
 {
+    public NullableTranslationTest(ITestOutputHelper output) : base(output) { }
+
     [Theory]
     [InlineData(typeof(NullableClass), "TypeGen.IntegrationTest.NullableTranslation.Expected.nullable-class.ts")]
     public async Task TestNullableTranslationGenerationSpec(Type type, string expectedLocation)

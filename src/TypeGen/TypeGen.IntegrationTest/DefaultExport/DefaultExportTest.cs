@@ -5,11 +5,14 @@ using TypeGen.IntegrationTest.CommonCases;
 using TypeGen.IntegrationTest.DefaultExport.Entities;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.DefaultExport
 {
     public class DefaultExportTest : GenerationTestBase
     {
+        public DefaultExportTest(ITestOutputHelper output) : base(output) { }
+
         /// <summary>
         /// Looks into generating classes and interfaces with circular type constraints
         /// </summary>

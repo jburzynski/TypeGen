@@ -6,11 +6,14 @@ using TypeGen.Core.TypeAnnotations;
 using TypeGen.IntegrationTest.CustomBaseInterfaces.Entities;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.CustomBaseInterfaces;
 
 public class CustomBaseInterfacesTest : GenerationTestBase
 {
+    public CustomBaseInterfacesTest(ITestOutputHelper output) : base(output) {}
+
     [Theory]
     [InlineData(typeof(Foo), "TypeGen.IntegrationTest.CustomBaseInterfaces.Expected.foo.ts")]
     public async Task TestCustomBaseInterfacesGenerationSpec(Type type, string expectedLocation)

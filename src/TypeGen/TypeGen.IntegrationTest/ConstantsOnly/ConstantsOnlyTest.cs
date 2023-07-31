@@ -4,11 +4,14 @@ using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.ConstantsOnly;
 
 public class ConstantsOnlyTest : GenerationTestBase
 {
+    public ConstantsOnlyTest(ITestOutputHelper output) : base(output) { }
+
     [Theory]
     [InlineData(typeof(Entities.ConstantsOnly), "TypeGen.IntegrationTest.ConstantsOnly.Expected.constants-only.ts")]
     public async Task TestConstantsOnlyGenerationSpec(Type type, string expectedLocation)

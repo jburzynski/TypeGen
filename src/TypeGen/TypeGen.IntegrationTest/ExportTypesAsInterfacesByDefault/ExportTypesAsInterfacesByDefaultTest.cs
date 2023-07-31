@@ -4,11 +4,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.ExportTypesAsInterfacesByDefault.Entities;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.ExportTypesAsInterfacesByDefault;
 
 public class ExportTypesAsInterfacesByDefaultTest : GenerationTestBase
 {
+    public ExportTypesAsInterfacesByDefaultTest(ITestOutputHelper output) : base(output) { }
+
     [Fact]
     public async Task if_option_not_set_should_generate_class()
     {

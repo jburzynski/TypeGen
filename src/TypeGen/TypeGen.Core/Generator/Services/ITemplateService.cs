@@ -4,8 +4,10 @@ namespace TypeGen.Core.Generator.Services
 {
     internal interface ITemplateService
     {
-        string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null);
-        string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string customHead, string customBody, string fileHeading = null);
+        string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string constructor, string customHead, string customBody, string fileHeading = null);
+        string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string constructor, string customHead, string customBody, string fileHeading = null);
+        string FillConstructorTemplate(string type, string parameters, string superCall, string body);
+        string FillConstructorAssignmentTemplate(string name);
         string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string defaultValue = null);
         string FillInterfaceTemplate(string imports, string name, string extends, string properties, string customHead, string customBody, string fileHeading = null);
         string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string customHead, string customBody, string fileHeading = null);

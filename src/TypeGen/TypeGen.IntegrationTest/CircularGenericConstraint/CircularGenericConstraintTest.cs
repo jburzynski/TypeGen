@@ -4,11 +4,14 @@ using TypeGen.IntegrationTest.CircularGenericConstraint.TestClasses;
 using TypeGen.IntegrationTest.CommonCases;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.CircularGenericConstraint
 {
     public class CircularGenericConstraintTest : GenerationTestBase
     {
+        public CircularGenericConstraintTest(ITestOutputHelper output) : base(output) { }
+
         /// <summary>
         /// Looks into generating classes and interfaces with circular type constraints
         /// </summary>

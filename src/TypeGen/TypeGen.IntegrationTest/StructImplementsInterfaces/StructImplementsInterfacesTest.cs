@@ -9,11 +9,14 @@ using TypeGen.IntegrationTest.NullableTranslation.Entities;
 using TypeGen.IntegrationTest.StructImplementsInterfaces.Entities;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.IntegrationTest.StructImplementsInterfaces;
 
 public class StructImplementsInterfacesTest : GenerationTestBase
 {
+    public StructImplementsInterfacesTest(ITestOutputHelper output) : base(output) {}
+
     [Theory]
     [InlineData(typeof(ImplementsInterfaces), "TypeGen.IntegrationTest.StructImplementsInterfaces.Expected.implements-interfaces.ts")]
     public async Task TestStructImplementsInterfacesFromGenerationSpec(Type type, string expectedLocation)

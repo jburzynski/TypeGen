@@ -5,6 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Logging;
@@ -363,6 +365,7 @@ namespace TypeGen.Core.Generator.Services
                             !valueType.GetTypeInfo().IsValueType && // Ignore value types
                             valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
                         {
+                            _logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
                             var defaultCtorValueType = Activator.CreateInstance(valueType);
                             if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
                             {
@@ -397,12 +400,20 @@ namespace TypeGen.Core.Generator.Services
             {
                 return false;
             }
-            foreach (var member in type.GetTsExportableMembers(this._metadataReaderFactory.GetInstance()))
+            while (type != null)
             {
-                if (member is PropertyInfo p && p.GetIndexParameters().Length > 0) continue;
-                GetMemberValue(member, a, out var aVal, out var _);
-                GetMemberValue(member, b, out var bVal, out var _);
-                if (!memberwiseEquals(aVal, bVal)) return false;
+                foreach (var member in type.GetTsExportableMembers(this._metadataReaderFactory.GetInstance()))
+                {
+                    if (member is PropertyInfo p && p.GetIndexParameters().Length > 0) continue;
+                    GetMemberValue(member, a, out var aVal, out var _);
+                    GetMemberValue(member, b, out var bVal, out var _);
+                    if (!memberwiseEquals(aVal, bVal))
+                    {
+                        _logger?.Log($"Difference found in member {type.FullName}.{member.Name}: {aVal} != {bVal}", LogLevel.Info);
+                        return false;
+                    }
+                }
+                type = type.GetTypeInfo().BaseType;
             }
             return true;
         }
@@ -423,6 +434,72 @@ namespace TypeGen.Core.Generator.Services
                     throw new Exception();
             }
 
+        }
+
+        public string GetConstructorText(Type type)
+        {
+            var reader = _metadataReaderFactory.GetInstance();
+            var ctorParams = GetHierarchyConstructorParams(type);
+            if (ctorParams.Count == 0 || ctorParams.All(l => l.Count == 0))
+            {
+                return "";
+            }
+            ctorParams.Reverse();
+            var paramsText = string.Join(", ", ctorParams.SelectMany(_ => _).Select(m =>
+            {
+                string defaultValue;
+                var typeName = _typeService.GetTsTypeName(m);
+                // try to get default value from TsDefaultValueAttribute
+                var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(m);
+                if (defaultValueAttribute != null)
+                {
+                    defaultValue = defaultValueAttribute.DefaultValue;
+                }
+                else
+                {
+                    // try to get default value from the member's default value
+                    string valueText = GetMemberValueText(m);
+                    if (!string.IsNullOrWhiteSpace(valueText))
+                        defaultValue = valueText;
+                    // try to get default value from Options.DefaultValuesForTypes
+                    else if (_generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.Any() && _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.ContainsKey(typeName))
+                        defaultValue = _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes[typeName];
+                    else
+                        defaultValue = null;
+                }
+                var ret = $"{GetTsMemberName(m)}: {typeName}";
+                if (!string.IsNullOrWhiteSpace(defaultValue))
+                {
+                    ret += $" = {defaultValue}";
+                }
+                return ret;
+            }));
+            string tab = GeneratorOptions.UseTabCharacter ? "\t" : StringUtils.GetTabText(GeneratorOptions.TabLength);
+            var newParams = ctorParams.Last();
+            var superParams = new List<List<MemberInfo>>(ctorParams);
+            superParams.RemoveAt(superParams.Count - 1);
+            var superText = superParams.Count == 0 || superParams.All(l => l.Count == 0) ? "" : $"{tab}{tab}super({string.Join(", ", superParams.SelectMany(_ => _).Select(GetTsMemberName))});\r\n";
+            var bodyText = newParams.Aggregate("", (acc, m) => acc + _templateService.FillConstructorAssignmentTemplate(GetTsMemberName(m)));
+            return _templateService.FillConstructorTemplate(_typeService.GetTsTypeName(type), paramsText, superText, bodyText);
+        }
+
+        private List<List<MemberInfo>> GetHierarchyConstructorParams(Type type)
+        {
+            var reader = _metadataReaderFactory.GetInstance();
+            var ret = new List<List<MemberInfo>>();
+            while (type != null)
+            {
+                var parameters = type.GetTsExportableMembers(reader).Where(m => reader.GetAttribute<TsConstructorAttribute>(m) != null).ToList();
+                ret.Add(parameters);
+                type = type.GetTypeInfo().BaseType;
+            }
+            return ret;
+        }
+
+        private string GetTsMemberName(MemberInfo memberInfo)
+        {
+            var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
+            return nameAttribute?.Name ?? _generatorOptionsProvider.GeneratorOptions.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
         }
     }
 }
