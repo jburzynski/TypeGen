@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>dotnet-typegen</id>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,10 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen .NET Core CLI tool (TypeGen is a single-class-per-file C# to TypeScript generator)</description>
 	<releaseNotes>
-- XmlDoc comments are now generated as TsDoc in TypeScript sources #130
-- fixed "AsUnionType" for enums not being implemented in generation specs
-- added OnAfterGeneration() to GenerationSpec #156
-- added the option to use "import type" instead of "import" for imports (the useImportType option) #161
+- fixed exportTypesAsInterfacesByDefault and useImportType not working in tgconfig.json
     </releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs dotnet cli</tags>
 	<packageTypes>
