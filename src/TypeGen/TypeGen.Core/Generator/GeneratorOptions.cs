@@ -45,7 +45,7 @@ namespace TypeGen.Core.Generator
         public TypeNameConverterCollection TypeNameConverters { get; set; } = DefaultTypeNameConverters;
 
         /// <summary>
-        /// A collection (chain) of converters used for converting C# class property names to TypeScript class property names
+        /// A collection (chain) of converters used for converting C# property names to TypeScript property names
         /// </summary>
         public MemberNameConverterCollection PropertyNameConverters { get; set; } = DefaultPropertyNameConverters;
 
