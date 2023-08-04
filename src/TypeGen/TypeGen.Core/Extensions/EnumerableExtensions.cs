@@ -76,5 +76,8 @@ namespace TypeGen.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
+
+        public static bool Contains<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
+            => enumerable.Where(predicate).Any();
     }
 }
