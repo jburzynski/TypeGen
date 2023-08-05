@@ -19,7 +19,6 @@ namespace TypeGen.Cli
 {
     internal class Program
     {
-        private static IConsoleArgsReader _consoleArgsReader;
         private static ILogger _logger;
         private static IFileSystem _fileSystem;
         private static IConfigProvider _configProvider;
@@ -30,9 +29,7 @@ namespace TypeGen.Cli
 
         private static void InitializeServices(string[] args)
         {
-            _consoleArgsReader = new ConsoleArgsReader();
-
-            bool verbose = _consoleArgsReader.ContainsVerboseOption(args);
+            bool verbose = ConsoleArgsReader.ContainsVerboseOption(args);
             _logger = new ConsoleLogger(verbose);
             
             _fileSystem = new FileSystem();
@@ -48,27 +45,27 @@ namespace TypeGen.Cli
             {
                 InitializeServices(args);
                 
-                if (args == null || args.Length == 0 || _consoleArgsReader.ContainsHelpOption(args) || _consoleArgsReader.ContainsAnyCommand(args) == false)
+                if (args == null || args.Length == 0 || ConsoleArgsReader.ContainsHelpOption(args) || ConsoleArgsReader.ContainsAnyCommand(args) == false)
                 {
                     ShowHelp();
                     return (int)ExitCode.Success;
                 }
 
-                if (_consoleArgsReader.ContainsGetCwdCommand(args))
+                if (ConsoleArgsReader.ContainsGetCwdCommand(args))
                 {
                     string cwd = _fileSystem.GetCurrentDirectory();
                     Console.WriteLine($"Current working directory is: {cwd}");
                     return (int)ExitCode.Success;
                 }
                 
-                string[] configPaths = _consoleArgsReader.GetConfigPaths(args).ToArray();
+                string[] configPaths = ConsoleArgsReader.GetConfigPaths(args).ToArray();
 
-                string[] projectFolders = _consoleArgsReader.ContainsProjectFolderOption(args) ?
-                    _consoleArgsReader.GetProjectFolders(args).ToArray() :
+                string[] projectFolders = ConsoleArgsReader.ContainsProjectFolderOption(args) ?
+                    ConsoleArgsReader.GetProjectFolders(args).ToArray() :
                     new [] { "." };
 
-                string? outputFolder = _consoleArgsReader.ContainsOutputOption(args) ?
-                    _consoleArgsReader.GetOutputFolder(args) : null;
+                string? outputFolder = ConsoleArgsReader.ContainsOutputOption(args) ?
+                    ConsoleArgsReader.GetOutputFolder(args) : null;
 
                 for (var i = 0; i < projectFolders.Length; i++)
                 {
@@ -205,7 +202,9 @@ namespace TypeGen.Cli
                               "generate     Generate TypeScript files" + Environment.NewLine +
                               "getcwd       Get current working directory" + Environment.NewLine +
                               Environment.NewLine +
-                              "For more information please visit project's website: http://jburzynski.net/TypeGen");
+                              "For more information, visit:" + Environment.NewLine +
+                              "Documentation: https://typegen.readthedocs.io" + Environment.NewLine +
+                              "GitHub: https://github.com/jburzynski/TypeGen");
         }
     }
 }

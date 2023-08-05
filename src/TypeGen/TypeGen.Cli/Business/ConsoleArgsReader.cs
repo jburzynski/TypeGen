@@ -7,7 +7,7 @@ using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Business
 {
-    internal class ConsoleArgsReader : IConsoleArgsReader
+    internal class ConsoleArgsReader
     {
         private const string GetCwdCommand = "GETCWD";
         private const string GenerateCommand = "GENERATE";
@@ -17,22 +17,22 @@ namespace TypeGen.Cli.Business
         /// </summary>
         private const string PathSeparator = "|";
 
-        public bool ContainsGetCwdCommand(string[] args) => ContainsCommand(args, GetCwdCommand);
-        public bool ContainsGenerateCommand(string[] args) => ContainsCommand(args, GenerateCommand);
-        public bool ContainsAnyCommand(string[] args) => ContainsGenerateCommand(args) || ContainsGetCwdCommand(args);
-        private bool ContainsCommand(string[] args, string command) => args.Any(arg => string.Equals(arg, command, StringComparison.InvariantCultureIgnoreCase));
+        public static bool ContainsGetCwdCommand(string[] args) => ContainsCommand(args, GetCwdCommand);
+        public static bool ContainsGenerateCommand(string[] args) => ContainsCommand(args, GenerateCommand);
+        public static bool ContainsAnyCommand(string[] args) => ContainsGenerateCommand(args) || ContainsGetCwdCommand(args);
+        private static bool ContainsCommand(string[] args, string command) => args.Any(arg => string.Equals(arg, command, StringComparison.InvariantCultureIgnoreCase));
 
-        public bool ContainsHelpOption(string[] args) => ContainsOption(args, "-h", "--help");
-        public bool ContainsProjectFolderOption(string[] args) => ContainsOption(args, "-p", "--project-folder");
-        public bool ContainsOutputOption(string[] args) => ContainsOption(args, "-o", "--output-folder");
-        public bool ContainsVerboseOption(string[] args) => ContainsOption(args, "-v", "--verbose");
-        private bool ContainsOption(string[] args, string optionShortName, string optionFullName) => args.Any(arg => string.Equals(arg, optionShortName, StringComparison.InvariantCultureIgnoreCase) || string.Equals(arg, optionFullName, StringComparison.InvariantCultureIgnoreCase));
+        public static bool ContainsHelpOption(string[] args) => ContainsOption(args, "-h", "--help");
+        public static bool ContainsProjectFolderOption(string[] args) => ContainsOption(args, "-p", "--project-folder");
+        public static bool ContainsOutputOption(string[] args) => ContainsOption(args, "-o", "--output-folder");
+        public static bool ContainsVerboseOption(string[] args) => ContainsOption(args, "-v", "--verbose");
+        private static bool ContainsOption(string[] args, string optionShortName, string optionFullName) => args.Any(arg => string.Equals(arg, optionShortName, StringComparison.InvariantCultureIgnoreCase) || string.Equals(arg, optionFullName, StringComparison.InvariantCultureIgnoreCase));
 
-        public IEnumerable<string> GetProjectFolders(string[] args) => GetPathsParam(args, "-p", "--project-folder");
-        public string GetOutputFolder(string[] args) => GetPathsParam(args, "-o", "--output-folder").FirstOrDefault();
-        public IEnumerable<string> GetConfigPaths(string[] args) => GetPathsParam(args, "-c", "--config-path");
+        public static IEnumerable<string> GetProjectFolders(string[] args) => GetPathsParam(args, "-p", "--project-folder");
+        public static string GetOutputFolder(string[] args) => GetPathsParam(args, "-o", "--output-folder").FirstOrDefault();
+        public static IEnumerable<string> GetConfigPaths(string[] args) => GetPathsParam(args, "-c", "--config-path");
 
-        private IEnumerable<string> GetPathsParam(string[] args, string paramShortName, string paramFullName)
+        private static IEnumerable<string> GetPathsParam(string[] args, string paramShortName, string paramFullName)
         {
             int index = -1;
 

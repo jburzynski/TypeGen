@@ -7,13 +7,11 @@ namespace TypeGen.Cli.Test.Business
 {
     public class ConsoleArgsReaderTest
     {
-        private readonly IConsoleArgsReader _consoleArgsReader = new ConsoleArgsReader();
-        
         [Theory]
         [MemberData(nameof(ContainsGetCwdCommand_TestData))]
         public void ContainsGetCwdCommand_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsGetCwdCommand(args);
+            bool actualResult = ConsoleArgsReader.ContainsGetCwdCommand(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -31,7 +29,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsGenerateCommand_TestData))]
         public void ContainsGenerateCommand_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsGenerateCommand(args);
+            bool actualResult = ConsoleArgsReader.ContainsGenerateCommand(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -49,7 +47,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsAnyCommand_TestData))]
         public void ContainsAnyCommand_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsAnyCommand(args);
+            bool actualResult = ConsoleArgsReader.ContainsAnyCommand(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -74,7 +72,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsHelpOption_TestData))]
         public void ContainsHelpOption_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsHelpOption(args);
+            bool actualResult = ConsoleArgsReader.ContainsHelpOption(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -95,7 +93,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsProjectFolderOption_TestData))]
         public void ContainsProjectFolderOption_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsProjectFolderOption(args);
+            bool actualResult = ConsoleArgsReader.ContainsProjectFolderOption(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -116,7 +114,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsOutputFolderOption_TestData))]
         public void ContainsOutputFolderOption_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsOutputOption(args);
+            bool actualResult = ConsoleArgsReader.ContainsOutputOption(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -137,7 +135,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(ContainsVerboseOption_TestData))]
         public void ContainsVerboseOption_Test(string[] args, bool expectedResult)
         {
-            bool actualResult = _consoleArgsReader.ContainsVerboseOption(args);
+            bool actualResult = ConsoleArgsReader.ContainsVerboseOption(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -158,7 +156,7 @@ namespace TypeGen.Cli.Test.Business
         [MemberData(nameof(GetProjectFolders_TestData))]
         public void GetProjectFolders_Test(string[] args, IEnumerable<string> expectedResult)
         {
-            IEnumerable<string> actualResult = _consoleArgsReader.GetProjectFolders(args);
+            IEnumerable<string> actualResult = ConsoleArgsReader.GetProjectFolders(args);
             Assert.Equal(expectedResult, actualResult);
         }
         
@@ -176,14 +174,14 @@ namespace TypeGen.Cli.Test.Business
         public void GetProjectFolders_ParameterPresentAndNoPathsSpecified_ExceptionThrown()
         {
             var args = new[] { "--project-folder" };
-            Assert.Throws<CliException>(() => _consoleArgsReader.GetProjectFolders(args));
+            Assert.Throws<CliException>(() => ConsoleArgsReader.GetProjectFolders(args));
         }
 
         [Theory]
         [MemberData(nameof(GetOutputFolder_TestData))]
         public void GetOutputFolder_Test(string[] args, string expectedResult)
         {
-            string actualResult = _consoleArgsReader.GetOutputFolder(args);
+            string actualResult = ConsoleArgsReader.GetOutputFolder(args);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -201,14 +199,14 @@ namespace TypeGen.Cli.Test.Business
         public void GetOutputFolder_ParameterPresentAndNoPathsSpecified_ExceptionThrown()
         {
             var args = new[] { "--output-folder" };
-            Assert.Throws<CliException>(() => _consoleArgsReader.GetOutputFolder(args));
+            Assert.Throws<CliException>(() => ConsoleArgsReader.GetOutputFolder(args));
         }
 
         [Theory]
         [MemberData(nameof(GetConfigPaths_TestData))]
         public void GetConfigPaths_Test(string[] args, IEnumerable<string> expectedResult)
         {
-            IEnumerable<string> actualResult = _consoleArgsReader.GetConfigPaths(args);
+            IEnumerable<string> actualResult = ConsoleArgsReader.GetConfigPaths(args);
             Assert.Equal(expectedResult, actualResult);
         }
         
@@ -228,7 +226,7 @@ namespace TypeGen.Cli.Test.Business
         public void GetConfigPaths_ParameterPresentAndNoPathsSpecified_ExceptionThrown()
         {
             var args = new[] { "--config-path" };
-            Assert.Throws<CliException>(() => _consoleArgsReader.GetConfigPaths(args));
+            Assert.Throws<CliException>(() => ConsoleArgsReader.GetConfigPaths(args));
         }
     }
 }
