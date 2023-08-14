@@ -80,7 +80,17 @@ namespace TypeGen.Cli
 
                     _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
-                    Generate(projectFolder, configPath, outputFolder, new[] { (nameof(TgConfig.ExcludeIEquatableForRecordClass), excludeRecordClass), (nameof(TgConfig.IncludeBaseClassWhenExportedAsInterface), includeBaseClassForInterfaces) });
+                    Generate(projectFolder, configPath, outputFolder, configure =>
+                    {
+                        if (excludeRecordClass is not null)
+                        {
+                            configure.ExcludeIEquatableForRecordClass = excludeRecordClass;
+                        }
+                        if (includeBaseClassForInterfaces is not null)
+                        {
+                            configure.IncludeBaseClassWhenExportedAsInterface = includeBaseClassForInterfaces;
+                        }
+                    });
                 }
                 
                 return (int)ExitCode.Success;
@@ -108,7 +118,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath, string? outputFolder, IEnumerable<(string name, bool? value)>? flags)
+        private static void Generate(string projectFolder, string configPath, string? outputFolder, Action<TgConfig> configure)
         {
             // get config
 
@@ -118,14 +128,7 @@ namespace TypeGen.Cli
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
 
-            if(flags != null && flags.Any())
-            {
-                foreach(var (flagName, flagValue) in flags) 
-                {
-                    if (flagValue is null) continue;
-                    config.GetType().GetProperty(flagName)?.SetValue(config, flagValue);
-                }
-            }
+            configure(config);
 
             // register assembly resolver
 
