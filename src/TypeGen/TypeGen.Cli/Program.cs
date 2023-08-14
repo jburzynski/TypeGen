@@ -67,6 +67,9 @@ namespace TypeGen.Cli
                 string? outputFolder = ConsoleArgsReader.ContainsOutputOption(args) ?
                     ConsoleArgsReader.GetOutputFolder(args) : null;
 
+                bool? excludeRecordClass = ConsoleArgsReader.ContainsRecordClassOption(args) ?
+                    ConsoleArgsReader.GetRecordClassOption(args) : null;
+
                 for (var i = 0; i < projectFolders.Length; i++)
                 {
                     string projectFolder = projectFolders[i];
@@ -74,7 +77,7 @@ namespace TypeGen.Cli
 
                     _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
-                    Generate(projectFolder, configPath, outputFolder);
+                    Generate(projectFolder, configPath, outputFolder, excludeRecordClass);
                 }
                 
                 return (int)ExitCode.Success;
@@ -102,7 +105,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath, string? outputFolder)
+        private static void Generate(string projectFolder, string configPath, string? outputFolder, bool? excludeRecordClass)
         {
             // get config
 
@@ -111,6 +114,11 @@ namespace TypeGen.Cli
                 : Path.Combine(projectFolder, "tgconfig.json");
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
+
+            if(excludeRecordClass is not null)
+            {
+                config.ExcludeIEquatableForRecordClass = excludeRecordClass;
+            }
 
             // register assembly resolver
 

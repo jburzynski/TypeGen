@@ -560,5 +560,7 @@ namespace TypeGen.Core.Generator.Services
 
             return baseTypes;
         }
+        public bool IsRecordClass(Type type)
+            => type.GetMethods().Any(m => m.Name == "<Clone>$");
     }
 }

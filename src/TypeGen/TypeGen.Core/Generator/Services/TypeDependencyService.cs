@@ -113,6 +113,12 @@ namespace TypeGen.Core.Generator.Services
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
 
             var baseTypes = _typeService.GetInterfaces(type);
+
+            if(baseTypes.Any() && _generatorOptionsProvider.GeneratorOptions.ExcludeIEquatableForRecordClass && _typeService.IsRecordClass(type))
+            {
+                baseTypes = baseTypes.Where(t => !t.IsGenericType || t.GetGenericTypeDefinition() != typeof(IEquatable<>));
+            }
+
             if (!baseTypes.Any()) return Enumerable.Empty<TypeDependencyInfo>();
 
             return baseTypes

@@ -21,6 +21,7 @@ namespace TypeGen.Core.Generator
         public static string DefaultTypeScriptFileExtension => "ts";
         public static bool DefaultSingleQuotes => false;
         public static bool DefaultCreateIndexFile => false;
+        public static bool DefaultExcludeIEquatableForRecordClass => false;
         public static StrictNullTypeUnionFlags DefaultCsNullableTranslation => StrictNullTypeUnionFlags.None;
         public static bool DefaultCsAllowNullsForAllTypes = false;
         public static bool DefaultCsDefaultValuesForConstantsOnly = false;
@@ -100,6 +101,11 @@ namespace TypeGen.Core.Generator
         /// Whether to create an index file which exports all generated types
         /// </summary>
         public bool CreateIndexFile { get; set; } = DefaultCreateIndexFile;
+
+        /// <summary>
+        /// C# compiler adds IEquatable interface to all record types. To exclude those from export set this to true.
+        /// </summary>
+        public bool ExcludeIEquatableForRecordClass { get; set; } = DefaultExcludeIEquatableForRecordClass;
 
         /// <summary>
         /// Indicates which union types (null, undefined) are added to TypeScript property types for C# nullable types by default

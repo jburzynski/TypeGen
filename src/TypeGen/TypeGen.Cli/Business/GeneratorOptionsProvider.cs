@@ -62,6 +62,7 @@ namespace TypeGen.Cli.Business
                 CsAllowNullsForAllTypes = config.CsAllowNullsForAllTypes ?? GeneratorOptions.DefaultCsAllowNullsForAllTypes,
                 CsDefaultValuesForConstantsOnly = config.CsDefaultValuesForConstantsOnly ?? GeneratorOptions.DefaultCsDefaultValuesForConstantsOnly,
                 CreateIndexFile = config.CreateIndexFile ?? GeneratorOptions.DefaultCreateIndexFile,
+                ExcludeIEquatableForRecordClass = config.ExcludeIEquatableForRecordClass ?? GeneratorOptions.DefaultExcludeIEquatableForRecordClass,
                 DefaultValuesForTypes = config.DefaultValuesForTypes ?? GeneratorOptions.DefaultDefaultValuesForTypes,
                 TypeUnionsForTypes = config.TypeUnionsForTypes ?? GeneratorOptions.DefaultTypeUnionsForTypes,
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,

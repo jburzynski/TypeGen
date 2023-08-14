@@ -127,5 +127,6 @@ namespace TypeGen.Core.Generator.Services
 
         IEnumerable<string> GetTypeUnions(MemberInfo memberInfo);
         IEnumerable<Type> GetInterfaces(Type type);
+        bool IsRecordClass(Type type);
     }
 }
