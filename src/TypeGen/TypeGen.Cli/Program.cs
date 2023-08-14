@@ -70,6 +70,9 @@ namespace TypeGen.Cli
                 bool? excludeRecordClass = ConsoleArgsReader.ContainsRecordClassOption(args) ?
                     ConsoleArgsReader.GetRecordClassOption(args) : null;
 
+                bool? includeBaseClassForInterfaces = ConsoleArgsReader.ContainsIncludeBaseClassForInterfacesOption(args) ?
+                    ConsoleArgsReader.GetIncludeBaseClassForInterfacesOption(args) : null;
+
                 for (var i = 0; i < projectFolders.Length; i++)
                 {
                     string projectFolder = projectFolders[i];
@@ -77,7 +80,7 @@ namespace TypeGen.Cli
 
                     _assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder);
 
-                    Generate(projectFolder, configPath, outputFolder, excludeRecordClass);
+                    Generate(projectFolder, configPath, outputFolder, new[] { (nameof(TgConfig.ExcludeIEquatableForRecordClass), excludeRecordClass), (nameof(TgConfig.IncludeBaseClassWhenExportedAsInterface), includeBaseClassForInterfaces) });
                 }
                 
                 return (int)ExitCode.Success;
@@ -105,7 +108,7 @@ namespace TypeGen.Cli
             }
         }
 
-        private static void Generate(string projectFolder, string configPath, string? outputFolder, bool? excludeRecordClass)
+        private static void Generate(string projectFolder, string configPath, string? outputFolder, IEnumerable<(string name, bool? value)>? flags)
         {
             // get config
 
@@ -115,9 +118,13 @@ namespace TypeGen.Cli
 
             TgConfig config = _configProvider.GetConfig(configPath, projectFolder);
 
-            if(excludeRecordClass is not null)
+            if(flags != null && flags.Any())
             {
-                config.ExcludeIEquatableForRecordClass = excludeRecordClass;
+                foreach(var (flagName, flagValue) in flags) 
+                {
+                    if (flagValue is null) continue;
+                    config.GetType().GetProperty(flagName)?.SetValue(config, flagValue);
+                }
             }
 
             // register assembly resolver

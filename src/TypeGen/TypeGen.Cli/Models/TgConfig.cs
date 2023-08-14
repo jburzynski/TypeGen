@@ -39,6 +39,7 @@ namespace TypeGen.Cli.Models
         public string OutputPath { get; set; }
         public bool? ClearOutputDirectory { get; set; }
         public bool? CreateIndexFile { get; set; }
+        public bool? IncludeBaseClassWhenExportedAsInterface { get; set; }
         public bool? ExcludeIEquatableForRecordClass { get; set; }
         public string CsNullableTranslation { get; set; }
         public bool? CsAllowNullsForAllTypes { get; set; }

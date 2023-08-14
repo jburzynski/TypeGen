@@ -26,6 +26,7 @@ namespace TypeGen.Cli.Business
         public static bool ContainsProjectFolderOption(string[] args) => ContainsOption(args, "-p", "--project-folder");
         public static bool ContainsOutputOption(string[] args) => ContainsOption(args, "-o", "--output-folder");
         public static bool ContainsRecordClassOption(string[] args) => ContainsOption(args, "-er", "--exclude-record-class");
+        public static bool ContainsIncludeBaseClassForInterfacesOption(string[] args) => ContainsOption(args, "-ib", "--include-base-for-interfaces");
         public static bool ContainsVerboseOption(string[] args) => ContainsOption(args, "-v", "--verbose");
         private static bool ContainsOption(string[] args, string optionShortName, string optionFullName) => args.Any(arg => string.Equals(arg, optionShortName, StringComparison.InvariantCultureIgnoreCase) || string.Equals(arg, optionFullName, StringComparison.InvariantCultureIgnoreCase));
 
@@ -33,6 +34,7 @@ namespace TypeGen.Cli.Business
         public static string GetOutputFolder(string[] args) => GetPathsParam(args, "-o", "--output-folder").FirstOrDefault();
         public static IEnumerable<string> GetConfigPaths(string[] args) => GetPathsParam(args, "-c", "--config-path");
         public static bool? GetRecordClassOption(string[] args) => GetFlagParam(args, "-er", "--exclude-record-class");
+        public static bool? GetIncludeBaseClassForInterfacesOption(string[] args) => GetFlagParam(args, "-ib", "--include-base-for-interfaces");
 
         private static IEnumerable<string> GetPathsParam(string[] args, string paramShortName, string paramFullName)
         {

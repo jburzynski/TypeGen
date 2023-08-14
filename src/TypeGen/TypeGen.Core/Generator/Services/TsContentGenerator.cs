@@ -112,6 +112,8 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
+            string? tsBaseType = GetExtendsForBaseClassText(type);
+
             IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
 
             if (baseTypes.Any() && _generatorOptionsProvider.GeneratorOptions.ExcludeIEquatableForRecordClass && _typeService.IsRecordClass(type))
@@ -119,10 +121,38 @@ namespace TypeGen.Core.Generator.Services
                 baseTypes = baseTypes.Where(t => !t.IsGenericType || t.GetGenericTypeDefinition() != typeof(IEquatable<>));
             }
 
-            if (!baseTypes.Any()) return "";
+            if (!baseTypes.Any() && tsBaseType == null) return "";
 
             IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
+            if(tsBaseType != null)
+            {
+                baseTypeNames = new[] { tsBaseType }.Union(baseTypeNames);
+            }
             return _templateService.GetExtendsText(baseTypeNames);
+        }
+
+        /// <summary>
+        /// Checks if the type that is converted to a TsInterface is a class and if it does have a base class
+        /// If this is the case and the base class has also a ExportTsInterfaceAttribute it will return its
+        /// interface name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string? GetExtendsForBaseClassText(Type type)
+        {
+            if (_generatorOptionsProvider.GeneratorOptions.IncludeBaseClassWhenExportedAsInterface && type.IsClass)
+            {
+                Type classBaseType = _typeService.GetBaseType(type);
+                if (classBaseType is not null)
+                {
+                    var isExportAsInterface = classBaseType.GetCustomAttribute(typeof(ExportTsInterfaceAttribute));
+                    if (isExportAsInterface != null)
+                    {
+                        return _typeService.GetTsTypeName(classBaseType, false);
+                    }
+                }
+            }
+            return null;
         }
 
         /// <summary>
