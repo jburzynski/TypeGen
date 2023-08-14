@@ -85,6 +85,8 @@ namespace TypeGen.Cli.Models
             if (EnumStringInitializersConverters == null) EnumStringInitializersConverters = GeneratorOptions.DefaultEnumStringInitializersConverters.GetTypeNames().ToArray();
             if (ExternalAssemblyPaths == null) ExternalAssemblyPaths = Array.Empty<string>();
             if (CreateIndexFile == null) CreateIndexFile = GeneratorOptions.DefaultCreateIndexFile;
+            if (IncludeBaseClassWhenExportedAsInterface == null) IncludeBaseClassWhenExportedAsInterface = GeneratorOptions.DefaultIncludeBaseClassWhenExportedAsInterface;
+            if (ExcludeIEquatableForRecordClass == null) ExcludeIEquatableForRecordClass = GeneratorOptions.DefaultExcludeIEquatableForRecordClass;
             if (CsNullableTranslation == null) CsNullableTranslation = GeneratorOptions.DefaultCsNullableTranslation.ToFlagString();
             if (CsAllowNullsForAllTypes == null) CsAllowNullsForAllTypes = GeneratorOptions.DefaultCsAllowNullsForAllTypes;
             if (CsDefaultValuesForConstantsOnly == null) CsDefaultValuesForConstantsOnly = GeneratorOptions.DefaultCsDefaultValuesForConstantsOnly;
