@@ -409,8 +409,12 @@ namespace TypeGen.Core.Generator
             string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
-            string customHead = _tsContentGenerator.GetCustomHead(filePath);
-            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+            string customInFileHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customAttributeHead = classAttribute.CustomHeader;
+            string customHead = string.Join(Environment.NewLine, new[] { customInFileHead, customAttributeHead }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string customInFileBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+            string customAttributeBody = classAttribute.CustomBody;
+            string customBody = string.Join(Environment.NewLine, new[] { customInFileBody, customAttributeBody }.Where(i => !string.IsNullOrWhiteSpace(i)));
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
@@ -458,8 +462,12 @@ namespace TypeGen.Core.Generator
             string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
-            string customHead = _tsContentGenerator.GetCustomHead(filePath);
-            string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+            string customInFileHead = _tsContentGenerator.GetCustomHead(filePath);
+            string customAttributeHead = interfaceAttribute.CustomHeader;
+            string customHead = string.Join(Environment.NewLine, new[] { customInFileHead, customAttributeHead }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string customInFileBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+            string customAttributeBody = interfaceAttribute.CustomBody;
+            string customBody = string.Join(Environment.NewLine, new[] { customInFileBody, customAttributeBody }.Where(i => !string.IsNullOrWhiteSpace(i)));
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
