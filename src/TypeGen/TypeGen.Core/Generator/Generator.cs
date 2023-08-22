@@ -118,7 +118,8 @@ namespace TypeGen.Core.Generator
         public IEnumerable<string> Generate(IEnumerable<GenerationSpec> generationSpecs)
         {
             Requires.NotNullOrEmpty(generationSpecs, nameof(generationSpecs));
-            
+
+            generationSpecs = generationSpecs.ToList();
             var files = new List<string>();
             _generationContext = new GenerationContext(_fileSystem);
             
@@ -130,7 +131,7 @@ namespace TypeGen.Core.Generator
                 generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
 
                 foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
-                    files.AddRange(GenerateTypePrivate(kvp.Key));
+                    files.AddRange(GenerateMarkedType(kvp.Key));
             }
             
             files = files.Distinct().ToList();
@@ -152,7 +153,7 @@ namespace TypeGen.Core.Generator
 
             return files;
         }
-        
+
         /// <summary>
         /// Generates TypeScript files from an assembly
         /// </summary>
@@ -303,8 +304,10 @@ namespace TypeGen.Core.Generator
             return new[] { filename };
         }
         
-        private IEnumerable<string> GenerateTypePrivate(Type type)
+        private IEnumerable<string> GenerateMarkedType(Type type)
         {
+            if (Options.IsTypeBlacklisted(type)) return Enumerable.Empty<string>();
+            
             IEnumerable<string> files = Enumerable.Empty<string>();
             
             _generationContext.BeginTypeGeneration(type);
@@ -342,7 +345,7 @@ namespace TypeGen.Core.Generator
                 return GenerateEnum(type, enumAttribute);
             }
 
-            return GenerateNotMarked(type, Options.BaseOutputDirectory);
+            return GenerateNotMarkedType(type, Options.BaseOutputDirectory);
         }
         
         /// <summary>
@@ -351,8 +354,10 @@ namespace TypeGen.Core.Generator
         /// <param name="type"></param>
         /// <param name="outputDirectory"></param>
         /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
-        private IEnumerable<string> GenerateNotMarked(Type type, string outputDirectory)
+        private IEnumerable<string> GenerateNotMarkedType(Type type, string outputDirectory)
         {
+            if (Options.IsTypeBlacklisted(type)) return Enumerable.Empty<string>();
+            
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.IsClass || typeInfo.IsStruct())
             {
@@ -406,7 +411,7 @@ namespace TypeGen.Core.Generator
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, true);
-            string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
+            string tsTypeNameFirstPart = tsTypeName.RemoveTsTypeNameGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customInFileHead = _tsContentGenerator.GetCustomHead(filePath);
@@ -459,7 +464,7 @@ namespace TypeGen.Core.Generator
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, true);
-            string tsTypeNameFirstPart = tsTypeName.RemoveTypeGenericComponent();
+            string tsTypeNameFirstPart = tsTypeName.RemoveTsTypeNameGenericComponent();
             string filePath = GetFilePath(type, outputDir);
             string filePathRelative = GetRelativeFilePath(type, outputDir);
             string customInFileHead = _tsContentGenerator.GetCustomHead(filePath);
@@ -549,7 +554,7 @@ namespace TypeGen.Core.Generator
 
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
-            string typeName = _typeService.GetTsTypeName(memberInfo);
+            string typeName = _typeService.GetTsTypeName(memberInfo, MemberTypeIsBlacklistedCallback(memberInfo));
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
             var tsDoc = GetTsDocForMember(type, memberInfo);
@@ -575,6 +580,17 @@ namespace TypeGen.Core.Generator
                 return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, Options.DefaultValuesForTypes[typeName]);
 
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
+        }
+
+        private static Action<Type> MemberTypeIsBlacklistedCallback(MemberInfo memberInfo)
+        {
+            return type => throw new CoreException($"Type '{type.FullName}'" +
+                                                   $" used for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}'" +
+                                                   $" contains a blacklisted type. Possible solutions:" +
+                                                   $"{Environment.NewLine}1. Remove the type from blacklist." +
+                                                   $"{Environment.NewLine}2. Remove the member." +
+                                                   $"{Environment.NewLine}3. Add TsTypeAttribute to the member." +
+                                                   $"{Environment.NewLine}4. Create custom type mapping for the blacklisted type.");
         }
 
         private string GetTsDocForMember(Type type, MemberInfo memberInfo)
@@ -729,7 +745,7 @@ namespace TypeGen.Core.Generator
         }
 
         /// <summary>
-        /// Generates type dependencies' files for a given type
+        /// Generates type dependencies for a given type
         /// </summary>
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
@@ -737,40 +753,28 @@ namespace TypeGen.Core.Generator
         private IEnumerable<string> GenerateTypeDependencies(Type type, string outputDir)
         {
             var generatedFiles = new List<string>();
-            IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
+            var typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
-            foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
+            foreach (var typeDependencyInfo in typeDependencies)
             {
-                Type typeDependency = typeDependencyInfo.Type;
-
-                // dependency type TypeScript file generation
-
-                // dependency HAS an ExportTsX attribute (AND hasn't been generated yet)
-                if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.IsTypeGenerated(typeDependency))
-                {
-                    _generationContext.AddGeneratedType(typeDependency);
-                    generatedFiles.AddRange(GenerateTypePrivate(typeDependency));
-                }
-
-                // dependency DOESN'T HAVE an ExportTsX attribute (AND hasn't been generated for the currently generated type yet)
-                if (!typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) && !_generationContext.IsTypeGeneratedForType(typeDependency))
-                {
-                    var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
+                var typeDependency = typeDependencyInfo.Type;
+                if (typeDependency.HasExportAttribute(_metadataReaderFactory.GetInstance()) || _generationContext.IsTypeGenerated(typeDependency)) continue;
+                
+                var defaultOutputAttribute = typeDependencyInfo.MemberAttributes
                         ?.FirstOrDefault(a => a is TsDefaultTypeOutputAttribute)
-                        as TsDefaultTypeOutputAttribute;
+                    as TsDefaultTypeOutputAttribute;
 
-                    string defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
-
-                    _generationContext.AddGeneratedType(typeDependency);
-
-                    try
-                    {
-                        generatedFiles.AddRange(GenerateNotMarked(typeDependency, defaultOutputDir));
-                    }
-                    catch (CoreException ex)
-                    {
-                        throw new CoreException($"Error generating dependencies types for {type.FullName}", ex);
-                    }
+                var defaultOutputDir = defaultOutputAttribute?.OutputDir ?? outputDir;
+                
+                _generationContext.AddGeneratedType(typeDependency);
+                
+                try
+                {
+                    generatedFiles.AddRange(GenerateNotMarkedType(typeDependency, defaultOutputDir));
+                }
+                catch (Exception ex)
+                {
+                    throw new CoreException($"Error generating type dependencies for '{type.FullName}'", ex);
                 }
             }
 

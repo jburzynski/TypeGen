@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TypeGen.Core.Converters;
+using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Services;
 using TypeGen.Core.Utils;
+using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Generator
 {
@@ -33,6 +36,21 @@ namespace TypeGen.Core.Generator
         public static string DefaultIndexFileExtension => DefaultTypeScriptFileExtension;
         public static bool DefaultExportTypesAsInterfacesByDefault => false;
         public static bool DefaultUseImportType => false;
+
+        public static HashSet<string> DefaultTypeBlacklist => new(new []
+        {
+            "System.IAsyncDisposable",
+            typeof(ICloneable).FullName,
+            typeof(IComparable).FullName,
+            typeof(IComparable<>).FullName,
+            typeof(IConvertible).FullName,
+            typeof(IDisposable).FullName,
+            typeof(IEquatable<>).FullName,
+            typeof(IFormattable).FullName,
+            "System.IParsable`1",
+            "System.ISpanFormattable",
+            "System.ISpanParsable`1"
+        });
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# file names to TypeScript file names
@@ -162,5 +180,33 @@ namespace TypeGen.Core.Generator
         /// </summary>
         public bool UseImportType { get; set; } = DefaultUseImportType;
 
+        /// <summary>
+        /// Specifies types which should not be generated.
+        /// </summary>
+        public HashSet<string> TypeBlacklist { get; set; } = DefaultTypeBlacklist;
+
+        /// <summary>
+        /// Checks if the type is on the type blacklist.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>true if the type is on the blacklist, false otherwise</returns>
+        public bool IsTypeBlacklisted(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+
+            if (type.IsGenericParameter) return false;
+
+            var nameWithNamespace = $"{type.Namespace}.{type.Name}";
+            
+            return TypeBlacklist.Contains(nameWithNamespace.RemoveGenericArgumentsFromTypeName())
+                   || TypeBlacklist.Contains(type.Name.RemoveGenericArgumentsFromTypeName());
+        }
+
+        /// <summary>
+        /// Checks if the type is not on the type blacklist.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>true if the type is not on the blacklist, false otherwise</returns>
+        public bool IsTypeNotBlacklisted(Type type) => !IsTypeBlacklisted(type);
     }
 }

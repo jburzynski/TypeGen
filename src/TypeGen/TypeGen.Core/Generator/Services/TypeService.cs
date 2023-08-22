@@ -45,44 +45,45 @@ namespace TypeGen.Core.Generator.Services
             return type.IsEnum;
         }
 
-        private string GenerateCustomType(Type t, string customType)
+        private string ConstructTsTypeName(Type type, string tsTypeNameTemplate)
         {
             // For custom types mappings ending with <>, construct the relevant generic custom type
-            if (customType.EndsWith("<>"))
+            if (tsTypeNameTemplate.EndsWith("<>"))
             {
-                customType = customType.Substring(0, customType.Length - 2); // Strip <>
-                string[] genericArgumentNames = t.GetGenericArguments()
+                tsTypeNameTemplate = tsTypeNameTemplate.Substring(0, tsTypeNameTemplate.Length - 2); // Strip <>
+                string[] genericArgumentNames = type.GetGenericArguments()
                     .Select(t2 => t2.IsGenericParameter ? t2.Name : GetTsTypeName(t2, false))
                     .ToArray();
-                customType = $"{customType}<{string.Join(", ", genericArgumentNames)}>";
+                tsTypeNameTemplate = $"{tsTypeNameTemplate}<{string.Join(", ", genericArgumentNames)}>";
             }
 
             // For custom types not ending with <>, leave the custom type as-is (not generic)
-            return customType;
+            return tsTypeNameTemplate;
         }
 
-        private bool TryGetCustomTypeMapping(Type t, out string customType)
+        private bool TryGetCustomTypeMapping(Type type, out string tsTypeName)
         {
-            if (t != null && t.FullName != null && GeneratorOptions.CustomTypeMappings != null)
+            if (type is { FullName: not null } && GeneratorOptions.CustomTypeMappings != null)
             {
                 // Check for given type as-is (and combined generics)
-                if (GeneratorOptions.CustomTypeMappings.TryGetValue(t.FullName, out string customTypeMappingValue))
+                if (GeneratorOptions.CustomTypeMappings.TryGetValue(type.FullName, out var customTypeMappingValue))
                 {
-                    customType = GenerateCustomType(t, customTypeMappingValue);
+                    tsTypeName = ConstructTsTypeName(type, customTypeMappingValue);
                     return true;
                 }
-                else if (t.IsConstructedGenericType)
+
+                if (type.IsConstructedGenericType)
                 {
                     // Check for generic type
-                    Type genericType = t.GetGenericTypeDefinition();
+                    Type genericType = type.GetGenericTypeDefinition();
                     if (GeneratorOptions.CustomTypeMappings.TryGetValue(genericType.FullName, out customTypeMappingValue))
                     {
-                        customType = GenerateCustomType(t, customTypeMappingValue);
+                        tsTypeName = ConstructTsTypeName(type, customTypeMappingValue);
                         return true;
                     }
                 }
             }
-            customType = null;
+            tsTypeName = null;
             return false;
         }
 
@@ -157,9 +158,7 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(memberInfo, nameof(memberInfo));
 
             if (!memberInfo.Is<FieldInfo>() && !memberInfo.Is<PropertyInfo>())
-            {
                 throw new ArgumentException($"{memberInfo} must be either a FieldInfo or a PropertyInfo");
-            }
 
             return memberInfo is PropertyInfo info
                 ? StripNullable(info.PropertyType)
@@ -208,49 +207,28 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(Type type, bool forTypeDeclaration = false)
+        public string GetTsTypeName(Type type, bool forTypeDeclaration = false, Action<Type> typeIsBlacklistedCallback = null)
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
             type = StripNullable(type);
 
-            if (TryGetCustomTypeMapping(type, out string customType))
-            {
-                return customType;
-            }
+            if (TryGetCustomTypeMapping(type, out string customType)) return customType;
+            
+            if (GeneratorOptions.IsTypeBlacklisted(type)) typeIsBlacklistedCallback?.Invoke(type);
 
-            // handle simple types
-            if (IsTsBuiltInType(type))
-            {
-                return GetTsBuiltInTypeName(type);
-            }
+            if (IsTsBuiltInType(type)) return GetTsBuiltInTypeName(type);
+            if (IsCollectionType(type)) return GetTsCollectionTypeName(type);
+            if (IsDictionaryType(type)) return GetTsDictionaryTypeName(type);
+            if (IsCustomGenericType(type)) return GetGenericTsTypeName(type, forTypeDeclaration);
 
-            // handle collection types
-            if (IsCollectionType(type))
-            {
-                return GetTsCollectionTypeName(type);
-            }
-
-            // handle dictionaries
-            if (IsDictionaryType(type))
-            {
-                return GetTsDictionaryTypeName(type);
-            }
-
-            // handle custom generic types
-            if (IsCustomGenericType(type))
-            {
-                return GetGenericTsTypeName(type, forTypeDeclaration);
-            }
-
-            // handle custom types & generic parameters
             string typeNameNoArity = type.Name.RemoveTypeArity();
             return type.IsGenericParameter ? typeNameNoArity : GeneratorOptions.TypeNameConverters.Convert(typeNameNoArity, type);
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(MemberInfo memberInfo)
+        public string GetTsTypeName(MemberInfo memberInfo, Action<Type> typeIsBlacklistedCallback = null)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
@@ -259,36 +237,29 @@ namespace TypeGen.Core.Generator.Services
             if (typeAttribute != null)
             {
                 if (string.IsNullOrWhiteSpace(typeAttribute.TypeName))
-                {
                     throw new CoreException($"No type specified in TsType attribute for member '{memberInfo.Name}' declared in '{memberInfo.DeclaringType?.FullName}'");
-                }
 
                 Type type = GetMemberType(memberInfo);
-                return GenerateCustomType(type, typeAttribute.TypeName);
+                return ConstructTsTypeName(type, typeAttribute.TypeName);
             }
 
-            return GetTsTypeNameForMember(memberInfo);
+            return GetTsTypeNameForMember(memberInfo, typeIsBlacklistedCallback);
         }
 
         /// <summary>
         /// Gets TypeScript type name for a member
         /// </summary>
         /// <param name="memberInfo"></param>
+        /// <param name="typeIsBlacklistedCallback"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        private string GetTsTypeNameForMember(MemberInfo memberInfo)
+        private string GetTsTypeNameForMember(MemberInfo memberInfo, Action<Type> typeIsBlacklistedCallback = null)
         {
-            // special case - dynamic property/field
-            
             if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
-            {
                 return "any";
-            }
-
-            // otherwise, resolve by type
 
             Type type = GetMemberType(memberInfo);
-            return GetTsTypeName(type);
+            return GetTsTypeName(type, false, typeIsBlacklistedCallback);
         }
 
 #if NET6_0_OR_GREATER
@@ -542,7 +513,7 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
 
             Type baseType = type.GetTypeInfo().BaseType;
-            if (baseType == null || baseType == typeof(object)) return null;
+            if (baseType == null || baseType == typeof(object) || GeneratorOptions.IsTypeBlacklisted(baseType)) return null;
 
             if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");
 
@@ -550,15 +521,11 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public IEnumerable<Type> GetInterfaces(Type type)
+        public IEnumerable<Type> GetImplementedInterfaces(Type type)
         {
             Requires.NotNull(type, nameof(type));
-
-            IEnumerable<Type> baseTypes = type.GetTypeInfo().ImplementedInterfaces;
-
-            // if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");
-
-            return baseTypes;
+            return type.GetTypeInfo().ImplementedInterfaces
+                .Where(GeneratorOptions.IsTypeNotBlacklisted);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace TypeGen.Core.Test.Extensions
         [InlineData("NonGenericType", "NonGenericType")]
         public void RemoveTypeGenericComponent_Test(string input, string expectedResult)
         {
-            string actualResult = input.RemoveTypeGenericComponent();
+            string actualResult = input.RemoveTsTypeNameGenericComponent();
             Assert.Equal(expectedResult, actualResult);
         }
 

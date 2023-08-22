@@ -62,14 +62,25 @@ namespace TypeGen.Core.Extensions
         }
         
         /// <summary>
-        /// Removes generic component from the type, e.g. "MyType<T>" becomes "MyType"
+        /// Removes generic component from the TypeScript type name, e.g. "MyType&lt;T&gt;" becomes "MyType"
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RemoveTypeGenericComponent(this string value)
+        public static string RemoveTsTypeNameGenericComponent(this string value)
         {
             Requires.NotNull(value, nameof(value));
             return value.Split('<')[0];
+        }
+
+        /// <summary>
+        /// Removes generic arguments from the type name.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string RemoveGenericArgumentsFromTypeName(this string value)
+        {
+            Requires.NotNull(value, nameof(value));
+            return value.Split('[')[0];
         }
 
         /// <summary>

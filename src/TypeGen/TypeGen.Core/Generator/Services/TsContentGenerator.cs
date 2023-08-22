@@ -112,7 +112,7 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
-            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
+            IEnumerable<Type> baseTypes = _typeService.GetImplementedInterfaces(type);
             if (!baseTypes.Any()) return "";
 
             IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
@@ -129,10 +129,10 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
-            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
-            if (!baseTypes.Any()) return "";
+            IEnumerable<Type> implementedInterfaces = _typeService.GetImplementedInterfaces(type);
+            if (!implementedInterfaces.Any()) return "";
 
-            IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
+            IEnumerable<string> baseTypeNames = implementedInterfaces.Select(baseType => _typeService.GetTsTypeName(baseType, true));
             return _templateService.GetImplementsText(baseTypeNames);
         }
         
