@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Services;
@@ -48,8 +49,10 @@ namespace TypeGen.Core.Generator
             typeof(IEquatable<>).FullName,
             typeof(IFormattable).FullName,
             "System.IParsable`1",
+            typeof(ISerializable).FullName,
             "System.ISpanFormattable",
-            "System.ISpanParsable`1"
+            "System.ISpanParsable`1",
+            typeof(ValueType).FullName
         });
 
         /// <summary>

@@ -546,6 +546,7 @@ namespace TypeGen.Core.Generator
         private string GetClassPropertyText(Type type, MemberInfo memberInfo)
         {
             LogClassPropertyWarnings(memberInfo);
+            if (_typeService.MemberTypeContainsBlacklistedType(memberInfo)) ThrowMemberTypeIsBlacklisted(memberInfo);
             
             string modifiers = Options.ExplicitPublicAccessor ? "public " : "";
 
@@ -554,7 +555,7 @@ namespace TypeGen.Core.Generator
 
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
-            string typeName = _typeService.GetTsTypeName(memberInfo, MemberTypeIsBlacklistedCallback(memberInfo));
+            string typeName = _typeService.GetTsTypeName(memberInfo);
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
             var tsDoc = GetTsDocForMember(type, memberInfo);
@@ -582,10 +583,9 @@ namespace TypeGen.Core.Generator
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
         }
 
-        private static Action<Type> MemberTypeIsBlacklistedCallback(MemberInfo memberInfo)
+        private static Action<Type> ThrowMemberTypeIsBlacklisted(MemberInfo memberInfo)
         {
-            return type => throw new CoreException($"Type '{type.FullName}'" +
-                                                   $" used for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}'" +
+            throw new CoreException($"Member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}'" +
                                                    $" contains a blacklisted type. Possible solutions:" +
                                                    $"{Environment.NewLine}1. Remove the type from blacklist." +
                                                    $"{Environment.NewLine}2. Remove the member." +
@@ -649,6 +649,7 @@ namespace TypeGen.Core.Generator
         private string GetInterfacePropertyText(Type type, MemberInfo memberInfo)
         {
             LogInterfacePropertyWarnings(memberInfo);
+            if (_typeService.MemberTypeContainsBlacklistedType(memberInfo)) ThrowMemberTypeIsBlacklisted(memberInfo);
             
             string modifiers = "";
             if (IsReadonlyTsProperty(memberInfo)) modifiers += "readonly ";

@@ -77,7 +77,7 @@ namespace TypeGen.Core.Generator.Services
                     var stripped = _typeService.StripNullable(constraint);
                     Type baseFlatType = _typeService.GetFlatType(stripped);
 
-                    if (_typeService.IsIngoredGenericConstarint(baseFlatType))
+                    if (_typeService.IsIgnoredGenericConstarint(baseFlatType))
                         continue;
 
                     result.AddRange(GetFlatTypeDependencies(baseFlatType));

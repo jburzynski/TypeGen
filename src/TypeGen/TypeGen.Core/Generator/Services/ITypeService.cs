@@ -72,26 +72,24 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        bool IsIngoredGenericConstarint(Type type);
+        bool IsIgnoredGenericConstarint(Type type);
 
         /// <summary>
         /// Gets TypeScript type name for a type
         /// </summary>
         /// <param name="type"></param>
         /// <param name="forTypeDeclaration"></param>
-        /// <param name="typeIsBlacklistedCallback"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when type or typeNameConverters is null</exception>
         /// <exception cref="CoreException">Thrown when collection element type for the passed type is null (occurs only if the passed type is a collection type)</exception>
-        string GetTsTypeName(Type type, bool forTypeDeclaration = false, Action<Type> typeIsBlacklistedCallback = null);
+        string GetTsTypeName(Type type, bool forTypeDeclaration = false);
 
         /// <summary>
         /// Gets the TypeScript type name to generate for a member
         /// </summary>
         /// <param name="memberInfo"></param>
-        /// <param name="typeIsBlacklistedCallback"></param>
         /// <returns></returns>
-        string GetTsTypeName(MemberInfo memberInfo, Action<Type> typeIsBlacklistedCallback = null);
+        string GetTsTypeName(MemberInfo memberInfo);
 
         /// <summary>
         /// Gets the type of the deepest element from a jagged collection of the given type.
@@ -129,5 +127,7 @@ namespace TypeGen.Core.Generator.Services
 
         IEnumerable<string> GetTypeUnions(MemberInfo memberInfo);
         IEnumerable<Type> GetImplementedInterfaces(Type type);
+        bool TypeContainsBlacklistedType(Type type);
+        bool MemberTypeContainsBlacklistedType(MemberInfo memberInfo);
     }
 }

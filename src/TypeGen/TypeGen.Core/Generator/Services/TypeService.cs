@@ -15,7 +15,7 @@ namespace TypeGen.Core.Generator.Services
     /// </summary>
     internal class TypeService : ITypeService
     {
-        private static HashSet<Type> IgnoredGenricConstraints = new HashSet<Type>
+        private static HashSet<Type> IgnoredGenricConstraints = new()
         {
             typeof(ValueType)
         };
@@ -194,7 +194,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc/>
-        public bool IsIngoredGenericConstarint(Type type)
+        public bool IsIgnoredGenericConstarint(Type type)
         {
             return IgnoredGenricConstraints.Contains(type);
         }
@@ -207,7 +207,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(Type type, bool forTypeDeclaration = false, Action<Type> typeIsBlacklistedCallback = null)
+        public string GetTsTypeName(Type type, bool forTypeDeclaration = false)
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
@@ -216,8 +216,6 @@ namespace TypeGen.Core.Generator.Services
 
             if (TryGetCustomTypeMapping(type, out string customType)) return customType;
             
-            if (GeneratorOptions.IsTypeBlacklisted(type)) typeIsBlacklistedCallback?.Invoke(type);
-
             if (IsTsBuiltInType(type)) return GetTsBuiltInTypeName(type);
             if (IsCollectionType(type)) return GetTsCollectionTypeName(type);
             if (IsDictionaryType(type)) return GetTsDictionaryTypeName(type);
@@ -228,7 +226,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
-        public string GetTsTypeName(MemberInfo memberInfo, Action<Type> typeIsBlacklistedCallback = null)
+        public string GetTsTypeName(MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
@@ -243,23 +241,55 @@ namespace TypeGen.Core.Generator.Services
                 return ConstructTsTypeName(type, typeAttribute.TypeName);
             }
 
-            return GetTsTypeNameForMember(memberInfo, typeIsBlacklistedCallback);
+            return GetTsTypeNameForMember(memberInfo);
+        }
+
+        public bool MemberTypeContainsBlacklistedType(MemberInfo memberInfo)
+        {
+            Requires.NotNull(memberInfo, nameof(memberInfo));
+
+            var type = GetMemberType(memberInfo);
+            return TypeContainsBlacklistedType(type);
+        }
+        
+        public bool TypeContainsBlacklistedType(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+
+            if (type.IsGenericParameter) return false;
+            
+            type = StripNullable(type);
+            if (GeneratorOptions.IsTypeBlacklisted(type)) return true;
+
+            if (IsCollectionType(type))
+            {
+                var elementType = GetTsCollectionElementType(type);
+                if (GeneratorOptions.IsTypeBlacklisted(elementType)) return true;
+            }
+
+            if (type.IsGenericType)
+            {
+                return type.GetGenericArguments()
+                    .Select(TypeContainsBlacklistedType)
+                    .Any(x => x);
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Gets TypeScript type name for a member
         /// </summary>
         /// <param name="memberInfo"></param>
-        /// <param name="typeIsBlacklistedCallback"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
-        private string GetTsTypeNameForMember(MemberInfo memberInfo, Action<Type> typeIsBlacklistedCallback = null)
+        private string GetTsTypeNameForMember(MemberInfo memberInfo)
         {
             if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
                 return "any";
 
             Type type = GetMemberType(memberInfo);
-            return GetTsTypeName(type, false, typeIsBlacklistedCallback);
+            return GetTsTypeName(type, false);
         }
 
 #if NET6_0_OR_GREATER
@@ -409,7 +439,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetGenericTsTypeConstraintsForDeclaration(Type type)
         {
-            var constraints = type.GetGenericParameterConstraints().Where(t => !IsIngoredGenericConstarint(t)).ToArray();
+            var constraints = type.GetGenericParameterConstraints().Where(t => !IsIgnoredGenericConstarint(t)).ToArray();
             if (constraints.Length < 1)
                 return type.Name;
 
@@ -458,8 +488,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private Type GetTsCollectionElementType(Type type)
         {
-            // handle array types
-            Type elementType = type.GetElementType();
+            Type elementType = type.GetElementType(); // this is for arrays
             if (elementType != null)
             {
                 return StripNullable(elementType);
@@ -467,10 +496,8 @@ namespace TypeGen.Core.Generator.Services
 
             switch (type.Name)
             {
-                // handle IEnumerable<>
                 case "IEnumerable`1":
                     return StripNullable(type.GetGenericArguments()[0]);
-                // handle IEnumerable
                 case "IEnumerable":
                     return typeof(object);
             }
