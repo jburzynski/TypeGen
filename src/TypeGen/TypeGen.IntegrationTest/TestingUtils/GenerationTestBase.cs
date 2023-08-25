@@ -18,10 +18,10 @@ public class GenerationTestBase
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(type.Assembly);
-        var expected = (await readExpectedTask).Trim();
+        var expected = (await readExpectedTask).NormalizeFileContent();
 
         interceptor.GeneratedOutputs.Should().ContainKey(type);
-        interceptor.GeneratedOutputs[type].Content.FormatOutput().Should().Be(expected);
+        interceptor.GeneratedOutputs[type].Content.NormalizeFileContent().Should().Be(expected);
     }
     
     protected static async Task TestGenerationSpec(Type type, string expectedLocation,
@@ -32,9 +32,9 @@ public class GenerationTestBase
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(new[] { generationSpec });
-        var expected = (await readExpectedTask).Trim();
+        var expected = (await readExpectedTask).NormalizeFileContent();
 
         interceptor.GeneratedOutputs.Should().ContainKey(type);
-        interceptor.GeneratedOutputs[type].Content.FormatOutput().Should().Be(expected);
+        interceptor.GeneratedOutputs[type].Content.NormalizeFileContent().Should().Be(expected);
     }
 }

@@ -2,8 +2,9 @@ namespace TypeGen.IntegrationTest.Extensions;
 
 public static class StringExtensions
 {
-    public static string FormatOutput(this string output)
-        => output
+    public static string NormalizeFileContent(this string content)
+        => content
+            .Trim('\uFEFF', '\u200B')
             .Trim()
             .Replace("\n", "")
             .Replace("\r", "")

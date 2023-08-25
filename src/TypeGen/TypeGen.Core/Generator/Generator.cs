@@ -583,7 +583,7 @@ namespace TypeGen.Core.Generator
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
         }
 
-        private static Action<Type> ThrowMemberTypeIsBlacklisted(MemberInfo memberInfo)
+        private static void ThrowMemberTypeIsBlacklisted(MemberInfo memberInfo)
         {
             throw new CoreException($"Member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}'" +
                                                    $" contains a blacklisted type. Possible solutions:" +

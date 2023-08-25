@@ -20,14 +20,6 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
         /// <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
         string GetTsBuiltInTypeName(Type type);
-        
-        /// <summary>
-        /// Determines whether the type represents a TypeScript class
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True if the type represents a TypeScript class; false otherwise</returns>
-        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
-        bool IsTsClass(Type type);
 
         /// <summary>
         /// Determines whether the type represents a TypeScript class

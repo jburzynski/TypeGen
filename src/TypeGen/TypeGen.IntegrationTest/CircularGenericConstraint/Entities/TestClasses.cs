@@ -1,6 +1,6 @@
 ﻿using TypeGen.Core.TypeAnnotations;
 
-namespace TypeGen.IntegrationTest.CircularGenericConstraint.TestClasses
+namespace TypeGen.IntegrationTest.CircularGenericConstraint.Entities
 {
     [ExportTsClass]
     public class RecursiveConstraintClass<TSelf>

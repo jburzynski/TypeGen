@@ -127,29 +127,12 @@ namespace TypeGen.Core.Generator.Services
                     return null;
             }
         }
-        
-        /// <inheritdoc />
-        public bool IsTsClass(Type type)
-        {
-            Requires.NotNull(type, nameof(type));
-            TypeInfo typeInfo = type.GetTypeInfo();
-
-            if (!typeInfo.IsClass) return false;
-
-            var exportAttribute = MetadataReader.GetAttribute<ExportAttribute>(type);
-            return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
-        }
 
         /// <inheritdoc />
         public bool IsTsInterface(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            TypeInfo typeInfo = type.GetTypeInfo();
-
-            if (!typeInfo.IsClass) return false;
-
-            var exportAttribute = MetadataReader.GetAttribute<ExportAttribute>(type);
-            return exportAttribute is ExportTsInterfaceAttribute;
+            return MetadataReader.GetAttribute<ExportTsInterfaceAttribute>(type) != null;
         }
 
         /// <inheritdoc />
@@ -538,11 +521,10 @@ namespace TypeGen.Core.Generator.Services
         public Type GetBaseType(Type type)
         {
             Requires.NotNull(type, nameof(type));
-
-            Type baseType = type.GetTypeInfo().BaseType;
-            if (baseType == null || baseType == typeof(object) || GeneratorOptions.IsTypeBlacklisted(baseType)) return null;
-
-            if (IsTsClass(type) && IsTsInterface(baseType)) throw new CoreException($"Attempted to generate class '{type.FullName}' which extends an interface '{baseType.FullName}', which is not a valid inheritance chain in TypeScript");
+            var baseType = type.GetTypeInfo().BaseType;
+            
+            if (IsNullOrObjectOrBlacklisted(baseType) || IsTsInterface(baseType))
+                return null;
 
             return baseType;
         }
@@ -551,8 +533,23 @@ namespace TypeGen.Core.Generator.Services
         public IEnumerable<Type> GetImplementedInterfaces(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return type.GetTypeInfo().ImplementedInterfaces
+            
+            var result = type.GetTypeInfo().ImplementedInterfaces
                 .Where(GeneratorOptions.IsTypeNotBlacklisted);
+
+            var baseType = type.GetTypeInfo().BaseType;
+            if (IsNotNullAndNotObjectAndNotBlacklisted(baseType) && IsTsInterface(baseType))
+                result = result.Concat(new[] { baseType });
+
+            return result;
         }
+
+        private bool IsNullOrObjectOrBlacklisted(Type type) =>
+            type == null
+            || type == typeof(object)
+            || GeneratorOptions.IsTypeBlacklisted(type);
+
+        private bool IsNotNullAndNotObjectAndNotBlacklisted(Type type) =>
+            !IsNullOrObjectOrBlacklisted(type);
     }
 }

@@ -6,7 +6,6 @@ using TypeGen.Core;
 using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.IntegrationTest.Blacklist.Entities;
-using TypeGen.IntegrationTest.CircularGenericConstraint.TestClasses;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
 

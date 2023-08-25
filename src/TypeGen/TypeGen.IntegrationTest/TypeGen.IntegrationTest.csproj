@@ -112,6 +112,7 @@
 		<EmbeddedResource Include="ImportType\Expected\ts-class.ts" />
 		<EmbeddedResource Include="NullableTranslation\Expected\nullable-class.ts" />
 		<EmbeddedResource Include="StructImplementsInterfaces\Expected\implements-interfaces.ts" />
+		<EmbeddedResource Include="TsClassExtendsTsInterface\Expected\ts-class.ts" />
 		<EmbeddedResource Include="UseDefaultExportBreaksInterfaceInheritance\Expected\product-dto.ts" />
 	</ItemGroup>
 

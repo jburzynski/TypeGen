@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using TypeGen.IntegrationTest.CircularGenericConstraint.TestClasses;
+using TypeGen.IntegrationTest.CircularGenericConstraint.Entities;
 using TypeGen.IntegrationTest.CommonCases;
 using TypeGen.IntegrationTest.TestingUtils;
 using Xunit;
