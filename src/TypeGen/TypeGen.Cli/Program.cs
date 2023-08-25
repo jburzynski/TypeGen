@@ -34,7 +34,6 @@ namespace TypeGen.Cli
             
             _fileSystem = new FileSystem();
             _configProvider = new ConfigProvider(_fileSystem, _logger);
-            _generatorOptionsProvider = new GeneratorOptionsProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
             _projectBuilder = new ProjectBuilder(_logger);
         }
@@ -121,6 +120,8 @@ namespace TypeGen.Cli
 
             // create generator
 
+            var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
+            _generatorOptionsProvider = new GeneratorOptionsProvider(typeResolver);
             GeneratorOptions generatorOptions = _generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder);
             generatorOptions.BaseOutputDirectory = outputFolder ?? Path.Combine(projectFolder, config.OutputPath);
             var generator = new Generator(generatorOptions, _logger);
@@ -141,8 +142,6 @@ namespace TypeGen.Cli
 
             if (config.GenerationSpecs.Any())
             {
-                var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
-                
                 IEnumerable<GenerationSpec> generationSpecs = config.GenerationSpecs
                     .Select(name => typeResolver.Resolve(name, "GenerationSpec"))
                     .Where(t => t != null)

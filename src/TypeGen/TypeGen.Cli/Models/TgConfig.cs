@@ -18,6 +18,8 @@ namespace TypeGen.Cli.Models
         public static bool DefaultAddFilesToProject => false;
         public static bool DefaultBuildProject => false;
         public static string DefaultProjectOutputFolder => "bin";
+        public static string[] DefaultTypeBlacklist => Array.Empty<string>();
+        public static string[] DefaultTypeWhitelist => Array.Empty<string>();
 
         [Obsolete("Use Assemblies instead")]
         public string AssemblyPath { get; set; }
@@ -52,6 +54,8 @@ namespace TypeGen.Cli.Models
         public string ProjectOutputFolder { get; set; }
         public bool? ExportTypesAsInterfacesByDefault { get; set; }
         public bool? UseImportType { get; set; }
+        public string[] TypeBlacklist { get; set; }
+        public string[] TypeWhitelist { get; set; }
 
         public TgConfig Normalize()
         {
@@ -98,6 +102,8 @@ namespace TypeGen.Cli.Models
             if (ProjectOutputFolder == null) ProjectOutputFolder = DefaultProjectOutputFolder;
             if (ExportTypesAsInterfacesByDefault == null) ExportTypesAsInterfacesByDefault = GeneratorOptions.DefaultExportTypesAsInterfacesByDefault;
             if (UseImportType == null) UseImportType = GeneratorOptions.DefaultUseImportType;
+            if (TypeBlacklist == null) TypeBlacklist = DefaultTypeBlacklist;
+            if (TypeWhitelist == null) TypeWhitelist = DefaultTypeWhitelist;
             return this;
         }
 

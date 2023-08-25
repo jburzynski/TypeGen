@@ -35,6 +35,7 @@
 		<EmbeddedResource Include="Blacklist\Expected\class-with-blacklisted-base.ts" />
 		<EmbeddedResource Include="Blacklist\Expected\class-with-blacklisted-interface.ts" />
 		<EmbeddedResource Include="Blacklist\Expected\interface-with-blacklisted-base.ts" />
+		<EmbeddedResource Include="Blacklist\Expected\my-record.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\ICicrularConstraintInterface.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IMultipleConstraintInterface.ts" />
 		<EmbeddedResource Include="CircularGenericConstraint\Expected\IRecursiveConstraintInterface.ts" />

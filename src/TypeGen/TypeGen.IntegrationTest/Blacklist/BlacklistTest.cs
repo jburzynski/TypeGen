@@ -104,6 +104,17 @@ namespace TypeGen.IntegrationTest.Blacklist
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();
         }
+        
+        [Fact]
+        public async Task Record_Test()
+        {
+            var type = typeof(MyRecord);
+            const string expectedLocation = "TypeGen.IntegrationTest.Blacklist.Expected.my-record.ts";
+            var generationSpec = new RecordGenerationSpec();
+            var generatorOptions = new GeneratorOptions();
+            
+            await TestGenerationSpec(type, expectedLocation, generationSpec, generatorOptions);
+        }
 
         private class ClassWithBlacklistedBaseGenerationSpec : GenerationSpec
         {
@@ -143,6 +154,11 @@ namespace TypeGen.IntegrationTest.Blacklist
         private class InterfaceWithBlacklistedPropertyTypeGenerationSpec : GenerationSpec
         {
             public InterfaceWithBlacklistedPropertyTypeGenerationSpec() => AddClass<InterfaceWithBlacklistedPropertyType>();
+        }
+        
+        private class RecordGenerationSpec : GenerationSpec
+        {
+            public RecordGenerationSpec() => AddClass<MyRecord>();
         }
     }
 }

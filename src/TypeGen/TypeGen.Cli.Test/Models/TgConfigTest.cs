@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using FluentAssertions;
 using TypeGen.Cli.Models;
 using TypeGen.Core;
 using Xunit;
@@ -26,20 +27,22 @@ namespace TypeGen.Cli.Test.Models
             var tgConfig = new TgConfig();
             tgConfig.MergeWithDefaultParams();
             
-            Assert.Equal(new string[0], tgConfig.Assemblies);
-            Assert.False(tgConfig.ExplicitPublicAccessor);
-            Assert.False(tgConfig.SingleQuotes);
-            Assert.False(tgConfig.AddFilesToProject);
-            Assert.Equal("ts", tgConfig.TypeScriptFileExtension);
-            Assert.Equal(4, tgConfig.TabLength);
-            Assert.Equal(new [] { "PascalCaseToKebabCaseConverter" }, tgConfig.FileNameConverters);
-            Assert.Equal(new string[0], tgConfig.TypeNameConverters);
-            Assert.Equal(new[] { "PascalCaseToCamelCaseConverter" }, tgConfig.PropertyNameConverters);
-            Assert.Equal(new string[0], tgConfig.EnumValueNameConverters);
-            Assert.Equal(new string[0], tgConfig.ExternalAssemblyPaths);
-            Assert.False(tgConfig.CreateIndexFile);
-            Assert.Equal("", tgConfig.CsNullableTranslation);
-            Assert.Equal("", tgConfig.OutputPath);
+            tgConfig.Assemblies.Should().BeEmpty();
+            tgConfig.ExplicitPublicAccessor.Should().BeFalse();
+            tgConfig.SingleQuotes.Should().BeFalse();
+            tgConfig.AddFilesToProject.Should().BeFalse();
+            tgConfig.TypeScriptFileExtension.Should().Be("ts");
+            tgConfig.TabLength.Should().Be(4);
+            tgConfig.FileNameConverters.Should().BeEquivalentTo("PascalCaseToKebabCaseConverter");
+            tgConfig.TypeNameConverters.Should().BeEmpty();
+            tgConfig.PropertyNameConverters.Should().BeEquivalentTo("PascalCaseToCamelCaseConverter");
+            tgConfig.EnumValueNameConverters.Should().BeEmpty();
+            tgConfig.ExternalAssemblyPaths.Should().BeEmpty();
+            tgConfig.CreateIndexFile.Should().BeFalse();
+            tgConfig.CsNullableTranslation.Should().BeEmpty();
+            tgConfig.OutputPath.Should().BeEmpty();
+            tgConfig.TypeBlacklist.Should().BeEmpty();
+            tgConfig.TypeWhitelist.Should().BeEmpty();
         }
 
         [Fact]

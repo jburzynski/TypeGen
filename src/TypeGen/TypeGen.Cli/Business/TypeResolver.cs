@@ -11,7 +11,7 @@ using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.Business
 {
-    internal class TypeResolver
+    internal class TypeResolver : ITypeResolver
     {
         private readonly ILogger _logger;
         private readonly IFileSystem _fileSystem;

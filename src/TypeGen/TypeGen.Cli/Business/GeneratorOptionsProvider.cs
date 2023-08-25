@@ -20,15 +20,11 @@ namespace TypeGen.Cli.Business
 {
     internal class GeneratorOptionsProvider : IGeneratorOptionsProvider
     {
-        private readonly IFileSystem _fileSystem;
-        private readonly ILogger _logger;
+        private readonly ITypeResolver _typeResolver;
 
-        private TypeResolver _typeResolver;
-
-        public GeneratorOptionsProvider(IFileSystem fileSystem, ILogger logger)
+        public GeneratorOptionsProvider(ITypeResolver typeResolver)
         {
-            _fileSystem = fileSystem;
-            _logger = logger;
+            _typeResolver = typeResolver;
         }
 
         /// <summary>
@@ -43,8 +39,6 @@ namespace TypeGen.Cli.Business
             Requires.NotNull(config, nameof(config));
             Requires.NotNull(assemblies, nameof(assemblies));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
-            
-            _typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
             
             return new GeneratorOptions
             {
@@ -69,8 +63,16 @@ namespace TypeGen.Cli.Business
                 FileHeading = config.FileHeading ?? GeneratorOptions.DefaultFileHeading,
                 UseDefaultExport = config.UseDefaultExport ?? GeneratorOptions.DefaultUseDefaultExport,
                 ExportTypesAsInterfacesByDefault = config.ExportTypesAsInterfacesByDefault ?? GeneratorOptions.DefaultExportTypesAsInterfacesByDefault,
-                UseImportType = config.UseImportType ?? GeneratorOptions.DefaultUseImportType
+                UseImportType = config.UseImportType ?? GeneratorOptions.DefaultUseImportType,
+                TypeBlacklist = GetTypeBlacklist(config.TypeBlacklist, config.TypeWhitelist)
             };
+        }
+
+        private static HashSet<string> GetTypeBlacklist(string[] configTypeBlacklist, string[] configTypeWhitelist)
+        {
+            var defaultBlacklist = GeneratorOptions.DefaultTypeBlacklist.ToArray();
+            var blacklist = defaultBlacklist.Concat(configTypeBlacklist).Except(configTypeWhitelist);
+            return new HashSet<string>(blacklist);
         }
 
         private TypeNameConverterCollection GetTypeNameConvertersFromConfig(IEnumerable<string> typeNameConverters)
