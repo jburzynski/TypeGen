@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using TypeGen.Cli.Business;
 using TypeGen.Cli.Extensions;
-using TypeGen.Cli.Models;
-using TypeGen.Core;
+using TypeGen.Cli.TypeResolution;
 using TypeGen.Core.Converters;
-using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator;
-using TypeGen.Core.Generator.Services;
-using TypeGen.Core.Logging;
-using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.TypeGenConfig
 {
     internal class GeneratorOptionsProvider : IGeneratorOptionsProvider
     {

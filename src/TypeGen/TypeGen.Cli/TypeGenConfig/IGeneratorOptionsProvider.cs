@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using TypeGen.Cli.Models;
-using TypeGen.Core;
 using TypeGen.Core.Generator;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.TypeGenConfig
 {
     internal interface IGeneratorOptionsProvider
     {

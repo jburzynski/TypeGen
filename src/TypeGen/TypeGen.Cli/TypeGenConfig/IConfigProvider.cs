@@ -1,6 +1,4 @@
-﻿using TypeGen.Cli.Models;
-
-namespace TypeGen.Cli.Business
+﻿namespace TypeGen.Cli.TypeGenConfig
 {
     internal interface IConfigProvider
     {

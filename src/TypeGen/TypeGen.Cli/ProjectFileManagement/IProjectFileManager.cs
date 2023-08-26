@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.ProjectFileManagement
 {
     internal interface IProjectFileManager
     {

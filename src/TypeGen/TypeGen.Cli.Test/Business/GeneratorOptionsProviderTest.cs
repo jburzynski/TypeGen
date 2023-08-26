@@ -5,7 +5,8 @@ using System.Reflection;
 using FluentAssertions;
 using NSubstitute;
 using TypeGen.Cli.Business;
-using TypeGen.Cli.Models;
+using TypeGen.Cli.TypeGenConfig;
+using TypeGen.Cli.TypeResolution;
 using TypeGen.Core.Generator;
 using Xunit;
 

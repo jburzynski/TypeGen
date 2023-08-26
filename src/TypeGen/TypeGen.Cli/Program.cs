@@ -4,16 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using TypeGen.Cli.Build;
 using TypeGen.Cli.Business;
-using TypeGen.Cli.Models;
+using TypeGen.Cli.ProjectFileManagement;
+using TypeGen.Cli.TypeGenConfig;
+using TypeGen.Cli.TypeResolution;
 using TypeGen.Core;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator;
 using TypeGen.Core.Logging;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Storage;
-using IGeneratorOptionsProvider = TypeGen.Cli.Business.IGeneratorOptionsProvider;
-using GeneratorOptionsProvider = TypeGen.Cli.Business.GeneratorOptionsProvider;
+using IGeneratorOptionsProvider = TypeGen.Cli.TypeGenConfig.IGeneratorOptionsProvider;
+using GeneratorOptionsProvider = TypeGen.Cli.TypeGenConfig.GeneratorOptionsProvider;
 
 namespace TypeGen.Cli
 {
@@ -24,7 +27,7 @@ namespace TypeGen.Cli
         private static IConfigProvider _configProvider;
         private static IGeneratorOptionsProvider _generatorOptionsProvider;
         private static IProjectFileManager _projectFileManager;
-        private static ProjectBuilder _projectBuilder;
+        private static ProjectBuild _projectBuild;
         private static IAssemblyResolver _assemblyResolver;
 
         private static void InitializeServices(string[] args)
@@ -35,7 +38,7 @@ namespace TypeGen.Cli
             _fileSystem = new FileSystem();
             _configProvider = new ConfigProvider(_fileSystem, _logger);
             _projectFileManager = new ProjectFileManager(_fileSystem);
-            _projectBuilder = new ProjectBuilder(_logger);
+            _projectBuild = new ProjectBuild(_logger);
         }
 
         private static int Main(string[] args)
@@ -129,7 +132,7 @@ namespace TypeGen.Cli
             // generate
             
             if (config.ClearOutputDirectory == true) _fileSystem.ClearDirectory(generatorOptions.BaseOutputDirectory);
-            if (config.BuildProject == true) _projectBuilder.Build(projectFolder);
+            if (config.BuildProject == true) _projectBuild.Build(projectFolder);
             
             _logger.Log($"Generating files for project \"{projectFolder}\"...", LogLevel.Info);
             
@@ -187,7 +190,7 @@ namespace TypeGen.Cli
 
         private static void ShowHelp()
         {
-            Console.WriteLine($"TypeGen v{AppConfig.Version}" + Environment.NewLine +
+            Console.WriteLine($"TypeGen v{ApplicationConfig.Version}" + Environment.NewLine +
                               Environment.NewLine +
                               "Usage: [dotnet-]typegen [options] [command]" + Environment.NewLine +
                               Environment.NewLine +

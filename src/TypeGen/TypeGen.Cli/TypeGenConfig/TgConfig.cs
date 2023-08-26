@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using TypeGen.Cli.Extensions;
-using TypeGen.Core;
-using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator;
 
-namespace TypeGen.Cli.Models
+namespace TypeGen.Cli.TypeGenConfig
 {
     /// <summary>
     /// Represents console configuration

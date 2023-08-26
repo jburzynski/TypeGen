@@ -15,10 +15,9 @@ internal class ReflectionToCsModelConverter
     {
         Requires.NotNull(type, nameof(type));
 
-        if (type.IsNullable())
-            return ConvertTypePrivate(Nullable.GetUnderlyingType(type)!, true);
-        else
-            return ConvertTypePrivate(type, false);
+        return type.IsNullable()
+            ? ConvertTypePrivate(Nullable.GetUnderlyingType(type)!, true)
+            : ConvertTypePrivate(type, false);
     }
 
     private static CsType ConvertTypePrivate(Type type, bool isNullable)

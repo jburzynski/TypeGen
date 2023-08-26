@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TypeGen.Cli.Business;
+namespace TypeGen.Cli.TypeResolution;
 
 internal interface ITypeResolver
 {

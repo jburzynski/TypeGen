@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using TypeGen.Core.Logging;
-using TypeGen.Core.Storage;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.Build
 {
-    internal class ProjectBuilder
+    internal class ProjectBuild
     {
         private readonly ILogger _logger;
 
-        public ProjectBuilder(ILogger logger)
+        public ProjectBuild(ILogger logger)
         {
             _logger = logger;
         }

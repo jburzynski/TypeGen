@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using TypeGen.Core;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.TypeResolution
 {
     internal class TypeResolver : ITypeResolver
     {

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using TypeGen.Cli.Models;
 using TypeGen.Core;
 using Xunit;
 using TypeGen.Cli.Extensions;
+using TypeGen.Cli.TypeGenConfig;
 using TypeGen.Core.Extensions;
 
 namespace TypeGen.Cli.Test.Models

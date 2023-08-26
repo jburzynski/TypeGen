@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TypeGen.Cli.Models;
+using TypeGen.Cli.Business;
 using TypeGen.Core.Logging;
-using TypeGen.Core.Utils;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.TypeGenConfig
 {
     internal class ConfigProvider : IConfigProvider
     {

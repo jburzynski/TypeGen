@@ -9,7 +9,7 @@ using TypeGen.Cli.Extensions;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.TypeResolution
 {
     internal class AssemblyResolver : IAssemblyResolver
     {
@@ -21,7 +21,7 @@ namespace TypeGen.Cli.Business
         public IEnumerable<string> Directories
         {
             get => _directories;
-            set => _directories = value?.Select(d => Path.IsPathRooted(d) ? d : Path.Combine(_projectFolder, d));
+            set => _directories = value?.Select(d => Path.IsPathRooted((string)d) ? d : Path.Combine(_projectFolder, d));
         }
 
         private readonly string _globalFallbackPath;

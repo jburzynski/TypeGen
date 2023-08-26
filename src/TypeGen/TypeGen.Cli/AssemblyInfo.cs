@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TypeGen.IntegrationTest")]
 [assembly: InternalsVisibleTo("TypeGen.Cli.Test")]

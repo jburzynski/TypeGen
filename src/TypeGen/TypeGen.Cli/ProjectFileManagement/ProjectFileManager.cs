@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Xml;
-using TypeGen.Core.Utils;
-using TypeGen.Core.Extensions;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
-namespace TypeGen.Cli.Business
+namespace TypeGen.Cli.ProjectFileManagement
 {
     /// <summary>
     /// For ASP.NET (.NET Framework) versions (addFilesToProject parameter in TypeGen CLI)

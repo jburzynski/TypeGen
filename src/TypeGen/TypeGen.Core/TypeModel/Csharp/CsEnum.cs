@@ -5,6 +5,10 @@ namespace TypeGen.Core.TypeModel.Csharp;
 
 internal class CsEnum : CsType
 {
+    public string FullName { get; }
+    public IReadOnlyCollection<Attribute> TgAttributes { get; }
+    public IReadOnlyCollection<CsEnumValue> Values { get; }
+    
     public CsEnum(string fullName,
         string name,
         IReadOnlyCollection<Attribute> tgAttributes,
@@ -17,7 +21,5 @@ internal class CsEnum : CsType
         TgAttributes = tgAttributes;
     }
 
-    public string FullName { get; }
-    public IReadOnlyCollection<Attribute> TgAttributes { get; }
-    public IReadOnlyCollection<CsEnumValue> Values { get; }
+    
 }

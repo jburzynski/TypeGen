@@ -12,6 +12,25 @@ namespace TypeGen.Core.TypeModel.Csharp;
 /// </summary>
 internal class CsGpType : CsType
 {
+    public string FullName { get; init; }
+    public IReadOnlyCollection<CsType> GenericTypes { get; init; }
+    public CsGpType? Base { get; init; }
+    public IReadOnlyCollection<CsGpType> ImplementedInterfaces { get; init; }
+    public IReadOnlyCollection<CsField> Fields { get; init; }
+    public IReadOnlyCollection<CsProperty> Properties { get; init; }
+    public IReadOnlyCollection<Attribute> TgAttributes { get; init; }
+    
+    public bool IsNonDictionaryEnumerable =>
+        FullName != typeof(string).FullName
+        && !IsDictionary
+        && (ImplementsInterface(typeof(IEnumerable).FullName!) || FullName.StartsWith(typeof(IEnumerable).FullName!));
+
+    public bool IsDictionary =>
+        ImplementsInterface(typeof(IDictionary<,>).FullName!)
+        || FullName.StartsWith(typeof(IDictionary<,>).FullName!)
+        || ImplementsInterface(typeof(IDictionary).FullName!)
+        || FullName.StartsWith(typeof(IDictionary).FullName!);
+    
     private CsGpType(string name, bool isNullable)
         : base(name, isNullable)
     {
@@ -75,24 +94,5 @@ internal class CsGpType : CsType
         };
     }
     
-    public string FullName { get; init; }
-    public IReadOnlyCollection<CsType> GenericTypes { get; init; }
-    public CsGpType? Base { get; init; }
-    public IReadOnlyCollection<CsGpType> ImplementedInterfaces { get; init; }
-    public IReadOnlyCollection<CsField> Fields { get; init; }
-    public IReadOnlyCollection<CsProperty> Properties { get; init; }
-    public IReadOnlyCollection<Attribute> TgAttributes { get; init; }
-    
-    public bool IsNonDictionaryEnumerable =>
-        FullName != typeof(string).FullName
-        && !IsDictionary
-        && (ImplementsInterface(typeof(IEnumerable).FullName!) || FullName.StartsWith(typeof(IEnumerable).FullName!));
-
-    public bool IsDictionary =>
-        ImplementsInterface(typeof(IDictionary<,>).FullName!)
-        || FullName.StartsWith(typeof(IDictionary<,>).FullName!)
-        || ImplementsInterface(typeof(IDictionary).FullName!)
-        || FullName.StartsWith(typeof(IDictionary).FullName!);
-
     private bool ImplementsInterface(string fullName) => ImplementedInterfaces.Contains(x => x.FullName == fullName);
 }
