@@ -5,7 +5,7 @@ using TypeGen.Cli.Extensions;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator;
 
-namespace TypeGen.Cli.TypeGenConfig
+namespace TypeGen.Cli.GenerationConfig
 {
     /// <summary>
     /// Represents console configuration

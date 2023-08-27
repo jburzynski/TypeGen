@@ -11,27 +11,22 @@ using TypeGen.Core.Storage;
 
 namespace TypeGen.Cli.TypeResolution
 {
-    internal class AssemblyResolver : IAssemblyResolver
+    internal class AssemblyResolver : IDisposable
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly string _projectFolder;
-        
-        private IEnumerable<string> _directories;
-        public IEnumerable<string> Directories
-        {
-            get => _directories;
-            set => _directories = value?.Select(d => Path.IsPathRooted((string)d) ? d : Path.Combine(_projectFolder, d));
-        }
+        private readonly IEnumerable<string> _directories;
 
         private readonly string _globalFallbackPath;
         private readonly string _sharedFolder;
         private List<string> _nugetPackagesFolders;
         
-        public AssemblyResolver(IFileSystem fileSystem, ILogger logger, string projectFolder)
+        public AssemblyResolver(IFileSystem fileSystem, ILogger logger, string projectFolder, IEnumerable<string> directories)
         {
             _fileSystem = fileSystem;
             _logger = logger;
+            _directories = directories;
             _projectFolder = projectFolder.ToAbsolutePath(_fileSystem);
             
             string dotnetInstallPath = GetDotnetInstallPath();
@@ -41,6 +36,7 @@ namespace TypeGen.Cli.TypeResolution
             if (_fileSystem.DirectoryExists(dotNetInstallSharedPath)) _sharedFolder = dotNetInstallSharedPath;
             
             PopulateNuGetPackageFolders();
+            Register();
         }
 
         private void PopulateNuGetPackageFolders()
@@ -53,12 +49,12 @@ namespace TypeGen.Cli.TypeResolution
             if (!_nugetPackagesFolders.Contains(_globalFallbackPath) && Directory.Exists(_globalFallbackPath)) _nugetPackagesFolders.Add(_globalFallbackPath);
         }
 
-        public void Register()
+        private void Register()
         {
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
 
-        public void Unregister()
+        private void Unregister()
         {
             AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
         }
@@ -74,7 +70,7 @@ namespace TypeGen.Cli.TypeResolution
             if (assembly != null) return assembly;
 
             // user-defined
-            assembly = FindByPackageName(Directories, args.Name);
+            assembly = FindByPackageName(_directories, args.Name);
             if (assembly != null) return assembly;
 
             // step 2 - search recursively (shared + user-defined + nuget global + nuget fallback)
@@ -90,14 +86,14 @@ namespace TypeGen.Cli.TypeResolution
             }
 
             // user-defined
-            assembly = FindRecursive(Directories, assemblyFileName, assemblyVersion);
+            assembly = FindRecursive(_directories, assemblyFileName, assemblyVersion);
             if (assembly != null) return assembly;
 
             // nuget
             assembly = FindRecursive(_nugetPackagesFolders, assemblyFileName, assemblyVersion);
             
             // log if assembly not found
-            List<string> searchedDirectories = Directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder}).ToList();
+            List<string> searchedDirectories = _directories.Concat(_nugetPackagesFolders).Concat(new[] {_sharedFolder}).ToList();
             if (assembly == null) _logger.Log($"Could not resolve assembly: {args.Name} in any of the searched directories: {string.Join("; ", searchedDirectories)}", LogLevel.Error);
             
             // return assembly or null
@@ -207,5 +203,17 @@ namespace TypeGen.Cli.TypeResolution
             return @"C:\Program Files\dotnet"; // old behavior
         }
 
+        ~AssemblyResolver() => Dispose(false);
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            Unregister();
+        }
     }
 }

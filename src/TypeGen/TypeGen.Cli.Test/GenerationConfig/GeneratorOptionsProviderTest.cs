@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NSubstitute;
-using TypeGen.Cli.Business;
-using TypeGen.Cli.TypeGenConfig;
+using TypeGen.Cli.GenerationConfig;
 using TypeGen.Cli.TypeResolution;
 using TypeGen.Core.Generator;
 using Xunit;
 
-namespace TypeGen.Cli.Test.Business;
+namespace TypeGen.Cli.Test.GenerationConfig;
 
 public class GeneratorOptionsProviderTest
 {
@@ -24,8 +22,8 @@ public class GeneratorOptionsProviderTest
         tgConfig.TypeBlacklist = tgConfigBlacklist;
         var expected = GeneratorOptions.DefaultTypeBlacklist.Concat(tgConfigBlacklist);
 
-        var typeResolver = Substitute.For<ITypeResolver>();
-        var sut = new GeneratorOptionsProvider(typeResolver);
+        var converterResolver = Substitute.For<IConverterResolver>();
+        var sut = new GeneratorOptionsProvider(converterResolver);
 
         // act
         var actual = sut.GetGeneratorOptions(tgConfig, Enumerable.Empty<Assembly>(), projectFolder)
@@ -47,8 +45,8 @@ public class GeneratorOptionsProviderTest
         tgConfig.TypeWhitelist = tgConfigWhitelist;
         var expected = GeneratorOptions.DefaultTypeBlacklist.Concat(tgConfigBlacklist).Except(tgConfigWhitelist);
 
-        var typeResolver = Substitute.For<ITypeResolver>();
-        var sut = new GeneratorOptionsProvider(typeResolver);
+        var converterResolver = Substitute.For<IConverterResolver>();
+        var sut = new GeneratorOptionsProvider(converterResolver);
 
         // act
         var actual = sut.GetGeneratorOptions(tgConfig, Enumerable.Empty<Assembly>(), projectFolder)

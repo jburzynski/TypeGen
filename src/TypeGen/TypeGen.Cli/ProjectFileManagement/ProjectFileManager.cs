@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
@@ -19,11 +20,11 @@ namespace TypeGen.Cli.ProjectFileManagement
             _fileSystem = fileSystem;
         }
 
-        public bool ContainsTsFile(XmlDocument projectFile, string filePath)
+        public bool ContainsTsFile(XmlDocument projectDocument, string filePath)
         {
-            Requires.NotNull(projectFile, nameof(projectFile));
+            Requires.NotNull(projectDocument, nameof(projectDocument));
 
-            XmlNodeList itemGroups = projectFile.DocumentElement?.SelectNodes($"{TypeScriptCompileXPath}[@Include='{filePath}']");
+            XmlNodeList itemGroups = projectDocument.DocumentElement?.SelectNodes($"{TypeScriptCompileXPath}[@Include='{filePath}']");
 
             return itemGroups != null && itemGroups.Count > 0;
         }
@@ -51,22 +52,28 @@ namespace TypeGen.Cli.ProjectFileManagement
                 .FirstOrDefault(x => x.EndsWith(".csproj"));
         }
 
-        public void AddTsFile(XmlDocument projectFile, string filePath)
+        public void AddTsFiles(XmlDocument projectDocument, IEnumerable<string> filePaths)
         {
-            Requires.NotNull(projectFile, nameof(projectFile));
+            foreach (var filePath in filePaths)
+                AddTsFile(projectDocument, filePath);
+        }
 
-            XmlElement documentElement = projectFile.DocumentElement;
+        public void AddTsFile(XmlDocument projectDocument, string filePath)
+        {
+            Requires.NotNull(projectDocument, nameof(projectDocument));
+
+            XmlElement documentElement = projectDocument.DocumentElement;
             if (documentElement == null) throw new CliException("Project file has no XML document element");
 
-            if (ContainsTsFile(projectFile, filePath)) return;
+            if (ContainsTsFile(projectDocument, filePath)) return;
 
             XmlNode itemGroupNode = documentElement
                 .SelectSingleNode(TypeScriptCompileXPath)
                 ?.ParentNode
-                ?? AddItemGroup(projectFile);
+                ?? AddItemGroup(projectDocument);
 
             itemGroupNode.AppendChild(
-                CreateItemGroupChild(projectFile, "TypeScriptCompile", filePath)
+                CreateItemGroupChild(projectDocument, "TypeScriptCompile", filePath)
                 );
         }
 

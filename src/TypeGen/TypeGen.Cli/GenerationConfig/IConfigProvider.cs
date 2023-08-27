@@ -1,4 +1,4 @@
-﻿namespace TypeGen.Cli.TypeGenConfig
+﻿namespace TypeGen.Cli.GenerationConfig
 {
     internal interface IConfigProvider
     {
@@ -7,7 +7,8 @@
         /// </summary>
         /// <param name="configPath"></param>
         /// <param name="projectFolder"></param>
+        /// <param name="consoleOptions"></param>
         /// <returns></returns>
-        TgConfig GetConfig(string configPath, string projectFolder);
+        TgConfig GetConfig(string configPath, string projectFolder, ConfigConsoleOptions consoleOptions);
     }
 }

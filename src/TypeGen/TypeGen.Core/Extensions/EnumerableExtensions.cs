@@ -61,6 +61,15 @@ namespace TypeGen.Core.Extensions
         }
 
         /// <summary>
+        /// Checks if an enumerable is not null and not empty
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool IsNotNullAndNotEmpty<T>(this IEnumerable<T> enumerable)
+            => !enumerable.IsNullOrEmpty();
+
+        /// <summary>
         /// Checks if the <see cref="enumerable" /> is empty.
         /// </summary>
         /// <param name="enumerable"></param>

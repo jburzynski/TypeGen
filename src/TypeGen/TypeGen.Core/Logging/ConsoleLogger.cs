@@ -1,5 +1,6 @@
 ﻿using System;
 using TypeGen.Core.Validation;
+using static TypeGen.Core.Utils.ConsoleUtils;
 
 namespace TypeGen.Core.Logging
 {
@@ -8,11 +9,11 @@ namespace TypeGen.Core.Logging
     /// </summary>
     public class ConsoleLogger : ILogger
     {
-        private readonly bool _verbose;
+        public LogLevel MinLevel { get; set; }
 
-        public ConsoleLogger(bool verbose)
+        public ConsoleLogger(LogLevel minLevel = LogLevel.Info)
         {
-            _verbose = verbose;
+            MinLevel = minLevel;
         }
 
         /// <summary>
@@ -24,26 +25,16 @@ namespace TypeGen.Core.Logging
         {
             Requires.NotNullOrEmpty(message, nameof(message));
 
-            LogLevel minLevel = _verbose ? LogLevel.Debug : LogLevel.Info;
+            if (level < MinLevel) return;
 
-            if (level < minLevel) return;
-
-            ConsoleColor oldColor = Console.ForegroundColor;
-            
-            switch (level)
+            var color = level switch
             {
-                case LogLevel.Warning:
-                    message = "WARNING: " + message;
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    break;
-                case LogLevel.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-            }
+                LogLevel.Warning => ConsoleColor.Yellow,
+                LogLevel.Error => ConsoleColor.Red,
+                _ => Console.ForegroundColor
+            };
             
-            Console.WriteLine(message);
-
-            Console.ForegroundColor = oldColor;
+            WithColor(color, () => Console.WriteLine(message));
         }
     }
 }

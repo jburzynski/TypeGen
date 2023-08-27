@@ -4,7 +4,7 @@ using TypeGen.Core.Logging;
 
 namespace TypeGen.Cli.Build
 {
-    internal class ProjectBuild
+    internal class ProjectBuild : IProjectBuild
     {
         private readonly ILogger _logger;
 

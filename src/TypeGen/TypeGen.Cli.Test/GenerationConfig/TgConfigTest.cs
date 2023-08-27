@@ -1,12 +1,8 @@
-﻿using System.Linq;
-using FluentAssertions;
-using TypeGen.Core;
+﻿using FluentAssertions;
+using TypeGen.Cli.GenerationConfig;
 using Xunit;
-using TypeGen.Cli.Extensions;
-using TypeGen.Cli.TypeGenConfig;
-using TypeGen.Core.Extensions;
 
-namespace TypeGen.Cli.Test.Models
+namespace TypeGen.Cli.Test.GenerationConfig
 {
     public class TgConfigTest
     {

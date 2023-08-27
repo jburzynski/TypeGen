@@ -2,12 +2,12 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using TypeGen.Cli.Business;
+using TypeGen.Cli.Extensions;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
-namespace TypeGen.Cli.TypeGenConfig
+namespace TypeGen.Cli.GenerationConfig
 {
     internal class ConfigProvider : IConfigProvider
     {
@@ -22,38 +22,41 @@ namespace TypeGen.Cli.TypeGenConfig
         }
 
         /// <summary>
-        /// Creates a config object from a given config file
+        /// Creates an instance of TgConfig from 
         /// </summary>
         /// <param name="configPath"></param>
         /// <param name="projectFolder"></param>
+        /// <param name="consoleOptions"></param>
         /// <returns></returns>
-        public TgConfig GetConfig(string configPath, string projectFolder)
+        public TgConfig GetConfig(string configPath, string projectFolder, ConfigConsoleOptions consoleOptions)
         {
-            Requires.NotNullOrEmpty(configPath, nameof(configPath));
             Requires.NotNullOrEmpty(projectFolder, nameof(projectFolder));
             
-            if (!_fileSystem.FileExists(configPath))
-            {
-                _logger.Log($"No config file found for project \"{projectFolder}\". Default configuration will be used.", LogLevel.Debug);
+            configPath = !string.IsNullOrEmpty(configPath)
+                ? configPath.RelativeOrRooted(projectFolder)
+                : "tgconfig.json".RelativeOrRooted(projectFolder);
 
-                TgConfig defaultConfig = new TgConfig()
-                    .MergeWithDefaultParams()
-                    .Normalize();
+            _logger.Log(_fileSystem.FileExists(configPath)
+                ? $"Reading the config file from \"{configPath}\""
+                : $"No config file found for project \"{projectFolder}\". Default configuration will be used.",
+                LogLevel.Debug);
+            
+            var config = _fileSystem.FileExists(configPath)
+                ? JsonConvert.DeserializeObject<TgConfig>(_fileSystem.ReadFile(configPath))
+                : new TgConfig();
 
-                UpdateConfigAssemblyPaths(defaultConfig, projectFolder);
-                return defaultConfig;
-            }
-
-            _logger.Log($"Reading the config file from \"{configPath}\"", LogLevel.Debug);
-
-            string tgConfigJson = _fileSystem.ReadFile(configPath);
-            TgConfig config = JsonConvert.DeserializeObject<TgConfig>(tgConfigJson)
-                .MergeWithDefaultParams()
-                .Normalize();
-
+            OverrideWithConsoleOptions(config, consoleOptions);
+            config.MergeWithDefaultParams();
+            config.Normalize();
+            
             UpdateConfigAssemblyPaths(config, projectFolder);
-
+            
             return config;
+        }
+
+        private static void OverrideWithConsoleOptions(TgConfig config, ConfigConsoleOptions consoleOptions)
+        {
+            if (consoleOptions.OutputFolder != null) config.OutputPath = consoleOptions.OutputFolder;
         }
 
         private void UpdateConfigAssemblyPaths(TgConfig config, string projectFolder)
