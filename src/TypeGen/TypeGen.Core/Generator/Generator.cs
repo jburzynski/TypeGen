@@ -109,6 +109,26 @@ namespace TypeGen.Core.Generator
         {
             return Task.Run(() => Generate(generationSpecs));
         }
+        
+        /// <summary>
+        /// Generates TypeScript files from a GenerationSpec
+        /// </summary>
+        /// <param name="generationSpecs"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public Task<IEnumerable<string>> GenerateAsync(params GenerationSpec[] generationSpecs)
+        {
+            return GenerateAsync((IEnumerable<GenerationSpec>)generationSpecs);
+        }
+
+        /// <summary>
+        /// Generates TypeScript sources from GenerationSpecs.
+        /// </summary>
+        /// <param name="generationSpecs"></param>
+        /// <returns>Generated TypeScript file paths (relative to the Options.BaseOutputDirectory)</returns>
+        public IEnumerable<string> Generate(params GenerationSpec[] generationSpecs)
+        {
+            return Generate((IEnumerable<GenerationSpec>)generationSpecs);
+        }
 
         /// <summary>
         /// Generates TypeScript sources from GenerationSpecs.
