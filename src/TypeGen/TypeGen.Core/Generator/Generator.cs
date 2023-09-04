@@ -146,10 +146,12 @@ namespace TypeGen.Core.Generator
             // generate types
 
             foreach (GenerationSpec generationSpec in generationSpecs)
+                generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
+            
+            foreach (GenerationSpec generationSpec in generationSpecs)
             {
                 _metadataReaderFactory.GenerationSpec = generationSpec;
-                generationSpec.OnBeforeGeneration(new OnBeforeGenerationArgs(Options));
-
+                
                 foreach (KeyValuePair<Type, TypeSpec> kvp in generationSpec.TypeSpecs)
                     files.AddRange(GenerateMarkedType(kvp.Key));
             }
@@ -158,11 +160,11 @@ namespace TypeGen.Core.Generator
             
             // generate barrels
             
-            if (Options.CreateIndexFile)
-                files.AddRange(GenerateIndexFile(files));
-            
             foreach (GenerationSpec generationSpec in generationSpecs)
                 generationSpec.OnBeforeBarrelGeneration(new OnBeforeBarrelGenerationArgs(Options, files.ToList()));
+            
+            if (Options.CreateIndexFile)
+                files.AddRange(GenerateIndexFile(files));
             
             foreach (GenerationSpec generationSpec in generationSpecs)
                 foreach (BarrelSpec barrelSpec in generationSpec.BarrelSpecs)
