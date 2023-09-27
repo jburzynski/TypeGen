@@ -154,6 +154,7 @@ namespace TypeGen.Core.Test.Generator.Services
         [InlineData(typeof(object), false)]
         [InlineData(typeof(IDictionary<,>), false)]
         [InlineData(typeof(IDictionary), false)]
+        [InlineData(typeof(IReadOnlyDictionary<,>), false)]
         [InlineData(typeof(Dictionary<int, string>), false)]
         [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(MyEnum), false)]
@@ -188,6 +189,7 @@ namespace TypeGen.Core.Test.Generator.Services
         [InlineData(typeof(IDictionary), true)]
         [InlineData(typeof(IDictionary<,>), true)]
         [InlineData(typeof(IDictionary<int, string>), true)]
+        [InlineData(typeof(IReadOnlyDictionary<,>), true)]
         [InlineData(typeof(Dictionary<,>), true)]
         [InlineData(typeof(Dictionary<object, int>), true)]
         [InlineData(typeof(HybridDictionary), true)]
@@ -202,6 +204,7 @@ namespace TypeGen.Core.Test.Generator.Services
         [InlineData(typeof(IList<>), false)]
         [InlineData(typeof(IDictionary<,>), false)]
         [InlineData(typeof(Dictionary<int, string>), false)]
+        [InlineData(typeof(IReadOnlyDictionary<,>), false)]
         [InlineData(typeof(GenericClass1<>), true)]
         [InlineData(typeof(GenericClass2<,>), true)]
         [InlineData(typeof(GenericClass3<,,>), true)]
@@ -313,6 +316,10 @@ namespace TypeGen.Core.Test.Generator.Services
         public class GetTsTypeName_TestClass
         {
             public object objectField;
+            public IDictionary<string,string> iDictionaryField;
+            public IDictionary untypedIDictionaryField;
+            public IReadOnlyDictionary<string,string> iReadonlyDictionaryField;
+            public Dictionary<string,string> dictionaryField;
             public bool boolField;
             public char CharProperty { get; set; }
             public string stringField;
@@ -352,6 +359,14 @@ namespace TypeGen.Core.Test.Generator.Services
         {
             new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "Object" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("objectField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "Object" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("iDictionaryField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("iDictionaryField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("untypedIDictionaryField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("untypedIDictionaryField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("iReadonlyDictionaryField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("iReadonlyDictionaryField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("dictionaryField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
+            new object[] { typeof(GetTsTypeName_TestClass).GetField("dictionaryField"), new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), StrictNullTypeUnionFlags.None, "{ [key: string]: string; }" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("boolField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "boolean" },
             new object[] { typeof(GetTsTypeName_TestClass).GetProperty("CharProperty"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "string" },
             new object[] { typeof(GetTsTypeName_TestClass).GetField("stringField"), new TypeNameConverterCollection(), StrictNullTypeUnionFlags.None, "string" },
