@@ -99,18 +99,6 @@ namespace TypeGen.Core.Test.Generator.Services
         }
         
         [Theory]
-        [InlineData(typeof(MyClass), true)]
-        [InlineData(typeof(MyEnum), false)]
-        [InlineData(typeof(TsClass), true)]
-        [InlineData(typeof(TsInterface), false)]
-        [InlineData(typeof(TsEnum), false)]
-        public void IsTsClass_TypeGiven_DeterminedIfTsClass(Type type, bool expectedResult)
-        {
-            bool actualResult = _typeService.IsTsClass(type);
-            Assert.Equal(expectedResult, actualResult);
-        }
-        
-        [Theory]
         [InlineData(typeof(MyClass), false)]
         [InlineData(typeof(MyEnum), false)]
         [InlineData(typeof(TsClass), false)]

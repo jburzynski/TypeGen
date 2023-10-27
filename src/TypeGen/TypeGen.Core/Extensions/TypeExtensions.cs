@@ -104,11 +104,22 @@ namespace TypeGen.Core.Extensions
         public static bool IsNullable(this MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
-
+            
             var contextualMember = memberInfo.ToContextualAccessor();
             return contextualMember.Nullability == Nullability.Nullable;
         }
-
+        
+        /// <summary>
+        /// Checks if a property or field is nullable
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+        
         /// <summary>
         /// Maps an enumerable to an enumerable of the elements' type names
         /// </summary>

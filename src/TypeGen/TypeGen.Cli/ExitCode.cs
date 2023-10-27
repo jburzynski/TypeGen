@@ -1,6 +1,6 @@
 namespace TypeGen.Cli;
 
-public enum ExitCode : int
+internal enum ExitCode
 {
     Success = 0,
     Error = 1

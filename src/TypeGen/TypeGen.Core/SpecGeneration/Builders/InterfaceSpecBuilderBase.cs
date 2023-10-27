@@ -9,6 +9,8 @@ namespace TypeGen.Core.SpecGeneration.Builders
     /// </summary>
     public abstract class InterfaceSpecBuilderBase<TSelf> : SpecBuilderBase,
         ICustomBaseTrait<TSelf>,
+        ICustomHeaderTrait<TSelf>,
+        ICustomBodyTrait<TSelf>,
         IDefaultExportTrait<TSelf>,
         IDefaultTypeOutputTrait<TSelf>,
         IDefaultValueTrait<TSelf>,
@@ -28,6 +30,8 @@ namespace TypeGen.Core.SpecGeneration.Builders
         where TSelf : SpecBuilderBase
     {
         private readonly CustomBaseTrait<TSelf> _customBaseTrait;
+        private readonly CustomBodyTrait<TSelf> _customBodyTrait;
+        private readonly CustomHeaderTrait<TSelf> _customHeaderTrait;
         private readonly DefaultExportTrait<TSelf> _defaultExportTrait;
         private readonly DefaultTypeOutputTrait<TSelf> _defaultTypeOutputTrait;
         private readonly DefaultValueTrait<TSelf> _defaultValueTrait;
@@ -49,6 +53,8 @@ namespace TypeGen.Core.SpecGeneration.Builders
         {
             MemberTrait = new MemberTrait<TSelf>(this as TSelf, typeSpec);
             _customBaseTrait = new CustomBaseTrait<TSelf>(this as TSelf, typeSpec);
+            _customBodyTrait = new CustomBodyTrait<TSelf>(this as TSelf, typeSpec);
+            _customHeaderTrait = new CustomHeaderTrait<TSelf>(this as TSelf, typeSpec);
             _defaultExportTrait = new DefaultExportTrait<TSelf>(this as TSelf, typeSpec);
             _defaultTypeOutputTrait = new DefaultTypeOutputTrait<TSelf>(this as TSelf, typeSpec, MemberTrait);
             _defaultValueTrait = new DefaultValueTrait<TSelf>(this as TSelf, typeSpec, MemberTrait);
@@ -75,6 +81,14 @@ namespace TypeGen.Core.SpecGeneration.Builders
         public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
             params ImplementedInterface[] implementedInterfaces)
             => _customBaseTrait.CustomBase(@base, importPath, originalTypeName, isDefaultExport, implementedInterfaces);
+
+        /// <inheritdoc />
+        public TSelf CustomBody(string body)
+            => _customBodyTrait.CustomBody(body);
+
+        /// <inheritdoc />
+        public TSelf CustomHeader(string header)
+            => _customHeaderTrait.CustomHeader(header);
         
         /// <inheritdoc />
         public TSelf DefaultExport(bool enabled = true) => _defaultExportTrait.DefaultExport(enabled);

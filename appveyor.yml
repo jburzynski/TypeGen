@@ -16,7 +16,7 @@ before_build:
   - dotnet restore src/TypeGen/TypeGen.Core
   - dotnet restore src/TypeGen/TypeGen.Cli.Test
   - dotnet restore src/TypeGen/TypeGen.Core.Test
-  - dotnet restore src/TypeGen/TypeGen.IntegrationTest
+  - dotnet restore src/TypeGen/TypeGen.FileContentTest
 
 build:
   project: src/TypeGen/TypeGen.sln

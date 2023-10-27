@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration.Builders;
 using TypeGen.Core.SpecGeneration.Builders.Generic;
 using TypeGen.Core.TypeAnnotations;
@@ -22,14 +24,27 @@ namespace TypeGen.Core.SpecGeneration
             BarrelSpecs = new List<BarrelSpec>();
         }
 
+        /// <summary>
+        /// The callback invoked before any files from the current generation spec are generated.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
         public virtual void OnBeforeGeneration(OnBeforeGenerationArgs args)
         {
         }
 
+        /// <summary>
+        /// The callback invoked after the translated TypeScript files are generated from the current generation spec,
+        /// but before any barrel files are generated for the current generation spec.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
         public virtual void OnBeforeBarrelGeneration(OnBeforeBarrelGenerationArgs args)
         {
         }
         
+        /// <summary>
+        /// The callback invoked after all files from the current generation spec are generated.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
         public virtual void OnAfterGeneration(OnAfterGenerationArgs args)
         {
         }

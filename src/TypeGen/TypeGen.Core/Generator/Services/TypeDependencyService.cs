@@ -55,6 +55,7 @@ namespace TypeGen.Core.Generator.Services
                 .Concat(GetMemberTypeDependencies(type))
                 .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
                 .Where(t => t.Type != type)
+                .Where(t => GeneratorOptions.IsTypeNotBlacklisted(t.Type))
                 .ToList();
         }
 
@@ -76,7 +77,7 @@ namespace TypeGen.Core.Generator.Services
                     var stripped = _typeService.StripNullable(constraint);
                     Type baseFlatType = _typeService.GetFlatType(stripped);
 
-                    if (_typeService.IsIngoredGenericConstarint(baseFlatType))
+                    if (_typeService.IsIgnoredGenericConstarint(baseFlatType))
                         continue;
 
                     result.AddRange(GetFlatTypeDependencies(baseFlatType));
@@ -112,7 +113,7 @@ namespace TypeGen.Core.Generator.Services
         {
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsIgnoreBaseAttribute>(type) != null) return Enumerable.Empty<TypeDependencyInfo>();
 
-            var baseTypes = _typeService.GetInterfaces(type);
+            var baseTypes = _typeService.GetImplementedInterfaces(type);
             if (!baseTypes.Any()) return Enumerable.Empty<TypeDependencyInfo>();
 
             return baseTypes

@@ -20,14 +20,6 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="type">one of: object, bool, string, int, long, float, double, decimal; or any type specified in GeneratorOptions.CustomMappings</param>
         /// <returns>TypeScript type name. Null if the passed type cannot be represented as a TypeScript simple type.</returns>
         string GetTsBuiltInTypeName(Type type);
-        
-        /// <summary>
-        /// Determines whether the type represents a TypeScript class
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True if the type represents a TypeScript class; false otherwise</returns>
-        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
-        bool IsTsClass(Type type);
 
         /// <summary>
         /// Determines whether the type represents a TypeScript class
@@ -72,7 +64,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        bool IsIngoredGenericConstarint(Type type);
+        bool IsIgnoredGenericConstarint(Type type);
 
         /// <summary>
         /// Gets TypeScript type name for a type
@@ -126,6 +118,8 @@ namespace TypeGen.Core.Generator.Services
         bool UseDefaultExport(Type type);
 
         IEnumerable<string> GetTypeUnions(MemberInfo memberInfo);
-        IEnumerable<Type> GetInterfaces(Type type);
+        IEnumerable<Type> GetImplementedInterfaces(Type type);
+        bool TypeContainsBlacklistedType(Type type);
+        bool MemberTypeContainsBlacklistedType(MemberInfo memberInfo);
     }
 }
