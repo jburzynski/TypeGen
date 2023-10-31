@@ -98,6 +98,9 @@
 		<EmbeddedResource Include="CommonCases\Expected\with-ignored-base-and-custom-base.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\with-ignored-base.ts" />
 		<EmbeddedResource Include="ConstantsOnly\Expected\constants-only.ts" />
+		<EmbeddedResource Include="Constructor\Expected\test-constructors.ts" />
+		<EmbeddedResource Include="Constructor\Expected\test-empty-constructors.ts" />
+		<EmbeddedResource Include="Constructor\Expected\test-record-constructors.ts" />
 		<EmbeddedResource Include="CustomBaseInterfaces\Expected\foo.ts" />
 		<EmbeddedResource Include="CustomMappingsClassGeneration\Expected\class-with-uri.ts" />
 		<EmbeddedResource Include="DefaultExport\Expected\class-with-default-export.ts" />

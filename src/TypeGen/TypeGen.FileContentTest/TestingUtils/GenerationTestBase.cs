@@ -9,11 +9,14 @@ namespace TypeGen.FileContentTest.TestingUtils;
 
 public class GenerationTestBase
 {
-    protected async Task TestFromAssembly(Type type, string expectedLocation)
+    protected async Task TestFromAssembly(Type type, string expectedLocation, GeneratorOptions generatorOptions = null)
     {
         var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
-        var generator = new Generator();
+        var generator = generatorOptions != null ? 
+            new Generator(generatorOptions) : 
+            new Generator();
+        
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(type.Assembly);

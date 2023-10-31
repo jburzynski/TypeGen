@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
     <DocumentationFile>TypeGen.Core.xml</DocumentationFile>
@@ -21,6 +21,9 @@
     <None Remove="Templates\InterfaceProperty.tpl" />
     <None Remove="Templates\Index.tpl" />
     <None Remove="Templates\IndexExport.tpl" />
+    <None Remove="Templates\ClassConstructor.tpl" />
+    <None Remove="Templates\ClassConstructorAssigment.tpl" />
+    <None Remove="Templates\ClassConstructorArgument.tpl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
@@ -39,7 +42,10 @@
     <EmbeddedResource Include="Templates\InterfaceDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\InterfaceProperty.tpl" />
     <EmbeddedResource Include="Templates\Index.tpl" />
-    <EmbeddedResource Include="Templates\IndexExport.tpl" />
+    <EmbeddedResource Include="Templates\IndexExport.tpl" />    
+    <EmbeddedResource Include="Templates\ClassConstructor.tpl" />    
+    <EmbeddedResource Include="Templates\ClassConstructorAssignment.tpl" />
+    <EmbeddedResource Include="Templates\ClassConstructorArgument.tpl" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Namotion.Reflection" Version="2.1.1" />

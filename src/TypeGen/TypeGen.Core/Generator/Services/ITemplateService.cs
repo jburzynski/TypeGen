@@ -4,8 +4,8 @@ namespace TypeGen.Core.Generator.Services
 {
     internal interface ITemplateService
     {
-        string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
-        string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
+        string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string constructorsText, string fileHeading = null);
+        string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string constructorsText, string fileHeading = null);
         string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string tsDoc, string defaultValue = null);
         string FillInterfaceTemplate(string imports, string name, string extends, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
@@ -21,5 +21,8 @@ namespace TypeGen.Core.Generator.Services
         string GetExtendsText(string name);
         string GetExtendsText(IEnumerable<string> names);
         string GetImplementsText(IEnumerable<string> names);
+        string FillClassConstructorTemplate(string arguments, string assignments);
+        string FillClassConstructorArgumentTemplate(string argumentName, string argumentType);
+        string FillClassConstructorAssignmentTemplate(string memberName, string argumentName);
     }
 }

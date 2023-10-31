@@ -33,6 +33,9 @@ namespace TypeGen.Core.Generator.Services
         private readonly string _indexTemplate;
         private readonly string _indexExportTemplate;
         private readonly string _headingTemplate;
+        private readonly string _classConstructorTemplate;
+        private readonly string _classConstructorArgumentTemplate;
+        private readonly string _classConstructorAssignmentTemplate;
 
         private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
 
@@ -58,10 +61,13 @@ namespace TypeGen.Core.Generator.Services
             _indexTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl");
             _indexExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl");
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
+            _classConstructorTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassConstructor.tpl");
+            _classConstructorArgumentTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassConstructorArgument.tpl");
+            _classConstructorAssignmentTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.ClassConstructorAssignment.tpl");
         }
 
         public string FillClassTemplate(string imports, string name, string extends, string implements, string properties,
-            string tsDoc, string customHead, string customBody, string fileHeading = null)
+            string tsDoc, string customHead, string customBody, string constructorsText, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -74,11 +80,12 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
-                .Replace(GetTag("fileHeading"), fileHeading);
+                .Replace(GetTag("fileHeading"), fileHeading)
+                .Replace(GetTag("constructors"), constructorsText);
         }
         
         public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements,
-            string properties, string tsDoc, string customHead, string customBody, string fileHeading = null)
+            string properties, string tsDoc, string customHead, string customBody, string constructorsText, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -92,7 +99,8 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("tsDoc"), tsDoc)
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
-                .Replace(GetTag("fileHeading"), fileHeading);
+                .Replace(GetTag("fileHeading"), fileHeading)
+                .Replace(GetTag("constructors"), constructorsText);
         }
 
         public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions,
@@ -235,6 +243,27 @@ namespace TypeGen.Core.Generator.Services
         {
             return ReplaceSpecialChars(_indexExportTemplate)
                 .Replace(GetTag("filename"), filename);
+        }
+        
+        public string FillClassConstructorTemplate(string arguments, string assignments)
+        {
+            return ReplaceSpecialChars(_classConstructorTemplate)
+                .Replace(GetTag("arguments"), arguments)
+                .Replace(GetTag("assignments"), assignments);
+        }
+
+        public string FillClassConstructorArgumentTemplate(string argumentName, string argumentType)
+        {
+            return ReplaceSpecialChars(_classConstructorArgumentTemplate)
+                .Replace(GetTag("argName"), argumentName)
+                .Replace(GetTag("argType"), argumentType);
+        }
+
+        public string FillClassConstructorAssignmentTemplate(string memberName, string argumentName)
+        {
+            return ReplaceSpecialChars(_classConstructorAssignmentTemplate)
+                .Replace(GetTag("memberName"), memberName)
+                .Replace(GetTag("argumentName"), argumentName);
         }
 
         public string GetExtendsText(string name) => $" extends {name}";
