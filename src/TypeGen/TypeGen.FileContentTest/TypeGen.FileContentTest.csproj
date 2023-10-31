@@ -118,6 +118,8 @@
 		<EmbeddedResource Include="TsClassExtendsTsInterface\Expected\ts-class.ts" />
 		<EmbeddedResource Include="TsInterfaceInheritance\Expected\sub.ts" />
 		<EmbeddedResource Include="UseDefaultExportBreaksInterfaceInheritance\Expected\product-dto.ts" />
+		<None Remove="Constructor\Expected\test-constructors-mismatch.ts" />
+		<EmbeddedResource Include="Constructor\Expected\test-constructors-mismatch.ts" />
 	</ItemGroup>
 
 	<ItemGroup>
