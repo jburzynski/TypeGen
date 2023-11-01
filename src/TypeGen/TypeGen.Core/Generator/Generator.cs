@@ -676,15 +676,13 @@ namespace TypeGen.Core.Generator
                         break;
                 }
                 
-                return new { memberName = memberInfo.Name, memberType, tsName = memberName, tsType = typeName };
-            });
-
-            var tsMemberTypes = members.ToDictionary(x => x.tsName, x => x.tsType);
+                return new TsMemberInfo(memberInfo.Name, memberType, memberName, typeName);
+            }).ToArray();
             
             //if ctor params all match member names and types or is a Record
             var matchedConstructors = constructors.Where(ctor =>
                 (classHasTsConstructorAttribute || ctor.GetCustomAttributes(typeof(TsConstructorAttribute)).Any()) &&
-                ctor.GetParameters().All(p => members.Any(m => m.memberName.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase) && m.memberType == p.ParameterType))).ToArray();
+                ctor.GetParameters().All(p => members.Any(m => m.DotNetMemberName.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase) && m.DotNetMemberType == p.ParameterType))).ToArray();
 
             //if single empty constructor, skip
             if (matchedConstructors.Length == 1 && matchedConstructors[0].GetParameters().Length == 0)
@@ -692,12 +690,12 @@ namespace TypeGen.Core.Generator
                 return constructorsText;
             }
             
-            constructorsText += matchedConstructors.Aggregate(constructorsText, (current, ctorInfo) => current + GetClassConstructorText(ctorInfo, tsMemberTypes));
+            constructorsText += matchedConstructors.Aggregate(constructorsText, (current, ctorInfo) => current + GetClassConstructorText(ctorInfo, members));
 
             return constructorsText;
         }
 
-        private string GetClassConstructorText(ConstructorInfo ctor, Dictionary<string, string> tsMemberTypes)
+        private string GetClassConstructorText(ConstructorInfo ctor, TsMemberInfo[] tsMemberTypes)
         {
             string argumentsText = "";
             string assignmentsText = "";
@@ -706,10 +704,16 @@ namespace TypeGen.Core.Generator
                 
             foreach (var param in parameters)
             {
-                var matchingKey = tsMemberTypes.Keys.FirstOrDefault(k => k.Equals(param.Name, StringComparison.InvariantCultureIgnoreCase));
+                var matchingMemberInfo = tsMemberTypes.FirstOrDefault(k => k.DotNetMemberName.Equals(param.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                argumentsText += _templateService.FillClassConstructorArgumentTemplate(matchingKey, tsMemberTypes[matchingKey]);
-                assignmentsText += _templateService.FillClassConstructorAssignmentTemplate(matchingKey, matchingKey);
+                if(matchingMemberInfo == null)
+                {
+                    //not all parameters have a matching member name, skip constructor building
+                    return string.Empty;
+                }
+                
+                argumentsText += _templateService.FillClassConstructorArgumentTemplate(matchingMemberInfo.TsMemberName, matchingMemberInfo.TsMemberType);
+                assignmentsText += _templateService.FillClassConstructorAssignmentTemplate(matchingMemberInfo.TsMemberName, matchingMemberInfo.TsMemberName);
             }
 
             argumentsText = argumentsText.TrimEnd(',', ' ');
