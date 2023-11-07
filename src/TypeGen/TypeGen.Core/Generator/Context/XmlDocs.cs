@@ -28,7 +28,7 @@ internal class XmlDocs
 
         var xmlDocFilePath = Path.ChangeExtension(assemblyLocation, "xml");
         
-        var xmlDoc = _fileSystem.FileExists(xmlDocFilePath)
+        var xmlDoc = !String.IsNullOrEmpty(assemblyLocation) && _fileSystem.FileExists(xmlDocFilePath)
             ? _fileSystem.ReadFile(xmlDocFilePath)
             : null;
 
