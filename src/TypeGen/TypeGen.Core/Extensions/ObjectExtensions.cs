@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace TypeGen.Core.Extensions
+﻿namespace TypeGen.Core.Extensions
 {
     internal static class ObjectExtensions
     {

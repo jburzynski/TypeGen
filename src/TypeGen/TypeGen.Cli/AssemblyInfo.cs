@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TypeGen.FileContentTest")]
 [assembly: InternalsVisibleTo("TypeGen.Cli.Test")]

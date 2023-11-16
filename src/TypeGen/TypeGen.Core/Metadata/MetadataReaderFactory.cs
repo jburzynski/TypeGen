@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.Core.Validation;
 

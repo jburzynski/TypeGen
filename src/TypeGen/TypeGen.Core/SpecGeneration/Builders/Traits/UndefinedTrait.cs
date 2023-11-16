@@ -1,5 +1,3 @@
-using TypeGen.Core.TypeAnnotations;
-
 namespace TypeGen.Core.SpecGeneration.Builders.Traits;
 
 internal class UndefinedTrait<TSpecBuilder> : IUndefinedTrait<TSpecBuilder>

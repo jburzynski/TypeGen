@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions

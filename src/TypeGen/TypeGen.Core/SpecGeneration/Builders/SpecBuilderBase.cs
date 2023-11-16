@@ -1,5 +1,3 @@
-using System;
-
 namespace TypeGen.Core.SpecGeneration.Builders
 {
     /// <summary>

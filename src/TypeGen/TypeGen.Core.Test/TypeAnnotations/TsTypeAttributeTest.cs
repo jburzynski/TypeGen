@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TypeGen.Core.TypeAnnotations;
+﻿using TypeGen.Core.TypeAnnotations;
 using Xunit;
 
 namespace TypeGen.Core.Test.TypeAnnotations

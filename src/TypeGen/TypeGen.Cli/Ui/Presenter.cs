@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Reflection;
-using System.Threading.Tasks;
 using TypeGen.Cli.Build;
 using TypeGen.Cli.GenerationConfig;
 using TypeGen.Cli.ProjectFileManagement;

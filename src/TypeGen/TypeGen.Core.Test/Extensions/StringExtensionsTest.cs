@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TypeGen.Core.Extensions;
+﻿using TypeGen.Core.Extensions;
 using Xunit;
 
 namespace TypeGen.Core.Test.Extensions

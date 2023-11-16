@@ -1,5 +1,3 @@
-using TypeGen.Core.TypeAnnotations;
-
 namespace TypeGen.Core.SpecGeneration.Builders.Traits;
 
 internal class ReadonlyTrait<TSpecBuilder> : IReadonlyTrait<TSpecBuilder>

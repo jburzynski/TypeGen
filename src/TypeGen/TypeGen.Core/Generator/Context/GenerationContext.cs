@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using TypeGen.Core.Conversion;
 using TypeGen.Core.Storage;
 
 namespace TypeGen.Core.Generator.Context

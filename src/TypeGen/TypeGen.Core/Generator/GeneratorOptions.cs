@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
-using TypeGen.Core.Generator.Services;
 using TypeGen.Core.Utils;
 using TypeGen.Core.Validation;
 

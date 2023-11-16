@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using TypeGen.Core.Extensions;
-using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Utils

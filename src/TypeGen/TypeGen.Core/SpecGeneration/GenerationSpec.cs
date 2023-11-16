@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration.Builders;
 using TypeGen.Core.SpecGeneration.Builders.Generic;
 using TypeGen.Core.TypeAnnotations;

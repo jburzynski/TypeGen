@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using TypeGen.Core.Extensions;
 using TypeGen.Core.Utils;
 
 namespace TypeGen.Core.TypeAnnotations
