@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
 
@@ -33,6 +35,8 @@ namespace TypeGen.Core.Generator.Services
         private readonly string _indexTemplate;
         private readonly string _indexExportTemplate;
         private readonly string _headingTemplate;
+        private readonly string _singleLineCommentTemplate;
+        private readonly string _lineBreakTemplate;
 
         private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
 
@@ -58,6 +62,8 @@ namespace TypeGen.Core.Generator.Services
             _indexTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Index.tpl");
             _indexExportTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.IndexExport.tpl");
             _headingTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Heading.tpl");
+            _singleLineCommentTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.SingleLineComment.tpl");
+            _lineBreakTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.LineBreak.tpl");
         }
 
         public string FillClassTemplate(string imports, string name, string extends, string implements, string properties,
@@ -108,6 +114,20 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("name"), name + (isOptional ? "?" : ""))
                 .Replace(GetTag("type"), type)
                 .Replace(GetTag("tsDoc"), tsDoc)
+                .Replace(GetTag("defaultValue"), defaultValue);
+        }
+
+        public string FillClassPropertyTemplate(string name, string type, string defaultValue = null)
+        {
+            type = $": {type}";
+
+            defaultValue = string.IsNullOrWhiteSpace(defaultValue) ? "" : $" = {defaultValue}";
+
+            return ReplaceSpecialChars(_classPropertyTemplate)
+                .Replace(GetTag("modifiers"), "")
+                .Replace(GetTag("name"), name)
+                .Replace(GetTag("type"), type)
+                .Replace(GetTag("tsDoc"), "")
                 .Replace(GetTag("defaultValue"), defaultValue);
         }
 
@@ -241,6 +261,14 @@ namespace TypeGen.Core.Generator.Services
         public string GetExtendsText(IEnumerable<string> names) => $" extends {string.Join(", ", names)}";
 
         public string GetImplementsText(IEnumerable<string> names) => $" implements {string.Join(", ", names)}";
+
+        public string FillWithSingleLineComment(string comment)
+        {
+            return 
+                ReplaceSpecialChars(_lineBreakTemplate) + 
+                ReplaceSpecialChars(_singleLineCommentTemplate)
+                .Replace(GetTag("comment"), comment);
+        }
 
         private static string GetTag(string tagName) => $"$tg{{{tagName}}}";
 

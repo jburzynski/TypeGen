@@ -21,11 +21,15 @@
     <None Remove="Templates\InterfaceProperty.tpl" />
     <None Remove="Templates\Index.tpl" />
     <None Remove="Templates\IndexExport.tpl" />
+    <None Remove="Templates\LineBreak.tpl" />
+    <None Remove="Templates\SingleLineComment.tpl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Class.tpl" />
     <EmbeddedResource Include="Templates\ClassDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\ClassProperty.tpl" />
+    <EmbeddedResource Include="Templates\LineBreak.tpl" />
+    <EmbeddedResource Include="Templates\SingleLineComment.tpl" />
     <EmbeddedResource Include="Templates\EnumUnionTypeDefaultExport.tpl" />
     <EmbeddedResource Include="Templates\EnumUnionType.tpl" />
     <EmbeddedResource Include="Templates\Enum.tpl" />
