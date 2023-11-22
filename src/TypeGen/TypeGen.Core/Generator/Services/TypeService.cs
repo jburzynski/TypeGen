@@ -165,6 +165,8 @@ namespace TypeGen.Core.Generator.Services
             
             return type.GetInterface("System.Collections.Generic.IDictionary`2") != null
                    || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
+                   || type.GetInterface("System.Collections.Generic.IReadOnlyDictionary`2") != null
+                   || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IReadOnlyDictionary`2"))
                    || type.GetInterface("System.Collections.IDictionary") != null
                    || (type.FullName != null && type.FullName.StartsWith("System.Collections.IDictionary"));
         }
@@ -338,10 +340,14 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetTsDictionaryTypeName(Type type)
         {
-            // handle IDictionary<,>
+            // handle IDictionary<,> and IReadOnlyDictionary<,>
             
-            Type dictionary2Interface = type.GetInterface("System.Collections.Generic.IDictionary`2");
-            if (dictionary2Interface != null || (type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2")))
+            Type[] dictionary2Interfaces = new[] {
+                type.GetInterface("System.Collections.Generic.IDictionary`2"),
+                type.GetInterface("System.Collections.Generic.IReadOnlyDictionary`2")
+            };
+            Type dictionary2Interface = dictionary2Interfaces.LastOrDefault(i => i != null);
+            if (dictionary2Interface != null || (type.FullName != null && (type.FullName.StartsWith("System.Collections.Generic.IDictionary`2") || type.FullName.StartsWith("System.Collections.Generic.IReadOnlyDictionary`2"))))
             {
                 Type dictionaryType = dictionary2Interface ?? type;
                 Type keyType = dictionaryType.GetGenericArguments()[0];
