@@ -18,7 +18,7 @@
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0" />
-      <group targetFramework="net7.0" />
+      <group targetFramework="net8.0" />
       <group>
         <dependency id="System.Reflection.TypeExtensions" version="4.7.0" />
         <dependency id="System.Dynamic.Runtime" version="4.3.0" />
