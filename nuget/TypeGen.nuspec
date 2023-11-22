@@ -13,6 +13,7 @@
     <releaseNotes>
 - updated to .NET 8
 - added support for IReadOnlyDictionary
+- fixed XmlDoc reading for assemblies without location
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
