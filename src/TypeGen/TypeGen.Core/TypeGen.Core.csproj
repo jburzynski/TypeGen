@@ -3,8 +3,8 @@
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <DocumentationFile>TypeGen.Core.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>4.5.0.0</AssemblyVersion>
-    <FileVersion>4.5.0.0</FileVersion>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Templates\Class.tpl" />
