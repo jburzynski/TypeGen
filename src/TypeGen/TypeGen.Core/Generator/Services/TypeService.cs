@@ -132,7 +132,11 @@ namespace TypeGen.Core.Generator.Services
         public bool IsTsInterface(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return MetadataReader.GetAttribute<ExportTsInterfaceAttribute>(type) != null;
+
+            if (type.IsGenericType) type = type.GetGenericTypeDefinition();
+            
+            return MetadataReader.GetAttribute<ExportTsInterfaceAttribute>(type) != null
+                || (!type.IsEnum && GeneratorOptions.ExportTypesAsInterfacesByDefault);
         }
 
         /// <inheritdoc />

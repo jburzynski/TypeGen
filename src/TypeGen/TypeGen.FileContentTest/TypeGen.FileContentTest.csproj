@@ -111,6 +111,7 @@
 		<EmbeddedResource Include="DefaultExport\Expected\interface-with-default-export.ts" />
 		<EmbeddedResource Include="ExportTypesAsInterfacesByDefault\Expected\child-as-class.ts" />
 		<EmbeddedResource Include="ExportTypesAsInterfacesByDefault\Expected\child-as-interface.ts" />
+		<EmbeddedResource Include="GenericInheritance\Expected\get-customers-response-dto.ts" />
 		<EmbeddedResource Include="IgnoreBaseInterfaces\Expected\test.ts" />
 		<EmbeddedResource Include="ImportType\Expected\ts-class-default-export.ts" />
 		<EmbeddedResource Include="ImportType\Expected\ts-class.ts" />
