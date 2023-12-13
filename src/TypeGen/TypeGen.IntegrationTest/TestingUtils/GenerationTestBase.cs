@@ -38,7 +38,10 @@ public class GenerationTestBase
     {
         var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
-        var generator = new Generator(logger);
+        GeneratorOptions options = new GeneratorOptions();
+        options.FileNameConverters.Add(new AddFolderConverter());
+
+        var generator = new Generator(options, logger);
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(type.Assembly);

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Xml.Linq;
 using Newtonsoft.Json;
@@ -157,22 +158,47 @@ namespace TypeGen.Core.Generator.Services
                 typeDependencies = typeDependencies.Where(td => !td.IsBase);
             }
 
+            var startFilePath = GeneratorOptions.FileNameConverters.Convert(type.Name.RemoveTypeArity(), type);
+            var startFileName = startFilePath;
+
+            var startOutputDir = outputDir == null ? startFilePath : Path.Combine(outputDir, startFilePath);
+            if (startOutputDir.IndexOf(Path.DirectorySeparatorChar) != -1)
+            {
+                startFileName = startOutputDir.Substring(startOutputDir.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf(Path.DirectorySeparatorChar));
+            }
+            else
+            {
+                startOutputDir = outputDir;
+            }
+
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
             {
                 Type typeDependency = typeDependencyInfo.Type;
 
-                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
-
-                // get path diff
-                string pathDiff = FileSystemUtils.GetPathDiff(outputDir, dependencyOutputDir);
-                pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
-
                 // get type & file name
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
-                string fileName = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
+                string endFilePath = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
+                string endFileName = endFilePath;
 
+                var endOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
+                endOutputDir = endOutputDir == null ? endFilePath : Path.Combine(endOutputDir, endFilePath);
+                if (endOutputDir.IndexOf(Path.DirectorySeparatorChar) != -1)
+                {
+                    endFileName = endOutputDir.Substring(endOutputDir.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf(Path.DirectorySeparatorChar));
+                }
+                else
+                {
+                    endOutputDir = outputDir;
+                }
+
+                // get path diff
+                string pathDiff = FileSystemUtils.GetPathDiff(startOutputDir, endOutputDir);
+                pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
+                _logger.Log($"{startOutputDir} -> {endOutputDir} = {pathDiff}", LogLevel.Info);
                 // get file path
-                string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), fileName);
+                string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), endFileName);
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
@@ -312,11 +338,12 @@ namespace TypeGen.Core.Generator.Services
         /// Gets text to be used as a member value
         /// </summary>
         /// <param name="memberInfo"></param>
+        /// <param name="fallback"></param>
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
-        public string GetMemberValueText(MemberInfo memberInfo)
+        public string GetMemberValueText(MemberInfo memberInfo, string? fallback = null)
         {
             var temp = memberInfo.Name;
-            if (memberInfo.DeclaringType == null) return null;
+            if (memberInfo.DeclaringType == null) return fallback;
 
             try
             {
@@ -329,21 +356,31 @@ namespace TypeGen.Core.Generator.Services
                 object valueObjGuard = valueObj;
                 bool isConstant = false;
 
-                GetMemberValue(memberInfo, instance, out valueObj, out isConstant);
+                var valueType = GetMemberValue(memberInfo, instance, out valueObj, out isConstant);
 
                 // if only default values for constants are allowed
-                if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return null;
+                if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return fallback;
 
                 // if valueObj hasn't been assigned in the switch
-                if (valueObj == valueObjGuard) return null;
-                
-                // if valueObj's value is the default value for its type
-                if (valueObj == null || valueObj.Equals(TypeUtils.GetDefaultValue(valueObj.GetType()))) return null;
+                if (valueObj == valueObjGuard) return fallback;
 
-                var valueType = valueObj.GetType();
+                // if valueObj's value is the default value for its type
+                var defaultValueForType = TypeUtils.GetDefaultValue(valueType);
+                if (_typeService.IsCollectionType(valueType))
+                    valueObj = new List<object>();
+                else if (_typeService.IsDictionaryType(valueType))
+                    valueObj = new Dictionary<string, object>();
+                else if (valueObj == null)
+                    return _generatorOptionsProvider.GeneratorOptions.StrictMode ? fallback ?? "null" : fallback;
+                else if (valueObj.Equals(defaultValueForType))
+                    if (fallback != null || !_generatorOptionsProvider.GeneratorOptions.StrictMode)
+                        return fallback;
+                    else
+                        valueObj = defaultValueForType;
+
+                valueType = valueObj.GetType();
                 string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
-
 
                 switch (valueObj)
                 {
@@ -365,7 +402,7 @@ namespace TypeGen.Core.Generator.Services
                             !valueType.GetTypeInfo().IsValueType && // Ignore value types
                             valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
                         {
-                            _logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
+                            //_logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
                             var defaultCtorValueType = Activator.CreateInstance(valueType);
                             if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
                             {
@@ -388,7 +425,7 @@ namespace TypeGen.Core.Generator.Services
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because an unknown exception occurred: '{e.Message}'", LogLevel.Debug);
             }
 
-            return null;
+            return fallback;
         }
 
         private bool memberwiseEquals(object a, object b)
@@ -409,7 +446,7 @@ namespace TypeGen.Core.Generator.Services
                     GetMemberValue(member, b, out var bVal, out var _);
                     if (!memberwiseEquals(aVal, bVal))
                     {
-                        _logger?.Log($"Difference found in member {type.FullName}.{member.Name}: {aVal} != {bVal}", LogLevel.Info);
+                        //_logger?.Log($"Difference found in member {type.FullName}.{member.Name}: {aVal} != {bVal}", LogLevel.Info);
                         return false;
                     }
                 }
@@ -418,18 +455,18 @@ namespace TypeGen.Core.Generator.Services
             return true;
         }
 
-        private void GetMemberValue(MemberInfo memberInfo, object instance, out object valueObj, out bool isConstant)
+        private Type GetMemberValue(MemberInfo memberInfo, object instance, out object valueObj, out bool isConstant)
         {
             switch (memberInfo)
             {
                 case FieldInfo fieldInfo:
                     valueObj = fieldInfo.GetValue(instance);
                     isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
-                    break;
+                    return fieldInfo.FieldType;
                 case PropertyInfo propertyInfo:
                     valueObj = propertyInfo.GetValue(instance);
                     isConstant = false;
-                    break;
+                    return propertyInfo.PropertyType;
                 default:
                     throw new Exception();
             }
@@ -457,13 +494,15 @@ namespace TypeGen.Core.Generator.Services
                 }
                 else
                 {
+                    // try to get default value from Options.DefaultValuesForTypes
+                    string fallback = null;
+                    if (_generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.Any() && _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.ContainsKey(typeName))
+                        fallback = _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes[typeName];
+
                     // try to get default value from the member's default value
-                    string valueText = GetMemberValueText(m);
+                    string valueText = GetMemberValueText(m, fallback);
                     if (!string.IsNullOrWhiteSpace(valueText))
                         defaultValue = valueText;
-                    // try to get default value from Options.DefaultValuesForTypes
-                    else if (_generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.Any() && _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.ContainsKey(typeName))
-                        defaultValue = _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes[typeName];
                     else
                         defaultValue = null;
                 }

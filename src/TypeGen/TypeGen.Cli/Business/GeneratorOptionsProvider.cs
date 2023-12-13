@@ -67,7 +67,8 @@ namespace TypeGen.Cli.Business
                 CustomTypeMappings = config.CustomTypeMappings ?? GeneratorOptions.DefaultCustomTypeMappings,
                 EnumStringInitializers = config.EnumStringInitializers ?? GeneratorOptions.DefaultEnumStringInitializers,
                 FileHeading = config.FileHeading ?? GeneratorOptions.DefaultFileHeading,
-                UseDefaultExport = config.UseDefaultExport ?? GeneratorOptions.DefaultUseDefaultExport
+                UseDefaultExport = config.UseDefaultExport ?? GeneratorOptions.DefaultUseDefaultExport,
+                StrictMode = config.StrictMode ?? GeneratorOptions.DefaultStrictMode,
             };
         }
 

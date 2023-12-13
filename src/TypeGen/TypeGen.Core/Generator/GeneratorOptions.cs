@@ -32,6 +32,7 @@ namespace TypeGen.Core.Generator
         public static bool DefaultUseDefaultExport => false;
         public static string DefaultIndexFileExtension => DefaultTypeScriptFileExtension;
         public static bool DefaultExportTypesAsInterfacesByDefault => false;
+        public static bool DefaultStrictMode => false;
 
         /// <summary>
         /// A collection (chain) of converters used for converting C# file names to TypeScript file names
@@ -155,5 +156,10 @@ namespace TypeGen.Core.Generator
         /// Whether to export types as interfaces by default. For example affects member types which aren't explicitly selected to be generated.
         /// </summary>
         public bool ExportTypesAsInterfacesByDefault { get; set; } = DefaultExportTypesAsInterfacesByDefault;
+
+        /// <summary>
+        /// Whether to append null to type unions where null is the default value.
+        /// </summary>
+        public bool StrictMode { get; set; } = DefaultStrictMode;
     }
 }
