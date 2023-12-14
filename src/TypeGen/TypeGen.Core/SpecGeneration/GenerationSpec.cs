@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using TypeGen.Core.Generator;
 using TypeGen.Core.SpecGeneration.Builders;
 using TypeGen.Core.SpecGeneration.Builders.Generic;
 using TypeGen.Core.TypeAnnotations;
@@ -22,11 +24,28 @@ namespace TypeGen.Core.SpecGeneration
             BarrelSpecs = new List<BarrelSpec>();
         }
 
+        /// <summary>
+        /// The callback invoked before any files from the current generation spec are generated.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
         public virtual void OnBeforeGeneration(OnBeforeGenerationArgs args)
         {
         }
 
+        /// <summary>
+        /// The callback invoked after the translated TypeScript files are generated from the current generation spec,
+        /// but before any barrel files are generated for the current generation spec.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
         public virtual void OnBeforeBarrelGeneration(OnBeforeBarrelGenerationArgs args)
+        {
+        }
+        
+        /// <summary>
+        /// The callback invoked after all files from the current generation spec are generated.
+        /// </summary>
+        /// <param name="args">The callback arguments.</param>
+        public virtual void OnAfterGeneration(OnAfterGenerationArgs args)
         {
         }
 
@@ -82,10 +101,11 @@ namespace TypeGen.Core.SpecGeneration
         /// <param name="type"></param>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
+        /// <param name="asUnionType"></param>
         /// <returns></returns>
-        protected EnumSpecBuilder AddEnum(Type type, string outputDir = null, bool isConst = false)
+        protected EnumSpecBuilder AddEnum(Type type, string outputDir = null, bool isConst = false, bool asUnionType = false)
         {
-            TypeSpec typeSpec = AddTypeSpec(type, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
+            TypeSpec typeSpec = AddTypeSpec(type, new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst, AsUnionType = asUnionType });
             return new EnumSpecBuilder(typeSpec);
         }
 
@@ -94,10 +114,11 @@ namespace TypeGen.Core.SpecGeneration
         /// </summary>
         /// <param name="outputDir"></param>
         /// <param name="isConst"></param>
+        /// <param name="asUnionType"></param>
         /// <returns></returns>
-        protected EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false) where T : Enum
+        protected EnumSpecBuilder<T> AddEnum<T>(string outputDir = null, bool isConst = false, bool asUnionType = false) where T : Enum
         {
-            TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst });
+            TypeSpec typeSpec = AddTypeSpec(typeof(T), new ExportTsEnumAttribute { OutputDir = outputDir, IsConst = isConst, AsUnionType = asUnionType });
             return new EnumSpecBuilder<T>(typeSpec);
         }
 

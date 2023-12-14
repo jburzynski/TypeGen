@@ -94,7 +94,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public string GetExtendsText(Type type)
+        public string GetExtendsForClassesText(Type type)
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
@@ -116,7 +116,7 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
-            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
+            IEnumerable<Type> baseTypes = _typeService.GetImplementedInterfaces(type);
             if (!baseTypes.Any()) return "";
 
             IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
@@ -133,10 +133,10 @@ namespace TypeGen.Core.Generator.Services
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
 
-            IEnumerable<Type> baseTypes = _typeService.GetInterfaces(type);
-            if (!baseTypes.Any()) return "";
+            IEnumerable<Type> implementedInterfaces = _typeService.GetImplementedInterfaces(type);
+            if (!implementedInterfaces.Any()) return "";
 
-            IEnumerable<string> baseTypeNames = baseTypes.Select(baseType => _typeService.GetTsTypeName(baseType, true));
+            IEnumerable<string> baseTypeNames = implementedInterfaces.Select(baseType => _typeService.GetTsTypeName(baseType, true));
             return _templateService.GetImplementsText(baseTypeNames);
         }
         
@@ -204,8 +204,8 @@ namespace TypeGen.Core.Generator.Services
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
                 
                 result += _typeService.UseDefaultExport(typeDependency) ?
-                    _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath) :
-                    _templateService.FillImportTemplate(typeName, "", dependencyPath);
+                    _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath, GeneratorOptions.UseImportType) :
+                    _templateService.FillImportTemplate(typeName, "", dependencyPath, GeneratorOptions.UseImportType);
             }
 
             return result;
@@ -269,8 +269,8 @@ namespace TypeGen.Core.Generator.Services
             string name = withOriginalTypeName ? originalTypeName : typeName;
             string typeAlias = withOriginalTypeName ? typeName : null;
             
-            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath) : 
-                _templateService.FillImportTemplate(name, typeAlias, importPath);
+            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) : 
+                _templateService.FillImportTemplate(name, typeAlias, importPath, GeneratorOptions.UseImportType);
         }
 
         /// <summary>

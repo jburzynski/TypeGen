@@ -61,6 +61,15 @@ namespace TypeGen.Core.Extensions
         }
 
         /// <summary>
+        /// Checks if an enumerable is not null and not empty
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool IsNotNullAndNotEmpty<T>(this IEnumerable<T> enumerable)
+            => !enumerable.IsNullOrEmpty();
+
+        /// <summary>
         /// Checks if the <see cref="enumerable" /> is empty.
         /// </summary>
         /// <param name="enumerable"></param>
@@ -76,5 +85,8 @@ namespace TypeGen.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
+
+        public static bool Contains<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
+            => enumerable.Where(predicate).Any();
     }
 }

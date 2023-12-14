@@ -21,7 +21,7 @@ namespace TypeGen.Core.SpecGeneration
             _memberAttributes = new Dictionary<string, IList<Attribute>>();
             _additionalAttributes = new List<Attribute>();
         }
-        
+
         public void AddMember(string memberName) => _memberAttributes[memberName] = new List<Attribute>();
 
         public void AddCustomBaseAttribute(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
@@ -32,6 +32,8 @@ namespace TypeGen.Core.SpecGeneration
         public void AddDefaultValueAttribute(string memberName, string defaultValue) => AddMemberAttribute(memberName, new TsDefaultValueAttribute(defaultValue));
         public void AddIgnoreAttribute(string memberName) => AddMemberAttribute(memberName, new TsIgnoreAttribute());
         public void AddIgnoreBaseAttribute() => AddAdditionalAttribute(new TsIgnoreBaseAttribute());
+        public void SetCustomHeader(string header) { ExportAttribute.CustomHeader = header; }
+        public void SetCustomBody(string body) { ExportAttribute.CustomBody = body; }
         public void AddMemberNameAttribute(string memberName, string name) => AddMemberAttribute(memberName, new TsMemberNameAttribute(name));
         public void AddNotNullAttribute(string memberName) => AddMemberAttribute(memberName, new TsNotNullAttribute());
         public void AddNotReadonlyAttribute(string memberName) => AddMemberAttribute(memberName, new TsNotReadonlyAttribute());
@@ -48,7 +50,7 @@ namespace TypeGen.Core.SpecGeneration
         public void AddTypeUnionsAttribute(string memberName, IEnumerable<string> typeUnions) => AddMemberAttribute(memberName, new TsTypeUnionsAttribute(typeUnions));
         public void AddTypeUnionsAttribute(string memberName, params string[] typeUnions) => AddMemberAttribute(memberName, new TsTypeUnionsAttribute(typeUnions));
         public void AddUndefinedAttribute(string memberName) => AddMemberAttribute(memberName, new TsUndefinedAttribute());
-        
+
         private void AddMemberAttribute(string memberName, Attribute attribute) => MemberAttributes[memberName].Add(attribute);
         private void AddAdditionalAttribute(Attribute attribute) => _additionalAttributes.Add(attribute);
     }

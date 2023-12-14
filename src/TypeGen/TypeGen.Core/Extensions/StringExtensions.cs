@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Extensions
@@ -61,14 +62,25 @@ namespace TypeGen.Core.Extensions
         }
         
         /// <summary>
-        /// Removes generic component from the type, e.g. "MyType<T>" becomes "MyType"
+        /// Removes generic component from the TypeScript type name, e.g. "MyType&lt;T&gt;" becomes "MyType"
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RemoveTypeGenericComponent(this string value)
+        public static string RemoveTsTypeNameGenericComponent(this string value)
         {
             Requires.NotNull(value, nameof(value));
             return value.Split('<')[0];
+        }
+
+        /// <summary>
+        /// Removes generic arguments from the type name.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string RemoveGenericArgumentsFromTypeName(this string value)
+        {
+            Requires.NotNull(value, nameof(value));
+            return value.Split('[')[0];
         }
 
         /// <summary>
@@ -161,6 +173,25 @@ namespace TypeGen.Core.Extensions
                 return str.Substring(0, str.Length - postfix.Length);
             }
             return str;
+        }
+
+        public static string NormalizeNewLines(this string str)
+        {
+            return Regex.Replace(str, @"\r\n|\n|\r", Environment.NewLine);
+        }
+
+        public static string SetIndentation(this string str, int indentationLength)
+            => str.MakeIndentation(indentationLength, true);
+
+        public static string AddIndentation(this string str, int indentationLength)
+            => str.MakeIndentation(indentationLength, false);
+
+        private static string MakeIndentation(this string str, int indentationLength, bool trimLinesStart)
+        {
+            var indentation = string.Join("", Enumerable.Repeat(" ", indentationLength));
+            str = str.NormalizeNewLines();
+            var lines = str.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            return string.Join(Environment.NewLine, lines.Select(x => indentation + (trimLinesStart ? x.TrimStart() : x)));
         }
     }
 }

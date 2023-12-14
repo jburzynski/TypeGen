@@ -19,7 +19,7 @@ namespace TypeGen.Core.Generator.Services
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        string GetExtendsText(Type type);
+        string GetExtendsForClassesText(Type type);
 
         /// <summary>
         /// Gets custom code for a TypeScript file given by filePath.

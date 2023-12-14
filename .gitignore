@@ -262,3 +262,5 @@ paket-files/
 /src/TypeGen/TypeGen.Cli/NuGet.config
 /src/TypeGen/TypeGen.Core/TypeGen.Core.xml
 generated-typescript
+/src/TypeGen/TypeGen.Core.Test/foo.ts
+/src/TypeGen/TypeGen.Core.Test/tgconfig.json

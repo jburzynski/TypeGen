@@ -37,6 +37,9 @@ namespace TypeGen.Core.Storage
         }
         
         /// <inheritdoc />
+        public bool FileDoesNotExist(string filePath) => !FileExists(filePath);
+
+        /// <inheritdoc />
         public IEnumerable<string> GetFilesRecursive(string rootDirectory, string fileName)
         {
             Requires.NotNullOrEmpty(rootDirectory, nameof(rootDirectory));

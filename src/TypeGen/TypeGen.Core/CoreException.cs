@@ -19,8 +19,8 @@ namespace TypeGen.Core
         {
         }
 
-        public CoreException(string message, Exception exception)
-            : base(message, exception)
+        public CoreException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }

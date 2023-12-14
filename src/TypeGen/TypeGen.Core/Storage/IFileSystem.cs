@@ -24,6 +24,13 @@ namespace TypeGen.Core.Storage
         /// <param name="filePath"></param>
         /// <returns></returns>
         bool FileExists(string filePath);
+        
+        /// <summary>
+        /// Checks if the file does not exist
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        bool FileDoesNotExist(string filePath);
 
         /// <summary>
         /// Searches recursively for a file in a directory

@@ -57,6 +57,32 @@ namespace TypeGen.Core.Test.SpecGeneration
             Assert.Equal(isDefaultExport, ((TsCustomBaseAttribute)attribute).IsDefaultExport);
         }
         
+        [Fact]
+        public void CustomHeader_Invoked_SpecUpdated()
+        {
+            const string header = "header";
+            var spec = new TypeSpec(new ExportTsInterfaceAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.CustomHeader(header);
+
+            var attribute = spec.ExportAttribute;
+            Assert.Equal(header, attribute.CustomHeader);
+        }
+        
+        [Fact]
+        public void CustomBody_Invoked_SpecUpdated()
+        {
+            const string body = "body";
+            var spec = new TypeSpec(new ExportTsInterfaceAttribute());
+            var builder = new ClassSpecBuilder(spec);
+
+            builder.CustomBody(body);
+
+            var attribute = spec.ExportAttribute;
+            Assert.Equal(body, attribute.CustomBody);
+        }
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]

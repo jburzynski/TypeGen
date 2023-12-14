@@ -53,7 +53,17 @@ namespace TypeGen.Core.Test.Extensions
         [InlineData("NonGenericType", "NonGenericType")]
         public void RemoveTypeGenericComponent_Test(string input, string expectedResult)
         {
-            string actualResult = input.RemoveTypeGenericComponent();
+            string actualResult = input.RemoveTsTypeNameGenericComponent();
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        [Theory]
+        [InlineData("Foo.Bar.Baz", "Foo.Bar.Baz")]
+        [InlineData("Foo.Bar.Baz`2", "Foo.Bar.Baz`2")]
+        [InlineData("Foo.Bar.Baz`2[[System.Int32, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]", "Foo.Bar.Baz`2")]
+        public void RemoveGenericArgumentsFromTypeName_Test(string input, string expectedResult)
+        {
+            string actualResult = input.RemoveGenericArgumentsFromTypeName();
             Assert.Equal(expectedResult, actualResult);
         }
 
