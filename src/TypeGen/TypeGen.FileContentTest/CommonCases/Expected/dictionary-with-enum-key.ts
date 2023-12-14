@@ -7,5 +7,5 @@ import { EnumAsUnionType } from "./enum-as-union-type";
 import { CustomBaseClass } from "./custom-base-class";
 
 export class DictionaryWithEnumKey {
-    enumDict: { [key in EnumAsUnionType]?: CustomBaseClass; };
+    enumDict: { [key in EnumAsUnionType]?: CustomBaseClass; } = {};
 }

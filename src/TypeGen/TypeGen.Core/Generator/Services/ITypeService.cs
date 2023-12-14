@@ -25,6 +25,14 @@ namespace TypeGen.Core.Generator.Services
         /// Determines whether the type represents a TypeScript class
         /// </summary>
         /// <param name="type"></param>
+        /// <returns>True if the type represents a TypeScript class; false otherwise</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
+        bool IsTsClass(Type type);
+
+        /// <summary>
+        /// Determines whether the type represents a TypeScript class
+        /// </summary>
+        /// <param name="type"></param>
         /// <returns>True is the type represents a TypeScript class; false otherwise</returns>
         /// <exception cref="ArgumentNullException">Thrown if the type is null</exception>
         bool IsTsInterface(Type type);

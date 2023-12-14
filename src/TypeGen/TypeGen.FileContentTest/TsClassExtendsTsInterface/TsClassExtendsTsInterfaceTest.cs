@@ -4,11 +4,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.TestingUtils;
 using TypeGen.FileContentTest.TsClassExtendsTsInterface.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.TsClassExtendsTsInterface;
 
 public class TsClassExtendsTsInterfaceTest : GenerationTestBase
 {
+    public TsClassExtendsTsInterfaceTest(ITestOutputHelper output) : base(output) { }
+
     [Fact]
     public async Task TsClassExtendsTsInterface_Test()
     {

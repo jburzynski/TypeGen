@@ -280,7 +280,7 @@ namespace TypeGen.Core.Test.Generator.Services
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act
-            string actual = tsContentGenerator.GetMemberValueText(memberInfo);
+            string actual = tsContentGenerator.GetMemberValueText(memberInfo, false);
 
             //assert
             Assert.Equal(expected, actual);

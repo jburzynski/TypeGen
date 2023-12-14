@@ -5,11 +5,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.Comments.Entities;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.Comments;
 
 public class CommentsTest : GenerationTestBase
 {
+    public CommentsTest(ITestOutputHelper output) : base(output) { }
+
     [Theory]
     [InlineData(typeof(TsClass), "TypeGen.FileContentTest.Comments.Expected.ts-class.ts", false)]
     [InlineData(typeof(TsClass), "TypeGen.FileContentTest.Comments.Expected.ts-class-default-export.ts", true)]

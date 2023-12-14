@@ -4,5 +4,5 @@
  */
 
 export class DictionaryStringObjectErrorCase {
-    foo: { [key: string]: Object; };
+    foo: { [key: string]: Object; } = {};
 }

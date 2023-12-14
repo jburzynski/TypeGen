@@ -8,11 +8,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.Blacklist.Entities;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.Blacklist
 {
     public class BlacklistTest : GenerationTestBase
     {
+        public BlacklistTest(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task ClassWithBlacklistedBase_Test()
         {

@@ -4,5 +4,5 @@
  */
 
 export class ArrayOfNullable {
-    password: number[];
+    password: number[] = [];
 }

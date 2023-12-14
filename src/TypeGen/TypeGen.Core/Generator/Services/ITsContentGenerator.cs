@@ -44,7 +44,7 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="memberInfo"></param>
         /// <param name="fallback"></param>
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
-        string GetMemberValueText(MemberInfo memberInfo, string? fallback = null);
+        string GetMemberValueText(MemberInfo memberInfo, bool isOptional, string? fallback = null);
         string GetImplementsText(Type type);
         string GetExtendsForInterfacesText(Type type);
         string GetConstructorText(Type type);

@@ -5,7 +5,7 @@ using TypeGen.Core.Generator;
 using TypeGen.Core.Logging;
 using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.Extensions;
-using TypeGen.IntegrationTest.Extensions;
+using TypeGen.IntegrationTest;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,6 +21,8 @@ public class GenerationTestBase
         {
             this.output = output;
         }
+
+        public LogLevel MinLevel { get; set; } = LogLevel.Debug;
 
         void ILogger.Log(string message, LogLevel level)
         {
@@ -41,7 +43,6 @@ public class GenerationTestBase
         var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
         GeneratorOptions options = new GeneratorOptions();
-        options.FileNameConverters.Add(new AddFolderConverter());
 
         var generator = new Generator(options, logger);
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);

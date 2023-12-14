@@ -162,10 +162,10 @@ namespace TypeGen.Core.Generator.Services
             var startFileName = startFilePath;
 
             var startOutputDir = outputDir == null ? startFilePath : Path.Combine(outputDir, startFilePath);
-            if (startOutputDir.IndexOf(Path.DirectorySeparatorChar) != -1)
+            if (startOutputDir.IndexOf('/') != -1)
             {
-                startFileName = startOutputDir.Substring(startOutputDir.LastIndexOf(Path.DirectorySeparatorChar) + 1);
-                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf(Path.DirectorySeparatorChar));
+                startFileName = startOutputDir.Substring(startOutputDir.LastIndexOf('/') + 1);
+                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf('/'));
             }
             else
             {
@@ -183,20 +183,20 @@ namespace TypeGen.Core.Generator.Services
 
                 var endOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
                 endOutputDir = endOutputDir == null ? endFilePath : Path.Combine(endOutputDir, endFilePath);
-                if (endOutputDir.IndexOf(Path.DirectorySeparatorChar) != -1)
+                if (endOutputDir.IndexOf('/') != -1)
                 {
-                    endFileName = endOutputDir.Substring(endOutputDir.LastIndexOf(Path.DirectorySeparatorChar) + 1);
-                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf(Path.DirectorySeparatorChar));
+                    endFileName = endOutputDir.Substring(endOutputDir.LastIndexOf('/') + 1);
+                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf('/'));
                 }
                 else
                 {
-                    endOutputDir = outputDir;
+                    endOutputDir = "./";
                 }
 
                 // get path diff
                 string pathDiff = FileSystemUtils.GetPathDiff(startOutputDir, endOutputDir);
-                pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
-                _logger.Log($"{startOutputDir} -> {endOutputDir} = {pathDiff}", LogLevel.Info);
+                pathDiff = pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
+                _logger?.Log($"{startOutputDir} -> {endOutputDir} = {pathDiff}", LogLevel.Info);
                 // get file path
                 string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), endFileName);
                 dependencyPath = dependencyPath.Replace('\\', '/');
@@ -340,7 +340,7 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="memberInfo"></param>
         /// <param name="fallback"></param>
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
-        public string GetMemberValueText(MemberInfo memberInfo, string? fallback = null)
+        public string GetMemberValueText(MemberInfo memberInfo, bool isOptional, string? fallback = null)
         {
             var temp = memberInfo.Name;
             if (memberInfo.DeclaringType == null) return fallback;
@@ -367,17 +367,18 @@ namespace TypeGen.Core.Generator.Services
                 // if valueObj's value is the default value for its type
                 var defaultValueForType = TypeUtils.GetDefaultValue(valueType);
                 if (_typeService.IsCollectionType(valueType))
-                    valueObj = new List<object>();
+                    valueObj ??= isOptional ? null : new List<object>();
                 else if (_typeService.IsDictionaryType(valueType))
-                    valueObj = new Dictionary<string, object>();
+                    valueObj ??= isOptional ? null : new Dictionary<string, object>();
                 else if (valueObj == null)
                     return _generatorOptionsProvider.GeneratorOptions.StrictMode ? fallback ?? "null" : fallback;
                 else if (valueObj.Equals(defaultValueForType))
                     if (fallback != null || !_generatorOptionsProvider.GeneratorOptions.StrictMode)
                         return fallback;
                     else
-                        valueObj = defaultValueForType;
+                        valueObj = isOptional ? null : defaultValueForType;
 
+                if (valueObj == null) return null;
                 valueType = valueObj.GetType();
                 string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
                 string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
@@ -500,7 +501,13 @@ namespace TypeGen.Core.Generator.Services
                         fallback = _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes[typeName];
 
                     // try to get default value from the member's default value
-                    string valueText = GetMemberValueText(m, fallback);
+                    var isNullable = m.IsNullable();
+                    var isOptional = false;
+                    if (isNullable && _generatorOptionsProvider.GeneratorOptions.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
+                    {
+                        isOptional = true;
+                    }
+                    string valueText = GetMemberValueText(m, isOptional, fallback);
                     if (!string.IsNullOrWhiteSpace(valueText))
                         defaultValue = valueText;
                     else

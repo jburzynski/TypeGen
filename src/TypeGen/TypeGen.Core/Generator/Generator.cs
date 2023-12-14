@@ -326,7 +326,7 @@ namespace TypeGen.Core.Generator
             return new[] { filename };
         }
         
-        private IEnumerable<string> GenerateTypeInit(Type type)
+        private IEnumerable<string> GenerateMarkedType(Type type)
         {
             if (Options.IsTypeBlacklisted(type)) return Enumerable.Empty<string>();
             
@@ -429,6 +429,7 @@ namespace TypeGen.Core.Generator
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = GetClassPropertiesText(type);
+            string constructorText = _tsContentGenerator.GetConstructorText(type);
 
             // generate the file content
 
@@ -445,8 +446,8 @@ namespace TypeGen.Core.Generator
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -482,7 +483,6 @@ namespace TypeGen.Core.Generator
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = GetInterfacePropertiesText(type);
-            string constructorText = _tsContentGenerator.GetConstructorText(type);
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, true);
@@ -498,8 +498,8 @@ namespace TypeGen.Core.Generator
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading) :
-                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading);
+                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
+                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -590,7 +590,7 @@ namespace TypeGen.Core.Generator
 
             var ctorAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsConstructorAttribute>(memberInfo);
             if (ctorAttribute != null)
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional);
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
 
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
@@ -603,7 +603,7 @@ namespace TypeGen.Core.Generator
                 fallback = Options.DefaultValuesForTypes[typeName];
 
             // try to get default value from the member's default value
-            string valueText = _tsContentGenerator.GetMemberValueText(memberInfo, fallback);
+            string valueText = _tsContentGenerator.GetMemberValueText(memberInfo, isOptional, fallback);
             if (((string.IsNullOrWhiteSpace(valueText) || valueText == "null") && Options.StrictMode) && !typeUnions.Contains("null"))
                 typeUnions = typeUnions.Append("null");
 
