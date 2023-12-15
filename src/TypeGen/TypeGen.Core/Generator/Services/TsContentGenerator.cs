@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -71,10 +72,10 @@ namespace TypeGen.Core.Generator.Services
         public string GetImportsText(Type type, string outputDir)
         {
             Requires.NotNull(type, nameof(type));
-            
+
             if (GeneratorOptions.FileNameConverters == null)
                 throw new InvalidOperationException($"{nameof(GeneratorOptions.FileNameConverters)} should not be null.");
-            
+
             if (GeneratorOptions.TypeNameConverters == null)
                 throw new InvalidOperationException($"{nameof(GeneratorOptions.TypeNameConverters)} should not be null.");
 
@@ -98,7 +99,7 @@ namespace TypeGen.Core.Generator.Services
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
-            
+
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
@@ -139,7 +140,7 @@ namespace TypeGen.Core.Generator.Services
             IEnumerable<string> baseTypeNames = implementedInterfaces.Select(baseType => _typeService.GetTsTypeName(baseType, true));
             return _templateService.GetImplementsText(baseTypeNames);
         }
-        
+
         /// <summary>
         /// Returns TypeScript imports source code related to type dependencies
         /// </summary>
@@ -148,7 +149,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetTypeDependencyImportsText(Type type, string outputDir)
         {
-            if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "\\";
+            if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "/";
             var result = "";
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
@@ -158,14 +159,14 @@ namespace TypeGen.Core.Generator.Services
                 typeDependencies = typeDependencies.Where(td => !td.IsBase);
             }
 
-            var startFilePath = GeneratorOptions.FileNameConverters.Convert(type.Name.RemoveTypeArity(), type);
+            var startFilePath = GeneratorOptions.FileNameConverters.Convert(type.Name.RemoveTypeArity(), type)?.Replace("\\", "/");
             var startFileName = startFilePath;
 
-            var startOutputDir = outputDir == null ? startFilePath : Path.Combine(outputDir, startFilePath);
+            var startOutputDir = outputDir == null ? startFilePath : outputDir.EnsurePostfix("/") + startFilePath;
             if (startOutputDir.IndexOf('/') != -1)
             {
                 startFileName = startOutputDir.Substring(startOutputDir.LastIndexOf('/') + 1);
-                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf('/'));
+                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf('/') + 1);
             }
             else
             {
@@ -181,12 +182,12 @@ namespace TypeGen.Core.Generator.Services
                 string endFilePath = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
                 string endFileName = endFilePath;
 
-                var endOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
-                endOutputDir = endOutputDir == null ? endFilePath : Path.Combine(endOutputDir, endFilePath);
+                var endOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir)?.Replace("\\", "/");
+                endOutputDir = endOutputDir == null ? endFilePath : endOutputDir.EnsurePostfix("/") + endFilePath;
                 if (endOutputDir.IndexOf('/') != -1)
                 {
                     endFileName = endOutputDir.Substring(endOutputDir.LastIndexOf('/') + 1);
-                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf('/'));
+                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf('/') + 1);
                 }
                 else
                 {
@@ -198,11 +199,11 @@ namespace TypeGen.Core.Generator.Services
                 pathDiff = pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
                 _logger?.Log($"{startOutputDir} -> {endOutputDir} = {pathDiff}", LogLevel.Info);
                 // get file path
-                string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), endFileName);
+                string dependencyPath = pathDiff.EnsurePostfix("/") + endFileName;
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
-                
+
                 result += _typeService.UseDefaultExport(typeDependency) ?
                     _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath, GeneratorOptions.UseImportType) :
                     _templateService.FillImportTemplate(typeName, "", dependencyPath, GeneratorOptions.UseImportType);
@@ -268,8 +269,8 @@ namespace TypeGen.Core.Generator.Services
 
             string name = withOriginalTypeName ? originalTypeName : typeName;
             string typeAlias = withOriginalTypeName ? typeName : null;
-            
-            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) : 
+
+            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) :
                 _templateService.FillImportTemplate(name, typeAlias, importPath, GeneratorOptions.UseImportType);
         }
 
@@ -309,7 +310,7 @@ namespace TypeGen.Core.Generator.Services
         public string GetCustomBody(string filePath, int indentSize)
         {
             Requires.NotNull(filePath, nameof(filePath));
-            
+
             string content = _tsContentParser.GetTagContent(filePath, indentSize, KeepTsTagName, CustomBodyTagName);
             string tab = StringUtils.GetTabText(indentSize);
 
@@ -327,7 +328,7 @@ namespace TypeGen.Core.Generator.Services
         public string GetCustomHead(string filePath)
         {
             Requires.NotNull(filePath, nameof(filePath));
-            
+
             string content = _tsContentParser.GetTagContent(filePath, 0, CustomHeadTagName);
             return string.IsNullOrEmpty(content)
                 ? ""
@@ -378,46 +379,13 @@ namespace TypeGen.Core.Generator.Services
                     else
                         valueObj = isOptional ? null : defaultValueForType;
 
-                if (valueObj == null) return null;
-                valueType = valueObj.GetType();
-                string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
-                string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
-
-                switch (valueObj)
-                {
-                    case Guid valueGuid when memberType == "string":
-                        return quote + valueGuid + quote;
-                    case DateTime valueDateTime when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTime.ToString("o", CultureInfo.InvariantCulture)}{quote})";
-                    case DateTime valueDateTime when memberType == "string":
-                        return quote + valueDateTime.ToString("o", CultureInfo.InvariantCulture) + quote;
-                    case DateTimeOffset valueDateTimeOffset when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture)}{quote})";
-                    case DateTimeOffset valueDateTimeOffset when memberType == "string":
-                        return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
-                    default:
-                        var serializedValue = JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
-                        if (!_typeService.IsCollectionType(valueType) &&
-                            !_typeService.IsDictionaryType(valueType) &&
-                            _typeService.IsTsClass(valueType) && // Make sure it's not a list, array, or other special type
-                            !valueType.GetTypeInfo().IsValueType && // Ignore value types
-                            valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
-                        {
-                            //_logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
-                            var defaultCtorValueType = Activator.CreateInstance(valueType);
-                            if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
-                            {
-                                return $@"new {_typeService.GetTsTypeName(memberInfo)}()";
-                            }
-                        }
-                        return serializedValue;
-                }
+                return SerializeObjectToTs(valueObj, memberInfo);
             }
             catch (MissingMethodException e)
             {
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has no default constructor.", LogLevel.Debug);
             }
-            catch (ArgumentException e) when(e.InnerException is TypeLoadException)
+            catch (ArgumentException e) when (e.InnerException is TypeLoadException)
             {
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.", LogLevel.Debug);
             }
@@ -427,6 +395,58 @@ namespace TypeGen.Core.Generator.Services
             }
 
             return fallback;
+        }
+
+        private string SerializeObjectToTs(object valueObj)
+        {
+            return SerializeObjectToTs(valueObj, null);
+        }
+    
+        private string SerializeObjectToTs(object valueObj, MemberInfo memberInfo)
+        {
+            if (valueObj == null) return null;
+            var valueType = valueObj.GetType();
+            string memberType = memberInfo == null ? _typeService.GetTsTypeName(valueType).GetTsTypeUnion(0) : _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
+            string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
+
+            switch (valueObj)
+            {
+                case Guid valueGuid when memberType == "string":
+                    return quote + valueGuid + quote;
+                case DateTime valueDateTime when memberType == "Date":
+                    return $@"new Date({quote}{valueDateTime.ToString("o", CultureInfo.InvariantCulture)}{quote})";
+                case DateTime valueDateTime when memberType == "string":
+                    return quote + valueDateTime.ToString("o", CultureInfo.InvariantCulture) + quote;
+                case DateTimeOffset valueDateTimeOffset when memberType == "Date":
+                    return $@"new Date({quote}{valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture)}{quote})";
+                case DateTimeOffset valueDateTimeOffset when memberType == "string":
+                    return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
+                case IEnumerable valueEnumerable when _typeService.IsCollectionType(valueType) && valueEnumerable.GetEnumerator().MoveNext():
+                    return $"[ {string.Join(", ", valueEnumerable.Cast<object>().Select(SerializeObjectToTs))} ]";
+                case IEnumerable valueDictEnumerable when _typeService.IsDictionaryType(valueType) && valueDictEnumerable.GetEnumerator().MoveNext():
+                    return $"{{ {string.Join(", ", valueDictEnumerable.Cast<object>().Select(SerializeObjectToTs))} }}";
+                case DictionaryEntry valueDictEntry:
+                    return $"{SerializeObjectToTs(valueDictEntry.Key)}: {SerializeObjectToTs(valueDictEntry.Value)}";
+                case var _ when valueType.IsGenericType && typeof(KeyValuePair<,>).IsAssignableFrom(valueType.GetGenericTypeDefinition()):
+                    dynamic pair = valueObj;
+                    return $"{SerializeObjectToTs(pair.Key)}: {SerializeObjectToTs(pair.Value)}";
+                default:
+                    var serializedValue = JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
+                    if (!_typeService.IsCollectionType(valueType) &&
+                        !_typeService.IsDictionaryType(valueType) &&
+                        _typeService.IsTsClass(valueType) && // Make sure it's not a list, array, or other special type
+                        !valueType.GetTypeInfo().IsValueType && // Ignore value types
+                        valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
+                    {
+                        //_logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
+                        var defaultCtorValueType = Activator.CreateInstance(valueType);
+                        if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
+                        {
+                            return $@"new {_typeService.GetTsTypeName(valueType)}()";
+                        }
+                    }
+                    return serializedValue;
+            }
         }
 
         private bool memberwiseEquals(object a, object b)

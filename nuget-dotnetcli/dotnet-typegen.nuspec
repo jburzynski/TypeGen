@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>dotnet-typegen</id>
+    <id>CIERA.dotnet-typegen</id>
     <version>5.0.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>

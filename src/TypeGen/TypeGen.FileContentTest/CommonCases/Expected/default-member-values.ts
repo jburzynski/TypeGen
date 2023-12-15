@@ -15,4 +15,6 @@ export class DefaultMemberValues {
     static staticPropertyString: string = "StaticPropertyString";
     propertyComplexDefaultValue: DefaultMemberComplexValues = new DefaultMemberComplexValues();
     propertyComplexNotDefaultValue: DefaultMemberComplexValues = {"number":4,"numberNull":null,"string":"default","stringNull":null};
+    propertyListOfComplexDefaultValue: DefaultMemberComplexValues[] = [ new DefaultMemberComplexValues() ];
+    propertyDictOfComplexDefaultValue: { [key: string]: DefaultMemberComplexValues; } = { "key": new DefaultMemberComplexValues() };
 }
