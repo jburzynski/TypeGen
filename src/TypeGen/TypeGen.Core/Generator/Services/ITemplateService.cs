@@ -7,6 +7,7 @@ namespace TypeGen.Core.Generator.Services
         string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string tsDoc, string defaultValue = null);
+        string FillClassPropertyTemplate(string name, string type, string defaultValue = null);
         string FillInterfaceTemplate(string imports, string name, string extends, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillInterfacePropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions, bool isOptional, string tsDoc);
@@ -17,6 +18,7 @@ namespace TypeGen.Core.Generator.Services
         string FillImportTemplate(string name, string typeAlias, string path, bool useImportType);
         string FillImportDefaultExportTemplate(string name, string path, bool useImportType);
         string FillIndexTemplate(string exports);
+        string FillWithSingleLineComment(string comment);
         string FillIndexExportTemplate(string filename);
         string GetExtendsText(string name);
         string GetExtendsText(IEnumerable<string> names);

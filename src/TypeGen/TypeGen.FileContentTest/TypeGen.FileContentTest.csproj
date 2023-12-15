@@ -21,6 +21,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="AdditionalProperties\Expected\class-with-additional-class-properties.ts" />
 	  <None Remove="Generator\Expected\constants-only.ts" />
 	</ItemGroup>
 
@@ -36,6 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="AdditionalProperties\Expected\class-with-additional-class-properties.ts" />
 		<EmbeddedResource Include="Blacklist\Expected\class-with-blacklisted-base.ts" />
 		<EmbeddedResource Include="Blacklist\Expected\class-with-blacklisted-interface.ts" />
 		<EmbeddedResource Include="Blacklist\Expected\interface-with-blacklisted-base.ts" />

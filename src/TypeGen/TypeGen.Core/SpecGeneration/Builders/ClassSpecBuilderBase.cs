@@ -4,6 +4,7 @@ using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.Core.SpecGeneration.Builders
 {
+    /// <inheritdoc />
     public abstract class ClassSpecBuilderBase<TSelf> : SpecBuilderBase,
         ICustomBaseTrait<TSelf>,
         ICustomHeaderTrait<TSelf>,
@@ -24,7 +25,8 @@ namespace TypeGen.Core.SpecGeneration.Builders
         IStaticTrait<TSelf>,
         ITypeTrait<TSelf>,
         ITypeUnionsTrait<TSelf>,
-        IUndefinedTrait<TSelf>
+        IUndefinedTrait<TSelf>,
+        IAdditionalPropertiesTrait<TSelf>
         where TSelf : SpecBuilderBase
     {
         private readonly CustomBaseTrait<TSelf> _customBaseTrait;
@@ -47,7 +49,8 @@ namespace TypeGen.Core.SpecGeneration.Builders
         private readonly TypeTrait<TSelf> _typeTrait;
         private readonly TypeUnionsTrait<TSelf> _typeUnionsTrait;
         private readonly UndefinedTrait<TSelf> _undefinedTrait;
-        
+        private readonly AdditionalPropertiesTrait<TSelf> _additionalPropertiesTrait;
+
         internal ClassSpecBuilderBase(TypeSpec typeSpec) : base(typeSpec)
         {
             MemberTrait = new MemberTrait<TSelf>(this as TSelf, typeSpec);
@@ -70,13 +73,14 @@ namespace TypeGen.Core.SpecGeneration.Builders
             _typeTrait = new TypeTrait<TSelf>(this as TSelf, typeSpec, MemberTrait);
             _typeUnionsTrait = new TypeUnionsTrait<TSelf>(this as TSelf, typeSpec, MemberTrait);
             _undefinedTrait = new UndefinedTrait<TSelf>(this as TSelf, typeSpec, MemberTrait);
+            _additionalPropertiesTrait = new AdditionalPropertiesTrait<TSelf>(this as TSelf, typeSpec);
         }
 
         /// <inheritdoc />
         public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
             IEnumerable<ImplementedInterface> implementedInterfaces = null)
             => _customBaseTrait.CustomBase(@base, importPath, originalTypeName, isDefaultExport, implementedInterfaces);
-        
+
         /// <inheritdoc />
         public TSelf CustomBase(string @base = null, string importPath = null, string originalTypeName = null, bool isDefaultExport = false,
             params ImplementedInterface[] implementedInterfaces)
@@ -92,43 +96,43 @@ namespace TypeGen.Core.SpecGeneration.Builders
 
         /// <inheritdoc />
         public TSelf DefaultExport(bool enabled = true) => _defaultExportTrait.DefaultExport(enabled);
-        
+
         /// <inheritdoc />
         public TSelf DefaultTypeOutput(string outputDir) => _defaultTypeOutputTrait.DefaultTypeOutput(outputDir);
-        
+
         /// <inheritdoc />
         public TSelf DefaultValue(string defaultValue) => _defaultValueTrait.DefaultValue(defaultValue);
-        
+
         /// <inheritdoc />
         public TSelf IgnoreBase() => _ignoreBaseTrait.IgnoreBase();
-        
+
         /// <inheritdoc />
         public TSelf Ignore() => _ignoreTrait.Ignore();
-        
+
         /// <inheritdoc />
         public TSelf MemberName(string name) => _memberNameTrait.MemberName(name);
-        
+
         /// <inheritdoc />
         public TSelf Member(string memberName) => MemberTrait.Member(memberName);
 
         /// <inheritdoc />
         public TSelf NotNull() => _notNullTrait.NotNull();
-        
+
         /// <inheritdoc />
         public TSelf NotReadonly() => _notReadonlyTrait.NotReadonly();
-        
+
         /// <inheritdoc />
         public TSelf NotStatic() => _notStaticTrait.NotStatic();
 
         /// <inheritdoc />
         public TSelf NotUndefined() => _notUndefinedTrait.NotUndefined();
-        
+
         /// <inheritdoc />
         public TSelf Null() => _nullTrait.Null();
-        
+
         /// <inheritdoc />
         public TSelf Readonly() => _readonlyTrait.Readonly();
-        
+
         /// <inheritdoc />
         public TSelf Static() => _staticTrait.Static();
 
@@ -138,7 +142,7 @@ namespace TypeGen.Core.SpecGeneration.Builders
 
         /// <inheritdoc />
         public TSelf Type(TsType tsType) => _typeTrait.Type(tsType);
-        
+
         /// <inheritdoc />
         public TSelf TypeUnions(IEnumerable<string> typeUnions) => _typeUnionsTrait.TypeUnions(typeUnions);
 
@@ -147,5 +151,18 @@ namespace TypeGen.Core.SpecGeneration.Builders
 
         /// <inheritdoc />
         public TSelf Undefined() => _undefinedTrait.Undefined();
+
+        /// <summary>
+        /// Adds an additional property to the TypeScript class being generated.
+        /// The 'name' parameter can include access modifiers and the 'readonly' keyword,
+        /// allowing for flexible property definitions. For instance, you can define the
+        /// property as 'public name', 'private name', 'readonly name', etc.
+        /// </summary>
+        /// <param name="name">The name of the property, which can include access modifiers and keywords.</param>
+        /// <param name="type">The TypeScript type of the property.</param>
+        /// <param name="defaultValue">An optional default value for the property. If provided, it initializes the property with this value.</param>
+        /// <returns>The instance of the spec builder for method chaining.</returns>
+        public TSelf WithAdditionalProperty(string name, string type, string defaultValue = null) =>
+           _additionalPropertiesTrait.WithAdditionalProperty(name, type, defaultValue);
     }
 }
