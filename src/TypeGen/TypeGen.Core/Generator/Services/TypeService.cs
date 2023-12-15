@@ -129,6 +129,18 @@ namespace TypeGen.Core.Generator.Services
         }
 
         /// <inheritdoc />
+        public bool IsTsClass(Type type)
+        {
+            Requires.NotNull(type, nameof(type));
+            TypeInfo typeInfo = type.GetTypeInfo();
+
+            if (!typeInfo.IsClass) return false;
+
+            var exportAttribute = MetadataReader.GetAttribute<ExportAttribute>(type);
+            return exportAttribute == null || exportAttribute is ExportTsClassAttribute;
+        }
+
+        /// <inheritdoc />
         public bool IsTsInterface(Type type)
         {
             Requires.NotNull(type, nameof(type));

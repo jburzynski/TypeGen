@@ -4,7 +4,9 @@ using TypeGen.FileContentTest.CommonCases.Entities;
 using TypeGen.FileContentTest.CommonCases.Entities.Constants;
 using TypeGen.FileContentTest.CommonCases.Entities.ErrorCase;
 using TypeGen.FileContentTest.TestingUtils;
+using TypeGen.IntegrationTest.CommonCases.Entities;
 using Xunit;
+using Xunit.Abstractions;
 using CustomBaseClass = TypeGen.FileContentTest.CommonCases.Entities.CustomBaseClass;
 using CustomBaseCustomImport = TypeGen.FileContentTest.CommonCases.Entities.CustomBaseCustomImport;
 using CustomEmptyBaseClass = TypeGen.FileContentTest.CommonCases.Entities.CustomEmptyBaseClass;
@@ -24,6 +26,8 @@ namespace TypeGen.FileContentTest.CommonCases
 {
     public class CommonCasesGenerationTest : GenerationTestBase
     {
+        public CommonCasesGenerationTest(ITestOutputHelper output) : base(output) { }
+
         /// <summary>
         /// Tests if types are correctly translated to TypeScript.
         /// The tested types contain all major use cases that should be supported.
@@ -38,6 +42,8 @@ namespace TypeGen.FileContentTest.CommonCases
         [InlineData(typeof(Entities.BaseClass<>), "TypeGen.FileContentTest.CommonCases.Expected.base-class.ts")]
         [InlineData(typeof(BaseClass2<>), "TypeGen.FileContentTest.CommonCases.Expected.base-class2.ts")]
         [InlineData(typeof(C), "TypeGen.FileContentTest.CommonCases.Expected.c.ts")]
+        [InlineData(typeof(ConstructorClass), "TypeGen.FileContentTest.CommonCases.Expected.constructor-class.ts")]
+        [InlineData(typeof(ConstructorChildClass), "TypeGen.FileContentTest.CommonCases.Expected.constructor-child-class.ts")]
         [InlineData(typeof(CustomBaseClass), "TypeGen.FileContentTest.CommonCases.Expected.custom-base-class.ts")]
         [InlineData(typeof(CustomEmptyBaseClass), "TypeGen.FileContentTest.CommonCases.Expected.custom-empty-base-class.ts")]
         [InlineData(typeof(D), "TypeGen.FileContentTest.CommonCases.Expected.d.ts")]

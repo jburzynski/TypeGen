@@ -58,7 +58,8 @@ namespace TypeGen.Cli.GenerationConfig
                 UseDefaultExport = config.UseDefaultExport ?? GeneratorOptions.DefaultUseDefaultExport,
                 ExportTypesAsInterfacesByDefault = config.ExportTypesAsInterfacesByDefault ?? GeneratorOptions.DefaultExportTypesAsInterfacesByDefault,
                 UseImportType = config.UseImportType ?? GeneratorOptions.DefaultUseImportType,
-                TypeBlacklist = GetTypeBlacklist(config.TypeBlacklist, config.TypeWhitelist)
+                TypeBlacklist = GetTypeBlacklist(config.TypeBlacklist, config.TypeWhitelist),
+                StrictMode = config.StrictMode ?? GeneratorOptions.DefaultStrictMode,
             };
         }
 

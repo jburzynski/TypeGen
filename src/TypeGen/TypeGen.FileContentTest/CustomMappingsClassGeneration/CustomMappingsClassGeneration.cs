@@ -6,11 +6,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.CommonCases.Entities.CustomMappingsClassGenerationIssue;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.CustomMappingsClassGeneration
 {
     public class CustomMappingsClassGeneration : GenerationTestBase
     {
+        public CustomMappingsClassGeneration(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task GeneratesCorrectly()
         {

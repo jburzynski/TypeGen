@@ -53,6 +53,7 @@ namespace TypeGen.Cli.GenerationConfig
         public bool? UseImportType { get; set; }
         public string[] TypeBlacklist { get; set; }
         public string[] TypeWhitelist { get; set; }
+        public bool? StrictMode { get; set; }
 
         public TgConfig Normalize()
         {
@@ -101,6 +102,7 @@ namespace TypeGen.Cli.GenerationConfig
             if (UseImportType == null) UseImportType = GeneratorOptions.DefaultUseImportType;
             if (TypeBlacklist == null) TypeBlacklist = DefaultTypeBlacklist;
             if (TypeWhitelist == null) TypeWhitelist = DefaultTypeWhitelist;
+            if (StrictMode == null) StrictMode = GeneratorOptions.DefaultStrictMode;
             return this;
         }
 

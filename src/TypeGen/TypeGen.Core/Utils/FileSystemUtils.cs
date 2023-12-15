@@ -34,8 +34,8 @@ namespace TypeGen.Core.Utils
         /// <returns></returns>
         public static string GetPathDiff(string pathFrom, string pathTo)
         {
-            var pathFromUri = new Uri("file:///" + pathFrom?.Replace('\\', '/'));
-            var pathToUri = new Uri("file:///" + pathTo?.Replace('\\', '/'));
+            var pathFromUri = new Uri("file:///root/" + pathFrom?.Replace('\\', '/'));
+            var pathToUri = new Uri("file:///root/" + pathTo?.Replace('\\', '/'));
 
             return pathFromUri.MakeRelativeUri(pathToUri).ToString();
         }

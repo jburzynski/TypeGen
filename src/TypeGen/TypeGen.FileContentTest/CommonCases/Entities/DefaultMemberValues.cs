@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TypeGen.Core.TypeAnnotations;
 
 namespace TypeGen.FileContentTest.CommonCases.Entities
@@ -19,6 +20,12 @@ namespace TypeGen.FileContentTest.CommonCases.Entities
 
         public DateTime fieldDateTimeUnassigned;
 
-        public DefaultMemberComplexValues PropertyComplex { get; set; } = new();
+        public DefaultMemberComplexValues PropertyComplexDefaultValue { get; set; } = new();
+
+        public DefaultMemberComplexValues PropertyComplexNotDefaultValue { get; set; } = new() { Number = 4 };
+
+        public List<DefaultMemberComplexValues> PropertyListOfComplexDefaultValue { get; set; } = new() { new() };
+        
+        public Dictionary<string, DefaultMemberComplexValues> PropertyDictOfComplexDefaultValue { get; set; } = new() { { "key", new() } };
     }
 }

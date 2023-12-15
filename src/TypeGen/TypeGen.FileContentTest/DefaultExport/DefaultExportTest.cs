@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using TypeGen.FileContentTest.DefaultExport.Entities;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.DefaultExport
 {
     public class DefaultExportTest : GenerationTestBase
     {
+        public DefaultExportTest(ITestOutputHelper output) : base(output) { }
+
         /// <summary>
         /// Looks into generating classes and interfaces with circular type constraints
         /// </summary>

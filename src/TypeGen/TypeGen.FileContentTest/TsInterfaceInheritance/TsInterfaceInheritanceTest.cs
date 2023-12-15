@@ -4,11 +4,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.TestingUtils;
 using TypeGen.FileContentTest.TsInterfaceInheritance.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.TsInterfaceInheritance;
 
 public class TsInterfaceInheritanceTest : GenerationTestBase
 {
+    public TsInterfaceInheritanceTest(ITestOutputHelper output) : base(output) { }
+
     [Fact]
     public async Task cs_classes_which_are_ts_interfaces_should_respect_ts_interface_inheritance()
     {

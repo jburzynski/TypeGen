@@ -5,11 +5,14 @@ using TypeGen.Core.SpecGeneration;
 using TypeGen.FileContentTest.StructImplementsInterfaces.Entities;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.StructImplementsInterfaces;
 
 public class StructImplementsInterfacesTest : GenerationTestBase
 {
+    public StructImplementsInterfacesTest(ITestOutputHelper output) : base(output) {}
+
     [Theory]
     [InlineData(typeof(ImplementsInterfaces), "TypeGen.FileContentTest.StructImplementsInterfaces.Expected.implements-interfaces.ts")]
     public async Task TestStructImplementsInterfacesFromGenerationSpec(Type type, string expectedLocation)

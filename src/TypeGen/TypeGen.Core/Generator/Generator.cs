@@ -27,17 +27,17 @@ namespace TypeGen.Core.Generator
         /// An event that fires when a file's content is generated
         /// </summary>
         public event EventHandler<FileContentGeneratedArgs> FileContentGenerated;
-        
+
         /// <summary>
         /// A logger instance used to log messages raised by a Generator instance
         /// </summary>
         public ILogger Logger { get; }
-        
+
         /// <summary>
         /// Generator options. Cannot be null.
         /// </summary>
         public GeneratorOptions Options { get; }
-        
+
         private readonly MetadataReaderFactory _metadataReaderFactory;
         private readonly ITypeService _typeService;
         private readonly ITypeDependencyService _typeDependencyService;
@@ -53,10 +53,10 @@ namespace TypeGen.Core.Generator
             Requires.NotNull(options, nameof(options));
             
             FileContentGenerated += OnFileContentGenerated;
-            
+
             Options = options;
             Logger = logger;
-            
+
             var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
 
             var internalStorage = new InternalStorage();
@@ -74,7 +74,7 @@ namespace TypeGen.Core.Generator
                 generatorOptionsProvider,
                 logger);
         }
-        
+
         public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
         {
         }
@@ -91,7 +91,7 @@ namespace TypeGen.Core.Generator
             FileContentGenerated -= OnFileContentGenerated;
             FileContentGenerated += OnFileContentGenerated;
         }
-        
+
         /// <summary>
         /// Unsubscribes the default FileContentGenerated event handler, which saves generated sources to the file system
         /// </summary>
@@ -270,20 +270,20 @@ namespace TypeGen.Core.Generator
         private IEnumerable<string> GenerateBarrel(BarrelSpec barrelSpec)
         {
             string directory = Path.Combine(Options.BaseOutputDirectory?.EnsurePostfix("/") ?? "", barrelSpec.Directory);
-            
+
             var fileName = "index";
             if (!string.IsNullOrWhiteSpace(Options.TypeScriptFileExtension)) fileName += $".{Options.TypeScriptFileExtension}";
             string filePath = Path.Combine(directory.EnsurePostfix("/"), fileName);
 
             var entries = new List<string>();
-            
+
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Files))
             {
                 entries.AddRange(_fileSystem.GetDirectoryFiles(directory)
                     .Where(x => Path.GetFileName(x) != fileName && x.EndsWith($".{Options.TypeScriptFileExtension}"))
                     .Select(Path.GetFileNameWithoutExtension));
             }
-            
+
             if (barrelSpec.BarrelScope.HasFlag(BarrelScope.Directories))
             {
                 entries.AddRange(
@@ -294,11 +294,11 @@ namespace TypeGen.Core.Generator
 
             string indexExportsContent = entries.Aggregate("", (acc, entry) => acc += _templateService.FillIndexExportTemplate(entry));
             string content = _templateService.FillIndexTemplate(indexExportsContent);
-            
+
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(null, filePath, content));
             return new[] { Path.Combine(barrelSpec.Directory.EnsurePostfix("/"), fileName) };
         }
-        
+
         /// <summary>
         /// DEPRECATED, can be removed in the future.
         /// Generates an `index.ts` file which exports all types within the generated files
@@ -339,7 +339,7 @@ namespace TypeGen.Core.Generator
 
             return files.Distinct();
         }
-        
+
         /// <summary>
         /// Contains the actual logic of generating TypeScript files for a given type
         /// Should only be used inside GenerateTypeInit(), otherwise use GenerateTypeInit()
@@ -387,7 +387,7 @@ namespace TypeGen.Core.Generator
                     ? GenerateInterface(type, new ExportTsInterfaceAttribute { OutputDir = outputDirectory })
                     : GenerateClass(type, new ExportTsClassAttribute { OutputDir = outputDirectory });
             }
-            
+
             if (typeInfo.IsInterface)
                 return GenerateInterface(type, new ExportTsInterfaceAttribute { OutputDir = outputDirectory });
 
@@ -429,6 +429,7 @@ namespace TypeGen.Core.Generator
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = GetClassPropertiesText(type);
+            string constructorText = _tsContentGenerator.GetConstructorText(type);
 
             // generate the file content
 
@@ -445,8 +446,8 @@ namespace TypeGen.Core.Generator
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, constructorText, tsDoc, customHead, customBody, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -482,7 +483,6 @@ namespace TypeGen.Core.Generator
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
             string propertiesText = GetInterfacePropertiesText(type);
-
             // generate the file content
 
             string tsTypeName = _typeService.GetTsTypeName(type, true);
@@ -517,7 +517,7 @@ namespace TypeGen.Core.Generator
                 .Select(x => x.Name)
                 .Where(x => !string.IsNullOrEmpty(x))
                 .ToList();
-            
+
         /// <summary>
         /// Generates a TypeScript enum file from a class type
         /// </summary>
@@ -552,7 +552,7 @@ namespace TypeGen.Core.Generator
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotStaticAttribute>(memberInfo) != null) return false;
             return _metadataReaderFactory.GetInstance().GetAttribute<TsStaticAttribute>(memberInfo) != null || memberInfo.IsStatic();
         }
-        
+
         private bool IsReadonlyTsProperty(MemberInfo memberInfo)
         {
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsNotReadonlyAttribute>(memberInfo) != null) return false;
@@ -588,19 +588,27 @@ namespace TypeGen.Core.Generator
                 isOptional = true;
             }
 
+            var ctorAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsConstructorAttribute>(memberInfo);
+            if (ctorAttribute != null)
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
+
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
                 return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, defaultValueAttribute.DefaultValue);
 
-            // try to get default value from the member's default value
-            string valueText = _tsContentGenerator.GetMemberValueText(memberInfo);
-            if (!string.IsNullOrWhiteSpace(valueText))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, valueText);
-
+            string fallback = null;
             // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any() && Options.DefaultValuesForTypes.ContainsKey(typeName))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, Options.DefaultValuesForTypes[typeName]);
+                fallback = Options.DefaultValuesForTypes[typeName];
+
+            // try to get default value from the member's default value
+            string valueText = _tsContentGenerator.GetMemberValueText(memberInfo, isOptional, fallback);
+            if (((string.IsNullOrWhiteSpace(valueText) || valueText == "null") && Options.StrictMode) && !typeUnions.Contains("null"))
+                typeUnions = typeUnions.Append("null");
+
+            if (!string.IsNullOrWhiteSpace(valueText))
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, valueText);
 
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
         }

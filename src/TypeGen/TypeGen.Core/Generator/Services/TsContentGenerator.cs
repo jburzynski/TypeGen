@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Logging;
@@ -67,10 +72,10 @@ namespace TypeGen.Core.Generator.Services
         public string GetImportsText(Type type, string outputDir)
         {
             Requires.NotNull(type, nameof(type));
-            
+
             if (GeneratorOptions.FileNameConverters == null)
                 throw new InvalidOperationException($"{nameof(GeneratorOptions.FileNameConverters)} should not be null.");
-            
+
             if (GeneratorOptions.TypeNameConverters == null)
                 throw new InvalidOperationException($"{nameof(GeneratorOptions.TypeNameConverters)} should not be null.");
 
@@ -94,7 +99,7 @@ namespace TypeGen.Core.Generator.Services
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(GeneratorOptions.TypeNameConverters, nameof(GeneratorOptions.TypeNameConverters));
-            
+
             Type baseType = _typeService.GetBaseType(type);
             if (baseType == null) return "";
 
@@ -135,7 +140,7 @@ namespace TypeGen.Core.Generator.Services
             IEnumerable<string> baseTypeNames = implementedInterfaces.Select(baseType => _typeService.GetTsTypeName(baseType, true));
             return _templateService.GetImplementsText(baseTypeNames);
         }
-        
+
         /// <summary>
         /// Returns TypeScript imports source code related to type dependencies
         /// </summary>
@@ -144,7 +149,7 @@ namespace TypeGen.Core.Generator.Services
         /// <returns></returns>
         private string GetTypeDependencyImportsText(Type type, string outputDir)
         {
-            if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "\\";
+            if (!string.IsNullOrEmpty(outputDir) && !outputDir.EndsWith("/") && !outputDir.EndsWith("\\")) outputDir += "/";
             var result = "";
             IEnumerable<TypeDependencyInfo> typeDependencies = _typeDependencyService.GetTypeDependencies(type);
 
@@ -154,26 +159,51 @@ namespace TypeGen.Core.Generator.Services
                 typeDependencies = typeDependencies.Where(td => !td.IsBase);
             }
 
+            var startFilePath = GeneratorOptions.FileNameConverters.Convert(type.Name.RemoveTypeArity(), type)?.Replace("\\", "/");
+            var startFileName = startFilePath;
+
+            var startOutputDir = outputDir == null ? startFilePath : outputDir.EnsurePostfix("/") + startFilePath;
+            if (startOutputDir.IndexOf('/') != -1)
+            {
+                startFileName = startOutputDir.Substring(startOutputDir.LastIndexOf('/') + 1);
+                startOutputDir = startOutputDir.Remove(startOutputDir.LastIndexOf('/') + 1);
+            }
+            else
+            {
+                startOutputDir = outputDir;
+            }
+
             foreach (TypeDependencyInfo typeDependencyInfo in typeDependencies)
             {
                 Type typeDependency = typeDependencyInfo.Type;
 
-                string dependencyOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir);
-
-                // get path diff
-                string pathDiff = FileSystemUtils.GetPathDiff(outputDir, dependencyOutputDir);
-                pathDiff = pathDiff.StartsWith("..\\") || pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
-
                 // get type & file name
                 string typeDependencyName = typeDependency.Name.RemoveTypeArity();
-                string fileName = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
+                string endFilePath = GeneratorOptions.FileNameConverters.Convert(typeDependencyName, typeDependency);
+                string endFileName = endFilePath;
 
+                var endOutputDir = GetTypeDependencyOutputDir(typeDependencyInfo, outputDir)?.Replace("\\", "/");
+                endOutputDir = endOutputDir == null ? endFilePath : endOutputDir.EnsurePostfix("/") + endFilePath;
+                if (endOutputDir.IndexOf('/') != -1)
+                {
+                    endFileName = endOutputDir.Substring(endOutputDir.LastIndexOf('/') + 1);
+                    endOutputDir = endOutputDir.Remove(endOutputDir.LastIndexOf('/') + 1);
+                }
+                else
+                {
+                    endOutputDir = "./";
+                }
+
+                // get path diff
+                string pathDiff = FileSystemUtils.GetPathDiff(startOutputDir, endOutputDir);
+                pathDiff = pathDiff.StartsWith("../") ? pathDiff : $"./{pathDiff}";
+                _logger?.Log($"{startOutputDir} -> {endOutputDir} = {pathDiff}", LogLevel.Info);
                 // get file path
-                string dependencyPath = Path.Combine(pathDiff.EnsurePostfix("/"), fileName);
+                string dependencyPath = pathDiff.EnsurePostfix("/") + endFileName;
                 dependencyPath = dependencyPath.Replace('\\', '/');
 
                 string typeName = GeneratorOptions.TypeNameConverters.Convert(typeDependencyName, typeDependency);
-                
+
                 result += _typeService.UseDefaultExport(typeDependency) ?
                     _templateService.FillImportDefaultExportTemplate(typeName, dependencyPath, GeneratorOptions.UseImportType) :
                     _templateService.FillImportTemplate(typeName, "", dependencyPath, GeneratorOptions.UseImportType);
@@ -239,8 +269,8 @@ namespace TypeGen.Core.Generator.Services
 
             string name = withOriginalTypeName ? originalTypeName : typeName;
             string typeAlias = withOriginalTypeName ? typeName : null;
-            
-            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) : 
+
+            return isDefaultExport ? _templateService.FillImportDefaultExportTemplate(name, importPath, GeneratorOptions.UseImportType) :
                 _templateService.FillImportTemplate(name, typeAlias, importPath, GeneratorOptions.UseImportType);
         }
 
@@ -280,7 +310,7 @@ namespace TypeGen.Core.Generator.Services
         public string GetCustomBody(string filePath, int indentSize)
         {
             Requires.NotNull(filePath, nameof(filePath));
-            
+
             string content = _tsContentParser.GetTagContent(filePath, indentSize, KeepTsTagName, CustomBodyTagName);
             string tab = StringUtils.GetTabText(indentSize);
 
@@ -298,7 +328,7 @@ namespace TypeGen.Core.Generator.Services
         public string GetCustomHead(string filePath)
         {
             Requires.NotNull(filePath, nameof(filePath));
-            
+
             string content = _tsContentParser.GetTagContent(filePath, 0, CustomHeadTagName);
             return string.IsNullOrEmpty(content)
                 ? ""
@@ -309,63 +339,53 @@ namespace TypeGen.Core.Generator.Services
         /// Gets text to be used as a member value
         /// </summary>
         /// <param name="memberInfo"></param>
+        /// <param name="fallback"></param>
         /// <returns>The text to be used as a member value. Null if the member has no value or value cannot be determined.</returns>
-        public string GetMemberValueText(MemberInfo memberInfo)
+        public string GetMemberValueText(MemberInfo memberInfo, bool isOptional, string? fallback = null)
         {
-            if (memberInfo.DeclaringType == null) return null;
+            var temp = memberInfo.Name;
+            if (memberInfo.DeclaringType == null) return fallback;
 
             try
             {
                 object instance = memberInfo.IsStatic() ? null : ActivatorUtils.CreateInstanceAutoFillGenericParameters(memberInfo.DeclaringType);
+                if (instance != null)
+                {
+                    memberInfo = instance.GetType().GetMember(memberInfo.Name).First(); // Properties and fields can't overload, right?
+                }
                 var valueObj = new object();
                 object valueObjGuard = valueObj;
                 bool isConstant = false;
-                
-                switch (memberInfo)
-                {
-                    case FieldInfo fieldInfo:
-                        valueObj = fieldInfo.GetValue(instance);
-                        isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
-                        break;
-                    case PropertyInfo propertyInfo:
-                        valueObj = propertyInfo.GetValue(instance);
-                        break;
-                }
+
+                var valueType = GetMemberValue(memberInfo, instance, out valueObj, out isConstant);
 
                 // if only default values for constants are allowed
-                if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return null;
+                if (GeneratorOptions.CsDefaultValuesForConstantsOnly && !isConstant) return fallback;
 
                 // if valueObj hasn't been assigned in the switch
-                if (valueObj == valueObjGuard) return null;
-                
+                if (valueObj == valueObjGuard) return fallback;
+
                 // if valueObj's value is the default value for its type
-                if (valueObj == null || valueObj.Equals(TypeUtils.GetDefaultValue(valueObj.GetType()))) return null;
+                var defaultValueForType = TypeUtils.GetDefaultValue(valueType);
+                if (_typeService.IsCollectionType(valueType))
+                    valueObj ??= isOptional ? null : new List<object>();
+                else if (_typeService.IsDictionaryType(valueType))
+                    valueObj ??= isOptional ? null : new Dictionary<string, object>();
+                else if (valueObj == null)
+                    return _generatorOptionsProvider.GeneratorOptions.StrictMode ? fallback ?? "null" : fallback;
+                else if (valueObj.Equals(defaultValueForType))
+                    if (fallback != null || !_generatorOptionsProvider.GeneratorOptions.StrictMode)
+                        return fallback;
+                    else
+                        valueObj = isOptional ? null : defaultValueForType;
 
-                string memberType = _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
-                string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
-
-
-                switch (valueObj)
-                {
-                    case Guid valueGuid when memberType == "string":
-                        return quote + valueGuid + quote;
-                    case DateTime valueDateTime when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTime.ToString("o", CultureInfo.InvariantCulture)}{quote})";
-                    case DateTime valueDateTime when memberType == "string":
-                        return quote + valueDateTime.ToString("o", CultureInfo.InvariantCulture) + quote;
-                    case DateTimeOffset valueDateTimeOffset when memberType == "Date":
-                        return $@"new Date({quote}{valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture)}{quote})";
-                    case DateTimeOffset valueDateTimeOffset when memberType == "string":
-                        return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
-                    default:
-                        return JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
-                }
+                return SerializeObjectToTs(valueObj, memberInfo);
             }
             catch (MissingMethodException e)
             {
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has no default constructor.", LogLevel.Debug);
             }
-            catch (ArgumentException e) when(e.InnerException is TypeLoadException)
+            catch (ArgumentException e) when (e.InnerException is TypeLoadException)
             {
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because type '{memberInfo.DeclaringType.FullName}' has generic parameters with base class or interface constraints.", LogLevel.Debug);
             }
@@ -374,7 +394,178 @@ namespace TypeGen.Core.Generator.Services
                 _logger?.Log($"Cannot determine the default value for member '{memberInfo.DeclaringType.FullName}.{memberInfo.Name}', because an unknown exception occurred: '{e.Message}'", LogLevel.Debug);
             }
 
-            return null;
+            return fallback;
+        }
+
+        private string SerializeObjectToTs(object valueObj)
+        {
+            return SerializeObjectToTs(valueObj, null);
+        }
+    
+        private string SerializeObjectToTs(object valueObj, MemberInfo memberInfo)
+        {
+            if (valueObj == null) return null;
+            var valueType = valueObj.GetType();
+            string memberType = memberInfo == null ? _typeService.GetTsTypeName(valueType).GetTsTypeUnion(0) : _typeService.GetTsTypeName(memberInfo).GetTsTypeUnion(0);
+            string quote = GeneratorOptions.SingleQuotes ? "'" : "\"";
+
+            switch (valueObj)
+            {
+                case Guid valueGuid when memberType == "string":
+                    return quote + valueGuid + quote;
+                case DateTime valueDateTime when memberType == "Date":
+                    return $@"new Date({quote}{valueDateTime.ToString("o", CultureInfo.InvariantCulture)}{quote})";
+                case DateTime valueDateTime when memberType == "string":
+                    return quote + valueDateTime.ToString("o", CultureInfo.InvariantCulture) + quote;
+                case DateTimeOffset valueDateTimeOffset when memberType == "Date":
+                    return $@"new Date({quote}{valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture)}{quote})";
+                case DateTimeOffset valueDateTimeOffset when memberType == "string":
+                    return quote + valueDateTimeOffset.ToString("o", CultureInfo.InvariantCulture) + quote;
+                case IEnumerable valueEnumerable when _typeService.IsCollectionType(valueType) && valueEnumerable.GetEnumerator().MoveNext():
+                    return $"[ {string.Join(", ", valueEnumerable.Cast<object>().Select(SerializeObjectToTs))} ]";
+                case IEnumerable valueDictEnumerable when _typeService.IsDictionaryType(valueType) && valueDictEnumerable.GetEnumerator().MoveNext():
+                    return $"{{ {string.Join(", ", valueDictEnumerable.Cast<object>().Select(SerializeObjectToTs))} }}";
+                case DictionaryEntry valueDictEntry:
+                    return $"{SerializeObjectToTs(valueDictEntry.Key)}: {SerializeObjectToTs(valueDictEntry.Value)}";
+                case var _ when valueType.IsGenericType && typeof(KeyValuePair<,>).IsAssignableFrom(valueType.GetGenericTypeDefinition()):
+                    dynamic pair = valueObj;
+                    return $"{SerializeObjectToTs(pair.Key)}: {SerializeObjectToTs(pair.Value)}";
+                default:
+                    var serializedValue = JsonConvert.SerializeObject(valueObj, _jsonSerializerSettings).Replace("\"", quote);
+                    if (!_typeService.IsCollectionType(valueType) &&
+                        !_typeService.IsDictionaryType(valueType) &&
+                        _typeService.IsTsClass(valueType) && // Make sure it's not a list, array, or other special type
+                        !valueType.GetTypeInfo().IsValueType && // Ignore value types
+                        valueType.GetConstructor(Type.EmptyTypes) != null) // Make sure the type has a default constructor to use for this
+                    {
+                        //_logger?.Log($"Checking type {valueType.FullName} for constructor usage", LogLevel.Info);
+                        var defaultCtorValueType = Activator.CreateInstance(valueType);
+                        if (defaultCtorValueType != null && memberwiseEquals(valueObj, defaultCtorValueType))
+                        {
+                            return $@"new {_typeService.GetTsTypeName(valueType)}()";
+                        }
+                    }
+                    return serializedValue;
+            }
+        }
+
+        private bool memberwiseEquals(object a, object b)
+        {
+            if (a == b || a.Equals(b)) return true;
+            if (a.GetType() != b.GetType()) return false;
+            var type = a.GetType();
+            if (type.GetTypeInfo().IsValueType)
+            {
+                return false;
+            }
+            while (type != null)
+            {
+                foreach (var member in type.GetTsExportableMembers(this._metadataReaderFactory.GetInstance()))
+                {
+                    if (member is PropertyInfo p && p.GetIndexParameters().Length > 0) continue;
+                    GetMemberValue(member, a, out var aVal, out var _);
+                    GetMemberValue(member, b, out var bVal, out var _);
+                    if (!memberwiseEquals(aVal, bVal))
+                    {
+                        //_logger?.Log($"Difference found in member {type.FullName}.{member.Name}: {aVal} != {bVal}", LogLevel.Info);
+                        return false;
+                    }
+                }
+                type = type.GetTypeInfo().BaseType;
+            }
+            return true;
+        }
+
+        private Type GetMemberValue(MemberInfo memberInfo, object instance, out object valueObj, out bool isConstant)
+        {
+            switch (memberInfo)
+            {
+                case FieldInfo fieldInfo:
+                    valueObj = fieldInfo.GetValue(instance);
+                    isConstant = fieldInfo.IsStatic && fieldInfo.IsLiteral && !fieldInfo.IsInitOnly;
+                    return fieldInfo.FieldType;
+                case PropertyInfo propertyInfo:
+                    valueObj = propertyInfo.GetValue(instance);
+                    isConstant = false;
+                    return propertyInfo.PropertyType;
+                default:
+                    throw new Exception();
+            }
+
+        }
+
+        public string GetConstructorText(Type type)
+        {
+            var reader = _metadataReaderFactory.GetInstance();
+            var ctorParams = GetHierarchyConstructorParams(type);
+            if (ctorParams.Count == 0 || ctorParams.All(l => l.Count == 0))
+            {
+                return "";
+            }
+            ctorParams.Reverse();
+            var paramsText = string.Join(", ", ctorParams.SelectMany(_ => _).Select(m =>
+            {
+                string defaultValue;
+                var typeName = _typeService.GetTsTypeName(m);
+                // try to get default value from TsDefaultValueAttribute
+                var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(m);
+                if (defaultValueAttribute != null)
+                {
+                    defaultValue = defaultValueAttribute.DefaultValue;
+                }
+                else
+                {
+                    // try to get default value from Options.DefaultValuesForTypes
+                    string fallback = null;
+                    if (_generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.Any() && _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes.ContainsKey(typeName))
+                        fallback = _generatorOptionsProvider.GeneratorOptions.DefaultValuesForTypes[typeName];
+
+                    // try to get default value from the member's default value
+                    var isNullable = m.IsNullable();
+                    var isOptional = false;
+                    if (isNullable && _generatorOptionsProvider.GeneratorOptions.CsNullableTranslation == StrictNullTypeUnionFlags.Optional)
+                    {
+                        isOptional = true;
+                    }
+                    string valueText = GetMemberValueText(m, isOptional, fallback);
+                    if (!string.IsNullOrWhiteSpace(valueText))
+                        defaultValue = valueText;
+                    else
+                        defaultValue = null;
+                }
+                var ret = $"{GetTsMemberName(m)}: {typeName}";
+                if (!string.IsNullOrWhiteSpace(defaultValue))
+                {
+                    ret += $" = {defaultValue}";
+                }
+                return ret;
+            }));
+            string tab = GeneratorOptions.UseTabCharacter ? "\t" : StringUtils.GetTabText(GeneratorOptions.TabLength);
+            var newParams = ctorParams.Last();
+            var superParams = new List<List<MemberInfo>>(ctorParams);
+            superParams.RemoveAt(superParams.Count - 1);
+            var superText = superParams.Count == 0 || superParams.All(l => l.Count == 0) ? "" : $"{tab}{tab}super({string.Join(", ", superParams.SelectMany(_ => _).Select(GetTsMemberName))});\r\n";
+            var bodyText = newParams.Aggregate("", (acc, m) => acc + _templateService.FillConstructorAssignmentTemplate(GetTsMemberName(m)));
+            return _templateService.FillConstructorTemplate(_typeService.GetTsTypeName(type), paramsText, superText, bodyText);
+        }
+
+        private List<List<MemberInfo>> GetHierarchyConstructorParams(Type type)
+        {
+            var reader = _metadataReaderFactory.GetInstance();
+            var ret = new List<List<MemberInfo>>();
+            while (type != null)
+            {
+                var parameters = type.GetTsExportableMembers(reader).Where(m => reader.GetAttribute<TsConstructorAttribute>(m) != null).ToList();
+                ret.Add(parameters);
+                type = type.GetTypeInfo().BaseType;
+            }
+            return ret;
+        }
+
+        private string GetTsMemberName(MemberInfo memberInfo)
+        {
+            var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
+            return nameAttribute?.Name ?? _generatorOptionsProvider.GeneratorOptions.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
         }
     }
 }

@@ -53,6 +53,7 @@ namespace TypeGen.Core.Generator.Services
                 .Concat(GetBaseTypeDependency(type))
                 .Concat(GetImplementedInterfaceTypesDependencies(type))
                 .Concat(GetMemberTypeDependencies(type))
+                .Concat(GetSuperConstructorTypeDependencies(type))
                 .Distinct(new TypeDependencyInfoTypeComparer<TypeDependencyInfo>())
                 .Where(t => t.Type != type)
                 .Where(t => GeneratorOptions.IsTypeNotBlacklisted(t.Type))
@@ -147,6 +148,31 @@ namespace TypeGen.Core.Generator.Services
                 result.AddRange(GetFlatTypeDependencies(memberFlatType, memberAttributes));
             }
 
+            return result;
+        }
+
+        private IEnumerable<TypeDependencyInfo> GetSuperConstructorTypeDependencies(Type type)
+        {
+            var baseClass = type.GetTypeInfo().BaseType;
+            var result = new List<TypeDependencyInfo>();
+            while (baseClass != null)
+            {
+                IEnumerable<MemberInfo> memberInfos = baseClass.GetTsExportableMembers(_metadataReaderFactory.GetInstance()).Where(m => _metadataReaderFactory.GetInstance().GetAttribute<TsConstructorAttribute>(m) != null);
+
+                foreach (var memberInfo in memberInfos)
+                {
+                    Type memberType = _typeService.GetMemberType(memberInfo);
+                    Type memberFlatType = _typeService.GetFlatType(memberType);
+
+                    if (memberFlatType == type || (memberFlatType.IsConstructedGenericType && memberFlatType.GetGenericTypeDefinition() == type)) continue; // NOT a dependency if it's the type itself
+                    if (GeneratorOptions.CustomTypeMappings.ContainsKey(memberFlatType.FullName ?? "")) continue; // NOT a dependency if specified in custom type mappings
+
+                    IEnumerable<Attribute> memberAttributes = _metadataReaderFactory.GetInstance().GetAttributes<Attribute>(memberInfo);
+                    result.AddRange(GetFlatTypeDependencies(memberFlatType, memberAttributes));
+                }
+
+                baseClass = baseClass.BaseType;
+            }
             return result;
         }
 

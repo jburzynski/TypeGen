@@ -21,6 +21,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="CommonCases\Expected\constructor-child-class.ts" />
+	  <None Remove="CommonCases\Expected\constructor-class.ts" />
 	  <None Remove="Generator\Expected\constants-only.ts" />
 	</ItemGroup>
 
@@ -56,6 +58,8 @@
 		<EmbeddedResource Include="Comments\Expected\ts-enum.ts" />
 		<EmbeddedResource Include="Comments\Expected\ts-generic-default-export.ts" />
 		<EmbeddedResource Include="Comments\Expected\ts-generic.ts" />
+		<EmbeddedResource Include="CommonCases\Expected\constructor-child-class.ts" />
+		<EmbeddedResource Include="CommonCases\Expected\constructor-class.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\array-of-nullable.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\bar.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\base-class.ts" />

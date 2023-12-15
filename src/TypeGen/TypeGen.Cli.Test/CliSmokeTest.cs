@@ -6,11 +6,16 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.Cli.Test
 {
     public class CliSmokeTest
     {
+        private readonly ITestOutputHelper logger;
+
+        public CliSmokeTest(ITestOutputHelper output) => this.logger = output;
+
         [Fact]
         public void Cli_should_finish_with_success()
         {
@@ -19,8 +24,8 @@ namespace TypeGen.Cli.Test
             const string projectToGeneratePath = "../../../../TypeGen.FileContentTest";
             const string cliFileName = "TypeGen.Cli.exe";
             string[] cliPossibleDirectories = {
-                "../../../../TypeGen.Cli/bin/Debug/net7.0",            
-                "../../../../TypeGen.Cli/bin/Release/net7.0",            
+                "../../../../TypeGen.Cli/bin/Debug/net8.0",            
+                "../../../../TypeGen.Cli/bin/Release/net8.0",            
             };
             
             var cliFilePath = GetCliDirectory(cliPossibleDirectories);
@@ -47,7 +52,9 @@ namespace TypeGen.Cli.Test
             var outputBuilder = new StringBuilder();
             while (!process.StandardOutput.EndOfStream)
             {
-                outputBuilder.AppendLine(process.StandardOutput.ReadLine());
+                var line = process.StandardOutput.ReadLine();
+                logger.WriteLine(line);
+                outputBuilder.AppendLine(line);
             }
 
             var output = outputBuilder.ToString().TrimEnd();

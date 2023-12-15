@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using TypeGen.FileContentTest.CircularGenericConstraint.Entities;
 using TypeGen.FileContentTest.TestingUtils;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TypeGen.FileContentTest.CircularGenericConstraint
 {
     public class CircularGenericConstraintTest : GenerationTestBase
     {
+        public CircularGenericConstraintTest(ITestOutputHelper output) : base(output) { }
+
         /// <summary>
         /// Looks into generating classes and interfaces with circular type constraints
         /// </summary>
