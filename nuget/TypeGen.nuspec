@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TypeGen</id>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,9 +11,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen is a single-class-per-file C# to TypeScript generator</description>
     <releaseNotes>
-- updated to .NET 8
-- added support for IReadOnlyDictionary
-- fixed XmlDoc reading for assemblies without location
+- updated the project URL in the nuspec
+- fixed the issue with generic inheritance #185
 	</releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs</tags>
     <dependencies>
