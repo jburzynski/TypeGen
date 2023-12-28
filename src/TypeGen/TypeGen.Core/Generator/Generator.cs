@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using TypeGen.Core.Conversion;
+using TypeGen.Core.Converters;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Context;
 using TypeGen.Core.Generator.Services;
@@ -428,6 +431,9 @@ namespace TypeGen.Core.Generator
             }
 
             string importsText = _tsContentGenerator.GetImportsText(type, outputDir);
+
+            string constructorsText = GetClassConstructorsText(type);
+            
             string propertiesText = GetClassPropertiesText(type);
 
             // generate the file content
@@ -445,8 +451,8 @@ namespace TypeGen.Core.Generator
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, constructorsText, Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, constructorsText, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -642,6 +648,78 @@ namespace TypeGen.Core.Generator
             
             if (_metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null)
                 Logger.Log($"TsOptionalAttribute used for a class property ({memberInfo.DeclaringType?.FullName}.{memberInfo.Name}). The attribute will be ignored.", LogLevel.Warning);
+        }
+
+        private string GetClassConstructorsText(Type type)
+        {
+            var constructorsText = "";
+            var constructors = type.GetConstructors();
+
+            //var isRecord = ((TypeInfo)type).DeclaredProperties.FirstOrDefault(x => x.Name == "EqualityContract")?.GetMethod?.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) is object;
+
+            var classHasTsConstructorAttribute = type.GetCustomAttributes(typeof(TsConstructorAttribute)).Any();
+            
+            var members = type.GetTsExportableMembers(_metadataReaderFactory.GetInstance()).Select(memberInfo =>
+            {
+                var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
+                var memberName = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
+                var typeName = _typeService.GetTsTypeName(memberInfo);
+                Type memberType = null;
+                
+                switch (memberInfo.MemberType)
+                {
+                    case MemberTypes.Field:
+                        memberType = ((FieldInfo)memberInfo).FieldType;
+                        break;
+                    case MemberTypes.Property:
+                        memberType = ((PropertyInfo)memberInfo).PropertyType;
+                        break;
+                }
+                
+                return new TsMemberInfo(memberInfo.Name, memberType, memberName, typeName);
+            }).ToArray();
+            
+            //if ctor params all match member names and types or is a Record
+            var matchedConstructors = constructors.Where(ctor =>
+                (classHasTsConstructorAttribute || ctor.GetCustomAttributes(typeof(TsConstructorAttribute)).Any()) &&
+                ctor.GetParameters().All(p => members.Any(m => m.DotNetMemberName.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase) && m.DotNetMemberType == p.ParameterType))).ToArray();
+
+            //if single empty constructor, skip
+            if (matchedConstructors.Length == 1 && matchedConstructors[0].GetParameters().Length == 0)
+            {
+                return constructorsText;
+            }
+            
+            constructorsText += matchedConstructors.Aggregate(constructorsText, (current, ctorInfo) => current + GetClassConstructorText(ctorInfo, members));
+
+            return constructorsText;
+        }
+
+        private string GetClassConstructorText(ConstructorInfo ctor, TsMemberInfo[] tsMemberTypes)
+        {
+            string argumentsText = "";
+            string assignmentsText = "";
+
+            var parameters = ctor.GetParameters();
+                
+            foreach (var param in parameters)
+            {
+                var matchingMemberInfo = tsMemberTypes.FirstOrDefault(k => k.DotNetMemberName.Equals(param.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                if(matchingMemberInfo == null)
+                {
+                    //not all parameters have a matching member name, skip constructor building
+                    return string.Empty;
+                }
+                
+                argumentsText += _templateService.FillClassConstructorArgumentTemplate(matchingMemberInfo.TsMemberName, matchingMemberInfo.TsMemberType);
+                assignmentsText += _templateService.FillClassConstructorAssignmentTemplate(matchingMemberInfo.TsMemberName, matchingMemberInfo.TsMemberName);
+            }
+
+            argumentsText = argumentsText.TrimEnd(',', ' ');
+            assignmentsText = RemoveLastLineEnding(assignmentsText);
+
+            return _templateService.FillClassConstructorTemplate(argumentsText, assignmentsText);
         }
 
         /// <summary>
