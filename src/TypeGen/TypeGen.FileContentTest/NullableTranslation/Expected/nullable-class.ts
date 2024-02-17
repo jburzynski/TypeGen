@@ -6,7 +6,7 @@
 export class NullableClass {
     numberNotNullable: number;
     numberNullable?: number;
-    stringNotNullable: string = "";
+    stringNotNullable = "";
     stringNullable?: string;
     guidNotNullable: string;
     guidNullable?: string;

@@ -16,6 +16,6 @@ export class EClass extends GenericClass<number> {
     g: string;
     h: boolean;
     i: string;
-    link: string = "someUrl/";
+    link = "someUrl/";
     js: FClass[] = [];
 }

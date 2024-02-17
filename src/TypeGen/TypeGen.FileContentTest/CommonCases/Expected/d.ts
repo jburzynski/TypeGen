@@ -17,7 +17,7 @@ export class D extends GenericClass<number> {
     c: TestInterface;
     barId: number;
     bar: Bar;
-    e: string = "asdf";
+    e = "asdf";
     j: Date;
     k: Date;
     fs: FClass[] = [];
