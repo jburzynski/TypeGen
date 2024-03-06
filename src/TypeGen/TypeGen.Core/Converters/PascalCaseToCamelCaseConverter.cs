@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 using TypeGen.Core.Validation;
 
 namespace TypeGen.Core.Converters
@@ -10,6 +11,7 @@ namespace TypeGen.Core.Converters
     /// </summary>
     public class PascalCaseToCamelCaseConverter : IMemberNameConverter, ITypeNameConverter
     {
+        private static readonly CamelCasePropertyNamesContractResolver _resolver = new();
         public string Convert(string name, MemberInfo memberInfo)
         {
             Requires.NotNullOrEmpty(name, nameof(name));
@@ -24,8 +26,7 @@ namespace TypeGen.Core.Converters
 
         private static string ConvertTypeInvariant(string name)
         {
-            char firstChar = char.ToLowerInvariant(name[0]);
-            return firstChar + name.Remove(0, 1);
+            return _resolver.GetResolvedPropertyName(name);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
+using System.Text.Json;
 using TypeGen.Core.Converters;
 using Xunit;
 
@@ -14,6 +13,7 @@ namespace TypeGen.Core.Test.Converters
         [InlineData("Some", "some")]
         [InlineData("ASomeName", "aSomeName")]
         [InlineData("ASomeAName", "aSomeAName")]
+        [InlineData("IMEI", "imei")]
         public void PascalCaseToCamelCaseConverter_Test(string input, string expectedResult)
         {
             //arrange
@@ -26,6 +26,27 @@ namespace TypeGen.Core.Test.Converters
             //assert
             Assert.Equal(expectedResult, actualResultMember);
             Assert.Equal(expectedResult, actualResultType);
+        }
+
+        [Theory]
+        [InlineData("SomeName")]
+        [InlineData("Some")]
+        [InlineData("ASomeName")]
+        [InlineData("ASomeAName")]
+        [InlineData("IMEI")]
+        public void PascalCaseToCamelCaseConverter_ShouldMatchSystemTextJsonPolicy(string input)
+        {
+            //arrange
+            var expected = JsonNamingPolicy.CamelCase.ConvertName(input);
+            var converter = new PascalCaseToCamelCaseConverter();
+
+            //act
+            string actualResultMember = converter.Convert(input, (MemberInfo)null);
+            string actualResultType = converter.Convert(input, (Type)null);
+
+            //assert
+            Assert.Equal(expected, actualResultMember);
+            Assert.Equal(expected, actualResultType);
         }
 
         [Theory]
