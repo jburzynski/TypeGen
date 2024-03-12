@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TypeGen.Core.Generator.Services
 {
-    internal interface ITypeDependencyService
+    public interface ITypeDependencyService
     {
         /// <summary>
         /// Gets all non-simple and non-collection types the given type depends on.

@@ -1,6 +1,6 @@
 ﻿namespace TypeGen.Core.Storage
 {
-    internal interface IInternalStorage
+    public interface IInternalStorage
     {
         /// <summary>
         /// Gets embedded resource as string

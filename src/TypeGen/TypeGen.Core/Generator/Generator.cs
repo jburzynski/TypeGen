@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using TypeGen.Core.Conversion;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Context;
@@ -31,56 +33,98 @@ namespace TypeGen.Core.Generator
         /// <summary>
         /// A logger instance used to log messages raised by a Generator instance
         /// </summary>
-        public ILogger Logger { get; }
-        
+        private ILogger Logger { get; set; }
+
         /// <summary>
         /// Generator options. Cannot be null.
         /// </summary>
-        public GeneratorOptions Options { get; }
-        
-        private readonly MetadataReaderFactory _metadataReaderFactory;
-        private readonly ITypeService _typeService;
-        private readonly ITypeDependencyService _typeDependencyService;
-        private readonly ITemplateService _templateService;
-        private readonly ITsContentGenerator _tsContentGenerator;
-        private readonly IFileSystem _fileSystem;
+        public GeneratorOptions Options { get; set; }
+
+        private IMetadataReaderFactory _metadataReaderFactory;
+        private ITypeService _typeService;
+        private ITypeDependencyService _typeDependencyService;
+        private ITemplateService _templateService;
+        private ITsContentGenerator _tsContentGenerator;
+        private IFileSystem _fileSystem;
 
         // keeps track of what types have been generated in the current session
         private GenerationContext _generationContext;
 
-        public Generator(GeneratorOptions options, ILogger logger = null)
+        [ActivatorUtilitiesConstructor]
+        public Generator(
+            IOptions<GeneratorOptions> options, 
+            ILogger logger,
+            IFileSystem fileSystem,
+            IMetadataReaderFactory metadataReaderFactory,
+            ITypeService typeService,
+            ITypeDependencyService typeDependencyService,
+            ITemplateService templateService,
+            ITsContentGenerator tsContentGenerator
+        ) => Init(options, logger, fileSystem, metadataReaderFactory, typeService, typeDependencyService, templateService, tsContentGenerator);
+
+        protected Generator(GeneratorOptions generatorOptions, ILogger logger = null)
+        {
+            var options = new OptionsWrapper<GeneratorOptions>(generatorOptions);
+            var internalStorage = new InternalStorage();
+            var fileSystem = new FileSystem();
+            var metadataReaderFactory = new MetadataReaderFactory();
+            var typeService = new TypeService(metadataReaderFactory, options);
+            var typeDependencyService = new TypeDependencyService(typeService, metadataReaderFactory, options);
+            var templateService = new TemplateService(internalStorage, options);
+
+            var tsContentGenerator = new TsContentGenerator(typeDependencyService,
+                typeService,
+                templateService,
+                new TsContentParser(fileSystem),
+                metadataReaderFactory,
+                options,
+                logger);
+            
+            Init(options, logger, fileSystem, metadataReaderFactory, typeService, typeDependencyService, templateService, tsContentGenerator);
+        }
+
+        protected Generator(ILogger logger) : this(new GeneratorOptions(), logger)
+        {
+        }
+
+        protected Generator() : this(new GeneratorOptions())
+        {
+        }
+
+        public static Generator Get(GeneratorOptions generatorOptions, ILogger logger = null)
+        {
+            return new Generator(generatorOptions, logger);
+        }
+
+        public static Generator Get()
+        {
+            return new Generator();
+        }
+
+        private void Init(
+            IOptions<GeneratorOptions> options, 
+            ILogger logger,
+            IFileSystem fileSystem,
+            IMetadataReaderFactory metadataReaderFactory,
+            ITypeService typeService,
+            ITypeDependencyService typeDependencyService,
+            ITemplateService templateService,
+            ITsContentGenerator tsContentGenerator
+        )
         {
             Requires.NotNull(options, nameof(options));
             
             FileContentGenerated += OnFileContentGenerated;
             
-            Options = options;
+            Options = options.Value;
             Logger = logger;
-            
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = options };
 
-            var internalStorage = new InternalStorage();
-            _fileSystem = new FileSystem();
-            _metadataReaderFactory = new MetadataReaderFactory();
-            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
-            _typeDependencyService = new TypeDependencyService(_typeService, _metadataReaderFactory, generatorOptionsProvider);
-            _templateService = new TemplateService(internalStorage, generatorOptionsProvider);
-
-            _tsContentGenerator = new TsContentGenerator(_typeDependencyService,
-                _typeService,
-                _templateService,
-                new TsContentParser(_fileSystem),
-                _metadataReaderFactory,
-                generatorOptionsProvider,
-                logger);
-        }
-        
-        public Generator(ILogger logger) : this(new GeneratorOptions(), logger)
-        {
-        }
-
-        public Generator() : this(new GeneratorOptions())
-        {
+            _fileSystem = fileSystem;
+            _metadataReaderFactory = metadataReaderFactory;
+            _typeService = typeService;
+            _typeDependencyService = typeDependencyService;
+            _templateService = templateService;
+            _tsContentGenerator = tsContentGenerator;
         }
         
         /// <summary>

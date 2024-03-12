@@ -6,12 +6,20 @@
     <RootNamespace>TypeGen.Core.Test</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="6.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+    <PackageReference Include="xunit" Version="2.7.0" />
+    <PackageReference Include="Xunit.Microsoft.DependencyInjection" Version="8.0.12" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TypeGen.Cli\TypeGen.Cli.csproj" />
@@ -54,5 +62,10 @@
 	<None Remove="Acceptance\Expected\very\nested\directory\nested-entity.ts" />
     <None Remove="Acceptance\Expected\generic-with-restrictions.ts" />
     <None Remove="Acceptance\Expected\extended-primitives-class.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="child\dir\child-enum-dir\" />
+    <Folder Include="child\dir\child2dir\" />
+    <Folder Include="child\dir\child3dir\" />
   </ItemGroup>
 </Project>

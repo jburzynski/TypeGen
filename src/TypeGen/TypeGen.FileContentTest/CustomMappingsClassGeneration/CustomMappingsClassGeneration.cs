@@ -32,16 +32,15 @@ namespace TypeGen.FileContentTest.CustomMappingsClassGeneration
         public async Task ShouldNotGenerateDependencyIfItsInCustomTypeMappings()
         {
             var spec = new TestGenerationSpec();
-            var generator = new Core.Generator.Generator
-            {
-                Options =
+            var generator = Generator.Get(
+                new GeneratorOptions
                 {
                     CustomTypeMappings = new Dictionary<string, string>
                     {
                         { "System.Uri", "URL" }
                     }
                 }
-            };
+            );
             
             var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
             await generator.GenerateAsync(new[] { spec });

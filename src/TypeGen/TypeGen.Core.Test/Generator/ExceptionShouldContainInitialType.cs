@@ -16,7 +16,7 @@ public class ExceptionShouldContainInitialType
     {
         var type = typeof(TestExceptions);
         var spec = new ExceptionsGenerationSpec();
-        var generator = new Core.Generator.Generator();
+        var generator = Core.Generator.Generator.Get();
         try
         {
             await generator.GenerateAsync(spec);

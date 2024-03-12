@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
@@ -16,18 +17,18 @@ namespace TypeGen.Core.Generator.Services
     {
         private readonly ITypeService _typeService;
         private readonly IMetadataReaderFactory _metadataReaderFactory;
-        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        private readonly IOptions<GeneratorOptions> _options;
         
-        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        private GeneratorOptions GeneratorOptions => _options.Value;
 
         public TypeDependencyService(
             ITypeService typeService,
             IMetadataReaderFactory metadataReaderFactory,
-            IGeneratorOptionsProvider generatorOptionsProvider)
+            IOptions<GeneratorOptions> options)
         {
             _typeService = typeService;
             _metadataReaderFactory = metadataReaderFactory;
-            _generatorOptionsProvider = generatorOptionsProvider;
+            _options = options;
         }
 
         /// <summary>

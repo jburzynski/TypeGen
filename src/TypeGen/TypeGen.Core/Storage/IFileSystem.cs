@@ -2,7 +2,7 @@
 
 namespace TypeGen.Core.Storage
 {
-    internal interface IFileSystem
+    public interface IFileSystem
     {
         /// <summary>
         /// Writes a text file to the specified location

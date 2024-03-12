@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace TypeGen.Core.Metadata
 {
-    internal interface IMetadataReader
+    public interface IMetadataReader
     {
         TAttribute GetAttribute<TAttribute>(Type type) where TAttribute : Attribute;
         TAttribute GetAttribute<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute;

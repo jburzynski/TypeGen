@@ -13,7 +13,7 @@ public class GenerationTestBase
     {
         var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
 
-        var generator = new Generator();
+        var generator = Generator.Get();
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(type.Assembly);
@@ -27,7 +27,7 @@ public class GenerationTestBase
         GenerationSpec generationSpec, GeneratorOptions generatorOptions)
     {
         var readExpectedTask = EmbededResourceReader.GetEmbeddedResourceAsync(expectedLocation);
-        var generator = new Generator(generatorOptions);
+        var generator = Generator.Get(generatorOptions);
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(new[] { generationSpec });

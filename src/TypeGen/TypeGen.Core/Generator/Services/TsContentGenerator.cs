@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Logging;
@@ -24,7 +25,7 @@ namespace TypeGen.Core.Generator.Services
         private readonly ITemplateService _templateService;
         private readonly ITsContentParser _tsContentParser;
         private readonly IMetadataReaderFactory _metadataReaderFactory;
-        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        private readonly IOptions<GeneratorOptions> _generatorOptionsProvider;
         private readonly ILogger _logger;
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
@@ -32,14 +33,14 @@ namespace TypeGen.Core.Generator.Services
         private const string CustomHeadTagName = "custom-head";
         private const string CustomBodyTagName = "custom-body";
 
-        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.Value;
 
         public TsContentGenerator(ITypeDependencyService typeDependencyService,
             ITypeService typeService,
             ITemplateService templateService,
             ITsContentParser tsContentParser,
             IMetadataReaderFactory metadataReaderFactory,
-            IGeneratorOptionsProvider generatorOptionsProvider,
+            IOptions<GeneratorOptions> generatorOptionsProvider,
             ILogger logger)
         {
             _typeDependencyService = typeDependencyService;

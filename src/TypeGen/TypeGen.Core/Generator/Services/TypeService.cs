@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Metadata;
 using TypeGen.Core.TypeAnnotations;
@@ -21,15 +22,15 @@ namespace TypeGen.Core.Generator.Services
         };
 
         private readonly IMetadataReaderFactory _metadataReaderFactory;
-        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        private readonly IOptions<GeneratorOptions> _options;
 
-        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        private GeneratorOptions GeneratorOptions => _options.Value;
         private IMetadataReader MetadataReader => _metadataReaderFactory.GetInstance();
 
-        public TypeService(IMetadataReaderFactory metadataReaderFactory, IGeneratorOptionsProvider generatorOptionsProvider)
+        public TypeService(IMetadataReaderFactory metadataReaderFactory, IOptions<GeneratorOptions> options)
         {
             _metadataReaderFactory = metadataReaderFactory;
-            _generatorOptionsProvider = generatorOptionsProvider;
+            _options = options;
         }
 
         /// <inheritdoc />
@@ -192,7 +193,7 @@ namespace TypeGen.Core.Generator.Services
         public bool UseDefaultExport(Type type)
         {
             Requires.NotNull(type, nameof(type));
-            return MetadataReader.GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? _generatorOptionsProvider.GeneratorOptions.UseDefaultExport;
+            return MetadataReader.GetAttribute<TsDefaultExportAttribute>(type)?.Enabled ?? _options.Value.UseDefaultExport;
         }
 
         /// <inheritdoc />

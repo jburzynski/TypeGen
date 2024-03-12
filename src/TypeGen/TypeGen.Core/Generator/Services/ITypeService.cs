@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace TypeGen.Core.Generator.Services
 {
-    internal interface ITypeService
+    public interface ITypeService
     {
         /// <summary>
         /// Determines if a type has a TypeScript simple type representation

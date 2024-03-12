@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Generator;
@@ -39,7 +40,7 @@ namespace TypeGen.Core.Test.Generator.Services
         {
         
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -50,7 +51,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetImportsText_FileNameConvertersNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { FileNameConverters = null } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { FileNameConverters = null });
             
             //act,assert
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
@@ -61,7 +62,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetImportsText_TypeNameConvertersNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { TypeNameConverters = null });
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -78,11 +79,11 @@ namespace TypeGen.Core.Test.Generator.Services
                 string expectedOutput)
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions
             {
                 FileNameConverters = fileNameConverters,
                 TypeNameConverters = typeNameConverters
-            } };
+            });
             _typeDependencyService.GetTypeDependencies(Arg.Any<Type>()).Returns(typeDependencies);
             _templateService.FillImportTemplate(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(i => $"{i.ArgAt<string>(0)} | {i.ArgAt<string>(1)} | {i.ArgAt<string>(2)};");
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
@@ -208,7 +209,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetExtendsText_TypeNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -219,7 +220,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetExtendsText_TypeNameConvertersNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { TypeNameConverters = null });
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -230,7 +231,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetImplementsText_TypeNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
 
             //act,assert
@@ -241,7 +242,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetImplementsText_TypeNameConvertersNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = null } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { TypeNameConverters = null });
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
 
             //act,assert
@@ -252,7 +253,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetCustomBody_FilePathNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -263,7 +264,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetCustomHead_FilePathNull_ExceptionThrown()
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, _typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act,assert
@@ -276,7 +277,7 @@ namespace TypeGen.Core.Test.Generator.Services
         {
             //arrange
             ITypeService typeService = GetTypeService(convertTypesToString);
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions());
             var tsContentGenerator = new TsContentGenerator(_typeDependencyService, typeService, _templateService, _tsContentParser, _metadataReaderFactory, generatorOptionsProvider, null);
             
             //act

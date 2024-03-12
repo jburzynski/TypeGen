@@ -93,7 +93,7 @@ internal class Presenter : IPresenter
         
         var generatorOptionsProvider = new GeneratorOptionsProvider(converterResolver);
         var generatorOptions = generatorOptionsProvider.GetGeneratorOptions(config, assemblies, projectFolder);
-        var generator = new Generator(generatorOptions, _logger);
+        var generator = Generator.Get(generatorOptions, _logger);
         
         // generate
         
