@@ -2,7 +2,7 @@
 
 namespace TypeGen.Core.Generator.Services
 {
-    internal interface ITemplateService
+    public interface ITemplateService
     {
         string FillClassTemplate(string imports, string name, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);
         string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements, string properties, string tsDoc, string customHead, string customBody, string fileHeading = null);

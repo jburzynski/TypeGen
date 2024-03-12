@@ -54,7 +54,7 @@ namespace TypeGen.FileContentTest.Blacklist
         {
             var blacklist = new HashSet<string> { typeof(Baz).FullName };
             var generatorOptions = new GeneratorOptions { TypeBlacklist = blacklist };
-            var generator = new Generator(generatorOptions);
+            var generator = Generator.Get(generatorOptions);
             var generationSpec = new ClassWithBlacklistedPropertyTypeGenerationSpec();
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();
@@ -65,7 +65,7 @@ namespace TypeGen.FileContentTest.Blacklist
         {
             var blacklist = new HashSet<string> { typeof(Baz).FullName };
             var generatorOptions = new GeneratorOptions { TypeBlacklist = blacklist };
-            var generator = new Generator(generatorOptions);
+            var generator = Generator.Get(generatorOptions);
             var generationSpec = new ClassWithBlacklistedTypeInDictionaryGenerationSpec();
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();
@@ -76,7 +76,7 @@ namespace TypeGen.FileContentTest.Blacklist
         {
             var blacklist = new HashSet<string> { typeof(Baz).FullName };
             var generatorOptions = new GeneratorOptions { TypeBlacklist = blacklist };
-            var generator = new Generator(generatorOptions);
+            var generator = Generator.Get(generatorOptions);
             var generationSpec = new ClassWithBlacklistedTypeInArrayGenerationSpec();
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();
@@ -87,7 +87,7 @@ namespace TypeGen.FileContentTest.Blacklist
         {
             var blacklist = new HashSet<string> { typeof(Baz).FullName };
             var generatorOptions = new GeneratorOptions { TypeBlacklist = blacklist };
-            var generator = new Generator(generatorOptions);
+            var generator = Generator.Get(generatorOptions);
             var generationSpec = new ClassWithBlacklistedTypeInCustomGenericGenerationSpec();
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();
@@ -98,7 +98,7 @@ namespace TypeGen.FileContentTest.Blacklist
         {
             var blacklist = new HashSet<string> { typeof(Baz).FullName };
             var generatorOptions = new GeneratorOptions { TypeBlacklist = blacklist };
-            var generator = new Generator(generatorOptions);
+            var generator = Generator.Get(generatorOptions);
             var generationSpec = new InterfaceWithBlacklistedPropertyTypeGenerationSpec();
 
             ((Action)(() => generator.Generate(new[] { generationSpec }))).Should().Throw<CoreException>();

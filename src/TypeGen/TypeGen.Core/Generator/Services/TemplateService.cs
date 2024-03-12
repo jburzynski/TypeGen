@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Utils;
 
@@ -14,7 +15,7 @@ namespace TypeGen.Core.Generator.Services
         // dependencies
 
         private readonly IInternalStorage _internalStorage;
-        private readonly IGeneratorOptionsProvider _generatorOptionsProvider;
+        private readonly IOptions<GeneratorOptions> _options;
 
         private readonly string _enumTemplate;
         private readonly string _enumUnionTypeTemplate;
@@ -34,12 +35,12 @@ namespace TypeGen.Core.Generator.Services
         private readonly string _indexExportTemplate;
         private readonly string _headingTemplate;
 
-        private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
+        private GeneratorOptions GeneratorOptions => _options.Value;
 
-        public TemplateService(IInternalStorage internalStorage, IGeneratorOptionsProvider generatorOptionsProvider)
+        public TemplateService(IInternalStorage internalStorage, IOptions<GeneratorOptions> options)
         {
             _internalStorage = internalStorage;
-            _generatorOptionsProvider = generatorOptionsProvider;
+            _options = options;
 
             _enumTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.Enum.tpl");
             _enumUnionTypeTemplate = _internalStorage.GetEmbeddedResource("TypeGen.Core.Templates.EnumUnionType.tpl");

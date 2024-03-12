@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using TypeGen.Core.Converters;
 using TypeGen.Core.Generator;
@@ -28,9 +29,7 @@ namespace TypeGen.Core.Test.Generator.Services
             _metadataReaderFactory = Substitute.For<IMetadataReaderFactory>();
             _metadataReaderFactory.GetInstance().Returns(new AttributeMetadataReader());
 
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions() };
-
-            _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
+            _typeService = new TypeService(_metadataReaderFactory, new OptionsWrapper<GeneratorOptions>(new GeneratorOptions()));
         }
         
         public class MyClass {}
@@ -224,7 +223,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void UseDefaultExport_TypeGiven_DeterminedIfDefaultExport(Type type, bool optionsDefaultExport, bool expectedResult)
         {
             // arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { UseDefaultExport = optionsDefaultExport } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { UseDefaultExport = optionsDefaultExport });
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             
             // act
@@ -253,7 +252,7 @@ namespace TypeGen.Core.Test.Generator.Services
         public void GetTsTypeName_TypeGiven_TsTypeNameReturned(Type type, TypeNameConverterCollection converters, bool forTypeDeclaration, string expectedResult)
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions { TypeNameConverters = converters } };
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions { TypeNameConverters = converters });
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             
             //act
@@ -299,11 +298,11 @@ namespace TypeGen.Core.Test.Generator.Services
             StrictNullTypeUnionFlags csNullableTranslation, string expectedResult)
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider { GeneratorOptions = new GeneratorOptions
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(new GeneratorOptions
             {
                 TypeNameConverters = converters,
                 CsNullableTranslation = csNullableTranslation
-            } };
+            });
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             
             //act
@@ -491,14 +490,13 @@ namespace TypeGen.Core.Test.Generator.Services
             Type customMappingKey, string customMappingValue, string expectedResult)
         {
             //arrange
-            var generatorOptionsProvider = new GeneratorOptionsProvider
-            {
-                GeneratorOptions = new GeneratorOptions
+            var generatorOptionsProvider = new OptionsWrapper<GeneratorOptions>(
+                new GeneratorOptions
                 {
                     CustomTypeMappings = { { customMappingKey.FullName, customMappingValue } },
                     TypeNameConverters = converters
                 }
-            };
+            );
             _typeService = new TypeService(_metadataReaderFactory, generatorOptionsProvider);
             
             //act

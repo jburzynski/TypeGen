@@ -1,6 +1,6 @@
 ﻿namespace TypeGen.Core.Generator.Services
 {
-    internal interface ITsContentParser
+    public interface ITsContentParser
     {
         /// <summary>
         /// Gets text within specified tag(s).

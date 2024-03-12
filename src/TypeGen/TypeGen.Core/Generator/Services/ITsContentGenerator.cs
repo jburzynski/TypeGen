@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace TypeGen.Core.Generator.Services
 {
-    internal interface ITsContentGenerator
+    public interface ITsContentGenerator
     {
         /// <summary>
         /// Gets code for the 'imports' section for a given type

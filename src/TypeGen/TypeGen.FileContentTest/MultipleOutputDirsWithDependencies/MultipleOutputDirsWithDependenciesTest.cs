@@ -24,7 +24,7 @@ public class MultipleOutputDirsWithDependenciesTest
         var generationSpec = new MultipleOutputDirsWithDependenciesGenerationSpec();
         var generatorOptions = new GeneratorOptions();
         
-        var generator = new Generator(generatorOptions);
+        var generator = Generator.Get(generatorOptions);
         var interceptor = GeneratorOutputInterceptor.CreateInterceptor(generator);
 
         await generator.GenerateAsync(generationSpec);
