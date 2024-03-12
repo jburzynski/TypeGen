@@ -20,7 +20,6 @@ public class DiFixture : TestBedFixture
         services.AddScoped<IMetadataReaderFactory, MetadataReaderFactory>();
         services.AddScoped<ITypeService, TypeService>();
         services.AddScoped<ITypeDependencyService, TypeDependencyService>();
-        services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<ITsContentGenerator, TsContentGenerator>();
         services.AddScoped<ITsContentParser, TsContentParser>();
         services.AddScoped<IFileSystem, FileSystem>();
