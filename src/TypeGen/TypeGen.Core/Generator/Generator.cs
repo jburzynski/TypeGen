@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using TypeGen.Core.Conversion;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Context;
@@ -766,6 +763,13 @@ namespace TypeGen.Core.Generator
             return RemoveLastLineEnding(propertiesText);
         }
 
+        /// <summary>
+        /// Converts an enumvalue that is a number to a reference to the enumvalue
+        /// if EnumStringInitializers are enabled for that enum.
+        /// </summary>
+        /// <param name="enumType">The type of the enum</param>
+        /// <param name="enumValue">The number value in the form of a string</param>
+        /// <returns>A string representation of the reference to the enumvalue in the form {EnumType}.{StringRepresentation}</returns>
         private string GetEnumMemberReference(Type enumType, string enumValue)
         {
             var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(enumType);
