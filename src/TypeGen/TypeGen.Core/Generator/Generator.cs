@@ -597,12 +597,7 @@ namespace TypeGen.Core.Generator
 
             var enumType = GetEnumType(memberInfo);
             if (enumType != null)
-            {
-                defaultValue = GetEnumMemberText(enumType, defaultValue);
-            }
-            // todo if the type is an enum type that has the stringinitializersattribute set or its an enum and the stringinitializer is set in the tgconfig, convert the enum value to its string representation
-            //if(memberInfo.DeclaringType.BaseType == typeof(Enum))
-            //memberInfo.PropertyType.BaseType
+                defaultValue = GetEnumMemberReference(enumType, defaultValue);
 
             return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, defaultValue);
         }
@@ -771,7 +766,7 @@ namespace TypeGen.Core.Generator
             return RemoveLastLineEnding(propertiesText);
         }
 
-        private string GetEnumMemberText(Type enumType, string enumValue)
+        private string GetEnumMemberReference(Type enumType, string enumValue)
         {
             var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(enumType);
             if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
@@ -782,7 +777,7 @@ namespace TypeGen.Core.Generator
                 {
                     var values = Enum.GetValues(enumType);
                     var value = values.GetValue(index).ToString();
-                    return value;
+                    return $"{enumType.Name}.{value}";
                 }
             }
             return enumValue;
