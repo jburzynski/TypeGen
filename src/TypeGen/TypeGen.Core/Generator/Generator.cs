@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using TypeGen.Core.Conversion;
 using TypeGen.Core.Extensions;
 using TypeGen.Core.Generator.Context;
@@ -588,21 +590,65 @@ namespace TypeGen.Core.Generator
                 isOptional = true;
             }
 
+            var defaultValue = GetClassPropertyDefaultValue(memberInfo, typeName);
+
+            if (defaultValue == null)
+                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
+
+            var enumType = GetEnumType(memberInfo);
+            if (enumType != null)
+            {
+                defaultValue = GetEnumMemberText(enumType, defaultValue);
+            }
+            // todo if the type is an enum type that has the stringinitializersattribute set or its an enum and the stringinitializer is set in the tgconfig, convert the enum value to its string representation
+            //if(memberInfo.DeclaringType.BaseType == typeof(Enum))
+            //memberInfo.PropertyType.BaseType
+
+            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, defaultValue);
+        }
+
+        private Type GetEnumType(MemberInfo memberInfo)
+        {
+            Type enumType = null;
+
+            // Check if the memberInfo is a property or field
+            Type memberType = null;
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                memberType = propertyInfo.PropertyType;
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                memberType = fieldInfo.FieldType;
+            }
+
+            // Check if the member type is an enum
+            if (memberType != null && memberType.IsEnum)
+            {
+                enumType = memberType;
+                return enumType;
+            }
+
+            return null;
+        }
+
+        private string GetClassPropertyDefaultValue(MemberInfo memberInfo, string typeName)
+        {
             // try to get default value from TsDefaultValueAttribute
             var defaultValueAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsDefaultValueAttribute>(memberInfo);
             if (defaultValueAttribute != null)
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, defaultValueAttribute.DefaultValue);
+                return defaultValueAttribute.DefaultValue;
 
             // try to get default value from the member's default value
             string valueText = _tsContentGenerator.GetMemberValueText(memberInfo);
             if (!string.IsNullOrWhiteSpace(valueText))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, valueText);
+                return valueText;
 
             // try to get default value from Options.DefaultValuesForTypes
             if (Options.DefaultValuesForTypes.Any() && Options.DefaultValuesForTypes.ContainsKey(typeName))
-                return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc, Options.DefaultValuesForTypes[typeName]);
+                return Options.DefaultValuesForTypes[typeName];
 
-            return _templateService.FillClassPropertyTemplate(modifiers, name, typeName, typeUnions, isOptional, tsDoc);
+            return null;
         }
 
         private static void ThrowMemberTypeIsBlacklisted(MemberInfo memberInfo)
@@ -723,6 +769,23 @@ namespace TypeGen.Core.Generator
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetInterfacePropertyText(type, memberInfo));
 
             return RemoveLastLineEnding(propertiesText);
+        }
+
+        private string GetEnumMemberText(Type enumType, string enumValue)
+        {
+            var stringInitializersAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsStringInitializersAttribute>(enumType);
+            if ((Options.EnumStringInitializers && (stringInitializersAttribute == null || stringInitializersAttribute.Enabled)) ||
+                (stringInitializersAttribute != null && stringInitializersAttribute.Enabled))
+            {
+                int index;
+                if(int.TryParse(enumValue, out index))
+                {
+                    var values = Enum.GetValues(enumType);
+                    var value = values.GetValue(index).ToString();
+                    return value;
+                }
+            }
+            return enumValue;
         }
 
         /// <summary>
