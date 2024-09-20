@@ -107,7 +107,8 @@ namespace TypeGen.Core.Test.Generator.Services
                 "Child4 |  | ./child4/default/output/dir/child4;" +
                 "ChildEnum |  | ./child/dir/child-enum-dir/child-enum;" +
                 "CustomType |  | custom/directory/custom-type;" +
-                "OtherType | OT | other/directory/other-type;\r\n"
+                "OtherType | OT | other/directory/other-type;" +
+                Environment.NewLine
             },
 
             new object[] { typeof(GetImportsText_TestData.Parent), "./child/dir/", new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
@@ -121,17 +122,20 @@ namespace TypeGen.Core.Test.Generator.Services
                 "Child4 |  | ../../child4/default/output/dir/child4;" +
                 "ChildEnum |  | ./child-enum-dir/child-enum;" +
                 "CustomType |  | custom/directory/custom-type;" +
-                "OtherType | OT | other/directory/other-type;\r\n"
+                "OtherType | OT | other/directory/other-type;" +
+                Environment.NewLine
             },
             
             new object[] { typeof(GetImportsText_TestData.ParentCustomBase), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 new TypeDependencyInfo[] {},
-                "Base |  | base/directory/base;\r\n"
+                "Base |  | base/directory/base;" +
+                Environment.NewLine
             },
             
             new object[] { typeof(GetImportsText_TestData.ParentCustomBaseAlias), null, new TypeNameConverterCollection(new PascalCaseToKebabCaseConverter()), new TypeNameConverterCollection(),
                 new TypeDependencyInfo[] {},
-                "Base | B | other/directory/base;\r\n"
+                "Base | B | other/directory/base;" +
+                Environment.NewLine
             },
         };
 
