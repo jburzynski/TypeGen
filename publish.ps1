@@ -9,14 +9,14 @@ if (-not $args -contains "-nobuild")
   dotnet clean .\src\TypeGen\TypeGen.Core
   dotnet restore .\src\TypeGen\TypeGen.Core
   dotnet build .\src\TypeGen\TypeGen.Core -f netstandard2.0 -c Release
-  dotnet build .\src\TypeGen\TypeGen.Core -f net8.0 -c Release
+  dotnet build .\src\TypeGen\TypeGen.Core -f net9.0 -c Release
 }
 
 
 # publish TypeGen Cli
 dotnet clean .\src\TypeGen\TypeGen.Cli
 dotnet restore .\src\TypeGen\TypeGen.Cli
-dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f net8.0
+dotnet publish .\src\TypeGen\TypeGen.Cli -c Release -f net9.0
 
 
 # create TypeGen NuGet package
@@ -29,8 +29,8 @@ if (test-path nuget\tools)
 }
 
 new-item -Force -Path nuget\tools -ItemType Directory
-$binFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU\Release\net8.0\publish") {"bin\Any CPU"} else {"bin"}
-copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net8.0\publish\*" nuget\tools
+$binFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU\Release\net9.0\publish") {"bin\Any CPU"} else {"bin"}
+copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net9.0\publish\*" nuget\tools
 mv nuget\tools\TypeGen.Cli.exe nuget\tools\TypeGen.exe
 
 
@@ -47,11 +47,11 @@ $binFolder = if (test-path "src\TypeGen\TypeGen.Core\bin\Any CPU\Release\netstan
 copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\netstandard2.0\TypeGen.Core.dll" nuget\lib\netstandard2.0
 copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\netstandard2.0\TypeGen.Core.xml" nuget\lib\netstandard2.0
 
-#net8.0
-new-item -Force -Path nuget\lib\net8.0 -ItemType Directory
-$binFolder = if (test-path "src\TypeGen\TypeGen.Core\bin\Any CPU\Release\net8.0") {"bin\Any CPU"} else {"bin"}
-copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net8.0\TypeGen.Core.dll" nuget\lib\net8.0
-copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net8.0\TypeGen.Core.xml" nuget\lib\net8.0
+#net9.0
+new-item -Force -Path nuget\lib\net9.0 -ItemType Directory
+$binFolder = if (test-path "src\TypeGen\TypeGen.Core\bin\Any CPU\Release\net9.0") {"bin\Any CPU"} else {"bin"}
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net9.0\TypeGen.Core.dll" nuget\lib\net9.0
+copy "src\TypeGen\TypeGen.Core\$($binFolder)\Release\net9.0\TypeGen.Core.xml" nuget\lib\net9.0
 
 nuget pack nuget\TypeGen.nuspec
 
@@ -63,12 +63,12 @@ if (test-path nuget-dotnetcli\tools)
   rm -Recurse -Force nuget-dotnetcli\tools
 }
 
-new-item -Force -Path nuget-dotnetcli\tools\net8.0\any -ItemType Directory
-$binFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU\Release\net8.0\publish") {"bin\Any CPU"} else {"bin"}
-copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net8.0\publish\*" nuget-dotnetcli\tools\net8.0\any
+new-item -Force -Path nuget-dotnetcli\tools\net9.0\any -ItemType Directory
+$binFolder = if (test-path "src\TypeGen\TypeGen.Cli\bin\Any CPU\Release\net9.0\publish") {"bin\Any CPU"} else {"bin"}
+copy -Recurse "src\TypeGen\TypeGen.Cli\$($binFolder)\Release\net9.0\publish\*" nuget-dotnetcli\tools\net9.0\any
 
-New-Item nuget-dotnetcli\tools\net8.0\any\DotnetToolSettings.xml
-set-content nuget-dotnetcli\tools\net8.0\any\DotnetToolSettings.xml '<?xml version="1.0" encoding="utf-8"?>
+New-Item nuget-dotnetcli\tools\net9.0\any\DotnetToolSettings.xml
+set-content nuget-dotnetcli\tools\net9.0\any\DotnetToolSettings.xml '<?xml version="1.0" encoding="utf-8"?>
 <DotNetCliTool Version="1">
   <Commands>
     <Command Name="dotnet-typegen" EntryPoint="TypeGen.Cli.dll" Runner="dotnet" />
