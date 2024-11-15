@@ -79,7 +79,7 @@ namespace TypeGen.Core.Generator.Services
 
             if (!string.IsNullOrEmpty(result))
             {
-                result += "\r\n";
+                result += Environment.NewLine;
             }
 
             return result;
