@@ -2,5 +2,5 @@ namespace TypeGen.Cli;
 
 internal class ApplicationConfig
 {
-    public const string Version = "6.0.1";
+    public const string Version = "6.0.2";
 }
