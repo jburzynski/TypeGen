@@ -10,7 +10,7 @@ export class ConstantsOnly {
     static staticInt: number;
     static readonly staticReadonlyString: string;
     static readonly staticReadonlyInt: number;
-    static readonly constString: string = "data";
+    static readonly constString = "data";
     static readonly constInt: number = 10;
     propString: string;
     propInt: number;

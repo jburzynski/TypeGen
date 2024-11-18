@@ -5,14 +5,14 @@
 import { DefaultMemberComplexValues } from "./default-member-complex-values";
 
 export class DefaultMemberValues {
-    fieldString: string = "fieldString";
+    fieldString = "fieldString";
     fieldIntUnassigned: number;
     fieldIntAssignedDefaultValue: number;
     fieldFloatAssignedDefaultValue: number;
     fieldDateTimeUnassigned: Date;
     static staticFieldNumber: number = 2;
     propertyNumber: number = 3;
-    static staticPropertyString: string = "StaticPropertyString";
+    static staticPropertyString = "StaticPropertyString";
     propertyComplexDefaultValue: DefaultMemberComplexValues;
     propertyComplexNotDefaultValue: DefaultMemberComplexValues = {"number":4,"numberNull":null,"string":"default","stringNull":null};
 }

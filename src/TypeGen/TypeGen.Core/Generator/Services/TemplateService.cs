@@ -101,10 +101,21 @@ namespace TypeGen.Core.Generator.Services
         public string FillClassPropertyTemplate(string modifiers, string name, string type, IEnumerable<string> typeUnions,
             bool isOptional, string tsDoc, string defaultValue = null)
         {
-            type = $": {type}";
-            type = ConcatenateWithTypeUnions(type, typeUnions);
             
-            defaultValue = string.IsNullOrWhiteSpace(defaultValue) ? "" : $" = {defaultValue}";
+            bool defaultValueNorOrWhitespace = string.IsNullOrWhiteSpace(defaultValue);
+            
+            if (!defaultValueNorOrWhitespace && type == "string" && !typeUnions.Any())
+            {
+                type = "";
+            }
+            else
+            {
+                type = $": {type}";
+            
+                type = ConcatenateWithTypeUnions(type, typeUnions);
+            }
+            defaultValue = defaultValueNorOrWhitespace ? "" : $" = {defaultValue}";
+            
             
             return ReplaceSpecialChars(_classPropertyTemplate)
                 .Replace(GetTag("modifiers"), modifiers)
