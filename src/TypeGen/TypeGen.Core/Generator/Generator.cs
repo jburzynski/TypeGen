@@ -580,6 +580,9 @@ namespace TypeGen.Core.Generator
             string typeName = _typeService.GetTsTypeName(memberInfo);
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
+            var isRequired = _metadataReaderFactory.GetInstance().GetAttribute<TsRequiredAttribute>(memberInfo) != null;
+            if (isRequired) name += "!";
+            
             var tsDoc = GetTsDocForMember(type, memberInfo);
             bool isOptional = _metadataReaderFactory.GetInstance().GetAttribute<TsOptionalAttribute>(memberInfo) != null;
             var isNullable = memberInfo.IsNullable();
@@ -679,6 +682,9 @@ namespace TypeGen.Core.Generator
             var nameAttribute = _metadataReaderFactory.GetInstance().GetAttribute<TsMemberNameAttribute>(memberInfo);
             string name = nameAttribute?.Name ?? Options.PropertyNameConverters.Convert(memberInfo.Name, memberInfo);
 
+            var isRequired = _metadataReaderFactory.GetInstance().GetAttribute<TsRequiredAttribute>(memberInfo) != null;
+            if (isRequired) name += "!";
+            
             string typeName = _typeService.GetTsTypeName(memberInfo);
             IEnumerable<string> typeUnions = _typeService.GetTypeUnions(memberInfo);
 
