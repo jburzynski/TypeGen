@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using TypeGen.Cli.DependencyInjection;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
@@ -15,6 +16,12 @@ internal class Program
         services.AddInterfacesWithSingleImplementation();
         services.AddTransient<IFileSystem, FileSystem>();
         services.AddTransient<ILogger, ConsoleLogger>();
+        AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve +=
+            (s, e) =>
+            {
+                return Assembly.ReflectionOnlyLoad(e.Name);
+            };
+
 
         var serviceProvider = services.BuildServiceProvider(true);
         return (int)await serviceProvider.GetService<IApplication>().Run(args);

@@ -274,8 +274,11 @@ namespace TypeGen.Core.Generator.Services
         /// <exception cref="ArgumentNullException">Thrown when member or typeNameConverters is null</exception>
         private string GetTsTypeNameForMember(MemberInfo memberInfo)
         {
-            if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
-                return "any";
+            try
+            {
+                if (memberInfo.GetCustomAttribute<DynamicAttribute>() != null)
+                    return "any";
+            } catch { }
 
             Type type = GetMemberType(memberInfo);
             return GetTsTypeName(type, false);
