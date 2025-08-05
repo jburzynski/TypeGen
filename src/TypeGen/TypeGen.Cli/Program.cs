@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using TypeGen.Cli.DependencyInjection;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
