@@ -133,6 +133,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("customFooter"), customFooter)
+                .Replace(GetTag("extraCode"), extraCode)
                 .Replace(GetTag("fileHeading"), fileHeading)
                 .NormalizeNewLines();
         }
