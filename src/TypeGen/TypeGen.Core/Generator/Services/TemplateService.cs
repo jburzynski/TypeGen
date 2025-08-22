@@ -62,7 +62,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         public string FillClassTemplate(string imports, string name, string extends, string implements, string properties,
-            string tsDoc, string customHead, string customBody, string customFooter, string fileHeading = null)
+            string tsDoc, string customHead, string customBody, string customFooter, string extraCode, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -76,12 +76,13 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("customFooter"), customFooter)
+                .Replace(GetTag("extraCode"), extraCode)
                 .Replace(GetTag("fileHeading"), fileHeading)
                 .NormalizeNewLines();
         }
         
         public string FillClassDefaultExportTemplate(string imports, string name, string exportName, string extends, string implements,
-            string properties, string tsDoc, string customHead, string customBody, string customFooter, string fileHeading = null)
+            string properties, string tsDoc, string customHead, string customBody, string customFooter, string extraCode, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -96,6 +97,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("customFooter"), customFooter)
+                .Replace(GetTag("extraCode"), extraCode)
                 .Replace(GetTag("fileHeading"), fileHeading)
                 .NormalizeNewLines();
         }
@@ -118,7 +120,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         public string FillInterfaceTemplate(string imports, string name, string extends, string properties, string tsDoc,
-            string customHead,string customBody, string customFooter, string fileHeading = null)
+            string customHead,string customBody, string customFooter, string extraCode, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -136,7 +138,7 @@ namespace TypeGen.Core.Generator.Services
         }
         
         public string FillInterfaceDefaultExportTemplate(string imports, string name, string exportName, string extends, string properties,
-            string tsDoc, string customHead, string customBody, string customFooter, string fileHeading = null)
+            string tsDoc, string customHead, string customBody, string customFooter, string extraCode,string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -150,6 +152,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("customFooter"), customFooter)
+                .Replace(GetTag("extraCode"), extraCode)
                 .Replace(GetTag("fileHeading"), fileHeading)
                 .NormalizeNewLines();
         }
@@ -169,7 +172,7 @@ namespace TypeGen.Core.Generator.Services
         }
 
         public string FillEnumTemplate(string imports, string name, string values, bool isConst, bool asUnionType, string tsDoc,
-            string customHead, string customBody, string customFooter, string fileHeading = null)
+            string customHead, string customBody, string customFooter, string extraCode, string fileHeading = null)
         {
             if (fileHeading == null) fileHeading = _headingTemplate;
             
@@ -181,6 +184,7 @@ namespace TypeGen.Core.Generator.Services
                 .Replace(GetTag("customHead"), customHead)
                 .Replace(GetTag("customBody"), customBody)
                 .Replace(GetTag("customFooter"), customFooter)
+                .Replace(GetTag("extraCode"), extraCode)
                 .Replace(GetTag("modifiers"), isConst ? "const " : "")
                 .Replace(GetTag("fileHeading"), fileHeading)
                 .NormalizeNewLines();

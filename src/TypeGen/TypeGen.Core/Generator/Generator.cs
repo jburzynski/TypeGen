@@ -445,11 +445,12 @@ namespace TypeGen.Core.Generator
             string customInFileFooter = _tsContentGenerator.GetCustomFooter(filePath);
             string customAttributeFooter = classAttribute.CustomFooter;
             string customFooter = string.Join(Environment.NewLine, new[] { customInFileFooter, customAttributeFooter }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string extraCode = GetClassExtraCode(type);
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading) :
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, extraCode,Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, extraCode,Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -501,11 +502,12 @@ namespace TypeGen.Core.Generator
             string customInFileFooter = _tsContentGenerator.GetCustomFooter(filePath);
             string customAttributeFooter = interfaceAttribute.CustomFooter;
             string customFooter = string.Join(Environment.NewLine, new[] { customInFileFooter, customAttributeFooter }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string extraCode = GetClassExtraCode(type);
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading) :
-                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
+                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, extraCode,Options.FileHeading) :
+                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, extraCode, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -542,11 +544,12 @@ namespace TypeGen.Core.Generator
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
             string customFooter = _tsContentGenerator.GetCustomFooter(filePath);
+            string extraCode = GetClassExtraCode(type);
             var tsDoc = GetTsDocForType(type);
 
             string enumText = _typeService.UseDefaultExport(type) ? 
                 _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, tsDoc, enumAttribute.IsConst, enumAttribute.AsUnionType, Options.FileHeading) :
-                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
+                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, tsDoc, customHead, customBody, customFooter, extraCode,Options.FileHeading);
 
             // write TypeScript file
 
@@ -667,6 +670,16 @@ namespace TypeGen.Core.Generator
                 .Aggregate(propertiesText, (current, memberInfo) => current + GetClassPropertyText(type, memberInfo));
 
             return RemoveLastLineEnding(propertiesText);
+        }
+        
+        /// <summary>
+        /// Gets TypeScript class properties definition source code
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected virtual string GetClassExtraCode(Type type)
+        {
+            return string.Empty;
         }
 
         /// <summary>
