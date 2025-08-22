@@ -37,6 +37,14 @@ namespace TypeGen.Core.Generator.Services
         /// <param name="filePath"></param>
         /// <returns></returns>
         string GetCustomHead(string filePath);
+        
+        /// <summary>
+        /// Gets custom code for a TypeScript file given by filePath.
+        /// Returns an empty string if a file does not exist.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        string GetCustomFooter(string filePath);
 
         /// <summary>
         /// Gets text to be used as a member value

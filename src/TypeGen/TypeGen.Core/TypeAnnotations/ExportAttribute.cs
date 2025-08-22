@@ -13,6 +13,7 @@ namespace TypeGen.Core.TypeAnnotations
         private string _outputDir;
         private string _customHeader;
         private string _customBody;
+        private string _customFooter;
 
         /// <summary>
         /// TypeScript file output directory
@@ -40,5 +41,16 @@ namespace TypeGen.Core.TypeAnnotations
             get => _customBody;
             set => _customBody = value;
         }
+        
+        /// <summary>
+        /// TypeScript file custom Footer
+        /// </summary>
+        public string CustomFooter
+        {
+            get => _customFooter;
+            set => _customFooter = value;
+        }
+        
+        
     }
 }

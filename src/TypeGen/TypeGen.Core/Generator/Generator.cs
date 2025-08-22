@@ -442,11 +442,14 @@ namespace TypeGen.Core.Generator
             string customInFileBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
             string customAttributeBody = classAttribute.CustomBody;
             string customBody = string.Join(Environment.NewLine, new[] { customInFileBody, customAttributeBody }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string customInFileFooter = _tsContentGenerator.GetCustomFooter(filePath);
+            string customAttributeFooter = classAttribute.CustomFooter;
+            string customFooter = string.Join(Environment.NewLine, new[] { customInFileFooter, customAttributeFooter }.Where(i => !string.IsNullOrWhiteSpace(i)));
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
-                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
+                _templateService.FillClassDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading) :
+                _templateService.FillClassTemplate(importsText, tsTypeName, extendsText, implementsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -495,11 +498,14 @@ namespace TypeGen.Core.Generator
             string customInFileBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
             string customAttributeBody = interfaceAttribute.CustomBody;
             string customBody = string.Join(Environment.NewLine, new[] { customInFileBody, customAttributeBody }.Where(i => !string.IsNullOrWhiteSpace(i)));
+            string customInFileFooter = _tsContentGenerator.GetCustomFooter(filePath);
+            string customAttributeFooter = interfaceAttribute.CustomFooter;
+            string customFooter = string.Join(Environment.NewLine, new[] { customInFileFooter, customAttributeFooter }.Where(i => !string.IsNullOrWhiteSpace(i)));
             var tsDoc = GetTsDocForType(type);
 
             var content = _typeService.UseDefaultExport(type) ?
-                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading) :
-                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, tsDoc, customHead, customBody, Options.FileHeading);
+                    _templateService.FillInterfaceDefaultExportTemplate(importsText, tsTypeName, tsTypeNameFirstPart, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading) :
+                    _templateService.FillInterfaceTemplate(importsText, tsTypeName, extendsText, propertiesText, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
 
             // write TypeScript file
             FileContentGenerated?.Invoke(this, new FileContentGeneratedArgs(type, filePath, content));
@@ -535,11 +541,12 @@ namespace TypeGen.Core.Generator
             string filePathRelative = GetRelativeFilePath(type, enumAttribute.OutputDir);
             string customHead = _tsContentGenerator.GetCustomHead(filePath);
             string customBody = _tsContentGenerator.GetCustomBody(filePath, Options.TabLength);
+            string customFooter = _tsContentGenerator.GetCustomFooter(filePath);
             var tsDoc = GetTsDocForType(type);
 
             string enumText = _typeService.UseDefaultExport(type) ? 
                 _templateService.FillEnumDefaultExportTemplate("", tsEnumName, valuesText, tsDoc, enumAttribute.IsConst, enumAttribute.AsUnionType, Options.FileHeading) :
-                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, tsDoc, customHead, customBody, Options.FileHeading);
+                _templateService.FillEnumTemplate("", tsEnumName, valuesText, enumAttribute.IsConst, enumAttribute.AsUnionType, tsDoc, customHead, customBody, customFooter, Options.FileHeading);
 
             // write TypeScript file
 

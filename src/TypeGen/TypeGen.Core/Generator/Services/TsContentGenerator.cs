@@ -31,6 +31,7 @@ namespace TypeGen.Core.Generator.Services
         private const string KeepTsTagName = "keep-ts";
         private const string CustomHeadTagName = "custom-head";
         private const string CustomBodyTagName = "custom-body";
+        private const string CustomFooterTagName = "custom-footer";
 
         private GeneratorOptions GeneratorOptions => _generatorOptionsProvider.GeneratorOptions;
 
@@ -303,6 +304,23 @@ namespace TypeGen.Core.Generator.Services
             return string.IsNullOrEmpty(content)
                 ? ""
                 : $"//<{CustomHeadTagName}>\r\n{content}//</{CustomHeadTagName}>\r\n\r\n";
+        }
+     
+
+        /// <summary>
+        /// Gets custom code for a TypeScript file given by filePath.
+        /// Returns an empty string if a file does not exist.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public string GetCustomFooter(string filePath)
+        {
+            Requires.NotNull(filePath, nameof(filePath));
+            
+            string content = _tsContentParser.GetTagContent(filePath, 0, CustomFooterTagName);
+            return string.IsNullOrEmpty(content)
+                ? ""
+                : $"//<{CustomFooterTagName}>\r\n{content}//</{CustomFooterTagName}>\r\n\r\n";
         }
 
         /// <summary>
