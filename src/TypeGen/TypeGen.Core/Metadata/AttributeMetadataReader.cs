@@ -18,7 +18,7 @@ namespace TypeGen.Core.Metadata
             Requires.NotNull(memberInfo, nameof(memberInfo));
             return memberInfo.GetCustomAttribute<TAttribute>();
         }
-        
+
         public IEnumerable<TAttribute> GetAttributes<TAttribute>(Type type) where TAttribute : Attribute
         {
             Requires.NotNull(type, nameof(type));
@@ -30,7 +30,7 @@ namespace TypeGen.Core.Metadata
             Requires.NotNull(memberInfo, nameof(memberInfo));
             return memberInfo.GetCustomAttributes(typeof(TAttribute), false) as TAttribute[];
         }
-        
+
         public IEnumerable<object> GetAttributes(Type type)
         {
             Requires.NotNull(type, nameof(type));
@@ -40,7 +40,14 @@ namespace TypeGen.Core.Metadata
         public IEnumerable<object> GetAttributes(MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
-            return memberInfo.GetCustomAttributes(false);
+            try
+            {
+                return memberInfo.GetCustomAttributes(false);
+            }
+            catch (Exception ex)
+            {
+                return [];
+            }
         }
     }
 }
