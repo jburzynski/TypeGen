@@ -147,7 +147,8 @@ namespace TypeGen.Cli.TypeResolution
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFile(path);
+                    string fullPath = System.IO.Path.GetFullPath(path);
+                    Assembly assembly = Assembly.LoadFile(fullPath);
                     if (assembly.GetName().Version.ToString() == assemblyVersion)
                     {
                         _logger.Log($"Assembly '{assembly.FullName}' found in: {path}", LogLevel.Debug);
