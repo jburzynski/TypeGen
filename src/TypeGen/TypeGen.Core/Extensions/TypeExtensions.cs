@@ -23,7 +23,7 @@ namespace TypeGen.Core.Extensions
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNull(reader, nameof(reader));
-            
+
             return reader.GetAttribute<ExportTsClassAttribute>(type) != null ||
                    reader.GetAttribute<ExportTsInterfaceAttribute>(type) != null ||
                    reader.GetAttribute<ExportTsEnumAttribute>(type) != null;
@@ -39,7 +39,7 @@ namespace TypeGen.Core.Extensions
         {
             Requires.NotNull(types, nameof(types));
             Requires.NotNull(reader, nameof(reader));
-            
+
             return types.Where(t => t.HasExportAttribute(reader));
         }
 
@@ -53,7 +53,7 @@ namespace TypeGen.Core.Extensions
         {
             Requires.NotNull(memberInfos, nameof(memberInfos));
             Requires.NotNull(reader, nameof(reader));
-            
+
             return memberInfos.Where(i => reader.GetAttribute<TsIgnoreAttribute>(i) == null);
         }
 
@@ -104,11 +104,18 @@ namespace TypeGen.Core.Extensions
         public static bool IsNullable(this MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
-            
-            var contextualMember = memberInfo.ToContextualAccessor();
-            return contextualMember.Nullability == Nullability.Nullable;
+            try
+            {
+                var contextualMember = memberInfo.ToContextualAccessor();
+                return contextualMember.Nullability == Nullability.Nullable;
+            }
+            catch
+            {
+                // If the member is not a contextual member, we cannot determine nullability
+                return false;
+            }
         }
-        
+
         /// <summary>
         /// Checks if a property or field is nullable
         /// </summary>
@@ -119,7 +126,7 @@ namespace TypeGen.Core.Extensions
             Requires.NotNull(type, nameof(type));
             return Nullable.GetUnderlyingType(type) != null;
         }
-        
+
         /// <summary>
         /// Maps an enumerable to an enumerable of the elements' type names
         /// </summary>
@@ -128,11 +135,11 @@ namespace TypeGen.Core.Extensions
         public static IEnumerable<string> GetTypeNames(this IEnumerable<object> enumerable)
         {
             Requires.NotNull(enumerable, nameof(enumerable));
-            
+
             return enumerable
                 .Select(c => c.GetType().Name);
         }
-        
+
         /// <summary>
         /// Shim for Type.GetInterface
         /// </summary>
@@ -143,7 +150,7 @@ namespace TypeGen.Core.Extensions
         {
             Requires.NotNull(type, nameof(type));
             Requires.NotNullOrEmpty(interfaceName, nameof(interfaceName));
-            
+
             return type.GetInterfaces()
                 .FirstOrDefault(i => i.Name == interfaceName || i.FullName == interfaceName);
         }
@@ -164,17 +171,17 @@ namespace TypeGen.Core.Extensions
 
             if (!typeInfo.IsClass && !typeInfo.IsInterface && !typeInfo.IsStruct()) return Enumerable.Empty<MemberInfo>();
 
-            var fieldInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredFields
+            var fieldInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredFields
                 .WithMembersFilter();
-            
-            var propertyInfos = (IEnumerable<MemberInfo>) typeInfo.DeclaredProperties
+
+            var propertyInfos = (IEnumerable<MemberInfo>)typeInfo.DeclaredProperties
                 .WithMembersFilter();
 
             if (withoutTsIgnore)
             {
                 fieldInfos = fieldInfos.WithoutTsIgnore(metadataReader);
                 propertyInfos = propertyInfos.WithoutTsIgnore(metadataReader);
-            }  
+            }
 
             return fieldInfos.Union(propertyInfos);
         }
