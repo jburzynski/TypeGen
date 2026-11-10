@@ -104,9 +104,25 @@ namespace TypeGen.Core.Extensions
         public static bool IsNullable(this MemberInfo memberInfo)
         {
             Requires.NotNull(memberInfo, nameof(memberInfo));
-            
-            var contextualMember = memberInfo.ToContextualAccessor();
-            return contextualMember.Nullability == Nullability.Nullable;
+            #if NET6_0_OR_GREATER
+                var nullabilityInfoContext = new NullabilityInfoContext();
+                NullabilityInfo nullabilityInfo;
+                if (memberInfo is PropertyInfo propertyInfo)
+                {
+                    nullabilityInfo = nullabilityInfoContext.Create(propertyInfo);
+                }
+                else if (memberInfo is FieldInfo fieldInfo)
+                {
+                    nullabilityInfo = nullabilityInfoContext.Create(fieldInfo);
+                } else {
+                    throw new NotSupportedException("The member info must be a field or property.");
+                }
+                return nullabilityInfo.WriteState is NullabilityState.Nullable || 
+                    nullabilityInfo.ReadState is NullabilityState.Nullable;
+            #else
+                var contextualMember = memberInfo.ToContextualAccessor();
+                return contextualMember.Nullability == Nullability.Nullable;
+            #endif
         }
         
         /// <summary>

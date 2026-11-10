@@ -134,8 +134,17 @@ internal class Application : IApplication
         }
         catch (Exception e)
         {
-            _logger.Log($"{e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+            LogExceptions(e);
             return ExitCode.Error;
+        }
+    }
+
+    private void LogExceptions(Exception e)
+    {
+        while (e != null)
+        {
+            _logger.Log($"{e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+            e = e.InnerException;
         }
     }
 }
