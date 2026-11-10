@@ -56,6 +56,7 @@
 		<EmbeddedResource Include="Comments\Expected\ts-enum.ts" />
 		<EmbeddedResource Include="Comments\Expected\ts-generic-default-export.ts" />
 		<EmbeddedResource Include="Comments\Expected\ts-generic.ts" />
+		<EmbeddedResource Include="Comments\Expected\ts-nested-class.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\array-of-nullable.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\bar.ts" />
 		<EmbeddedResource Include="CommonCases\Expected\base-class.ts" />
