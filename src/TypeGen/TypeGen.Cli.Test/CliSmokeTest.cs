@@ -19,8 +19,8 @@ namespace TypeGen.Cli.Test
             const string projectToGeneratePath = "../../../../TypeGen.FileContentTest";
             const string cliFileName = "TypeGen.Cli.exe";
             string[] cliPossibleDirectories = {
-                "../../../../TypeGen.Cli/bin/Debug/net10.0",            
-                "../../../../TypeGen.Cli/bin/Release/net10.0",            
+                "../../../../TypeGen.Cli/bin/Debug/net11.0",            
+                "../../../../TypeGen.Cli/bin/Release/net11.0",            
             };
             
             var cliFilePath = GetCliDirectory(cliPossibleDirectories);
