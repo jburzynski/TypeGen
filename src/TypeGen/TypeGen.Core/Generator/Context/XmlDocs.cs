@@ -52,8 +52,8 @@ internal class XmlDocs
         var xmlDoc = _assemblyToXmlDocMapping[assemblyName];
         if (xmlDoc == null) return null;
         
-        var typeFullNameForRegex = typeFullName.Replace(".", "\\.");
-        var memberNameForRegex = memberName != null ? "\\." + memberName : null;
+        var typeFullNameForRegex = Regex.Escape(typeFullName.Replace('+', '.'));
+        var memberNameForRegex = memberName != null ? "\\." + Regex.Escape(memberName) : null;
         
         var regex = new Regex($"""<member name="{xmlDocMemberType}:{typeFullNameForRegex}{memberNameForRegex}\">(.*?)<\/member>""",
             RegexOptions.Singleline);

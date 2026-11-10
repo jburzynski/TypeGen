@@ -21,6 +21,7 @@ public class CommentsTest : GenerationTestBase
     [InlineData(typeof(TsEnum), "TypeGen.FileContentTest.Comments.Expected.ts-enum-default-export.ts", true)]
     [InlineData(typeof(TsEnumUnion), "TypeGen.FileContentTest.Comments.Expected.ts-enum-union.ts", false)]
     [InlineData(typeof(TsEnumUnion), "TypeGen.FileContentTest.Comments.Expected.ts-enum-union-default-export.ts", true)]
+    [InlineData(typeof(TsOuterClass.TsNestedClass), "TypeGen.FileContentTest.Comments.Expected.ts-nested-class.ts", false)]
     public async Task TestCommentsGenerationSpec(Type type, string expectedLocation, bool useDefaultExport)
     {
         var generationSpec = new CommentsGenerationSpec();
@@ -37,6 +38,7 @@ public class CommentsTest : GenerationTestBase
             AddInterface<ITsInterface>();
             AddEnum<TsEnum>();
             AddEnum<TsEnumUnion>(asUnionType: true);
+            AddClass<TsOuterClass.TsNestedClass>();
         }
     }
 }
