@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using NuGet.Frameworks;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using TypeGen.Cli.Extensions;
+using TypeGen.Cli.TypeResolution;
+using TypeGen.Core;
 using TypeGen.Core.Logging;
 using TypeGen.Core.Storage;
 using TypeGen.Core.Validation;
@@ -45,7 +49,7 @@ namespace TypeGen.Cli.GenerationConfig
                 ? $"Reading the config file from \"{configPath}\""
                 : $"No config file found for project \"{projectFolder}\". Default configuration will be used.",
                 LogLevel.Debug);
-            
+
             var config = _fileSystem.FileExists(configPath)
                 ? JsonConvert.DeserializeObject<TgConfig>(_fileSystem.ReadFile(configPath))
                 : new TgConfig();
@@ -112,19 +116,44 @@ namespace TypeGen.Cli.GenerationConfig
 
             string dllFileName = Path.ChangeExtension(projectFileName, "dll");
             string exeFileName = Path.ChangeExtension(projectFileName, "exe");
+
+            string projectFilePath = Path.Combine(projectFolder, projectFileName);
             string projectOutputFolderRelativeToCwd = Path.Combine(projectFolder, projectOutputFolder);
 
             List<string> foundFiles = _fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, dllFileName)
                 .Concat(_fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, exeFileName)).ToList();
 
-            if (foundFiles.Any())
+            string foundFile = null;
+
+            if (foundFiles.Count > 0)
             {
-                string foundFile = foundFiles.First();
+                var projectTargetFrameworks = TargetFrameworkUtils.GetProjectTargetFrameworks(projectFilePath);
+
+                foundFile = foundFiles[0];
+
+                if (foundFiles.Count > 1)
+                {
+                    foundFile = foundFiles
+                        .Select(x => (path: x, assemblyFramework: TargetFrameworkUtils.GetAssemblyTargetFramework(x)))
+                        .Where(x => x.assemblyFramework != null && !x.assemblyFramework.IsUnsupported &&
+                            projectTargetFrameworks.Any(f => DefaultCompatibilityProvider.Instance.IsCompatible(f, x.assemblyFramework)) &&
+                            DefaultCompatibilityProvider.Instance.IsCompatible(Constants.CliFramework, x.assemblyFramework))
+                        .OrderByDescending(x => _fileSystem.FileExists(Path.ChangeExtension(x.path, "xml")))
+                        .ThenBy(x => TargetFrameworkUtils.GetFrameworkFamilyRank(x.assemblyFramework!))
+                        .ThenByDescending(x => x.assemblyFramework!.Version)
+                        .ThenByDescending(x => _fileSystem.GetLastWriteTimeUtc(x.path))
+                        .Select(x => x.path)
+                        .FirstOrDefault();
+                }
+            }
+
+            if (foundFile != null)
+            {
                 _logger.Log($"Using project assembly found in: {foundFile}", LogLevel.Debug);
                 return foundFile;
             }
 
-            throw new CliException($"None of: '{dllFileName}' or '{exeFileName}' found in the default assembly folder (the project's output folder '{projectOutputFolder}\\'; searched recursively). Please make sure your project is built.");
+            throw new CoreException($"Could not find a compatible assembly in the project's output folder '{projectOutputFolderRelativeToCwd}' (searched recursively). Make sure the project is built and targets a .NET version compatible with the CLI ({Constants.CliFramework}).");
         }
     }
 }

@@ -105,5 +105,11 @@ namespace TypeGen.Core.Storage
             
             directoryInfo.Delete(true);
         }
+
+        public DateTime GetLastWriteTimeUtc(string path)
+        {
+            Requires.NotNullOrEmpty(path, nameof(path));
+            return File.GetLastWriteTimeUtc(path);
+        }
     }
 }

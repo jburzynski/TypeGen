@@ -62,7 +62,6 @@ namespace TypeGen.Cli.TypeResolution
 
         private void Register()
         {
-            AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
 
@@ -91,26 +90,27 @@ namespace TypeGen.Cli.TypeResolution
         {
             var assemblyShortName = GetAssemblyShortName(assemblyName);
             var assemblyVersion = GetAssemblyVersion(assemblyName);
+            HashSet<string> foundPaths = [];
 
-            var assembly = FindInAdditionalAssemblyFilePaths(assemblyShortName, assemblyName, assemblyVersion);
+            var assembly = FindInAdditionalAssemblyFilePaths(assemblyShortName, assemblyName, assemblyVersion, foundPaths);
             if (assembly != null) return assembly;
 
-            assembly = FindByPackageName(_nugetPackageFolders, assemblyName);
+            assembly = FindByPackageName(_nugetPackageFolders, assemblyName, foundPaths);
             if (assembly != null) return assembly;
 
-            assembly = FindByPackageName(_additionalAssemblyDirectories, assemblyName);
+            assembly = FindByPackageName(_additionalAssemblyDirectories, assemblyName, foundPaths);
             if (assembly != null) return assembly;
 
             if (_sharedFolder != null)
             {
-                assembly = FindByAssemblyName(_sharedFolder, assemblyShortName, assemblyName, assemblyVersion);
+                assembly = FindByAssemblyName(_sharedFolder, assemblyShortName, assemblyName, assemblyVersion, foundPaths);
                 if (assembly != null) return assembly;
             }
 
-            assembly = FindByAssemblyName(_additionalAssemblyDirectories, assemblyShortName, assemblyName, assemblyVersion);
+            assembly = FindByAssemblyName(_additionalAssemblyDirectories, assemblyShortName, assemblyName, assemblyVersion, foundPaths);
             if (assembly != null) return assembly;
 
-            assembly = FindByAssemblyName(_nugetPackageFolders, assemblyShortName, assemblyName, assemblyVersion);
+            if (foundPaths.Count > 0) assembly = ResolveFromPaths(foundPaths, assemblyName, assemblyVersion);
 
             if (assembly == null)
             {
@@ -121,14 +121,16 @@ namespace TypeGen.Cli.TypeResolution
             return assembly;
         }
 
-        private Assembly FindByPackageName(IEnumerable<string> directories, string assemblyFullName)
+        private Assembly FindByPackageName(IEnumerable<string> directories,
+            string assemblyFullName,
+            HashSet<string> foundPaths)
         {
             return directories
-                .Select(directory => FindByPackageName(directory, assemblyFullName))
+                .Select(directory => FindByPackageName(directory, assemblyFullName, foundPaths))
                 .FirstOrDefault(assembly => assembly != null);
         }
 
-        private Assembly FindByPackageName(string directory, string assemblyFullName)
+        private Assembly FindByPackageName(string directory, string assemblyFullName, HashSet<string> foundPaths)
         {
             var assemblyShortName = GetAssemblyShortName(assemblyFullName);
             var assemblyVersion = GetAssemblyVersion(assemblyFullName);
@@ -136,34 +138,42 @@ namespace TypeGen.Cli.TypeResolution
             var packageFolder = GetPackageFolder(directory, assemblyShortName);
 
             return packageFolder != null ?
-                FindByAssemblyName(packageFolder, assemblyShortName, assemblyFullName, assemblyVersion) :
+                FindByAssemblyName(packageFolder, assemblyShortName, assemblyFullName, assemblyVersion, foundPaths) :
                 null;
         }
 
         private Assembly FindByAssemblyName(IEnumerable<string> directories,
             string assemblyShortName,
             string assemblyFullName,
-            Version targetVersion)
+            Version targetVersion,
+            HashSet<string> foundPaths)
         {
-            return directories.Select(directory => FindByAssemblyName(directory, assemblyShortName, assemblyFullName, targetVersion))
+            return directories.Select(directory => FindByAssemblyName(directory, assemblyShortName, assemblyFullName, targetVersion, foundPaths))
                 .FirstOrDefault(assembly => assembly != null);
         }
 
         private Assembly FindInAdditionalAssemblyFilePaths(string assemblyShortName,
             string assemblyFullName,
-            Version targetVersion)
+            Version targetVersion,
+            HashSet<string> foundPaths)
         {
             var matchingPaths = _additionalAssemblyFilePaths
                 .Where(x => Path.GetFileNameWithoutExtension(x).Equals(assemblyShortName, StringComparison.Ordinal))
                 .ToList();
 
-            return ResolveFromPaths(matchingPaths, assemblyFullName, targetVersion);
+            foundPaths.UnionWith(matchingPaths);
+
+            // Leaving this in case early returns are ever needed for optimization.
+            // Currently searching all directories takes very little time,
+            // so there's no need to optimize any further.
+            return null;
         }
 
         private Assembly FindByAssemblyName(string directory,
             string assemblyShortName,
             string assemblyFullName,
-            Version targetVersion)
+            Version targetVersion,
+            HashSet<string> foundPaths)
         {
             var patterns = new[]
             {
@@ -171,17 +181,18 @@ namespace TypeGen.Cli.TypeResolution
                 $"{assemblyShortName}.exe"
             };
 
-            List<string> allPaths = [];
-
             foreach (var pattern in patterns)
             {
                 var found = Directory.GetFiles(directory, pattern, SearchOption.AllDirectories)
                     .Where(x => !x.Contains($"{_sep}obj{_sep}", StringComparison.OrdinalIgnoreCase));
 
-                allPaths.AddRange(found);
+                foundPaths.UnionWith(found);
             }
 
-            return ResolveFromPaths(allPaths, assemblyFullName, targetVersion);
+            // Leaving this in case early returns are ever needed for optimization.
+            // Currently searching all directories takes very little time,
+            // so there's no need to optimize any further.
+            return null;
         }
 
         private string GetAssemblyShortName(string assemblyFullName)
@@ -235,7 +246,7 @@ namespace TypeGen.Cli.TypeResolution
             return null;
         }
 
-        private Assembly ResolveFromPaths(IReadOnlyList<string> paths,
+        private Assembly ResolveFromPaths(IReadOnlyCollection<string> paths,
             string assemblyFullName,
             Version targetVersion)
         {
@@ -268,12 +279,15 @@ namespace TypeGen.Cli.TypeResolution
                     candidates = candidates.Where(x => x.Version == bestWithEqualOrHigherVersion.Version).ToList();
             }
 
-            candidates = candidates
+            if (candidates.Count > 1)
+            {
+                candidates = candidates
                 .OrderByDescending(x => _assembliesFrameworks.Any(f => DefaultCompatibilityProvider.Instance.IsCompatible(f, x.Framework)))
                 .ThenByDescending(x => x.Version)
                 .ThenBy(x => TargetFrameworkUtils.GetFrameworkFamilyRank(x.Framework))
                 .ThenByDescending(x => x.Framework.Version)
                 .ToList();
+            }
 
             foreach (var candidate in candidates)
             {
@@ -318,8 +332,6 @@ namespace TypeGen.Cli.TypeResolution
             }
         }
 
-        private record struct AssemblyCandidate(string Path, Version Version, NuGetFramework Framework);
-
         ~AssemblyResolver() => Dispose(false);
 
         public void Dispose()
@@ -332,5 +344,7 @@ namespace TypeGen.Cli.TypeResolution
         {
             Unregister();
         }
+
+        private record struct AssemblyCandidate(string Path, Version Version, NuGetFramework Framework);
     }
 }

@@ -29,7 +29,7 @@ namespace TypeGen.Core.Extensions
             {
                 IEnumerable<Type> types = e.Types.Where(t => t != null);
 
-                if (!types.Any()) throw new AssemblyResolutionException($"Could not resolve assembly '{assembly.FullName}'");
+                if (!types.Any()) throw new AssemblyResolutionException($"Could not resolve assembly '{assembly.FullName}'", e);
 
                 return types;
             }

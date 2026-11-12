@@ -22,34 +22,41 @@ internal static class TargetFrameworkUtils
         if (!File.Exists(projectFilePath))
             throw new FileNotFoundException("The specified project file was not found.", projectFilePath);
 
-        var doc = XDocument.Load(projectFilePath);
-        var targets = new List<NuGetFramework>();
-
-        foreach (var propertyGroup in doc.Descendants().Where(x => x.Name.LocalName == "PropertyGroup"))
+        try
         {
-            // 1. Single modern TargetFramework (e.g., net10.0, netstandard2.0)
-            AddFramework(propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFramework")?.Value, targets);
+            var doc = XDocument.Load(projectFilePath);
+            var targets = new List<NuGetFramework>();
 
-            // 2. Multi-targeting TargetFrameworks (e.g., net8.0;net10.0)
-            var targetFrameworks = propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFrameworks")?.Value;
-            if (!string.IsNullOrWhiteSpace(targetFrameworks))
+            foreach (var propertyGroup in doc.Descendants().Where(x => x.Name.LocalName == "PropertyGroup"))
             {
-                var targetFrameworkItems = targetFrameworks.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                // 1. Single modern TargetFramework (e.g., net10.0, netstandard2.0)
+                AddFramework(propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFramework")?.Value, targets);
 
-                foreach (var tf in targetFrameworkItems)
-                    AddFramework(tf, targets);
+                // 2. Multi-targeting TargetFrameworks (e.g., net8.0;net10.0)
+                var targetFrameworks = propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFrameworks")?.Value;
+                if (!string.IsNullOrWhiteSpace(targetFrameworks))
+                {
+                    var targetFrameworkItems = targetFrameworks.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var tf in targetFrameworkItems)
+                        AddFramework(tf, targets);
+                }
+
+                // 3. .NET Framework TargetFrameworkVersion (e.g., v4.8)
+                var targetFrameworkVersion = propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFrameworkVersion")?.Value;
+                if (!string.IsNullOrWhiteSpace(targetFrameworkVersion))
+                {
+                    // NuGetFramework can parse version strings if formatted as a framework or version
+                    AddFramework($"netframework{targetFrameworkVersion.TrimStart('v', 'V')}", targets);
+                }
             }
 
-            // 3. .NET Framework TargetFrameworkVersion (e.g., v4.8)
-            var targetFrameworkVersion = propertyGroup.Elements().FirstOrDefault(x => x.Name.LocalName == "TargetFrameworkVersion")?.Value;
-            if (!string.IsNullOrWhiteSpace(targetFrameworkVersion))
-            {
-                // NuGetFramework can parse version strings if formatted as a framework or version
-                AddFramework($"netframework{targetFrameworkVersion.TrimStart('v', 'V')}", targets);
-            }
+            return targets.DistinctBy(x => x.DotNetFrameworkName).ToList();
         }
-
-        return targets.DistinctBy(x => x.DotNetFrameworkName).ToList();
+        catch (Exception e)
+        {
+            throw new CliException($"An error occurred while parsing project file '{projectFilePath}'.", e);
+        }
     }
 
     private static void AddFramework(string rawFramework, List<NuGetFramework> targets)
@@ -96,7 +103,7 @@ internal static class TargetFrameworkUtils
                             if (attributeBlobReader.Length >= 2 && attributeBlobReader.ReadUInt16() == 0x0001)
                             {
                                 // e.g., ".NETCoreApp,Version=v10.0" or ".NETFramework,Version=v4.8"
-                                string? canonical = attributeBlobReader.ReadSerializedString();
+                                string canonical = attributeBlobReader.ReadSerializedString();
                                 if (string.IsNullOrWhiteSpace(canonical)) return null;
 
                                 var framework = NuGetFramework.Parse(canonical);

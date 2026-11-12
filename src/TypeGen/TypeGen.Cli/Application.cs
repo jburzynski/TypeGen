@@ -118,23 +118,23 @@ internal class Application : IApplication
         }
         catch (AssemblyResolutionException e)
         {
-            var message = e.Message +
-                             "Consider adding any external assembly directories in the externalAssemblyPaths parameter. " +
-                             "If you're using ASP.NET Core, add your NuGet directory to externalAssemblyPaths parameter (you can use global NuGet packages directory alias: \"<global-packages>\")";
-            _logger.Log($"{message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+            var message = $"An exception occurred when resolving assemblies. Consider adding any external assembly directories in the 'externalAssemblyPaths' config parameter." +
+                $"{Environment.NewLine}{e}";
+            _logger.Log(message, LogLevel.Error);
+
             return ExitCode.Error;
         }
         catch (ReflectionTypeLoadException e)
         {
             foreach (var loaderException in e.LoaderExceptions)
             {
-                _logger.Log($"Type load error: {loaderException.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+                _logger.Log($"Class loader exception: {loaderException}", LogLevel.Error);
             }
             return ExitCode.Error;
         }
         catch (Exception e)
         {
-            _logger.Log($"{e.Message}{Environment.NewLine}{e.StackTrace}", LogLevel.Error);
+            _logger.Log(e.ToString(), LogLevel.Error);
             return ExitCode.Error;
         }
     }

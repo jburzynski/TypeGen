@@ -33,8 +33,16 @@ namespace TypeGen.Core.Logging
                 LogLevel.Error => ConsoleColor.Red,
                 _ => Console.ForegroundColor
             };
-            
-            WithColor(color, () => Console.WriteLine(message));
+
+            WithColor(color, () => Write(message, level));
+        }
+
+        private void Write(string message, LogLevel level)
+        {
+            if (level > LogLevel.Info)
+                Console.Error.WriteLine(message);
+            else
+                Console.WriteLine(message);
         }
     }
 }

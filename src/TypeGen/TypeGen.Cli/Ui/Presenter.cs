@@ -1,5 +1,7 @@
+using NuGet.Frameworks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
@@ -81,12 +83,22 @@ internal class Presenter : IPresenter
     private void GenerateSingle(string projectFolder, string configPath, string outputFolder)
     {
         // prep
-        
+
         var configConsoleOptions = new ConfigConsoleOptions(outputFolder);
         var config = _configProvider.GetConfig(configPath, projectFolder, configConsoleOptions);
-        var assemblies = config.GetAssemblies().Select(Assembly.LoadFrom).ToList();
+
+        List<NuGetFramework> assembliesFrameworks = config.GetAssemblies()
+            .Select(x => TargetFrameworkUtils.GetAssemblyTargetFramework(x))
+            .Where(x => x != null && !x.IsUnsupported)
+            .ToList()!;
+
+        using var assemblyResolver = new AssemblyResolver(projectFolder,
+            assembliesFrameworks,
+            config.ExternalAssemblyPaths!,
+            config.GetAssemblies(),
+            _logger);
         
-        using var assemblyResolver = new AssemblyResolver(_fileSystem, _logger, projectFolder, config.ExternalAssemblyPaths);
+        var assemblies = config.GetAssemblies().Select(Assembly.LoadFrom).ToList();
         var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
         var converterResolver = new ConverterResolver(typeResolver);
         var generationSpecResolver = new GenerationSpecResolver(typeResolver);

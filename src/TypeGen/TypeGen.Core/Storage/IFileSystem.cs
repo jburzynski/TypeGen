@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TypeGen.Core.Storage
 {
@@ -78,5 +79,6 @@ namespace TypeGen.Core.Storage
         /// </summary>
         /// <param name="directory"></param>
         void SetCurrentDirectory(string directory);
+        DateTime GetLastWriteTimeUtc(string path);
     }
 }
