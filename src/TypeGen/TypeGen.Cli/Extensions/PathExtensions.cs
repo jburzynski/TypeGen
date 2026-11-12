@@ -15,6 +15,12 @@ namespace TypeGen.Cli.Extensions
             return path.RelativeOrRooted(fileSystem.GetCurrentDirectory());
         }
 
+        public static string ToAbsolutePath(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return path;
+            return path.RelativeOrRooted(Directory.GetCurrentDirectory());
+        }
+
         public static string RelativeOrRooted(this string path, string basePath)
         {
             Requires.NotNull(path, nameof(path));
