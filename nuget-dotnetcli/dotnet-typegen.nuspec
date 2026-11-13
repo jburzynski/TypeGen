@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>dotnet-typegen</id>
-    <version>8.0.0</version>
+    <version>8.1.0</version>
     <authors>Jacek Burzynski</authors>
     <owners>Jacek Burzynski</owners>
     <license type="file">LICENSE</license>
@@ -11,7 +11,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>TypeGen .NET CLI tool (TypeGen is a single-class-per-file C# to TypeScript generator)</description>
     <releaseNotes>
-- updated to .NET 11
+- Improved prioritizing assembly paths in AssemblyResolver. Includes fix for the recurring bug where Microsoft / ASP.NET assemblies fail to load.
+- Project assembly paths are now prioritized, which should for example eliminate the need to delete old .NET target directories in bin/.
+- Errors and warnings are now logged to stderr.
+- Inner exceptions are now logged.
+- Fixed ConfigProvider.GetDefaultAssemblyPath() throwing CoreException instead of CliException.
+- A failure to resolve an assembly in AssemblyResolver is now logged as a warning instead of an error, since generation might be successful even if some of the dependencies are not found.
     </releaseNotes>
     <tags>code-generator generator code typescript ts csharp cs dotnet cli</tags>
     <packageTypes>
