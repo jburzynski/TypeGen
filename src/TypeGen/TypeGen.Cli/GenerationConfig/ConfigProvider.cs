@@ -110,15 +110,16 @@ namespace TypeGen.Cli.GenerationConfig
                 .FirstOrDefault(n => n.EndsWith(".csproj") || n.EndsWith(".xproj"));
 
             if (projectFileName == null)
-            {
                 throw new CliException("Project file (*.csproj or *.xproj) not found in the project folder and no assembly path found in the config file");
-            }
 
             string dllFileName = Path.ChangeExtension(projectFileName, "dll");
             string exeFileName = Path.ChangeExtension(projectFileName, "exe");
 
             string projectFilePath = Path.Combine(projectFolder, projectFileName);
             string projectOutputFolderRelativeToCwd = Path.Combine(projectFolder, projectOutputFolder);
+
+            if (!_fileSystem.DirectoryExists(projectOutputFolderRelativeToCwd))
+                throw new CliException($"The project's output folder '{projectOutputFolderRelativeToCwd}' does not exist. Make sure the project is built.");
 
             List<string> foundFiles = _fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, dllFileName)
                 .Concat(_fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, exeFileName)).ToList();
@@ -136,8 +137,8 @@ namespace TypeGen.Cli.GenerationConfig
                     foundFile = foundFiles
                         .Select(x => (path: x, assemblyFramework: TargetFrameworkUtils.GetAssemblyTargetFramework(x)))
                         .Where(x => x.assemblyFramework != null && !x.assemblyFramework.IsUnsupported &&
-                            projectTargetFrameworks.Any(f => DefaultCompatibilityProvider.Instance.IsCompatible(f, x.assemblyFramework)) &&
-                            DefaultCompatibilityProvider.Instance.IsCompatible(Constants.CliFramework, x.assemblyFramework))
+                            projectTargetFrameworks.Any(f => f == x.assemblyFramework) &&
+                            DefaultCompatibilityProvider.Instance.IsCompatible(RuntimeInfo.CliFramework, x.assemblyFramework))
                         .OrderByDescending(x => _fileSystem.FileExists(Path.ChangeExtension(x.path, "xml")))
                         .ThenBy(x => TargetFrameworkUtils.GetFrameworkFamilyRank(x.assemblyFramework!))
                         .ThenByDescending(x => x.assemblyFramework!.Version)
@@ -153,7 +154,7 @@ namespace TypeGen.Cli.GenerationConfig
                 return foundFile;
             }
 
-            throw new CoreException($"Could not find a compatible assembly in the project's output folder '{projectOutputFolderRelativeToCwd}' (searched recursively). Make sure the project is built and targets a .NET version compatible with the CLI ({Constants.CliFramework}).");
+            throw new CliException($"Could not find a compatible assembly in the project's output folder '{projectOutputFolderRelativeToCwd}' (searched recursively). Make sure the project is built and targets a .NET version compatible with the CLI ({RuntimeInfo.CliFramework}).");
         }
     }
 }

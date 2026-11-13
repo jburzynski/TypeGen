@@ -261,7 +261,7 @@ namespace TypeGen.Cli.TypeResolution
                     return (path: x, assemblyFramework, assemblyVersion);
                 })
                 .Where(x => x.assemblyFramework != null && x.assemblyVersion != null && !x.assemblyFramework.IsUnsupported &&
-                    DefaultCompatibilityProvider.Instance.IsCompatible(Constants.CliFramework, x.assemblyFramework))
+                    DefaultCompatibilityProvider.Instance.IsCompatible(RuntimeInfo.CliFramework, x.assemblyFramework))
                 .Select(x => new AssemblyCandidate(x.path, x.assemblyVersion!, x.assemblyFramework!))
                 .ToList();
 
