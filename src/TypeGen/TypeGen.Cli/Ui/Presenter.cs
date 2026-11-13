@@ -99,6 +99,7 @@ internal class Presenter : IPresenter
             _logger);
         
         var assemblies = config.GetAssemblies().Select(Assembly.LoadFrom).ToList();
+
         var typeResolver = new TypeResolver(_logger, _fileSystem, projectFolder, assemblies);
         var converterResolver = new ConverterResolver(typeResolver);
         var generationSpecResolver = new GenerationSpecResolver(typeResolver);

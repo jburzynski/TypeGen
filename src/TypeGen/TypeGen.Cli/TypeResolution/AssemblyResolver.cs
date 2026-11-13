@@ -115,7 +115,7 @@ namespace TypeGen.Cli.TypeResolution
             if (assembly == null)
             {
                 var searchedDirectories = _additionalAssemblyDirectories.Concat(_nugetPackageFolders).Concat(new[] { _sharedFolder }).ToList();
-                _logger?.Log($"Could not resolve assembly '{assemblyName}' in any of the searched directories: {string.Join("; ", searchedDirectories)}", LogLevel.Error);
+                _logger?.Log($"Could not resolve assembly '{assemblyName}' in any of the searched directories: {string.Join("; ", searchedDirectories)}", LogLevel.Warning);
             }
 
             return assembly;
@@ -164,8 +164,7 @@ namespace TypeGen.Cli.TypeResolution
             foundPaths.UnionWith(matchingPaths);
 
             // Leaving this in case early returns are ever needed for optimization.
-            // Currently searching all directories takes very little time,
-            // so there's no need to optimize any further.
+            // Currently not returning early, because searching all directories is very quick.
             return null;
         }
 
@@ -190,14 +189,13 @@ namespace TypeGen.Cli.TypeResolution
             }
 
             // Leaving this in case early returns are ever needed for optimization.
-            // Currently searching all directories takes very little time,
-            // so there's no need to optimize any further.
+            // Currently not returning early, because searching all directories is very quick.
             return null;
         }
 
         private string GetAssemblyShortName(string assemblyFullName)
         {
-            return assemblyFullName.Split(',')[0];
+            return assemblyFullName.Split(',')[0].Trim();
         }
 
         private Version GetAssemblyVersion(string assemblyFullName)

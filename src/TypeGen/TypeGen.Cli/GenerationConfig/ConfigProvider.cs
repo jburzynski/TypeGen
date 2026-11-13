@@ -122,7 +122,8 @@ namespace TypeGen.Cli.GenerationConfig
                 throw new CliException($"The project's output folder '{projectOutputFolderRelativeToCwd}' does not exist. Make sure the project is built.");
 
             List<string> foundFiles = _fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, dllFileName)
-                .Concat(_fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, exeFileName)).ToList();
+                .Concat(_fileSystem.GetFilesRecursive(projectOutputFolderRelativeToCwd, exeFileName))
+                .ToList();
 
             string foundFile = null;
 
